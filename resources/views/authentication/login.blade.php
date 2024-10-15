@@ -10,21 +10,21 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
 
-    <title>NMU Housing - Password Reset</title>
+    <title>NMU Housing - Login</title>
 
-    <!-- Favicon -->
-<!-- Icons -->
+   <!-- Favicon -->
+    <!-- Icons -->
 <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
 <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32x32.png') }}">
 <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16x16.png') }}">
 
 
-<!-- CSS Files -->
-<link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
-<link href="{{ asset('css/icons.css') }}" rel="stylesheet" type="text/css">
-<link rel="stylesheet" href="{{ asset('css/login.css') }}">
-<link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css">
-<!-- End CSS Files -->
+    <!-- CSS Files -->
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('css/icons.css') }}" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="{{ asset('css/authenication.css') }}">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css">
+    <!-- End CSS Files -->
 
 </head>
 
@@ -45,27 +45,36 @@
                                     <!-- Logo at the top -->
                                     <div class="auth-logo text-center">
                                         <a href="index.html">
-                                            <img src="{{ asset('public/images/logo.png') }}" class="img-fluid" alt="logo">
+                                            <img src="{{ asset('images/logo.png') }}" class="img-fluid" alt="logo">
                                         </a>
                                     </div>
 
-                                    <h4 class="text-primary mb-4">Reset Your Password 🔒</h4> <!-- Reduced margin -->
+                                    <h4 class="text-primary mb-4">Welcome back 👋!</h4> <!-- Reduced margin -->
 
-                                    <form action="#">
-                                        <!-- Email Field -->
+                                    <form method="POST" action="{{ route('login') }}">
                                         <div class="form-floating mb-3">
-                                            <input type="email" class="form-control text-secondary" id="floatingEmail" placeholder="name@example.com" required>
-                                            <label for="floatingEmail">Email</label>
+                                            <input type="email" class="form-control text-secondary" id="floatingInput" placeholder="name@example.com">
+                                            <label for="floatingInput">Email / National ID</label>
                                         </div>
-                                    
-                                        <!-- Submit Button for Password Reset -->
+                                        
+
+                                        <div class="form-floating mb-3"> <!-- Added margin to match others -->
+                                            <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+                                            <label for="floatingPassword">Password</label>
+                                        </div>
+
+                                        <div class="row mb-4">
+                                            <div class="col">
+                                                <a id="forgot-psw" href="password-reset.html" class="font-14">Forgot Password?</a>
+                                            </div>
+                                        </div>
+
                                         <div class="d-grid mb-4">
-                                            <button class="btn btn-primary font-18" type="submit">Reset Password</button>
+                                            <button class="btn btn-primary font-18" type="submit">Log in</button>
                                         </div>
                                     </form>
-                                    
 
-                                    <p class="mb-0 mt-3">Not registered yet? <a href="sign-up.html">Create an account</a></p>
+                                    <p class="mb-0 mt-3">Don't have an account? <a href="sign-up.html">Sign up</a></p>
                                 </div>
                             </div>
                         </div>

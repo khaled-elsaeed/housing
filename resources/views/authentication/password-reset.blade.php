@@ -10,20 +10,21 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
 
-    <title>NMU Housing - Sign Up</title>
+    <title>NMU Housing - Password Reset</title>
 
-    <!-- Icons -->
+    <!-- Favicon -->
+<!-- Icons -->
 <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
 <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32x32.png') }}">
 <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16x16.png') }}">
 
 
-    <!-- CSS Files -->
-    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset('css/icons.css') }}" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
-    <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css">
-    <!-- End CSS Files -->
+<!-- CSS Files -->
+<link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+<link href="{{ asset('css/icons.css') }}" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="{{ asset('css/authenication.css') }}">
+<link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css">
+<!-- End CSS Files -->
 
 </head>
 
@@ -48,41 +49,23 @@
                                         </a>
                                     </div>
 
-                                    <h4 class="text-primary mb-4">Welcome to Housing Portal!</h4>
+                                    <h4 class="text-primary mb-4">Reset Your Password 🔒</h4> <!-- Reduced margin -->
 
                                     <form action="#">
-                                        <!-- National ID Field -->
-                                        <div class="form-floating mb-3">
-                                            <input type="text" class="form-control text-secondary" id="floatingNationalID" placeholder="National ID">
-                                            <label for="floatingNationalID">National ID</label>
-                                        </div>
-                                    
                                         <!-- Email Field -->
                                         <div class="form-floating mb-3">
-                                            <input type="email" class="form-control text-secondary" id="floatingEmail" placeholder="name@example.com">
+                                            <input type="email" class="form-control text-secondary" id="floatingEmail" placeholder="name@example.com" required>
                                             <label for="floatingEmail">Email</label>
                                         </div>
                                     
-                                        <!-- Password Field -->
-                                        <div class="form-floating mb-3">
-                                            <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-                                            <label for="floatingPassword">Password</label>
-                                        </div>
-                                    
-                                        <!-- Confirm Password Field -->
-                                        <div class="form-floating mb-3">
-                                            <input type="password" class="form-control" id="floatingConfirmPassword" placeholder="Confirm Password">
-                                            <label for="floatingConfirmPassword">Confirm Password</label>
-                                        </div>
-                                    
-                                        <!-- Register Button -->
+                                        <!-- Submit Button for Password Reset -->
                                         <div class="d-grid mb-4">
-                                            <button class="btn btn-primary font-18" type="submit">Register</button>
+                                            <button class="btn btn-primary font-18" type="submit">Reset Password</button>
                                         </div>
                                     </form>
                                     
 
-                                    <p class="mb-0 mt-3">Alrady have an account? <a href="login.html">Login</a></p>
+                                    <p class="mb-0 mt-3">Not registered yet? <a href="sign-up.html">Create an account</a></p>
                                 </div>
                             </div>
                         </div>
@@ -94,7 +77,7 @@
                     <div class="col-12 col-md-6 d-md-block d-none">
                         <!-- Start Auth Box -->
                         <div class="auth-box-right">
-                            <img src="{{ asset('images/authentication/sgin-up-hero.svg') }}" alt="Login Image">
+                            <img src="{{ asset('images/authentication/login-hero.svg') }}" alt="Login Image">
                         </div>
                         <!-- End Auth Box -->
                     </div>

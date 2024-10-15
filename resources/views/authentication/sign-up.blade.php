@@ -10,9 +10,8 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
 
-    <title>NMU Housing - Login</title>
+    <title>NMU Housing - Sign Up</title>
 
-   <!-- Favicon -->
     <!-- Icons -->
 <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
 <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32x32.png') }}">
@@ -22,7 +21,7 @@
     <!-- CSS Files -->
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('css/icons.css') }}" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/authenication.css') }}">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css">
     <!-- End CSS Files -->
 
@@ -49,32 +48,41 @@
                                         </a>
                                     </div>
 
-                                    <h4 class="text-primary mb-4">Welcome back 👋!</h4> <!-- Reduced margin -->
+                                    <h4 class="text-primary mb-4">Welcome to Housing Portal!</h4>
 
                                     <form action="#">
+                                        <!-- National ID Field -->
                                         <div class="form-floating mb-3">
-                                            <input type="email" class="form-control text-secondary" id="floatingInput" placeholder="name@example.com">
-                                            <label for="floatingInput">Email / National ID</label>
+                                            <input type="text" class="form-control text-secondary" id="floatingNationalID" placeholder="National ID">
+                                            <label for="floatingNationalID">National ID</label>
                                         </div>
-                                        
-
-                                        <div class="form-floating mb-3"> <!-- Added margin to match others -->
+                                    
+                                        <!-- Email Field -->
+                                        <div class="form-floating mb-3">
+                                            <input type="email" class="form-control text-secondary" id="floatingEmail" placeholder="name@example.com">
+                                            <label for="floatingEmail">Email</label>
+                                        </div>
+                                    
+                                        <!-- Password Field -->
+                                        <div class="form-floating mb-3">
                                             <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
                                             <label for="floatingPassword">Password</label>
                                         </div>
-
-                                        <div class="row mb-4">
-                                            <div class="col">
-                                                <a id="forgot-psw" href="password-reset.html" class="font-14">Forgot Password?</a>
-                                            </div>
+                                    
+                                        <!-- Confirm Password Field -->
+                                        <div class="form-floating mb-3">
+                                            <input type="password" class="form-control" id="floatingConfirmPassword" placeholder="Confirm Password">
+                                            <label for="floatingConfirmPassword">Confirm Password</label>
                                         </div>
-
+                                    
+                                        <!-- Register Button -->
                                         <div class="d-grid mb-4">
-                                            <button class="btn btn-primary font-18" type="submit">Log in</button>
+                                            <button class="btn btn-primary font-18" type="submit">Register</button>
                                         </div>
                                     </form>
+                                    
 
-                                    <p class="mb-0 mt-3">Don't have an account? <a href="sign-up.html">Sign up</a></p>
+                                    <p class="mb-0 mt-3">Alrady have an account? <a href="login.html">Login</a></p>
                                 </div>
                             </div>
                         </div>
@@ -86,7 +94,7 @@
                     <div class="col-12 col-md-6 d-md-block d-none">
                         <!-- Start Auth Box -->
                         <div class="auth-box-right">
-                            <img src="{{ asset('images/authentication/login-hero.svg') }}" alt="Login Image">
+                            <img src="{{ asset('images/authentication/sgin-up-hero.svg') }}" alt="Login Image">
                         </div>
                         <!-- End Auth Box -->
                     </div>
@@ -100,7 +108,7 @@
     <!-- End Containerbar -->
     
     <!-- Footer Section -->
-    <footer class="text-center mt-2">
+    <footer class="text-center mt-2 sign-up-footer">
         <div class="container">
             <p class="text-muted">&copy;2024 New Mansoura University. All Rights Reserved.</p>
         </div>

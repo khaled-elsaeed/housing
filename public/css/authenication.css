@@ -178,6 +178,19 @@ h4.text-primary {
     .auth-box .auth-box-right h4 {
         font-size: 22px;
     }
+
+    
+}
+
+@media (width:768px){
+    .auth-logo{
+        margin-bottom: -100px;
+    }
+
+    .auth-box-right h4{
+        margin-top: 25px;
+        font-size: 20px;
+    }
 }
 
 @media (max-width: 575px) {
@@ -192,6 +205,10 @@ h4.text-primary {
     /* Override margin-top for small screens */
     .mt-2 {
         margin-top: 0 !important;
+    }
+
+    .sign-up-footer{
+                margin-top: 100px !important;
     }
 }
 
