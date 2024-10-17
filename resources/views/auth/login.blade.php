@@ -49,30 +49,43 @@
                                         </a>
                                     </div>
 
-                                    <h4 class="text-primary mb-4">Welcome back 👋!</h4> <!-- Reduced margin -->
+                                    <h4 class="text-primary mb-4">Welcome back 👋!</h4> 
 
                                     <form method="POST" action="{{ route('login') }}">
-                                        <div class="form-floating mb-3">
-                                            <input type="email" class="form-control text-secondary" id="floatingInput" placeholder="name@example.com">
-                                            <label for="floatingInput">Email / National ID</label>
-                                        </div>
-                                        
+    @csrf <!-- Corrected the CSRF directive -->
+    
+    <!-- Display validation errors if any -->
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-                                        <div class="form-floating mb-3"> <!-- Added margin to match others -->
-                                            <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-                                            <label for="floatingPassword">Password</label>
-                                        </div>
+    <div class="form-floating mb-3">
+        <input type="email" class="form-control text-secondary" id="floatingInput" name="email" placeholder="name@example.com" required>
+        <label for="floatingInput">Email / National ID</label>
+    </div>
 
-                                        <div class="row mb-4">
-                                            <div class="col">
-                                                <a id="forgot-psw" href="password-reset.html" class="font-14">Forgot Password?</a>
-                                            </div>
-                                        </div>
+    <div class="form-floating mb-3">
+        <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password" required>
+        <label for="floatingPassword">Password</label>
+    </div>
 
-                                        <div class="d-grid mb-4">
-                                            <button class="btn btn-primary font-18" type="submit">Log in</button>
-                                        </div>
-                                    </form>
+    <div class="row mb-4">
+        <div class="col">
+            <a id="forgot-psw" href="" class="font-14">Forgot Password?</a>
+        </div>
+    </div>
+
+    <div class="d-grid mb-4">
+        <button class="btn btn-primary font-18" type="submit">Log in</button>
+    </div>
+</form>
+
 
                                     <p class="mb-0 mt-3">Don't have an account? <a href="sign-up.html">Sign up</a></p>
                                 </div>
