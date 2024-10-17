@@ -1,0 +1,54 @@
+[
+    {
+        "name_en": "Business",
+        "name_ar": "الأعمال"
+    },
+    {
+        "name_en": "Law",
+        "name_ar": "القانون"
+    },
+    {
+        "name_en": "Engineering",
+        "name_ar": "الهندسة"
+    },
+    {
+        "name_en": "Computer Science & Engineering",
+        "name_ar": "علوم الحاسوب والهندسة"
+    },
+    {
+        "name_en": "Science",
+        "name_ar": "العلوم"
+    },
+    {
+        "name_en": "Medicine",
+        "name_ar": "الطب"
+    },
+    {
+        "name_en": "Dentistry",
+        "name_ar": "طب الأسنان"
+    },
+    {
+        "name_en": "Pharmacy",
+        "name_ar": "الصيدلة"
+    },
+    {
+        "name_en": "Applied Health Sciences Technology",
+        "name_ar": "تكنولوجيا علوم الصحة التطبيقية"
+    },
+    {
+        "name_en": "Nursing",
+        "name_ar": "التمريض"
+    },
+    {
+        "name_en": "Textile Science Engineering",
+        "name_ar": "هندسة علوم النسيج"
+    },
+    {
+        "name_en": "Social & Human Sciences",
+        "name_ar": "العلوم الاجتماعية والإنسانية"
+    },
+    {
+        "name_en": "Mass Media & Communication",
+        "name_ar": "الإعلام والاتصال"
+    }
+]

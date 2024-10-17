@@ -87,7 +87,7 @@
 </form>
 
 
-                                    <p class="mb-0 mt-3">Don't have an account? <a href="sign-up.html">Sign up</a></p>
+                                    <p class="mb-0 mt-3">Don't have an account? <a href="{{ route('register') }}">Create Account</a></p>
                                 </div>
                             </div>
                         </div>

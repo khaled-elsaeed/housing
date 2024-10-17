@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('programs', function (Blueprint $table) {
             $table->id();
-            $table->string('name_ar', 45);
-            $table->string('name_en', 45); 
+            $table->string('name_ar', 100);
+            $table->string('name_en', 100);
+            $table->integer('duration_years'); 
             $table->foreignId('faculty_id')
-            ->constrained('faculties')
-            ->onDelete('cascade')
-            ->onUpdate('cascade');
+                ->constrained('faculties')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->timestamps();
         });
     }

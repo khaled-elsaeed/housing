@@ -4,14 +4,19 @@ namespace App\Services;
 
 use App\Models\User;
 
-class UserService
+class AuthService
 {
-    /**
-     * Check if the user is an admin.
-     *
-     * @param User $user
-     * @return bool
-     */
+    public function isEmailOrNationalId($value)
+    {
+        if (filter_var($value, FILTER_VALIDATE_EMAIL)) {
+            return 'email';
+        }
+        if (preg_match('/^\d{14}$/', $value)) {
+            return 'national_id';
+        }
+        return false;
+    }
+
     public function isAdmin(User $user): bool
     {
         return $user->hasRole('admin');
@@ -19,40 +24,60 @@ class UserService
 
     public function isResident(User $user): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasRole('resident');
     }
 
-    /**
-     * Check if the user is active.
-     *
-     * @param User $user
-     * @return bool
-     */
     public function isActive(User $user): bool
     {
-        return $user->is_active; // true or false
+        return $user->is_active;
     }
 
-    /**
-     * Check if the user is verified.
-     *
-     * @param User $user
-     * @return bool
-     */
     public function isVerified(User $user): bool
     {
-        return $user->is_verified; // true or false
+        return $user->is_verified;
     }
 
-    /**
-     * Check if the user is deleted (soft deleted).
-     *
-     * @param User $user
-     * @return bool
-     */
     public function isDeleted(User $user): bool
     {
-        return !is_null($user->deleted_at); // true if deleted, false if not
+        return !is_null($user->deleted_at);
     }
 
+    public function isProfileComplete(User $user): bool
+    {
+        return $user->student->profile_completed;
+    }
+
+    public function allowLateProfileCompletion(User $user): bool
+    {
+        return $user->student->can_complete_late;
+    }
+
+    public function handleStudentAfterLogin(User $user)
+    {
+        if ($this->isDeleted($user)) {
+            return [
+                'account' => __('auth.account_deleted'),
+            ];
+        }
+
+        if (!$this->isActive($user)) {
+            return [
+                'account' => __('auth.account_inactive'),
+            ];
+        }
+
+        if (!$this->isVerified($user)) {
+            return [
+                'account' => __('auth.account_not_verified'),
+            ];
+        }
+
+        if (!$this->isProfileComplete($user)) {
+            return [
+                'profile' => __('auth.profile_incomplete'),
+            ];
+        }
+
+        return true;
+    }
 }

@@ -10,7 +10,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
 
-    <title>NMU Housing - Sign Up</title>
+    <title>NMU Housing - Registeration</title>
 
     <!-- Icons -->
 <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
@@ -82,8 +82,8 @@
                                     </form>
                                     
 
-                                    <p class="mb-0 mt-3">Alrady have an account? <a href="login.html">Login</a></p>
-                                </div>
+                                    <p class="mb-0 mt-3">Already have an account? <a href="{{ route('login') }}">Login</a></p>
+                                    </div>
                             </div>
                         </div>
                         <!-- End Auth Box -->

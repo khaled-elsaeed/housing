@@ -28,13 +28,13 @@ return new class extends Migration
             $table->foreignId('parent_abroad_country_id')->nullable()->constrained('countries')->onDelete('restrict')->onUpdate('cascade');
             $table->string('sibling_name', 100)->nullable();
             $table->string('sibling_national_id', 45)->nullable()->unique();
-            $table->string('sibling_faculty', 45)->nullable();
+            $table->foreignId('sibling_faculty_id')->nullable()->constrained('faculties')->onDelete('restrict')->onUpdate('cascade');;
             $table->string('sibling_mobile', 45)->nullable();
             $table->enum('sibling_gender', ['male', 'female'])->nullable();
             $table->boolean('has_sibling')->default(0);
             $table->foreignId('program_id')->constrained('programs')->onDelete('restrict')->onUpdate('cascade');
-            $table->decimal('score', 5, 3);
-            $table->decimal('percent', 3, 2)->nullable();
+            $table->decimal('score', 5, 2);
+            $table->decimal('percent', 5, 2)->nullable();
             $table->string('academic_email', 100)->nullable()->unique();
             $table->string('cert_type', 100)->nullable();
             $table->string('cert_country', 100)->nullable();

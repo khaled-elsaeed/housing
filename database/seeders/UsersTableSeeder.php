@@ -4,7 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB; 
+use Spatie\Permission\Models\Role;
+use App\Models\User; // Make sure to import your User model
 
 class UsersTableSeeder extends Seeder
 {
@@ -13,7 +14,7 @@ class UsersTableSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('users')->insert([
+        $user = User::create([
             'email' => 'khaled@gmail.com', 
             'username_ar' => 'خالد زهران', 
             'username_en' => 'Khaled Zahran', 
@@ -25,5 +26,7 @@ class UsersTableSeeder extends Seeder
             'created_at' => now(), 
             'updated_at' => now(), 
         ]);
+
+        $user->assignRole('resident');
     }
 }
