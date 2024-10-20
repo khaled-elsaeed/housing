@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 
-class AuthService
+class LoginService
 {
     public function isEmailOrNationalId($value)
     {
@@ -42,10 +42,11 @@ class AuthService
         return !is_null($user->deleted_at);
     }
 
-    public function isProfileComplete(User $user): bool
-    {
-        return $user->student->profile_completed;
-    }
+    public function isStudentHasProfile(User $user): bool
+{
+    return $user->student()->exists();
+}
+
 
     public function allowLateProfileCompletion(User $user): bool
     {
@@ -72,7 +73,7 @@ class AuthService
             ];
         }
 
-        if (!$this->isProfileComplete($user)) {
+        if (!$this->isStudentHasProfile($user)) {
             return [
                 'profile' => __('auth.profile_incomplete'),
             ];

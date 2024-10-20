@@ -17,11 +17,11 @@ return new class extends Migration
             $table->string('password');
             $table->string('username_ar', 100);
             $table->string('username_en', 100);
-            $table->boolean('is_active')->default(1); // Default active status (yes)
-            $table->string('profile_picture', 255)->nullable(); 
+            $table->string('activation_token')->nullable();
+            $table->timestamp('activation_expires_at')->nullable();
+            $table->boolean('is_active')->default(0);             $table->string('profile_picture', 255)->nullable(); 
             $table->timestamp('last_login')->nullable();
-            $table->boolean('is_verified')->default(0); // Default verified status (no)
-            $table->timestamp('email_verified_at')->nullable();
+            $table->boolean('is_verified')->default(0);             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();

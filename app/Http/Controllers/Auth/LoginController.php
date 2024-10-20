@@ -6,15 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Services\AuthService;
+use App\Services\LoginService;
+use App\Models\UserNationalLink;
+use Illuminate\Support\Facades\RateLimiter;
 
 class LoginController extends Controller
 {
-    protected $authService;
+    protected $loginService;
 
-    public function __construct(AuthService $authService)
+    public function __construct(LoginService $loginService)
     {
-        $this->authService = $authService;
+        $this->loginService = $loginService;
     }
 
     public function showLoginPage()
@@ -29,37 +31,55 @@ class LoginController extends Controller
             'password' => 'required|string',
         ]);
 
+        if (RateLimiter::tooManyAttempts('login:' . $request->ip(), 5)) {
+            return redirect()
+                ->route('login')
+                ->withErrors(['error' => __('auth.too_many_login_attempts')]);
+
+        }
+
         $credentials = $request->only('email', 'password');
 
-        $inputType = $this->authService->isEmailOrNationalId($credentials['email']);
+        $inputType = $this->loginService->isEmailOrNationalId($credentials['email']);
 
         if ($inputType === false) {
             return back()->withErrors(['email' => 'The input must be a valid email or a 14-digit national ID.']);
         }
 
-        $user = $inputType === 'email' ? User::where('email', $credentials['email'])->first() : User::where('national_id', $credentials['email'])->first();
+        $user = null;
+        if ($inputType === 'email') {
+            $user = User::where('email', $credentials['email'])->first();
+        } else {
+            $userNationalLink = UserNationalLink::where('national_id', $credentials['email'])->first();
+            $user = $userNationalLink ? $userNationalLink->user : null;
+        }
 
         if (!$user) {
+            RateLimiter::hit('login:' . $request->ip());
             return back()->withErrors(['credentials' => 'No user found with the provided credentials.']);
         }
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            if ($this->authService->isAdmin($user)) {
+            RateLimiter::clear('login:' . $request->ip());
+
+            if ($this->loginService->isAdmin($user)) {
                 return redirect()->intended('welcome');
             }
 
-            if ($this->authService->isResident($user)) {
-                $studentChecks = $this->authService->handleStudentAfterLogin($user);
+            if ($this->loginService->isResident($user)) {
+                $studentChecks = $this->loginService->handleStudentAfterLogin($user);
 
-                if ($studentChecks) {
+                if (is_array($studentChecks)) {
                     return back()->withErrors($studentChecks);
                 }
 
                 return redirect()->intended('welcome');
             }
         }
+
+        RateLimiter::hit('login:' . $request->ip());
 
         return back()->withErrors(['credentials' => __('auth.invalid_credentials')]);
     }

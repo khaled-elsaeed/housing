@@ -20,6 +20,8 @@ class User extends Authenticatable
         'profile_picture',
         'last_login',
         'is_verified',
+        'activation_token',
+    'activation_expires_at',
     ];
 
     protected $hidden = [
@@ -28,6 +30,7 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
+        'activation_expires_at' => 'datetime',
         'email_verified_at' => 'datetime',
         'last_login' => 'datetime', 
         'is_active' => 'boolean', 

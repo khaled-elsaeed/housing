@@ -25,7 +25,7 @@ return new class extends Migration
             $table->boolean('profile_completed')->default(0); 
             $table->timestamp('profile_completed_at')->nullable();
             $table->boolean('can_complete_late')->default(0);
-            $table->foreignId('university_archieve_id')->unique()->constrained('university_archieve')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreignId('university_Archive_id')->unique()->constrained('university_Archive')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();
         });
     }

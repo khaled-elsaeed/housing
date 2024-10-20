@@ -9,11 +9,9 @@ class UniversityArchive extends Model
 {
     use HasFactory;
 
-    // Specify the table name if it doesn't follow Laravel's naming conventions
-    protected $table = 'university_archieve';
+        protected $table = 'university_Archive';
 
-    // Fillable attributes for mass assignment
-    protected $fillable = [
+        protected $fillable = [
         'name_en',
         'name_ar',
         'national_id',
