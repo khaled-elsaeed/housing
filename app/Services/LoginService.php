@@ -1,20 +1,14 @@
 <?php
-
 namespace App\Services;
 
 use App\Models\User;
 
 class LoginService
 {
-    public function isEmailOrNationalId($value)
+    public function isEmailOrNationalId($value): string|false
     {
-        if (filter_var($value, FILTER_VALIDATE_EMAIL)) {
-            return 'email';
-        }
-        if (preg_match('/^\d{14}$/', $value)) {
-            return 'national_id';
-        }
-        return false;
+        return filter_var($value, FILTER_VALIDATE_EMAIL) ? 'email' 
+               : (preg_match('/^\d{14}$/', $value) ? 'national_id' : false);
     }
 
     public function isAdmin(User $user): bool
@@ -29,12 +23,12 @@ class LoginService
 
     public function isActive(User $user): bool
     {
-        return $user->is_active;
+        return (bool) $user->is_active;
     }
 
     public function isVerified(User $user): bool
     {
-        return $user->is_verified;
+        return (bool) $user->is_verified;
     }
 
     public function isDeleted(User $user): bool
@@ -42,15 +36,14 @@ class LoginService
         return !is_null($user->deleted_at);
     }
 
-    public function isStudentHasProfile(User $user): bool
-{
-    return $user->student()->exists();
-}
-
+    public function hasStudentProfile(User $user): bool
+    {
+        return $user->student()->exists();
+    }
 
     public function allowLateProfileCompletion(User $user): bool
     {
-        return $user->student->can_complete_late;
+        return optional($user->student)->can_complete_late ?? false;
     }
 
     public function handleStudentAfterLogin(User $user)
@@ -73,7 +66,7 @@ class LoginService
             ];
         }
 
-        if (!$this->isStudentHasProfile($user)) {
+        if (!$this->hasStudentProfile($user)) {
             return [
                 'profile' => __('auth.profile_incomplete'),
             ];

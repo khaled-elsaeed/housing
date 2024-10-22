@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\AccountActivationController;
+use App\Http\Controllers\Auth\PasswordResetController;
+
 
 
 
@@ -19,6 +21,15 @@ Route::get('/register', [RegisterController::class,'showRegisterPage'])->name('r
 Route::post('/register',[RegisterController::class,'register'])->name('register');
 Route::get('/activate-account/{token}', [AccountActivationController::class, 'activate'])->name('activate-account');
 
+Route::get('/activate-account/{token}', [AccountActivationController::class, 'activate'])->name('activate-account');
+
+
+
+
+Route::get('password/reset', [PasswordResetController::class, 'showResetRequestForm'])->name('password.request');
+Route::post('password/reset', [PasswordResetController::class, 'requestResetPassword'])->name('password.email');
+Route::get('password/reset/{token}', [PasswordResetController::class, 'showUpdatePasswordPage'])->name('password.reset');
+Route::post('password/reset/{token}', [PasswordResetController::class, 'resetPassword'])->name('password.update');
 
 Route::get('/welcome',function(){
     return view('welcome');

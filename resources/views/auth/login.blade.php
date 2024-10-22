@@ -74,7 +74,7 @@
                                  </div>
                                  <div class="row mb-4">
                                     <div class="col">
-                                       <a id="forgot-psw" href="" class="font-14">Forgot Password?</a>
+                                    <a id="forgot-psw" href="{{ route('password.request') }}" class="font-14">Forgot Password?</a>
                                     </div>
                                  </div>
                                  <div class="d-grid mb-4">

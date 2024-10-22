@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\LoginService;
 use App\Models\UserNationalLink;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -35,15 +37,13 @@ class LoginController extends Controller
             return redirect()
                 ->route('login')
                 ->withErrors(['error' => __('auth.too_many_login_attempts')]);
-
         }
 
         $credentials = $request->only('email', 'password');
-
         $inputType = $this->loginService->isEmailOrNationalId($credentials['email']);
 
         if ($inputType === false) {
-            return back()->withErrors(['email' => 'The input must be a valid email or a 14-digit national ID.']);
+            return back()->withErrors(['email' => __('auth.invalid_input_type')]);
         }
 
         $user = null;
@@ -56,12 +56,12 @@ class LoginController extends Controller
 
         if (!$user) {
             RateLimiter::hit('login:' . $request->ip());
-            return back()->withErrors(['credentials' => 'No user found with the provided credentials.']);
+            return back()->withErrors(['credentials' => __('auth.user_not_found')]);
         }
 
-        if (Auth::attempt($credentials)) {
+        if (Hash::check($request->password, $user->password)) {
+            Auth::login($user);
             $request->session()->regenerate();
-
             RateLimiter::clear('login:' . $request->ip());
 
             if ($this->loginService->isAdmin($user)) {
@@ -70,7 +70,6 @@ class LoginController extends Controller
 
             if ($this->loginService->isResident($user)) {
                 $studentChecks = $this->loginService->handleStudentAfterLogin($user);
-
                 if (is_array($studentChecks)) {
                     return back()->withErrors($studentChecks);
                 }
@@ -80,7 +79,6 @@ class LoginController extends Controller
         }
 
         RateLimiter::hit('login:' . $request->ip());
-
         return back()->withErrors(['credentials' => __('auth.invalid_credentials')]);
     }
 }
