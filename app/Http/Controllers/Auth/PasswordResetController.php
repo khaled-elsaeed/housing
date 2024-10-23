@@ -10,37 +10,58 @@ use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\PasswordResetTokens;
 use App\Notifications\PasswordReset;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\RateLimiter;
 
 class PasswordResetController extends Controller
 {
     public function showResetRequestForm()
     {
-        return view('auth.password.reset'); 
+        return view('auth.password.reset');
     }
 
     public function showUpdatePasswordPage($token)
     {
-        return view('auth.password.update', ['token' => $token]); 
+        return view('auth.password.update', ['token' => $token]);
     }
 
     public function requestResetPassword(Request $request)
     {
         $request->validate(['email' => 'required|email|exists:users,email']);
+
         $email = $request->email;
+
+        $throttleTime = 60;
+
+        $key = 'password_reset_attempts:' . $email;
+
+        if (RateLimiter::tooManyAttempts($key, 3)) {
+            $seconds = RateLimiter::availableIn($key);
+            $minutes = ceil($seconds / 60); // Calculate remaining minutes
+
+            return redirect()
+                ->route('login')
+                ->withErrors([
+                    'email' => __('auth.password_reset_throttle', ['minutes' => $minutes]),
+                ]);
+        }
+
+        RateLimiter::hit($key, $throttleTime * 60);
 
         $token = Str::random(60);
         $hashedToken = hash('sha256', $token);
 
-        PasswordResetTokens::updateOrCreate(
-            ['email' => $email],
-            ['token' => $hashedToken, 'token_expires_at' => Carbon::now()->addHours(2)]
-        );
+        PasswordResetTokens::updateOrCreate(['email' => $email], ['token' => $hashedToken, 'token_expires_at' => Carbon::now()->addHours(2)]);
 
         $user = User::where('email', $email)->first();
+
         $user->notify(new PasswordReset($user, $token));
 
         session()->flash('success', __('auth.password_reset_link_sent'));
-        return redirect()->route('login')->withInput();
+
+        return redirect()
+            ->route('login')
+            ->withInput();
     }
 
     public function resetPassword(Request $request)
@@ -65,7 +86,9 @@ class PasswordResetController extends Controller
         $user->password = Hash::make($request->password);
         $user->save();
         $tokenData->delete();
-    
-        return redirect()->route('login')->with('success', __('auth.password_reset_success'));
+        RateLimiter::clear('password_reset_attempts:' . $tokenData->email);
+        return redirect()
+            ->route('login')
+            ->with('success', __('auth.password_reset_success'));
     }
 }

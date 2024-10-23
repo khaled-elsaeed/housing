@@ -65,7 +65,7 @@ class LoginController extends Controller
             RateLimiter::clear('login:' . $request->ip());
 
             if ($this->loginService->isAdmin($user)) {
-                return redirect()->intended('welcome');
+                return redirect()->route('admin.home');
             }
 
             if ($this->loginService->isResident($user)) {

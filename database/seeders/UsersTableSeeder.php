@@ -27,6 +27,6 @@ class UsersTableSeeder extends Seeder
             'updated_at' => now(), 
         ]);
 
-        $user->assignRole('resident');
+        $user->assignRole('admin');
     }
 }

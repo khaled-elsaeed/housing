@@ -193,6 +193,7 @@ code {
 }
 
 .contentbar {
+  margin-top: 80px;
   padding: 30px;
   margin-bottom: 30px;
 }
@@ -1034,8 +1035,10 @@ code {
 .icon-svg-list div p:hover span {
   background-color: rgba(0, 128, 255, 0.1) !important;
 }
+
 .icon-svg-list div p:hover span .icon-svg {
-  filter: invert(0.7) sepia(1) saturate(14) hue-rotate(195deg);
+  filter: brightness(0) saturate(100%) invert(19%) sepia(51%) saturate(1863%) hue-rotate(322deg) brightness(100%) contrast(88%);
+
   transform: scale(1.2);
 }
 
@@ -26153,7 +26156,8 @@ mark {
   color: #8C2F39;
 }
 .vertical-menu > li > a.active img {
-  filter: invert(0.7) sepia(1) saturate(14) hue-rotate(195deg);
+  filter: brightness(0) saturate(100%) invert(19%) sepia(51%) saturate(1863%) hue-rotate(322deg) brightness(100%) contrast(88%);
+
 }
 .vertical-menu > li:hover > a {
   background-color: transparent;
@@ -26161,7 +26165,7 @@ mark {
   opacity: 1;
 }
 .vertical-menu > li:hover > a img {
-  filter: invert(0.7) sepia(1) saturate(14) hue-rotate(195deg);
+  filter: brightness(0) saturate(100%) invert(19%) sepia(51%) saturate(1863%) hue-rotate(322deg) brightness(100%) contrast(88%);
 }
 .vertical-menu > li.active > a {
   font-weight: 400;
@@ -26170,7 +26174,8 @@ mark {
   opacity: 1;
 }
 .vertical-menu > li.active > a img {
-  filter: invert(0.7) sepia(1) saturate(14) hue-rotate(195deg);
+  filter: brightness(0) saturate(100%) invert(19%) sepia(51%) saturate(1863%) hue-rotate(322deg) brightness(100%) contrast(88%);
+
 }
 .vertical-menu > li.active {
   background-color: transparent;
@@ -26299,7 +26304,8 @@ mark {
   color: #8C2F39;
 }
 .vertical-menu-rtl > li > a.active img {
-  filter: invert(0.7) sepia(1) saturate(14) hue-rotate(195deg);
+  filter: brightness(0) saturate(100%) invert(19%) sepia(51%) saturate(1863%) hue-rotate(322deg) brightness(100%) contrast(88%);
+
 }
 .vertical-menu-rtl > li:hover > a {
   background-color: transparent;
@@ -26307,7 +26313,8 @@ mark {
   opacity: 1;
 }
 .vertical-menu-rtl > li:hover > a img {
-  filter: invert(0.7) sepia(1) saturate(14) hue-rotate(195deg);
+  filter: brightness(0) saturate(100%) invert(19%) sepia(51%) saturate(1863%) hue-rotate(322deg) brightness(100%) contrast(88%);
+
 }
 .vertical-menu-rtl > li.active > a {
   font-weight: 400;
@@ -26316,7 +26323,8 @@ mark {
   opacity: 1;
 }
 .vertical-menu-rtl > li.active > a img {
-  filter: invert(0.7) sepia(1) saturate(14) hue-rotate(195deg);
+  filter: brightness(0) saturate(100%) invert(19%) sepia(51%) saturate(1863%) hue-rotate(322deg) brightness(100%) contrast(88%);
+
 }
 .vertical-menu-rtl > li.active {
   background-color: transparent;
@@ -26462,7 +26470,8 @@ mark {
   background-color: rgba(129, 167, 205, 0.1);
 }
 .topbar-mobile .mobile-togglebar a.topbar-toggle-hamburger:hover img {
-  filter: invert(0.7) sepia(1) saturate(14) hue-rotate(195deg);
+  filter: brightness(0) saturate(100%) invert(19%) sepia(51%) saturate(1863%) hue-rotate(322deg) brightness(100%) contrast(88%);
+
 }
 .topbar-mobile .mobile-togglebar .menu-hamburger {
   padding: 10px 10px 12px;
@@ -26475,11 +26484,22 @@ mark {
 .topbar-mobile .mobile-togglebar .menu-hamburger img.menu-hamburger-close {
   display: none;
 }
+
+@media (max-width: 768px) {
+  .topbar-mobile .mobile-togglebar .menu-hamburger img.menu-hamburger-close {
+    display: block;
+  }
+  .topbar-mobile .mobile-togglebar .menu-hamburger img.menu-hamburger-collapse {
+    display: none;
+  }
+}
+
 .topbar-mobile .mobile-togglebar .menu-hamburger:hover {
   background-color: rgba(129, 167, 205, 0.1);
 }
 .topbar-mobile .mobile-togglebar .menu-hamburger:hover img {
-  filter: invert(0.7) sepia(1) saturate(14) hue-rotate(195deg);
+  filter: brightness(0) saturate(100%) invert(19%) sepia(51%) saturate(1863%) hue-rotate(322deg) brightness(100%) contrast(88%);
+
 }
 
 .topbar {
@@ -26541,14 +26561,15 @@ mark {
   filter: invert(0.6) sepia(1) saturate(1) hue-rotate(185deg);
   width: 20px;
 }
-.topbar .togglebar .menu-hamburger img.menu-hamburger-close {
+.topbar .togglebar .menu-hamburger img.menu-hamburger-collapse {
   display: none;
 }
 .topbar .togglebar .menu-hamburger:hover {
   background-color: rgba(129, 167, 205, 0.1);
 }
 .topbar .togglebar .menu-hamburger:hover img {
-  filter: invert(0.7) sepia(1) saturate(14) hue-rotate(195deg);
+  filter: brightness(0) saturate(100%) invert(19%) sepia(51%) saturate(1863%) hue-rotate(322deg) brightness(100%) contrast(88%);
+
 }
 .topbar .infobar {
   display: inline-block;
@@ -26590,7 +26611,8 @@ mark {
   background-color: rgba(129, 167, 205, 0.1);
 }
 .topbar .infobar .infobar-icon:hover img {
-  filter: invert(0.7) sepia(1) saturate(14) hue-rotate(195deg);
+  filter: brightness(0) saturate(100%) invert(19%) sepia(51%) saturate(1863%) hue-rotate(322deg) brightness(100%) contrast(88%);
+
 }
 .topbar .infobar .languagebar a {
   padding: 15px 10px 5px;
@@ -26732,7 +26754,8 @@ mark {
 }
 .infobar-settings-sidebar .infobar-settings-sidebar-head .infobar-settings-close img {
   width: 20px;
-  filter: invert(0.7) sepia(1) saturate(14) hue-rotate(195deg);
+  filter: brightness(0) saturate(100%) invert(19%) sepia(51%) saturate(1863%) hue-rotate(322deg) brightness(100%) contrast(88%);
+
 }
 .infobar-settings-sidebar .infobar-settings-sidebar-body .custom-color-setting {
   padding: 30px;
@@ -26874,7 +26897,8 @@ mark {
 }
 .userbox .profile-icon:hover img {
   width: 20px;
-  filter: invert(0.7) sepia(1) saturate(14) hue-rotate(195deg);
+  filter: brightness(0) saturate(100%) invert(19%) sepia(51%) saturate(1863%) hue-rotate(322deg) brightness(100%) contrast(88%);
+
 }
 .userbox .profile-icon img {
   width: 20px;

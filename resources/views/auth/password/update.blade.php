@@ -22,6 +22,8 @@
     <link rel="stylesheet" href="{{ asset('css/authenication.css') }}">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css">
     <!-- End CSS Files -->
+           <!-- Load SweetAlert2 from CDN -->
+           <script src="{{ asset('plugins/sweet-alert2/sweetalert2.all.min.js') }}"></script>
 </head>
 
 <body class="vertical-layout">
@@ -50,7 +52,35 @@
                                    <!-- Password Reset Form -->
 <form method="POST" action="{{ route('password.update', $token) }}">
     @csrf
-
+    @if (session('success'))
+                                 <script>
+                                    Swal.fire({
+                                        toast: true,
+                                        icon: 'success',
+                                        title: 'Success!',
+                                        text: '{{ session('success') }}',
+                                        position: 'top-start',  // Position the toast at the top-right
+                                        showConfirmButton: false,  // No confirmation button
+                                        timer: 8000,  // Auto-close after 3 seconds
+                                        timerProgressBar: true,  // Show progress bar
+                                    });
+                                 </script>
+                                 @endif
+                                 <!-- SweetAlert for Validation Errors -->
+                                 @if ($errors->any())
+                                 <script>
+                                    Swal.fire({
+                                        toast: true,
+                                        icon: 'error',
+                                        title: 'Error!',
+                                        text: '{{ $errors->first() }}',
+                                        position: 'top-start',  // Position the toast at the top-right
+                                        showConfirmButton: false,  // No confirmation button
+                                        timer: 3000,  // Auto-close after 3 seconds
+                                        timerProgressBar: true,  // Show progress bar
+                                    });
+                                 </script>
+                                 @endif
     <!-- New Password Field -->
     <div class="form-floating mb-3">
         <input type="password" class="form-control text-secondary" id="floatingPassword" placeholder="New Password" name="password" required>

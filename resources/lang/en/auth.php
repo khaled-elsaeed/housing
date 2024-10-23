@@ -15,6 +15,7 @@ return [
     'password_reset_link_sent' => 'A password reset link has been sent to your email address.',
     'invalid_or_expired_token' => 'Invalid or expired reset token.',
     'token_expired' => 'The reset token has expired.',
+    'password_reset_throttle' => 'Too many password reset attempts. Please try again in :minutes minutes.',
     'password_reset_success' => 'Your password has been reset successfully.',
     'student_not_registered' => 'Student is not registered in our university.',
     'national_id_registered' => 'National ID is already registered.',

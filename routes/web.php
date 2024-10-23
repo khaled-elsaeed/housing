@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\AccountActivationController;
 use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Admin\AdminHomeController;
 
 
 
@@ -30,6 +31,9 @@ Route::get('password/reset', [PasswordResetController::class, 'showResetRequestF
 Route::post('password/reset', [PasswordResetController::class, 'requestResetPassword'])->name('password.email');
 Route::get('password/reset/{token}', [PasswordResetController::class, 'showUpdatePasswordPage'])->name('password.reset');
 Route::post('password/reset/{token}', [PasswordResetController::class, 'resetPassword'])->name('password.update');
+
+Route::get('/admin/home',[AdminHomeController::class,'showHomePage'])->name('admin.home');
+
 
 Route::get('/welcome',function(){
     return view('welcome');
