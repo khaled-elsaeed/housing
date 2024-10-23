@@ -22,24 +22,6 @@
                             <ul class="vertical-submenu">
                                 <li><a href="basic-ui-kits-alerts.html">Newcomers</a></li>
                                 <li><a href="basic-ui-kits-badges.html">Old Students</a></li>
-                                <li><a href="basic-ui-kits-buttons.html">Buttons</a></li>
-                                <li><a href="basic-ui-kits-cards.html">Cards</a></li>
-                                <li><a href="basic-ui-kits-carousel.html">Carousel</a></li>
-                                <li><a href="basic-ui-kits-collapse.html">Collapse</a></li>
-                                <li><a href="basic-ui-kits-dropdowns.html">Dropdowns</a></li>
-                                <li><a href="basic-ui-kits-embeds.html">Embeds</a></li>
-                                <li><a href="basic-ui-kits-grids.html">Grids</a></li>
-                                <li><a href="basic-ui-kits-images.html">Images</a></li>
-                                <li><a href="basic-ui-kits-media.html">Media</a></li>
-                                <li><a href="basic-ui-kits-modals.html">Modals</a></li>
-                                <li><a href="basic-ui-kits-paginations.html">Paginations</a></li>
-                                <li><a href="basic-ui-kits-popovers.html">Popovers</a></li>
-                                <li><a href="basic-ui-kits-progressbars.html">Progress Bars</a></li>
-                                <li><a href="basic-ui-kits-spinners.html">Spinners</a></li>
-                                <li><a href="basic-ui-kits-tabs.html">Tabs</a></li>   
-                                <li><a href="basic-ui-kits-toasts.html">Toasts</a></li>     
-                                <li><a href="basic-ui-kits-tooltips.html">Tooltips</a></li>
-                                <li><a href="basic-ui-kits-typography.html">Typography</a></li>
                             </ul>
                         </li>
                         <li>

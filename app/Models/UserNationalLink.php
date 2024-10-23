@@ -13,6 +13,7 @@ class UserNationalLink extends Model
 
     protected $fillable = [
         'user_id',
+        'university_Archive_id',
         'national_id',
     ];
 
@@ -20,4 +21,15 @@ class UserNationalLink extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function universityArchive()
+    {
+        return $this->belongsTo(UniversityArchive::class, 'university_Archive_id');
+    }
+
+    public static function findUserByNationalID(string $nationalId): ?self
+    {
+        return self::where('national_id', $nationalId)->first();
+    }
+
 }

@@ -65,7 +65,7 @@
                                  </script>
                                  @endif
                                  <div class="form-floating mb-3">
-                                    <input type="text" class="form-control text-secondary" id="floatingInput" name="email" placeholder="name@example.com" required>
+                                    <input type="text" class="form-control text-secondary" id="floatingInput" name="identifier" placeholder="name@example.com" required>
                                     <label for="floatingInput">Email / National ID</label>
                                  </div>
                                  <div class="form-floating mb-3">

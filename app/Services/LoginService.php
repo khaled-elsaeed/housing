@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Models\UserNationalLink;
 
 class LoginService
 {
@@ -9,6 +10,22 @@ class LoginService
     {
         return filter_var($value, FILTER_VALIDATE_EMAIL) ? 'email' 
                : (preg_match('/^\d{14}$/', $value) ? 'national_id' : false);
+    }
+
+    public function findUserByEmailOrNationalId(string $identifier): ?User
+    {
+        $inputType = $this->isEmailOrNationalId($identifier);
+
+        if ($inputType === false) {
+            return null; 
+        }
+
+        if ($inputType === 'email') {
+            return User::findUserByEmail($identifier);
+        } else {
+            $userNationalLink = UserNationalLink::findUserByNationalID($identifier);
+            return $userNationalLink ? $userNationalLink->user : null;
+        }
     }
 
     public function isAdmin(User $user): bool
@@ -21,52 +38,27 @@ class LoginService
         return $user->hasRole('resident');
     }
 
-    public function isActive(User $user): bool
-    {
-        return (bool) $user->is_active;
-    }
-
-    public function isVerified(User $user): bool
-    {
-        return (bool) $user->is_verified;
-    }
-
-    public function isDeleted(User $user): bool
-    {
-        return !is_null($user->deleted_at);
-    }
-
-    public function hasStudentProfile(User $user): bool
-    {
-        return $user->student()->exists();
-    }
-
-    public function allowLateProfileCompletion(User $user): bool
-    {
-        return optional($user->student)->can_complete_late ?? false;
-    }
-
     public function handleStudentAfterLogin(User $user)
     {
-        if ($this->isDeleted($user)) {
+        if ($user->isDeleted()) {
             return [
                 'account' => __('auth.account_deleted'),
             ];
         }
 
-        if (!$this->isActive($user)) {
+        if (!$user->isActive()) {
             return [
                 'account' => __('auth.account_inactive'),
             ];
         }
 
-        if (!$this->isVerified($user)) {
+        if (!$user->isVerified()) {
             return [
                 'account' => __('auth.account_not_verified'),
             ];
         }
 
-        if (!$this->hasStudentProfile($user)) {
+        if (!$user->hasStudentProfile()) {
             return [
                 'profile' => __('auth.profile_incomplete'),
             ];
@@ -75,3 +67,5 @@ class LoginService
         return true;
     }
 }
+
+

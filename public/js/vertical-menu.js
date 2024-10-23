@@ -1,7 +1,7 @@
 "use strict";
 $(document).ready(function() {
     $.sidebarMenu = function(menu) {
-        var animationSpeed = 300,
+        var animationSpeed = 350,
         subMenuSelector = '.vertical-submenu';
         $(menu).on('click', 'li a', function(e) {
             var $this = $(this);

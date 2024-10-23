@@ -7,9 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Services\LoginService;
-use App\Models\UserNationalLink;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
@@ -29,40 +27,31 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|string',
+            'identifier' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        if (RateLimiter::tooManyAttempts('login:' . $request->ip(), 5)) {
+        $rateLimiterKey = 'login:' . $request->ip() . '|' . $request->input('identifier');
+
+        if (RateLimiter::tooManyAttempts($rateLimiterKey, 5)) {
             return redirect()
                 ->route('login')
                 ->withErrors(['error' => __('auth.too_many_login_attempts')]);
         }
 
-        $credentials = $request->only('email', 'password');
-        $inputType = $this->loginService->isEmailOrNationalId($credentials['email']);
+        $credentials = $request->only('identifier', 'password');
 
-        if ($inputType === false) {
-            return back()->withErrors(['email' => __('auth.invalid_input_type')]);
-        }
-
-        $user = null;
-        if ($inputType === 'email') {
-            $user = User::where('email', $credentials['email'])->first();
-        } else {
-            $userNationalLink = UserNationalLink::where('national_id', $credentials['email'])->first();
-            $user = $userNationalLink ? $userNationalLink->user : null;
-        }
+        $user = $this->loginService->findUserByEmailOrNationalId($credentials['identifier']);
 
         if (!$user) {
-            RateLimiter::hit('login:' . $request->ip());
+            RateLimiter::hit($rateLimiterKey);
             return back()->withErrors(['credentials' => __('auth.user_not_found')]);
         }
 
-        if (Hash::check($request->password, $user->password)) {
+        if (Hash::check($credentials['password'], $user->password)) {
             Auth::login($user);
             $request->session()->regenerate();
-            RateLimiter::clear('login:' . $request->ip());
+            RateLimiter::clear($rateLimiterKey);
 
             if ($this->loginService->isAdmin($user)) {
                 return redirect()->route('admin.home');
@@ -76,9 +65,11 @@ class LoginController extends Controller
 
                 return redirect()->intended('welcome');
             }
+
+            return redirect()->intended('home');
         }
 
-        RateLimiter::hit('login:' . $request->ip());
+        RateLimiter::hit($rateLimiterKey);
         return back()->withErrors(['credentials' => __('auth.invalid_credentials')]);
     }
 }

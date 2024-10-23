@@ -9,9 +9,10 @@ class UniversityArchive extends Model
 {
     use HasFactory;
 
-        protected $table = 'university_Archive';
+    // It's a good idea to follow Laravel's naming convention for tables (snake_case).
+    protected $table = 'university_archive'; // Changed to 'university_archives'
 
-        protected $fillable = [
+    protected $fillable = [
         'name_en',
         'name_ar',
         'national_id',
@@ -42,7 +43,7 @@ class UniversityArchive extends Model
     ];
 
     protected $casts = [
-        'is_new_comer' => 'boolean', 
+        'is_new_comer' => 'boolean',
     ];
     
     public function city()
@@ -60,5 +61,53 @@ class UniversityArchive extends Model
         return $this->belongsTo(Program::class);
     }
 
-    
+    public function userNationalLinks()
+    {
+        return $this->hasMany(UserNationalLink::class, 'university_Archive_id');
+    }
+
+    public static function isUniversityStudent(string $nationalId): bool
+    {
+        return self::where('national_id', $nationalId)->exists(); 
+    }
+
+    public static function isNationalIdRegistered(string $nationalId): bool
+    {
+        return UserNationalLink::where('national_id', $nationalId)->exists();
+    }
+
+    public static function findStudentByNationalId(string $nationalId) 
+    {
+        return self::where('national_id', $nationalId)->first(); 
+    }
+
+   
+    public static function getStudentUsername(string $nationalId)
+    {
+        
+        $universityArchive = self::where('national_id', $nationalId)->select('name_ar', 'name_en')->first();
+
+        if (!$universityArchive) {
+            return [
+                'username_ar' => null,
+                'username_en' => null,
+            ];
+        }
+
+        // Extract usernames from the existing full names in archive
+        $namePartsAr = explode(' ', $universityArchive->name_ar);
+        $firstNameAr = $namePartsAr[0];
+        $lastNameAr = end($namePartsAr);
+        $updatedNameAr = $firstNameAr . ' ' . $lastNameAr;
+
+        $namePartsEn = explode(' ', $universityArchive->name_en);
+        $firstNameEn = $namePartsEn[0];
+        $lastNameEn = end($namePartsEn);
+        $updatedNameEn = $firstNameEn . ' ' . $lastNameEn;
+
+        return [
+            'username_ar' => $updatedNameAr,
+            'username_en' => $updatedNameEn,
+        ];
+    }
 }
