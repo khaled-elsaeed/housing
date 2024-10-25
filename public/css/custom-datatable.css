@@ -1,0 +1,83 @@
+/* Base styles for the entire table card */
+.table-card {
+    background-color: transparent !important;
+}
+
+/* Header styles for the DataTable */
+#default-datatable thead tr th {
+    background-color: #8C2F39 !important;
+    color: white !important;
+}
+
+/* Hide the first row and first div of the DataTable wrapper */
+#default-datatable_wrapper > div:first-child {
+    display: none;
+}
+
+/* Padding adjustments for table and wrapper */
+.table-container {
+    padding: 0 !important;
+}
+
+#default-datatable_wrapper {
+    padding: 0 !important;
+}
+
+/* Toggle button icon styles */
+.toggle-btn i {
+    transition: transform 0.3s ease;
+    font-size: 1.5rem; /* Adjust icon size */
+}
+
+/* Prevent icon rotation when collapsed */
+.toggle-btn.collapsed i {
+    transform: rotate(180deg);
+}
+
+.toggle-btn i {
+    transition: none !important; /* Disable transition effects */
+    transform: none !important;  /* Remove any transformation effects */
+}
+
+/* Styles for the collapsible search section */
+.collapse {
+    margin-bottom: 20px;
+}
+
+/* Search container styles */
+.search-container {
+    width: 50%; 
+    position: relative; 
+}
+
+/* Search icon styles */
+.search-icon {
+    position: absolute; 
+    left: 15px; 
+    color: #931a23; 
+    font-size: 1.5rem; /* Icon size */
+}
+
+/* Search input styles */
+.search-input {
+    padding-left: 45px; 
+    height: 45px; /* Set height to medium */
+    border-radius: 20px; /* Slightly less rounded */
+    border: 2px solid #931a23; 
+    transition: border-color 0.3s ease; 
+    font-size: 1rem; /* Font size adjustment */
+    width: 100%; /* Full width */
+}
+
+
+
+.search-input:blur {
+    border-color: #931a23; /* Default border color */
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    .search-container {
+        width: 100%; /* Full width on smaller screens */
+    }
+}

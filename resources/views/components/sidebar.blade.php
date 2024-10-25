@@ -20,7 +20,7 @@
                                 <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="basic"><span>Applicants</span><i class="feather icon-chevron-right pull-right"></i>
                             </a>
                             <ul class="vertical-submenu">
-                                <li><a href="basic-ui-kits-alerts.html">Newcomers</a></li>
+                                <li><a href="{{ route('admin.applicant.view') }}">Applications</a></li>
                                 <li><a href="basic-ui-kits-badges.html">Old Students</a></li>
                             </ul>
                         </li>
