@@ -86,10 +86,21 @@ class ApplicantController extends Controller
         })->count();
     }
 
-    public function export()
+    public function exportApplicantsExcel()
     {
         $export = new ApplicantsExport();
         return $export->download();
+    }
+
+    
+    public function exportApplicantsPDF()
+    {
+        $export = new ApplicantsExport();
+        // Use the export class to generate the PDF
+        $pdf = $export->exportToPDF();
+
+        // Download the PDF with a specific filename
+        return $pdf->download('applicants_report.pdf');
     }
     
 }

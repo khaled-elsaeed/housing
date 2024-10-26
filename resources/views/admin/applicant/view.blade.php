@@ -185,7 +185,9 @@
 <button class="btn btn-outline-primary ms-2" id="exportButton">
     <i class="fa fa-download"></i> Export Applicants
 </button>
-
+<button class="btn btn-outline-primary ms-2" id="exportReportn">
+    <i class="fa fa-download"></i> Export Report
+</button>
          </div>
       </div>
    </div>
@@ -323,6 +325,53 @@
                     $(this).removeClass('loading'); // Enable button interactions
                 });
             });
+
+
+            $('#exportReportn').on('click', function() {
+                const originalText = $(this).html(); // Store original button text
+                $(this).html('<i class="fa fa-spinner fa-spin"></i> Downloading...'); // Change button text and add spinner
+                $(this).addClass('loading'); // Disable button interactions
+
+                // Get the CSRF token from the meta tag
+                const csrfToken = '{{ csrf_token() }}'; // Correctly embed CSRF token
+
+                // Make the fetch request to export applicants
+                fetch('{{ route('export.applicants.pdf') }}', {
+                    method: 'GET', // Use GET request
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest', // Indicate an AJAX request
+                        'X-CSRF-Token': csrfToken // Include CSRF token for security
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.blob(); // Get the response as a Blob
+                    }
+                    throw new Error('Network response was not ok.');
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob); // Create a URL for the Blob
+                    const a = document.createElement('a'); // Create an anchor element
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'applicants.pdf'; // Set the desired filename
+                    document.body.appendChild(a); // Append the anchor to the body
+                    a.click(); // Trigger the download
+                    window.URL.revokeObjectURL(url); // Clean up the URL object
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                })
+                .finally(() => {
+                    $(this).html(originalText); // Reset the button text to original
+                    $(this).removeClass('loading'); // Enable button interactions
+                });
+            });
+
+           
+
+
+           
         });
 </script>
 

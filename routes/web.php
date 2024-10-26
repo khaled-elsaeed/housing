@@ -42,4 +42,7 @@ Route::get('/welcome', function() {
     return view('welcome');
 });
 
-Route::get('/export-applicants', [ApplicantController::class, 'export'])->name('export.applicants');
+
+
+Route::get('/export-applicants', [ApplicantController::class, 'exportApplicantsExcel'])->name('export.applicants');
+Route::get('/export-applicants-pdf', [ApplicantController::class, 'exportApplicantsPDF'])->name('export.applicants.pdf'); // Ensure this matches the fetch URL

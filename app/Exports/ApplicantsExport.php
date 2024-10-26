@@ -5,6 +5,7 @@ namespace App\Exports;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Models\User; 
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ApplicantsExport
 {
@@ -41,5 +42,20 @@ class ApplicantsExport
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
         exit;
+    }
+
+    public function exportToPDF()
+    {
+        // Fetch all applicants; customize the query if needed
+        $applicants = User::all();
+
+        // Load the Blade view and pass the data to it
+        $pdf = Pdf::loadView('reports.applicants_report', compact('applicants'));
+
+        // Set paper size and orientation if desired (optional)
+        $pdf->setPaper('a4', 'portrait');
+
+        // Return the PDF object to the caller
+        return $pdf;
     }
 }
