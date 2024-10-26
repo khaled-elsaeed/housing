@@ -7,7 +7,11 @@
 <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('plugins/sweet-alert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('css/custom-datatable.css') }}" rel="stylesheet" type="text/css" />
-
+<style>
+        .loading {
+            pointer-events: none; /* Disable button interactions */
+        }
+    </style>
 @endsection
 @section('content')
 <!-- Start row -->
@@ -25,18 +29,27 @@
                         <span class="action-icon badge badge-primary-inverse me-0"><i class="feather icon-user"></i></span>
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
-                        <h5 class="card-title font-14">Students</h5>
-                        <h4 class="mb-0">2585</h4>
+                        <h5 class="card-title font-14">Applicants</h5>
+                        <h4 class="mb-0">{{ $totalApplicants }}</h4>
                      </div>
                   </div>
                </div>
+               
                <div class="card-footer">
                   <div class="row align-items-center">
-                     <div class="col-8">
-                        <span class="font-13">Updated Today</span>
+                     <div class="col-6 text-start">
+                        <span class="font-13">Pending</span>
                      </div>
-                     <div class="col-4 text-end">
-                        <span class="badge badge-success"><i class="feather icon-trending-up me-1"></i>25%</span>
+                     <div class="col-6 text-end">
+                        <span class="font-13"><i class="feather icon-clock text-warning "></i> {{ $totalPendingCount }}</span>
+                     </div>
+                  </div>
+                  <div class="row align-items-center">
+                     <div class="col-9 text-start">
+                        <span class="font-13">Preliminary Accepted</span>
+                     </div>
+                     <div class="col-3 text-end">
+                        <span class="font-13"><i class="feather feather icon-check-circle text-success "></i> {{ $totalPreliminaryAcceptedCount }}</span>
                      </div>
                   </div>
                </div>
@@ -53,17 +66,25 @@
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
                         <h5 class="card-title font-14">Males</h5>
-                        <h4 class="mb-0">263</h4>
+                        <h4 class="mb-0">{{ $maleCount }}</h4>
                      </div>
                   </div>
                </div>
                <div class="card-footer">
                   <div class="row align-items-center">
-                     <div class="col-8">
-                        <p class="font-13">Updated 1 Day ago</p>
+                     <div class="col-6 text-start">
+                        <span class="font-13">Pending</span>
                      </div>
-                     <div class="col-4 text-end">
-                        <span class="badge badge-warning"><i class="feather icon-trending-down me-1"></i>23%</span>
+                     <div class="col-6 text-end">
+                        <span class="font-13"><i class="feather icon-clock text-warning "></i> {{ $malePendingCount }}</span>
+                     </div>
+                  </div>
+                  <div class="row align-items-center">
+                     <div class="col-9 text-start">
+                        <span class="font-13">Preliminary Accepted</span>
+                     </div>
+                     <div class="col-3 text-end">
+                        <span class="font-13"><i class="feather feather icon-check-circle text-success "></i> {{ $malePreliminaryAcceptedCount }}</span>
                      </div>
                   </div>
                </div>
@@ -80,17 +101,26 @@
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
                         <h5 class="card-title font-14">Females</h5>
-                        <h4 class="mb-0">45</h4>
+                        <h4 class="mb-0">{{ $femaleCount }}</h4>
                      </div>
                   </div>
                </div>
+               
                <div class="card-footer">
                   <div class="row align-items-center">
-                     <div class="col-8">
-                        <p class="font-13">Updated 3 Day ago</p>
+                     <div class="col-6 text-start">
+                        <span class="font-13">Pending</span>
                      </div>
-                     <div class="col-4 text-end">
-                        <span class="badge badge-success"><i class="feather icon-trending-up me-1"></i>15%</span>
+                     <div class="col-6 text-end">
+                        <span class="font-13"><i class="feather icon-clock text-warning "></i> {{ $femalePendingCount }}</span>
+                     </div>
+                  </div>
+                  <div class="row align-items-center">
+                     <div class="col-9 text-start">
+                        <span class="font-13">Preliminary Accepted</span>
+                     </div>
+                     <div class="col-3 text-end">
+                        <span class="font-13"><i class="feather feather icon-check-circle text-success "></i> {{ $femalePreliminaryAcceptedCount }}</span>
                      </div>
                   </div>
                </div>
@@ -106,18 +136,27 @@
                         <span class="action-icon badge badge-secondary-inverse me-0"><i class="feather icon-book-open"></i></span>
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
-                        <h5 class="card-title font-14">Occupancy</h5>
-                        <h4 class="mb-0">93</h4>
+                        <h5 class="card-title font-14">Final Accepted</h5>
+                        <h4 class="mb-0">{{$totalFinalAcceptedCount}}</h4>
                      </div>
                   </div>
                </div>
+               
                <div class="card-footer">
                   <div class="row align-items-center">
-                     <div class="col-8">
-                        <p class="font-13">Updated 5 Day ago</p>
+                     <div class="col-6 text-start">
+                        <span class="font-13">Males</span>
                      </div>
-                     <div class="col-4 text-end">
-                        <span class="badge badge-warning"><i class="feather icon-trending-down me-1"></i>10%</span>
+                     <div class="col-6 text-end">
+                        <span class="font-13"><i class="feather icon-clock text-warning "></i> {{ $maleFinalAcceptedCount }}</span>
+                     </div>
+                  </div>
+                  <div class="row align-items-center">
+                     <div class="col-9 text-start">
+                        <span class="font-13">Females</span>
+                     </div>
+                     <div class="col-3 text-end">
+                        <span class="font-13"><i class="feather feather icon-check-circle text-success "></i> {{ $femaleFinalAcceptedCount }}</span>
                      </div>
                   </div>
                </div>
@@ -131,46 +170,45 @@
 </div>
 <!-- End row -->
 <div class="row">
-   <div class="col-12">
-      <div class="d-flex justify-content-between align-items-center mb-3">
+   <div class="col-lg-12">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
          <!-- Title on the Left -->
-         <h2 class="page-title m-0">Applicants</h2>
+         <h2 class="page-title text-primary mb-2 mb-md-0">Applicants</h2>
          <!-- Toggle Button on the Right -->
-          <div class="div">
-          <button class="btn btn-outline-primary btn-sm toggle-btn" id="toggleButton" type="button" data-bs-toggle="collapse"
-            data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-         <i class="fa fa-search-plus"></i>
-         </button>
-         <!-- New Applicant Button -->
-        <button class="btn btn-outline-primary ms-2" id="newApplicantButton">
-            <i class="fa fa-plus"></i> New Applicant
-        </button>
-          </div>
-         
+         <div class="div">
+            <button class="btn btn-outline-primary btn-sm toggle-btn" id="toggleButton" type="button" data-bs-toggle="collapse"
+               data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            <i class="fa fa-search-plus"></i>
+            </button>
+            <!-- New Applicant Button -->
+            <!-- Updated Export Button -->
+<button class="btn btn-outline-primary ms-2" id="exportButton">
+    <i class="fa fa-download"></i> Export Applicants
+</button>
+
+         </div>
       </div>
    </div>
 </div>
-<div class="row">
-</div>
 <div class="collapse" id="collapseExample">
-   <div class="card card-body" style="background-color: transparent !important;">
-      <div class="d-flex justify-content-between align-items-center">
-         <!-- Search Box on the Left -->
-         <div class="search-container d-flex align-items-center">
-        <i class="fa fa-search search-icon"></i>
-        <input type="search" class="form-control search-input" id="searchBox" placeholder="Search..." />
-    </div>
+   <div class="search-filter-container card card-body">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+         <!-- Search Box with Icon on the Left -->
+         <div class="search-container d-flex align-items-center mb-3 mb-md-0">
+            <div class="search-icon-container">
+               <i class="fa fa-search search-icon"></i>
+            </div>
+            <input type="search" class="form-control search-input" id="searchBox" placeholder="Search..." />
+         </div>
          <!-- Filters on the Right -->
-         <div class="d-flex" style="gap: 10px;">
-            <!-- Category Filter -->
-            <select id="categoryFilter" class="form-select" style="border: 1px solid #931a23; border-radius: 4px;">
+         <div class="d-flex flex-column flex-md-row filters-container">
+            <select id="categoryFilter" class="form-select mb-2 mb-md-0" >
                <option value="">Category</option>
                <option value="Category 1">Category 1</option>
                <option value="Category 2">Category 2</option>
                <option value="Category 3">Category 3</option>
             </select>
-            <!-- Status Filter -->
-            <select id="statusFilter" class="form-select" style="border: 1px solid #931a23; border-radius: 4px;">
+            <select id="statusFilter" class="form-select">
                <option value="">Status</option>
                <option value="Active">Active</option>
                <option value="Inactive">Inactive</option>
@@ -186,485 +224,38 @@
       <div class="card m-b-30 table-card">
          <div class="card-body table-container">
             <div class="table-responsive">
-               <table id="default-datatable" class="display table table-bordered">
+               <table id="default-datatable" class="display table table-bordered table-hover">
                   <thead>
                      <tr>
                         <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
+                        <th>Gender</th>
+                        <th>National ID</th>
+                        <th>Email</th>
+                        <th>Profile Completed</th>
+                        <th>Registration Date</th>
+                        <!-- Fixed closing tag -->
                      </tr>
                   </thead>
                   <tbody>
+                     @foreach($applicants as $applicant)
                      <tr>
-                        <td>Tiger Nixon</td>
-                        <td>System Architect</td>
-                        <td>Edinburgh</td>
-                        <td>61</td>
-                        <td>2011/04/25</td>
-                        <td>$320,800</td>
+                        <td>{{ $applicant->universityArchive->name_en ?? 'N/A' }}</td>
+                        <!-- Correct relationship name -->
+                        <td>{{ $applicant->universityArchive->gender ?? 'N/A' }}</td>
+                        <!-- Correct relationship name -->
+                        <td>{{ $applicant->universityArchive->national_id ?? 'N/A' }}</td>
+                        <td>{{ $applicant->email }}</td>
+                        <td>
+                           @if ($applicant->has_student_profile)
+                           <span class="badge badge-success badge-lg">Yes</span>
+                           @else
+                           <span class="badge badge-danger badge-lg">No</span>
+                           @endif
+                        </td>
+                        <td>{{ $applicant->created_at->format('F j, Y, g:i A') }}</td>
                      </tr>
-                     <tr>
-                        <td>Garrett Winters</td>
-                        <td>Accountant</td>
-                        <td>Tokyo</td>
-                        <td>63</td>
-                        <td>2011/07/25</td>
-                        <td>$170,750</td>
-                     </tr>
-                     <tr>
-                        <td>Ashton Cox</td>
-                        <td>Junior Technical Author</td>
-                        <td>San Francisco</td>
-                        <td>66</td>
-                        <td>2009/01/12</td>
-                        <td>$86,000</td>
-                     </tr>
-                     <tr>
-                        <td>Cedric Kelly</td>
-                        <td>Senior Javascript Developer</td>
-                        <td>Edinburgh</td>
-                        <td>22</td>
-                        <td>2012/03/29</td>
-                        <td>$433,060</td>
-                     </tr>
-                     <tr>
-                        <td>Airi Satou</td>
-                        <td>Accountant</td>
-                        <td>Tokyo</td>
-                        <td>33</td>
-                        <td>2008/11/28</td>
-                        <td>$162,700</td>
-                     </tr>
-                     <tr>
-                        <td>Brielle Williamson</td>
-                        <td>Integration Specialist</td>
-                        <td>New York</td>
-                        <td>61</td>
-                        <td>2012/12/02</td>
-                        <td>$372,000</td>
-                     </tr>
-                     <tr>
-                        <td>Herrod Chandler</td>
-                        <td>Sales Assistant</td>
-                        <td>San Francisco</td>
-                        <td>59</td>
-                        <td>2012/08/06</td>
-                        <td>$137,500</td>
-                     </tr>
-                     <tr>
-                        <td>Rhona Davidson</td>
-                        <td>Integration Specialist</td>
-                        <td>Tokyo</td>
-                        <td>55</td>
-                        <td>2010/10/14</td>
-                        <td>$327,900</td>
-                     </tr>
-                     <tr>
-                        <td>Colleen Hurst</td>
-                        <td>Javascript Developer</td>
-                        <td>San Francisco</td>
-                        <td>39</td>
-                        <td>2009/09/15</td>
-                        <td>$205,500</td>
-                     </tr>
-                     <tr>
-                        <td>Sonya Frost</td>
-                        <td>Software Engineer</td>
-                        <td>Edinburgh</td>
-                        <td>23</td>
-                        <td>2008/12/13</td>
-                        <td>$103,600</td>
-                     </tr>
-                     <tr>
-                        <td>Jena Gaines</td>
-                        <td>Office Manager</td>
-                        <td>London</td>
-                        <td>30</td>
-                        <td>2008/12/19</td>
-                        <td>$90,560</td>
-                     </tr>
-                     <tr>
-                        <td>Quinn Flynn</td>
-                        <td>Support Lead</td>
-                        <td>Edinburgh</td>
-                        <td>22</td>
-                        <td>2013/03/03</td>
-                        <td>$342,000</td>
-                     </tr>
-                     <tr>
-                        <td>Charde Marshall</td>
-                        <td>Regional Director</td>
-                        <td>San Francisco</td>
-                        <td>36</td>
-                        <td>2008/10/16</td>
-                        <td>$470,600</td>
-                     </tr>
-                     <tr>
-                        <td>Haley Kennedy</td>
-                        <td>Senior Marketing Designer</td>
-                        <td>London</td>
-                        <td>43</td>
-                        <td>2012/12/18</td>
-                        <td>$313,500</td>
-                     </tr>
-                     <tr>
-                        <td>Tatyana Fitzpatrick</td>
-                        <td>Regional Director</td>
-                        <td>London</td>
-                        <td>19</td>
-                        <td>2010/03/17</td>
-                        <td>$385,750</td>
-                     </tr>
-                     <tr>
-                        <td>Michael Silva</td>
-                        <td>Marketing Designer</td>
-                        <td>London</td>
-                        <td>66</td>
-                        <td>2012/11/27</td>
-                        <td>$198,500</td>
-                     </tr>
-                     <tr>
-                        <td>Paul Byrd</td>
-                        <td>Chief Financial Officer (CFO)</td>
-                        <td>New York</td>
-                        <td>64</td>
-                        <td>2010/06/09</td>
-                        <td>$725,000</td>
-                     </tr>
-                     <tr>
-                        <td>Gloria Little</td>
-                        <td>Systems Administrator</td>
-                        <td>New York</td>
-                        <td>59</td>
-                        <td>2009/04/10</td>
-                        <td>$237,500</td>
-                     </tr>
-                     <tr>
-                        <td>Bradley Greer</td>
-                        <td>Software Engineer</td>
-                        <td>London</td>
-                        <td>41</td>
-                        <td>2012/10/13</td>
-                        <td>$132,000</td>
-                     </tr>
-                     <tr>
-                        <td>Dai Rios</td>
-                        <td>Personnel Lead</td>
-                        <td>Edinburgh</td>
-                        <td>35</td>
-                        <td>2012/09/26</td>
-                        <td>$217,500</td>
-                     </tr>
-                     <tr>
-                        <td>Jenette Caldwell</td>
-                        <td>Development Lead</td>
-                        <td>New York</td>
-                        <td>30</td>
-                        <td>2011/09/03</td>
-                        <td>$345,000</td>
-                     </tr>
-                     <tr>
-                        <td>Yuri Berry</td>
-                        <td>Chief Marketing Officer (CMO)</td>
-                        <td>New York</td>
-                        <td>40</td>
-                        <td>2009/06/25</td>
-                        <td>$675,000</td>
-                     </tr>
-                     <tr>
-                        <td>Caesar Vance</td>
-                        <td>Pre-Sales Support</td>
-                        <td>New York</td>
-                        <td>21</td>
-                        <td>2011/12/12</td>
-                        <td>$106,450</td>
-                     </tr>
-                     <tr>
-                        <td>Doris Wilder</td>
-                        <td>Sales Assistant</td>
-                        <td>Sidney</td>
-                        <td>23</td>
-                        <td>2010/09/20</td>
-                        <td>$85,600</td>
-                     </tr>
-                     <tr>
-                        <td>Angelica Ramos</td>
-                        <td>Chief Executive Officer (CEO)</td>
-                        <td>London</td>
-                        <td>47</td>
-                        <td>2009/10/09</td>
-                        <td>$1,200,000</td>
-                     </tr>
-                     <tr>
-                        <td>Gavin Joyce</td>
-                        <td>Developer</td>
-                        <td>Edinburgh</td>
-                        <td>42</td>
-                        <td>2010/12/22</td>
-                        <td>$92,575</td>
-                     </tr>
-                     <tr>
-                        <td>Jennifer Chang</td>
-                        <td>Regional Director</td>
-                        <td>Singapore</td>
-                        <td>28</td>
-                        <td>2010/11/14</td>
-                        <td>$357,650</td>
-                     </tr>
-                     <tr>
-                        <td>Brenden Wagner</td>
-                        <td>Software Engineer</td>
-                        <td>San Francisco</td>
-                        <td>28</td>
-                        <td>2011/06/07</td>
-                        <td>$206,850</td>
-                     </tr>
-                     <tr>
-                        <td>Fiona Green</td>
-                        <td>Chief Operating Officer (COO)</td>
-                        <td>San Francisco</td>
-                        <td>48</td>
-                        <td>2010/03/11</td>
-                        <td>$850,000</td>
-                     </tr>
-                     <tr>
-                        <td>Shou Itou</td>
-                        <td>Regional Marketing</td>
-                        <td>Tokyo</td>
-                        <td>20</td>
-                        <td>2011/08/14</td>
-                        <td>$163,000</td>
-                     </tr>
-                     <tr>
-                        <td>Michelle House</td>
-                        <td>Integration Specialist</td>
-                        <td>Sidney</td>
-                        <td>37</td>
-                        <td>2011/06/02</td>
-                        <td>$95,400</td>
-                     </tr>
-                     <tr>
-                        <td>Suki Burks</td>
-                        <td>Developer</td>
-                        <td>London</td>
-                        <td>53</td>
-                        <td>2009/10/22</td>
-                        <td>$114,500</td>
-                     </tr>
-                     <tr>
-                        <td>Prescott Bartlett</td>
-                        <td>Technical Author</td>
-                        <td>London</td>
-                        <td>27</td>
-                        <td>2011/05/07</td>
-                        <td>$145,000</td>
-                     </tr>
-                     <tr>
-                        <td>Gavin Cortez</td>
-                        <td>Team Leader</td>
-                        <td>San Francisco</td>
-                        <td>22</td>
-                        <td>2008/10/26</td>
-                        <td>$235,500</td>
-                     </tr>
-                     <tr>
-                        <td>Martena Mccray</td>
-                        <td>Post-Sales support</td>
-                        <td>Edinburgh</td>
-                        <td>46</td>
-                        <td>2011/03/09</td>
-                        <td>$324,050</td>
-                     </tr>
-                     <tr>
-                        <td>Unity Butler</td>
-                        <td>Marketing Designer</td>
-                        <td>San Francisco</td>
-                        <td>47</td>
-                        <td>2009/12/09</td>
-                        <td>$85,675</td>
-                     </tr>
-                     <tr>
-                        <td>Howard Hatfield</td>
-                        <td>Office Manager</td>
-                        <td>San Francisco</td>
-                        <td>51</td>
-                        <td>2008/12/16</td>
-                        <td>$164,500</td>
-                     </tr>
-                     <tr>
-                        <td>Hope Fuentes</td>
-                        <td>Secretary</td>
-                        <td>San Francisco</td>
-                        <td>41</td>
-                        <td>2010/02/12</td>
-                        <td>$109,850</td>
-                     </tr>
-                     <tr>
-                        <td>Vivian Harrell</td>
-                        <td>Financial Controller</td>
-                        <td>San Francisco</td>
-                        <td>62</td>
-                        <td>2009/02/14</td>
-                        <td>$452,500</td>
-                     </tr>
-                     <tr>
-                        <td>Timothy Mooney</td>
-                        <td>Office Manager</td>
-                        <td>London</td>
-                        <td>37</td>
-                        <td>2008/12/11</td>
-                        <td>$136,200</td>
-                     </tr>
-                     <tr>
-                        <td>Jackson Bradshaw</td>
-                        <td>Director</td>
-                        <td>New York</td>
-                        <td>65</td>
-                        <td>2008/09/26</td>
-                        <td>$645,750</td>
-                     </tr>
-                     <tr>
-                        <td>Olivia Liang</td>
-                        <td>Support Engineer</td>
-                        <td>Singapore</td>
-                        <td>64</td>
-                        <td>2011/02/03</td>
-                        <td>$234,500</td>
-                     </tr>
-                     <tr>
-                        <td>Bruno Nash</td>
-                        <td>Software Engineer</td>
-                        <td>London</td>
-                        <td>38</td>
-                        <td>2011/05/03</td>
-                        <td>$163,500</td>
-                     </tr>
-                     <tr>
-                        <td>Sakura Yamamoto</td>
-                        <td>Support Engineer</td>
-                        <td>Tokyo</td>
-                        <td>37</td>
-                        <td>2009/08/19</td>
-                        <td>$139,575</td>
-                     </tr>
-                     <tr>
-                        <td>Thor Walton</td>
-                        <td>Developer</td>
-                        <td>New York</td>
-                        <td>61</td>
-                        <td>2013/08/11</td>
-                        <td>$98,540</td>
-                     </tr>
-                     <tr>
-                        <td>Finn Camacho</td>
-                        <td>Support Engineer</td>
-                        <td>San Francisco</td>
-                        <td>47</td>
-                        <td>2009/07/07</td>
-                        <td>$87,500</td>
-                     </tr>
-                     <tr>
-                        <td>Serge Baldwin</td>
-                        <td>Data Coordinator</td>
-                        <td>Singapore</td>
-                        <td>64</td>
-                        <td>2012/04/09</td>
-                        <td>$138,575</td>
-                     </tr>
-                     <tr>
-                        <td>Zenaida Frank</td>
-                        <td>Software Engineer</td>
-                        <td>New York</td>
-                        <td>63</td>
-                        <td>2010/01/04</td>
-                        <td>$125,250</td>
-                     </tr>
-                     <tr>
-                        <td>Zorita Serrano</td>
-                        <td>Software Engineer</td>
-                        <td>San Francisco</td>
-                        <td>56</td>
-                        <td>2012/06/01</td>
-                        <td>$115,000</td>
-                     </tr>
-                     <tr>
-                        <td>Jennifer Acosta</td>
-                        <td>Junior Javascript Developer</td>
-                        <td>Edinburgh</td>
-                        <td>43</td>
-                        <td>2013/02/01</td>
-                        <td>$75,650</td>
-                     </tr>
-                     <tr>
-                        <td>Cara Stevens</td>
-                        <td>Sales Assistant</td>
-                        <td>New York</td>
-                        <td>46</td>
-                        <td>2011/12/06</td>
-                        <td>$145,600</td>
-                     </tr>
-                     <tr>
-                        <td>Hermione Butler</td>
-                        <td>Regional Director</td>
-                        <td>London</td>
-                        <td>47</td>
-                        <td>2011/03/21</td>
-                        <td>$356,250</td>
-                     </tr>
-                     <tr>
-                        <td>Lael Greer</td>
-                        <td>Systems Administrator</td>
-                        <td>London</td>
-                        <td>21</td>
-                        <td>2009/02/27</td>
-                        <td>$103,500</td>
-                     </tr>
-                     <tr>
-                        <td>Jonas Alexander</td>
-                        <td>Developer</td>
-                        <td>San Francisco</td>
-                        <td>30</td>
-                        <td>2010/07/14</td>
-                        <td>$86,500</td>
-                     </tr>
-                     <tr>
-                        <td>Shad Decker</td>
-                        <td>Regional Director</td>
-                        <td>Edinburgh</td>
-                        <td>51</td>
-                        <td>2008/11/13</td>
-                        <td>$183,000</td>
-                     </tr>
-                     <tr>
-                        <td>Michael Bruce</td>
-                        <td>Javascript Developer</td>
-                        <td>Singapore</td>
-                        <td>29</td>
-                        <td>2011/06/27</td>
-                        <td>$183,000</td>
-                     </tr>
-                     <tr>
-                        <td>Donna Snider</td>
-                        <td>Customer Support</td>
-                        <td>New York</td>
-                        <td>27</td>
-                        <td>2011/01/25</td>
-                        <td>$112,000</td>
-                     </tr>
+                     @endforeach
                   </tbody>
-                  <tfoot>
-                     <tr>
-                        <th>Name</th>
-                        <th>Position</th>
-                        <th>Office</th>
-                        <th>Age</th>
-                        <th>Start date</th>
-                        <th>Salary</th>
-                     </tr>
-                  </tfoot>
                </table>
             </div>
          </div>
@@ -691,79 +282,48 @@
 <script src="{{ asset('js/custom/custom-table-datatable.js') }}"></script>
 <script src="{{ asset('plugins/sweet-alert2/sweetalert2.min.js') }}"></script>
 <script>
-    $('#newApplicantButton').on('click', function() {
-        swal({
-            title: 'Enter User National ID',
-            input: 'text',
-            inputPlaceholder: 'National ID',
-            showCancelButton: true,
-            confirmButtonText: 'Submit',
-            showLoaderOnConfirm: true,
-            confirmButtonClass: 'btn btn-success',
-            cancelButtonClass: 'btn btn-danger',
-            preConfirm: function (nationalId) {
-                return new Promise(function (resolve, reject) {
-                    // Validate National ID: 14 numeric characters
-                    if (!/^\d{14}$/.test(nationalId)) {
-                        reject('National ID must be exactly 14 digits long.');
-                        return;
+    $(document).ready(function() {
+            $('#exportButton').on('click', function() {
+                const originalText = $(this).html(); // Store original button text
+                $(this).html('<i class="fa fa-spinner fa-spin"></i> Downloading...'); // Change button text and add spinner
+                $(this).addClass('loading'); // Disable button interactions
+
+                // Get the CSRF token from the meta tag
+                const csrfToken = '{{ csrf_token() }}'; // Correctly embed CSRF token
+
+                // Make the fetch request to export applicants
+                fetch('{{ route('export.applicants') }}', {
+                    method: 'GET', // Use GET request
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest', // Indicate an AJAX request
+                        'X-CSRF-Token': csrfToken // Include CSRF token for security
                     }
-                    
-                    // Simulate async check for registration
-                    setTimeout(function () {
-                        if (nationalId === '30308218800598') {
-                            reject('This national ID is already registered.');
-                        } else {
-                            resolve(nationalId); // Resolve with national ID for next step
-                        }
-                    }, 2000);
-                });
-            },
-            allowOutsideClick: false
-        }).then(function (nationalId) {
-            // Prompt for email after validating national ID
-            swal({
-                title: 'Enter User Email',
-                input: 'email',
-                inputPlaceholder: 'Email',
-                showCancelButton: true,
-                confirmButtonText: 'Submit',
-                showLoaderOnConfirm: true,
-                confirmButtonClass: 'btn btn-success',
-                cancelButtonClass: 'btn btn-danger',
-                preConfirm: function (email) {
-                    return new Promise(function (resolve, reject) {
-                        // Simulate async check for email registration
-                        setTimeout(function () {
-                            if (email === 'example@example.com') { // Simulated registered email
-                                reject('This email is already registered.');
-                            } else {
-                                resolve(); // If email is valid and not registered
-                            }
-                        }, 2000);
-                    });
-                },
-                allowOutsideClick: false
-            }).then(function () {
-                // Show success message after both validations
-                swal({
-                    title: 'Success!',
-                    text: 'National ID and Email are valid and registered successfully.',
-                    icon: 'success',
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.blob(); // Get the response as a Blob
+                    }
+                    throw new Error('Network response was not ok.');
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob); // Create a URL for the Blob
+                    const a = document.createElement('a'); // Create an anchor element
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'applicants.xlsx'; // Set the desired filename
+                    document.body.appendChild(a); // Append the anchor to the body
+                    a.click(); // Trigger the download
+                    window.URL.revokeObjectURL(url); // Clean up the URL object
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                })
+                .finally(() => {
+                    $(this).html(originalText); // Reset the button text to original
+                    $(this).removeClass('loading'); // Enable button interactions
                 });
             });
-        }).catch(function (error) {
-            swal.showLoading();
-            setTimeout(function() {
-                swal.close();
-                swal({
-                    title: 'Error!',
-                    text: error,
-                    icon: 'error',
-                });
-            }, 100);
         });
-    });
 </script>
 
 @endsection

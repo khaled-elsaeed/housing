@@ -20,12 +20,14 @@ return new class extends Migration
             $table->string('mobile', 20)->unique();
             $table->date('birthdate');
             $table->enum('gender', ['male', 'female']);
-            $table->foreignId('city')->constrained('cities')->onDelete('restrict')->onUPdate('cascade');
+            $table->foreignId('city')->constrained('cities')->onDelete('restrict')->onUpdate('cascade');
             $table->string('street', 250);
             $table->boolean('profile_completed')->default(0); 
             $table->timestamp('profile_completed_at')->nullable();
             $table->boolean('can_complete_late')->default(0);
             $table->foreignId('university_Archive_id')->unique()->constrained('university_Archive')->onDelete('restrict')->onUpdate('cascade');
+            $table->enum('application_status', ['pending', 'preliminary_accepted', 'final_accepted'])->default('pending');
+            
             $table->timestamps();
         });
     }

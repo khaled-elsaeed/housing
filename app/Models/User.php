@@ -51,9 +51,15 @@ class User extends Authenticatable
 
     public function universityArchive()
     {
-        return $this->hasOneThrough(UniversityArchive::class, UserNationalLink::class);
+        return $this->hasOneThrough(
+            UniversityArchive::class,
+            UserNationalLink::class,
+            'user_id', // Foreign key on UserNationalLink table
+            'id', // Foreign key on UniversityArchive table
+            'id', // Local key on User table
+            'university_Archive_id' // Local key on UserNationalLink table
+        );
     }
-
     public function isAdmin(): bool
     {
         return $this->hasRole('admin');

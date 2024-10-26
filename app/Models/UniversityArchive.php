@@ -45,6 +45,11 @@ class UniversityArchive extends Model
     protected $casts = [
         'is_new_comer' => 'boolean',
     ];
+
+    public function users()
+    {
+        return $this->hasMany(UserNationalLink::class);
+    }
     
     public function city()
     {

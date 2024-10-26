@@ -17,11 +17,13 @@ class UserNationalLink extends Model
         'national_id',
     ];
 
+    // Define the relationship to User
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    // Define the relationship to UniversityArchive
     public function universityArchive()
     {
         return $this->belongsTo(UniversityArchive::class, 'university_Archive_id');
