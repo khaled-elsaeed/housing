@@ -32,7 +32,7 @@
          <!-- Start Leftbar -->
          <div class="leftbar">
             <!-- Start Sidebar -->
-            <x-sidebar />
+            <x-admin-sidebar />
             <!-- End Sidebar -->
          </div>
          <!-- End Leftbar -->

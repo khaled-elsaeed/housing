@@ -172,7 +172,7 @@ code {
   display: none;
 }
 .logobar .logo img {
-  width: 128px;
+  width: 118px;
 }
 
 .leftbar {
@@ -26547,6 +26547,7 @@ mark {
 .topbar .togglebar {
   display: inline-block;
   padding-top: 1px;
+
 }
 .topbar .togglebar li {
   margin-right: 0;

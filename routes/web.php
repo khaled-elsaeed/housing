@@ -1,15 +1,23 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Auth\AccountActivationController;
-use App\Http\Controllers\Auth\PasswordResetController;
-use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Auth\{
+    LoginController,
+    RegisterController,
+    AccountActivationController,
+    PasswordResetController,
+    LogoutController
+};
 use App\Http\Controllers\Admin\AdminHomeController;
+use App\Http\Controllers\Student\StudentHomeController;
 use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Middleware\NoCache;
+
+// Welcome Route
+Route::get('/welcome', function () {
+    return view('welcome');
+});
 
 // Authentication Routes
 Route::get('/', [LoginController::class, 'showLoginPage']); 
@@ -28,21 +36,20 @@ Route::get('password/reset/{token}', [PasswordResetController::class, 'showUpdat
 Route::post('password/reset/{token}', [PasswordResetController::class, 'resetPassword'])->name('password.update');
 
 // Protected Routes
-Route::middleware(['auth', NoCache::class])->group(function () { // Corrected middleware name
+Route::middleware(['auth', NoCache::class])->group(function () {
     // Admin Routes
     Route::get('/admin/home', [AdminHomeController::class, 'showHomePage'])->name('admin.home');
-    Route::get('/admin/applicant', [ApplicantController::class, 'showApplicantPage'])->name('admin.applicant.view'); // Other admin routes
+    Route::get('/admin/applicant', [ApplicantController::class, 'showApplicantPage'])->name('admin.applicant.view');
+
+    // Student Routes
+    Route::get('/student/home', [StudentHomeController::class, 'showHomePage'])->name('student.home');
+
+    // Additional protected routes can be added here...
 });
 
 // Logout Route
 Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 
-// Welcome Route
-Route::get('/welcome', function() {
-    return view('welcome');
-});
-
-
-
-Route::get('/export-applicants', [ApplicantController::class, 'exportApplicantsExcel'])->name('export.applicants');
-Route::get('/export-applicants-pdf', [ApplicantController::class, 'exportApplicantsPDF'])->name('export.applicants.pdf'); // Ensure this matches the fetch URL
+// Export Routes
+Route::get('/export-applicants-excel', [ApplicantController::class, 'downloadExcel'])->name('export.applicants.excel');
+Route::get('/export-applicants-pdf', [ApplicantController::class, 'downloadPDF'])->name('export.applicants.pdf'); // Ensure this matches the fetch URL

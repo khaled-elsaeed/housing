@@ -8,6 +8,7 @@ use App\Exports\ApplicantsExport;
 
 class ApplicantController extends Controller
 {
+    // Show the applicant page with statistics
     public function showApplicantPage()
     {
         $applicants = $this->getApplicants();
@@ -15,38 +16,39 @@ class ApplicantController extends Controller
         $totalApplicants = $applicants->count();
         $maleCount = $this->countGender($applicants, 'male');
         $femaleCount = $this->countGender($applicants, 'female');
-        $occupancyCount = $this->calculateOccupancy($totalApplicants, $maleCount, $femaleCount);
 
+        // Count application statuses
         $totalPendingCount = $this->countStatus($applicants, 'pending');
         $totalPreliminaryAcceptedCount = $this->countStatus($applicants, 'preliminary_accepted');
         $totalFinalAcceptedCount = $this->countStatus($applicants, 'final_accepted');
 
-
+        // Count gender-specific application statuses
         $malePreliminaryAcceptedCount = $this->countGenderStatus($applicants, 'male', 'preliminary_accepted');
         $malePendingCount = $this->countGenderStatus($applicants, 'male', 'pending');
         $maleFinalAcceptedCount = $this->countGenderStatus($applicants, 'male', 'final_accepted');
+
         $femaleFinalAcceptedCount = $this->countGenderStatus($applicants, 'female', 'final_accepted');
         $femalePreliminaryAcceptedCount = $this->countGenderStatus($applicants, 'female', 'preliminary_accepted');
         $femalePendingCount = $this->countGenderStatus($applicants, 'female', 'pending');
 
         return view('admin.applicant.view', compact(
-            'applicants', 
-            'totalApplicants', 
-            'maleCount', 
-            'femaleCount', 
-            'occupancyCount',
-            'totalPreliminaryAcceptedCount',   
+            'applicants',
+            'totalApplicants',
+            'maleCount',
+            'femaleCount',
             'totalPendingCount',
+            'totalPreliminaryAcceptedCount',
             'totalFinalAcceptedCount',
-            'malePreliminaryAcceptedCount',   
-            'malePendingCount',    
-            'femalePreliminaryAcceptedCount', 
-            'femalePendingCount',
+            'malePreliminaryAcceptedCount',
+            'malePendingCount',
             'maleFinalAcceptedCount',
+            'femalePreliminaryAcceptedCount',
+            'femalePendingCount',
             'femaleFinalAcceptedCount'
         ));
     }
 
+    // Fetch applicants from the database
     private function getApplicants()
     {
         return User::role('resident')
@@ -59,6 +61,7 @@ class ApplicantController extends Controller
                    });
     }
 
+    // Count the number of applicants by gender
     private function countGender($applicants, $gender)
     {
         return $applicants->filter(function ($applicant) use ($gender) {
@@ -66,11 +69,7 @@ class ApplicantController extends Controller
         })->count();
     }
 
-    private function calculateOccupancy($total, $maleCount, $femaleCount)
-    {
-        return $total > 0 ? ($maleCount + $femaleCount) : 0;
-    }
-
+    // Count the number of applicants by application status
     private function countStatus($applicants, $status)
     {
         return $applicants->filter(function ($applicant) use ($status) {
@@ -78,6 +77,7 @@ class ApplicantController extends Controller
         })->count();
     }
 
+    // Count the number of applicants by gender and application status
     private function countGenderStatus($applicants, $gender, $status)
     {
         return $applicants->filter(function ($applicant) use ($gender, $status) {
@@ -86,21 +86,18 @@ class ApplicantController extends Controller
         })->count();
     }
 
-    public function exportApplicantsExcel()
+    // Download applicants' data as an Excel file
+    public function downloadExcel()
     {
         $export = new ApplicantsExport();
-        return $export->download();
+        return $export->downloadExcel();
     }
 
-    
-    public function exportApplicantsPDF()
+    // Download applicants' data as a PDF file
+    public function downloadPDF()
     {
         $export = new ApplicantsExport();
-        // Use the export class to generate the PDF
-        $pdf = $export->exportToPDF();
-
-        // Download the PDF with a specific filename
+        $pdf = $export->downloadPDF();
         return $pdf->download('applicants_report.pdf');
     }
-    
 }

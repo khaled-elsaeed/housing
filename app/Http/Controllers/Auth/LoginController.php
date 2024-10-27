@@ -63,7 +63,7 @@ class LoginController extends Controller
                     return back()->withErrors($studentChecks);
                 }
 
-                return redirect()->intended('welcome');
+                return redirect()->route('student.home');
             }
 
             return redirect()->intended('home');

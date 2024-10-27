@@ -1,7 +1,7 @@
 
-@extends('layouts.app')
+@extends('layouts.admin')
 
-@section('title', 'Home Page')
+@section('title', 'Home')
 
 @section('links')
     <!-- Page-specific CSS -->

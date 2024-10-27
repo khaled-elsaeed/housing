@@ -1,10 +1,17 @@
 <!-- Start Sidebar -->
 <div class="sidebar">
+    
                 <!-- Start Logobar -->
                 <div class="logobar">
-                    <a href="index.html" class="logo logo-large"><img src="{{ asset('images/logo.png') }}" class="img-fluid" alt="logo"></a>
-                    <a href="index.html" class="logo logo-small"><img src="{{ asset('images/logo.png') }}" class="img-fluid" alt="logo"></a>
-                </div>
+        <a href="{{ route('admin.home') }}" class="logo logo-large">
+            <img src="{{ asset('images/logo-wide.png') }}" class="img-fluid" alt="logo">
+        </a>
+        <a href="{{ route('admin.home') }}" class="logo logo-small">
+            <img src="{{ asset('images/logo.png') }}" class="img-fluid" alt="logo">
+        </a>
+    </div>
+
+    
                 <!-- End Logobar -->
                 <!-- Start Navigationbar -->
                 <div class="navigationbar">
