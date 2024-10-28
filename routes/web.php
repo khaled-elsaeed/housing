@@ -40,6 +40,7 @@ Route::middleware(['auth', NoCache::class])->group(function () {
     // Admin Routes
     Route::get('/admin/home', [AdminHomeController::class, 'showHomePage'])->name('admin.home');
     Route::get('/admin/applicant', [ApplicantController::class, 'showApplicantPage'])->name('admin.applicant.view');
+    Route::get('/admin/applicant/invoice', [ApplicantController::class, 'showInvoicePage'])->name('admin.applicant.invoice');
 
     // Student Routes
     Route::get('/student/home', [StudentHomeController::class, 'showHomePage'])->name('student.home');
@@ -53,3 +54,4 @@ Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 // Export Routes
 Route::get('/export-applicants-excel', [ApplicantController::class, 'downloadExcel'])->name('export.applicants.excel');
 Route::get('/export-applicants-pdf', [ApplicantController::class, 'downloadPDF'])->name('export.applicants.pdf'); // Ensure this matches the fetch URL
+

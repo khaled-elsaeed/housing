@@ -238,7 +238,7 @@
       <div class="card m-b-30 table-card">
          <div class="card-body table-container">
             <div class="table-responsive">
-               <table id="default-datatable" class="display table table-bordered table-hover">
+               <table id="default-datatable" class="display table table-bordered">
                   <thead>
                      <tr>
                         <th>Name</th>
@@ -247,29 +247,52 @@
                         <th>Email</th>
                         <th>Profile Completed</th>
                         <th>Registration Date</th>
-                        <!-- Fixed closing tag -->
+                        <th>Actions</th>
                      </tr>
                   </thead>
                   <tbody>
-                     @foreach($applicants as $applicant)
-                     <tr>
-                        <td>{{ $applicant->universityArchive->name_en ?? 'N/A' }}</td>
-                        <!-- Correct relationship name -->
-                        <td>{{ $applicant->universityArchive->gender ?? 'N/A' }}</td>
-                        <!-- Correct relationship name -->
-                        <td>{{ $applicant->universityArchive->national_id ?? 'N/A' }}</td>
-                        <td>{{ $applicant->email }}</td>
-                        <td>
-                           @if ($applicant->has_student_profile)
-                           <span class="badge badge-success badge-lg">Yes</span>
-                           @else
-                           <span class="badge badge-danger badge-lg">No</span>
-                           @endif
-                        </td>
-                        <td>{{ $applicant->created_at->format('F j, Y, g:i A') }}</td>
-                     </tr>
-                     @endforeach
-                  </tbody>
+   @foreach($applicants as $applicant)
+   <tr>
+      <td>{{ $applicant->universityArchive->name_en ?? 'N/A' }}</td>
+      <td>{{ $applicant->universityArchive->gender ?? 'N/A' }}</td>
+      <td>{{ $applicant->universityArchive->national_id ?? 'N/A' }}</td>
+      <td>{{ $applicant->email }}</td>
+      <td>
+         @if ($applicant->has_student_profile)
+         <span class="badge badge-success badge-lg">Yes</span>
+         @else
+         <span class="badge badge-danger badge-lg">No</span>
+         @endif
+      </td>
+      <td>{{ $applicant->created_at->format('F j, Y, g:i A') }}</td>
+      <td>
+    <!-- Email Button -->
+    <button type="button" class="btn btn-round btn-primary-rgba" id="email-btn" title="Send Email">
+        <i class="feather icon-mail"></i> 
+    </button>
+    
+    <!-- Reset Password Button -->
+    <button type="button" class="btn btn-round btn-warning-rgba" id="reset-password-btn" title="Reset Password">
+        <i class="feather icon-lock"></i> 
+    </button>
+    
+    <!-- Delete Application Button -->
+    <button type="button" class="btn btn-round btn-danger-rgba" id="delete-btn" title="Delete Application">
+        <i class="feather icon-trash-2"></i> 
+    </button>
+    
+    <!-- More Details Button -->
+    <button type="button" class="btn btn-round btn-info-rgba" id="details-btn" title="More Details">
+        <i class="feather icon-info"></i> 
+    </button>
+</td>
+
+
+
+   </tr>
+   @endforeach
+</tbody>
+
                </table>
             </div>
          </div>
@@ -295,63 +318,12 @@
 <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 <script src="{{ asset('js/custom/custom-table-datatable.js') }}"></script>
 <script src="{{ asset('plugins/sweet-alert2/sweetalert2.min.js') }}"></script>
+<script src="{{ asset('js/pages/applicants.js') }}"></script>
 <script>
-$(document).ready(function() {
-    function exportFile(button, url, filename) {
-        const originalText = button.html(); // Store original button text
-        button.html('<i class="fa fa-spinner fa-spin"></i> Downloading...'); // Change button text and add spinner
-        button.addClass('loading'); // Disable button interactions
-
-        // Get the CSRF token from the meta tag
-        const csrfToken = '{{ csrf_token() }}'; // Correctly embed CSRF token
-
-        // Make the fetch request
-        fetch(url, {
-            method: 'GET', // Use GET request
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest', // Indicate an AJAX request
-                'X-CSRF-Token': csrfToken // Include CSRF token for security
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.blob(); // Get the response as a Blob
-            }
-            throw new Error('Network response was not ok.');
-        })
-        .then(blob => {
-            const url = window.URL.createObjectURL(blob); // Create a URL for the Blob
-            const a = document.createElement('a'); // Create an anchor element
-            a.style.display = 'none';
-            a.href = url;
-            a.download = filename; // Set the desired filename
-            document.body.appendChild(a); // Append the anchor to the body
-            a.click(); // Trigger the download
-            window.URL.revokeObjectURL(url); // Clean up the URL object
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-        })
-        .finally(() => {
-            button.html(originalText); // Reset the button text to original
-            button.removeClass('loading'); // Enable button interactions
-        });
-    }
-
-    // Attach the click event to the dropdown items
-    $('#exportExcel').on('click', function(e) {
-        e.preventDefault(); // Prevent default action
-        exportFile($('#downloadButton'), '{{ route('export.applicants.excel') }}', 'applicants.xlsx');
-    });
-
-    $('#exportPDF').on('click', function(e) {
-        e.preventDefault(); // Prevent default action
-        exportFile($('#downloadButton'), '{{ route('export.applicants.pdf') }}', 'applicants.pdf');
-    });
-});
-
-
-
+    window.routes = {
+        exportExcel: "{{ route('export.applicants.excel') }}",
+        exportPdf: "{{ route('export.applicants.pdf') }}"
+    };
 </script>
 
 @endsection

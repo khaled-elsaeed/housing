@@ -7,6 +7,7 @@
       <meta name="keywords" content="New Mansoura University, university housing, student accommodation, New Mansoura, dorms, student apartments, affordable student housing, university residence, student life, student housing, NMU housing, New Mansoura student living, secure housing for students">
       <meta name="author" content="Themesbox">
       <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+      <meta name="csrf-token" content="{{ csrf_token() }}">
       
       <!-- Dynamic Page Title -->
       <title>NMU Housing - @yield('title', 'Default Title')</title>

@@ -21,7 +21,7 @@ class LoginTest extends TestCase
         // Perform login
         $response = $this->post('/login', [
             'email' => 'khaled@gmail.com',
-            'password' => 'passworda',
+            'password' => 'password',
         ]);
 
         // End time measurement

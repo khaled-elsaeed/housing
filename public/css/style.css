@@ -1052,7 +1052,7 @@ code {
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
   background-color: rgba(0, 128, 255, 0.1);
-  border: 1px solid #66b3ff;
+  border: 1px solid #661e2a;
   color: #8C2F39;
 }
 .example-row .row + .row {
@@ -1060,7 +1060,7 @@ code {
 }
 .example-row.example-row-flex-cols .row {
   min-height: 10rem;
-  background-color: #99ccff;
+  background-color: #8C2F39;
 }
 
 @media (min-width: 576px) {
@@ -27344,32 +27344,33 @@ mark {
   border-color: #661e2a;
 }
 .btn-primary:not(:disabled):not(.disabled).active:focus {
-  box-shadow: 0 0 0 0.2rem #66b3ff;
+  box-shadow: 0 0 0 0.2rem #661e2a;
 }
 .btn-primary:not(:disabled):not(.disabled):active:focus {
-  box-shadow: 0 0 0 0.2rem #66b3ff;
+  box-shadow: 0 0 0 0.2rem #661e2a;
 }
 
 /* -- Primary Button Outline -- */
 .btn-outline-primary {
-  color: #8C2F39;
-  border-color: #8C2F39;
+  color: #8C2F39; /* Text color */
+  border-color: #8C2F39; /* Border color */
 }
+
 .btn-outline-primary:active {
-  background-color: #661e2a;
-  border-color: #661e2a;
+  background-color: #661e2a; /* Active background color */
+  border-color: #661e2a; /* Active border color */
 }
+
 .btn-outline-primary:hover {
-  color: #ffffff;
-  background-color: #661e2a;
-  border-color: #661e2a;
+  color: #ffffff; /* Text color on hover */
+  background-color: #661e2a; /* Background color on hover */
+  border-color: #661e2a; /* Border color on hover */
 }
-.btn-outline-primary.focus {
-  box-shadow: 0 0 0 0.2rem #66b3ff;
+
+.btn-outline-primary.focus, .btn-outline-primary:focus {
+  box-shadow: 0 0 0 0.2rem rgba(140, 47, 57, 0.25); /* Updated focus shadow with custom primary color */
 }
-.btn-outline-primary:focus {
-  box-shadow: 0 0 0 0.2rem #66b3ff;
-}
+
 .btn-outline-primary:visited {
   background-color: #661e2a;
   border-color: #661e2a;
@@ -27383,10 +27384,10 @@ mark {
   border-color: #661e2a;
 }
 .btn-outline-primary:not(:disabled):not(.disabled).active:focus {
-  box-shadow: 0 0 0 0.2rem #66b3ff;
+  box-shadow: 0 0 0 0.2rem #661e2a;
 }
 .btn-outline-primary:not(:disabled):not(.disabled):active:focus {
-  box-shadow: 0 0 0 0.2rem #66b3ff;
+  box-shadow: 0 0 0 0.2rem #661e2a;
 }
 
 .open > .dropdown-toggle.btn-primary {
@@ -27399,14 +27400,14 @@ mark {
   border-color: #661e2a;
 }
 .show > .btn-outline-primary.dropdown-toggle:focus {
-  box-shadow: 0 0 0 0.2rem #66b3ff;
+  box-shadow: 0 0 0 0.2rem #661e2a;
 }
 .show > .btn-primary.dropdown-toggle {
   background-color: #661e2a;
   border-color: #661e2a;
 }
 .show > .btn-primary.dropdown-toggle:focus {
-  box-shadow: 0 0 0 0.2rem #66b3ff;
+  box-shadow: 0 0 0 0.2rem #661e2a;
 }
 
 /* -- Secondary Button -- */
@@ -28255,13 +28256,13 @@ mark {
   color: #ffffff;
   background-color: #661e2a;
   border-color: #661e2a;
-  box-shadow: 0 0 0 0.2rem #66b3ff;
+  box-shadow: 0 0 0 0.2rem #661e2a;
 }
 .btn-default:focus {
   color: #ffffff;
   background-color: #661e2a;
   border-color: #661e2a;
-  box-shadow: 0 0 0 0.2rem #66b3ff;
+  box-shadow: 0 0 0 0.2rem #661e2a;
 }
 .btn-default:visited {
   background-color: #661e2a;
@@ -28276,10 +28277,10 @@ mark {
   border-color: #661e2a;
 }
 .btn-default:not(:disabled):not(.disabled).active:focus {
-  box-shadow: 0 0 0 0.2rem #66b3ff;
+  box-shadow: 0 0 0 0.2rem #661e2a;
 }
 .btn-default:not(:disabled):not(.disabled):active:focus {
-  box-shadow: 0 0 0 0.2rem #66b3ff;
+  box-shadow: 0 0 0 0.2rem #661e2a;
 }
 
 /* -- Default Button Outline -- */
@@ -28297,10 +28298,10 @@ mark {
   border-color: #661e2a;
 }
 .btn-outline-default.focus {
-  box-shadow: 0 0 0 0.2rem #66b3ff;
+  box-shadow: 0 0 0 0.2rem #661e2a;
 }
 .btn-outline-default:focus {
-  box-shadow: 0 0 0 0.2rem #66b3ff;
+  box-shadow: 0 0 0 0.2rem #661e2a;
 }
 .btn-outline-default:visited {
   background-color: #661e2a;
@@ -28315,10 +28316,10 @@ mark {
   border-color: #661e2a;
 }
 .btn-outline-default:not(:disabled):not(.disabled).active:focus {
-  box-shadow: 0 0 0 0.2rem #66b3ff;
+  box-shadow: 0 0 0 0.2rem #661e2a;
 }
 .btn-outline-default:not(:disabled):not(.disabled):active:focus {
-  box-shadow: 0 0 0 0.2rem #66b3ff;
+  box-shadow: 0 0 0 0.2rem #661e2a;
 }
 
 .open > .dropdown-toggle.btn-default {
@@ -28331,14 +28332,14 @@ mark {
   border-color: #661e2a;
 }
 .show > .btn-outline-default.dropdown-toggle:focus {
-  box-shadow: 0 0 0 0.2rem #66b3ff;
+  box-shadow: 0 0 0 0.2rem #661e2a;
 }
 .show > .btn-default.dropdown-toggle {
   background-color: #661e2a;
   border-color: #661e2a;
 }
 .show > .btn-default.dropdown-toggle:focus {
-  box-shadow: 0 0 0 0.2rem #66b3ff;
+  box-shadow: 0 0 0 0.2rem #661e2a;
 }
 
 /* -- Link Buttons -- */
@@ -28358,7 +28359,7 @@ mark {
   background-color: #8C2F39;
   border: none;
   color: #ffffff;
-  box-shadow: 0 0 0 0.2rem #66b3ff;
+  box-shadow: 0 0 0 0.2rem #661e2a;
 }
 
 .btn-secondary-rgba {
@@ -30331,7 +30332,7 @@ canvas {
 .-selected-.datepicker--cell-day.-other-month-,
 .-selected-.datepicker--cell-year.-other-decade- {
   color: #ffffff;
-  background: #99ccff;
+  background: #8C2F39;
 }
 
 .datepicker--time-row {
@@ -31945,7 +31946,7 @@ input[type=range]:focus {
 .page-item .page-link:focus {
   background-color: #d4d8de;
   border-color: rgba(0, 0, 0, 0.03);
-  box-shadow: 0 0 0 0.2rem #99ccff;
+  box-shadow: 0 0 0 0.2rem rgba(140, 47, 57, 0.5);
 }
 .page-item .page-link:hover {
   color: #263a5b;
@@ -33076,7 +33077,7 @@ input[type=range]:focus {
 }
 .swal2-modal .swal2-icon.swal2-question {
   color: #8C2F39;
-  border-color: #66b3ff;
+  border-color: #661e2a;
 }
 .swal2-modal .swal2-icon.swal2-warning {
   color: #ffa800;
@@ -33109,10 +33110,10 @@ input[type=range]:focus {
   background: #8C2F39;
 }
 .swal2-modal .swal2-progresssteps .swal2-progresscircle.swal2-activeprogressstep ~ .swal2-progresscircle {
-  background: #66b3ff;
+  background: #661e2a;
 }
 .swal2-modal .swal2-progresssteps .swal2-progresscircle.swal2-activeprogressstep ~ .swal2-progressline {
-  background: #66b3ff;
+  background: #661e2a;
 }
 .swal2-modal .swal2-progresssteps .swal2-progresscircle {
   background: #8C2F39;

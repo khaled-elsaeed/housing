@@ -48,6 +48,10 @@ class ApplicantController extends Controller
         ));
     }
 
+    public function showInvoicePage(){
+        return view('admin.applicant.invoice');
+    }
+
     // Fetch applicants from the database
     private function getApplicants()
     {
