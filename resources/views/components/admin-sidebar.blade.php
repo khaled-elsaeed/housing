@@ -62,7 +62,7 @@
                 <ul class="vertical-submenu">
                     <li><a href="{{route('admin.housing.building')}}">View Buildings</a></li>
                     <li><a href="{{route('admin.housing.apartment')}}">View Apartments</a></li>
-                    <li><a href="#">View Rooms</a></li>
+                    <li><a href="{{route('admin.housing.room')}}">View Rooms</a></li>
                 </ul>
             </li>
 

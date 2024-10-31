@@ -11,7 +11,7 @@ use App\Http\Controllers\Auth\{
 use App\Http\Controllers\Admin\AdminHomeController;
 use App\Http\Controllers\BuildingController;
 use App\Http\Controllers\ApartmentController;
-
+use App\Http\Controllers\RoomController;
 
 use App\Http\Controllers\Student\StudentHomeController;
 use App\Http\Controllers\ApplicantController;
@@ -61,3 +61,4 @@ Route::get('/export-applicants-pdf', [ApplicantController::class, 'downloadPDF']
 
 Route::get('/admin/housing/building',[BuildingController::class,'index'])->name('admin.housing.building');
 Route::get('/admin/housing/apartment',[ApartmentController::class,'index'])->name('admin.housing.apartment');
+Route::get('/admin/housing/room',[RoomController::class,'index'])->name('admin.housing.room');

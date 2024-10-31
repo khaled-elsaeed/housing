@@ -18,8 +18,9 @@ return new class extends Migration
             $table->tinyInteger('full_occupied')->default(0); // Full occupancy flag
             $table->integer('max_occupancy'); // Maximum number of occupants
             $table->integer('current_occupancy')->default(0); // Current occupancy count
-            $table->enum('status', ['active', 'inactive', 'under_maintenance'])->default('active'); // Status
-            $table->enum('type', ['accommodation', 'office', 'utility'])->default('accommodation'); // Type of room
+            $table->enum('status', ['active', 'inactive', 'under_maintenance'])->default('active'); // Status of the room
+            $table->enum('purpose', ['accommodation', 'office', 'utility'])->default('accommodation'); // Purpose of the room
+            $table->enum('type', ['single', 'double'])->default('single'); // Configuration of the room
             $table->string('description', 255)->nullable(); // Description of the room
             $table->timestamps(); // Created at and updated at
         });

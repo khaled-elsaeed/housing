@@ -1,7 +1,7 @@
 $(document).ready(function() {
     // Initialize DataTable
     const table = $('#default-datatable').DataTable({
-        "order": [[3, "desc"]],
+        "order": [[0, "asc"]],
         responsive: true
     });
 
