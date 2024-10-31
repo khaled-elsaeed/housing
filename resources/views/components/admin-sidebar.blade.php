@@ -28,14 +28,26 @@
             <!-- Applicants Link -->
             <li>
                 <a href="javaScript:void();">
-                    <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="applicants">
+                    <img src="{{ asset('images/svg-icon/layouts.svg') }}" class="img-fluid" alt="applicants">
                     <span>Applicants</span>
                     <i class="feather icon-chevron-right pull-right"></i>
                 </a>
                 <ul class="vertical-submenu">
-                    <li><a href="{{ route('admin.applicant.view') }}">View Applicants</a></li>
-                    <li><a href="#">Add Applicant</a></li>
-                    <li><a href="{{ route('admin.applicant.invoice') }}">Invoices</a></li>
+                    <li><a href="{{ route('admin.applicant.view') }}">Applicants</a></li>
+                    <li><a href="{{ route('admin.applicant.invoice') }}">Documents</a></li>
+                </ul>
+            </li>
+
+            <!-- Applicants Link -->
+            <li>
+                <a href="javaScript:void();">
+                    <img src="{{ asset('images/svg-icon/basic.svg') }}" class="img-fluid" alt="applicants">
+                    <span>Reservations</span>
+                    <i class="feather icon-chevron-right pull-right"></i>
+                </a>
+                <ul class="vertical-submenu">
+                <li><a href="{{ route('admin.reservation.criteria') }}">Criteria</a></li>
+                    <li><a href="{{ route('admin.applicant.view') }}">Reservation</a></li>
                 </ul>
             </li>
 
