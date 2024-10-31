@@ -25,4 +25,6 @@ $(document).ready(function() {
     $('#searchBox').on('keyup', function() {
         table.search(this.value).draw(); // Use the DataTable API to search
     });
+
+    
 });

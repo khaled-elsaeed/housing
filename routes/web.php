@@ -9,6 +9,10 @@ use App\Http\Controllers\Auth\{
     LogoutController
 };
 use App\Http\Controllers\Admin\AdminHomeController;
+use App\Http\Controllers\BuildingController;
+use App\Http\Controllers\ApartmentController;
+
+
 use App\Http\Controllers\Student\StudentHomeController;
 use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\NotificationController;
@@ -55,3 +59,5 @@ Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 Route::get('/export-applicants-excel', [ApplicantController::class, 'downloadExcel'])->name('export.applicants.excel');
 Route::get('/export-applicants-pdf', [ApplicantController::class, 'downloadPDF'])->name('export.applicants.pdf'); // Ensure this matches the fetch URL
 
+Route::get('/admin/housing/building',[BuildingController::class,'index'])->name('admin.housing.building');
+Route::get('/admin/housing/apartment',[ApartmentController::class,'index'])->name('admin.housing.apartment');

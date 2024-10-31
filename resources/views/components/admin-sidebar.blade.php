@@ -1,6 +1,6 @@
 <!-- Start Sidebar -->
 <div class="sidebar">
-    
+
     <!-- Start Logobar -->
     <div class="logobar">
         <a href="{{ route('admin.home') }}" class="logo logo-large">
@@ -33,13 +33,38 @@
                     <i class="feather icon-chevron-right pull-right"></i>
                 </a>
                 <ul class="vertical-submenu">
-                                <li><a href="{{ route('admin.applicant.view') }}">View Applicants</a></li>
-                                <li><a href="{{ route('admin.applicant.invoice') }}">Invoices</a></li>
-
-                            </ul>
+                    <li><a href="{{ route('admin.applicant.view') }}">View Applicants</a></li>
+                    <li><a href="#">Add Applicant</a></li>
+                    <li><a href="{{ route('admin.applicant.invoice') }}">Invoices</a></li>
+                </ul>
             </li>
 
-            
+            <!-- Residents Link -->
+            <li>
+                <a href="javaScript:void();">
+                    <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="residents">
+                    <span>Residents</span>
+                    <i class="feather icon-chevron-right pull-right"></i>
+                </a>
+                <ul class="vertical-submenu">
+                    <li><a href="#">View Residents</a></li>
+                    <li><a href="#">Add Resident</a></li>
+                </ul>
+            </li>
+
+            <!-- Housing Management Link -->
+            <li>
+                <a href="javaScript:void();">
+                    <img src="{{ asset('images/svg-icon/components.svg') }}" class="img-fluid" alt="housing management">
+                    <span>Housing</span>
+                    <i class="feather icon-chevron-right pull-right"></i>
+                </a>
+                <ul class="vertical-submenu">
+                    <li><a href="{{route('admin.housing.building')}}">View Buildings</a></li>
+                    <li><a href="{{route('admin.housing.apartment')}}">View Apartments</a></li>
+                    <li><a href="#">View Rooms</a></li>
+                </ul>
+            </li>
 
             <!-- Profile Link -->
             <li>
