@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Room extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'apartment_id',
         'number',
@@ -16,11 +17,18 @@ class Room extends Model
         'current_occupancy',
         'status',
         'purpose', // Include the purpose field
-        'type',   // Include the type field
+        'type',    // Include the type field
         'description',
     ];
-    
-    public function Apartment(){
+
+    public function apartment()
+    {
         return $this->belongsTo(Apartment::class);
+    }
+
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
     }
 }

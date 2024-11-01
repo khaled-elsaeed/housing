@@ -21,7 +21,8 @@ class Building extends Model
     ];
 
     
-    public function apartment()
+    
+    public function apartments()
     {
         return $this->hasMany(Apartment::class);
     }

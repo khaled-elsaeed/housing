@@ -43,7 +43,7 @@ Route::post('password/reset/{token}', [PasswordResetController::class, 'resetPas
 // Protected Routes
 Route::middleware(['auth', NoCache::class])->group(function () {
     // Admin Routes
-    Route::get('/admin/home', [AdminHomeController::class, 'showHomePage'])->name('admin.home');
+    Route::get('/admin/home', [AdminHomeController::class, 'index'])->name('admin.home');
     Route::get('/admin/applicant', [ApplicantController::class, 'showApplicantPage'])->name('admin.applicant.view');
     Route::get('/admin/applicant/invoice', [ApplicantController::class, 'showInvoicePage'])->name('admin.applicant.invoice');
 

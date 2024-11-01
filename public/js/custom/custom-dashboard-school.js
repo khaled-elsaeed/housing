@@ -6,7 +6,7 @@
 "use strict";
 $(document).ready(function() {    
   /* -- Course Slider -- */
-$('.course-slider').slick({
+$('.building-slider').slick({
     arrows: true,
     dots: false,
     infinite: true,

@@ -29826,21 +29826,21 @@ canvas {
   background-image: linear-gradient(180deg, #ffffff 0, #e5f2ff 100%);
 }
 
-.course-slider .slick-slide img {
+.building-slider .slick-slide img {
   display: inline-block;
   width: 100px;
 }
-.course-slider > i {
+.building-slider > i {
   position: absolute;
   top: -55px;
   right: -5px;
   font-size: 20px;
   z-index: 9;
 }
-.course-slider > i:first-child {
+.building-slider > i:first-child {
   right: 25px;
 }
-.course-slider > i:hover {
+.building-slider > i:hover {
   color: #8C2F39;
 }
 
