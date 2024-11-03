@@ -47,7 +47,7 @@
                 </a>
                 <ul class="vertical-submenu">
                 <li><a href="{{ route('admin.reservation.criteria') }}">Criteria</a></li>
-                    <li><a href="{{ route('admin.applicant.view') }}">Reservation</a></li>
+                    <li><a href="#">Reservation</a></li>
                 </ul>
             </li>
 
@@ -130,6 +130,12 @@
             // Append the form to the body and submit it
             document.body.appendChild(form);
             form.submit();
+
+            // Prevent the user from navigating back to the dashboard
+            history.pushState(null, document.title, location.href);
         }
+
+        
     }
+
 </script>

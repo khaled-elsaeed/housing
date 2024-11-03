@@ -17,7 +17,7 @@ use App\Http\Controllers\Student\StudentHomeController;
 use App\Http\Controllers\ApplicantController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\CriteriaController;
-use App\Http\Middleware\NoCache;
+
 
 // Welcome Route
 Route::get('/welcome', function () {
@@ -41,7 +41,7 @@ Route::get('password/reset/{token}', [PasswordResetController::class, 'showUpdat
 Route::post('password/reset/{token}', [PasswordResetController::class, 'resetPassword'])->name('password.update');
 
 // Protected Routes
-Route::middleware(['auth', NoCache::class])->group(function () {
+Route::middleware(['auth'])->group(function () {
     // Admin Routes
     Route::get('/admin/home', [AdminHomeController::class, 'index'])->name('admin.home');
     Route::get('/admin/applicant', [ApplicantController::class, 'showApplicantPage'])->name('admin.applicant.view');
