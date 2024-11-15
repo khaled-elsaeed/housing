@@ -31,4 +31,9 @@ class Student extends Model
         return $this->belongsToMany(Room::class, 'reservations'); // Many-to-Many relationship via the reservations table
     }
 
+    public function StudentPermissionRequests()
+    {
+        return $this->hasMany(StudentPermissionRequest::class, 'student_id');  // A student can have many requests
+    }
+
 }

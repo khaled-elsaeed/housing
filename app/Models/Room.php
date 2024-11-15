@@ -16,8 +16,8 @@ class Room extends Model
         'max_occupancy',
         'current_occupancy',
         'status',
-        'purpose', // Include the purpose field
-        'type',    // Include the type field
+        'purpose',
+        'type',  
         'description',
     ];
 

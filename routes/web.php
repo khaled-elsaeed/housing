@@ -10,6 +10,8 @@ use App\Http\Controllers\Auth\{
 };
 use App\Http\Controllers\Admin\AdminHomeController;
 use App\Http\Controllers\BuildingController;
+use App\Http\Controllers\StudentPermissionController;
+
 use App\Http\Controllers\ApartmentController;
 use App\Http\Controllers\RoomController;
 
@@ -59,8 +61,21 @@ Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 // Export Routes
 Route::get('/export-applicants-excel', [ApplicantController::class, 'downloadExcel'])->name('export.applicants.excel');
 Route::get('/export-applicants-pdf', [ApplicantController::class, 'downloadPDF'])->name('export.applicants.pdf'); // Ensure this matches the fetch URL
+// In routes/web.php
+
+Route::get('/admin/buildings/create', [BuildingsController::class, 'create'])->name('admin.buildings.store');
 
 Route::get('/admin/housing/building',[BuildingController::class,'index'])->name('admin.housing.building');
 Route::get('/admin/housing/apartment',[ApartmentController::class,'index'])->name('admin.housing.apartment');
 Route::get('/admin/housing/room',[RoomController::class,'index'])->name('admin.housing.room');
 Route::get('/admin/reservation/criteria',[CriteriaController::class,'index'])->name('admin.reservation.criteria');
+
+// Routes for students
+Route::get('/permissions', [StudentPermissionController::class, 'index'])->name('admin.student-permissions.index');
+Route::get('/permissions/{permission}/request', [StudentPermissionController::class, 'createRequest'])->name('admin.permissions.createRequest');
+Route::post('/permissions/{permission}/request', [StudentPermissionController::class, 'storeRequest'])->name('admin.permissions.storeRequest');
+
+Route::get('/permissions/manage', [StudentPermissionController::class, 'manage'])->name('admin.student-permissions.manage');
+Route::post('/permissions/store', [StudentPermissionController::class, 'store'])->name('admin.student-permissions.store');
+Route::post('/permissions/update/{id}', [StudentPermissionController::class, 'update'])->name('admin.student-permissions.update');
+Route::delete('/permissions/destroy/{id}', [StudentPermissionController::class, 'destroy'])->name('admin.student-permissions.destroy');
