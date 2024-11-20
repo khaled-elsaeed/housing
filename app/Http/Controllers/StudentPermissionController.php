@@ -41,40 +41,66 @@ class StudentPermissionController extends Controller
 
     public function manage()
     {
-        $permissions = StudentPermission::all();
-        return view('admin.student-permissions.manage', compact('permissions'));
+        // Fetching data needed for the dashboard metrics
+        $permissions = StudentPermission::get();
+        $totalPermissions = $permissions->count();
+        $approvedPermissionsCount = $permissions->where('status', 'approved')->count();
+        $pendingPermissionsCount = $permissions->where('status', 'pending')->count();
+        $deniedPermissionsCount = $permissions->where('status', 'denied')->count();
+        $lateArrivalPermissionsCount = $permissions->where('type', 'late_arrival')->count();
+        $extendedStayPermissionsCount = $permissions->where('type', 'extended_stay')->count();
+
+        // Pass data to the view
+        return view('admin.student-permissions.manage', compact(
+            'permissions',
+            'totalPermissions',
+            'approvedPermissionsCount',
+            'pendingPermissionsCount',
+            'deniedPermissionsCount',
+            'lateArrivalPermissionsCount',
+            'extendedStayPermissionsCount'
+        ));
     }
-
-
 
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
-        ]);
-
-        StudentPermission::create($request->all());
-        return back()->with('success', 'Permission created successfully.');
+        try {
+            $permission = StudentPermission::create($request->all());
+    
+            // Respond with success message
+            return response()->json(['success' => true, 'message' => 'Permission created successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to create permission'], 500);
+        }
     }
+    
 
+    public function edit($id)
+    {
+        $permission = StudentPermission::findOrFail($id);
+        return response()->json($permission);  // Return permission data for AJAX
+    }
+    
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
-        ]);
-
-        $permission = StudentPermission::findOrFail($id);
-        $permission->update($request->all());
-        return back()->with('success', 'Permission updated successfully.');
+        try {
+            $permission = StudentPermission::findOrFail($id);
+            $permission->update($request->all());
+    
+            // Respond with success message
+            return response()->json(['success' => true, 'message' => 'Permission updated successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to update permission'], 500);
+        }
     }
-
+    
+    
     public function destroy($id)
     {
         $permission = StudentPermission::findOrFail($id);
-        $permission->delete();
-        return back()->with('success', 'Permission deleted successfully.');
+        $permission->delete();  // Delete the permission
+        return response()->json(['success' => true]);  // Return success message
     }
+    
 }

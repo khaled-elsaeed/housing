@@ -68,7 +68,8 @@
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profilelink">
                                     <div class="dropdown-item">
                                         <div class="profilename">
-                                            <h5>{{ auth()->user()->username_en }}</h5>
+                                        <h5>{{ auth()->user()->username_en }}</h5>
+
                                         </div>
                                     </div>
                                     <div class="userbox">

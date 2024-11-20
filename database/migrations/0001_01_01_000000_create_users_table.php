@@ -15,17 +15,22 @@ return new class extends Migration
             $table->id();
             $table->string('email', 100)->unique();
             $table->string('password');
-            $table->string('username_ar', 100);
-            $table->string('username_en', 100);
+            $table->string('first_name_ar', 100)->nullable();
+            $table->string('last_name_ar', 100)->nullable();
+            $table->string('first_name_en', 100)->nullable();
+            $table->string('last_name_en', 100)->nullable();
             $table->string('activation_token')->nullable();
             $table->timestamp('activation_expires_at')->nullable();
-            $table->boolean('is_active')->default(0);             $table->string('profile_picture', 255)->nullable(); 
+            $table->boolean('is_active')->default(0);
+            $table->string('profile_picture', 255)->nullable(); 
             $table->timestamp('last_login')->nullable();
-            $table->boolean('is_verified')->default(0);             $table->timestamp('email_verified_at')->nullable();
+            $table->boolean('is_verified')->default(0);
+            $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();
         });
+        
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->id(); 

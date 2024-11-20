@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('reservation_id'); // Primary key
 
             // Foreign key constraints
-            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('room_id')->constrained('rooms')->restrictOnDelete()->cascadeOnUpdate();
 
             // Reservation details

@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('user_national_link', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('university_Archive_id')->unique()->constrained('university_Archive')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('university_Archive_id')->unique()->constrained('university_Archives')->onDelete('cascade')->onUpdate('cascade');
             $table->string('national_id')->unique();
             $table->timestamps();
         });

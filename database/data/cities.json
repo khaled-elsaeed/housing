@@ -5,6 +5,11 @@
        "name_en":"15 May"
     },
     {
+      "governorate_id":"1",
+      "name_ar":"القاهرة",
+      "name_en":"Cairo"
+   },
+    {
        "governorate_id":"1",
        "name_ar":"الازبكية",
        "name_en":"Al Azbakeyah"
@@ -66,7 +71,7 @@
     },
     {
        "governorate_id":"1",
-       "name_ar":"مدينة الشروق",
+       "name_ar":"الشروق",
        "name_en":"Shorouk"
     },
     {
@@ -381,7 +386,7 @@
     },
     {
        "governorate_id":"2",
-       "name_ar":"امبابة",
+       "name_ar":"إمبابة",
        "name_en":"Imbaba"
     },
     {
@@ -465,6 +470,11 @@
        "name_en":"Abu Qir"
     },
     {
+      "governorate_id":"3",
+      "name_ar":"الأسكندرية",
+      "name_en":"Alexandria"
+   },
+    {
        "governorate_id":"3",
        "name_ar":"الابراهيمية",
        "name_en":"Al Ibrahimeyah"
@@ -479,6 +489,11 @@
        "name_ar":"الانفوشى",
        "name_en":"Anfoushi"
     },
+    {
+      "governorate_id":"3",
+      "name_ar":"أبو صير",
+      "name_en":"Abusir"
+   },
     {
        "governorate_id":"3",
        "name_ar":"الدخيلة",
@@ -954,6 +969,7 @@
        "name_ar":"السيالة",
        "name_en":"Sayala"
     },
+    
     {
        "governorate_id":"8",
        "name_ar":"طنطا",

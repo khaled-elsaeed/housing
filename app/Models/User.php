@@ -14,8 +14,10 @@ class User extends Authenticatable
 
     protected $fillable = [
         'email',
-        'username_ar',
-        'username_en',
+       'first_name_en',
+        'last_name_en',
+        'first_name_ar',
+        'last_name_ar',
         'password',
         'is_active',
         'profile_picture',
@@ -108,6 +110,12 @@ class User extends Authenticatable
     public function isOldStudent(User $user): bool
     {
         return !$this->isNewComerStudent($user);
+    }
+
+    // Define an accessor for 'username_en' (concatenation of first_name_en and last_name_en)
+    public function getUsernameEnAttribute()
+    {
+        return $this->first_name_en . ' ' . $this->last_name_en;
     }
     
 }

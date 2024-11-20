@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('student_permission_requests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')->constrained('students')->onDelete('cascade');  // Link to the student (students table)
+            $table->foreignId('user_id')->constrained()->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('student_permission_id')->constrained('student_permissions')->onDelete('cascade');  // Link to the dorm permission
             $table->string('status')->default('pending');  // Status: 'pending', 'approved', 'denied'
             $table->text('reason')->nullable();  // Reason for the request

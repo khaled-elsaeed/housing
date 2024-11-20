@@ -242,10 +242,10 @@
                   <thead>
                      <tr>
                         <th>Name</th>
-                        <th>Gender</th>
-                        <th>National ID</th>
+                        <!-- <th>Gender</th>
+                        <th>National ID</th> -->
                         <th>Email</th>
-                        <th>Profile Completed</th>
+                        <!-- <th>Profile Completed</th> -->
                         <th>Registration Date</th>
                         <th>Actions</th>
                      </tr>
@@ -253,17 +253,17 @@
                   <tbody>
    @foreach($applicants as $applicant)
    <tr>
-      <td>{{ $applicant->universityArchive->name_en ?? 'N/A' }}</td>
-      <td>{{ $applicant->universityArchive->gender ?? 'N/A' }}</td>
-      <td>{{ $applicant->universityArchive->national_id ?? 'N/A' }}</td>
+      <td>{{ $applicant->username_en ?? 'N/A' }}</td>
+      <!-- <td>{{ $applicant->universityArchive->gender ?? 'N/A' }}</td>
+      <td>{{ $applicant->universityArchive->national_id ?? 'N/A' }}</td> -->
       <td>{{ $applicant->email }}</td>
-      <td>
+      <!-- <td>
          @if ($applicant->has_student_profile)
          <span class="badge badge-success badge-lg">Yes</span>
          @else
          <span class="badge badge-danger badge-lg">No</span>
          @endif
-      </td>
+      </td> -->
       <td>{{ $applicant->created_at->format('F j, Y, g:i A') }}</td>
       <td>
     <!-- Email Button -->

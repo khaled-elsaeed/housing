@@ -1,253 +1,253 @@
 [
     {
-        "name_en": "Entrepreneurship & Innovation Program",
-        "name_ar": "برنامج ريادة الأعمال والابتكار",
+        "name_en": "Entrepreneurship & Innovation",
+        "name_ar": "ريادة الأعمال والابتكار",
         "duration_years": 4,
         "faculty_id": 1
     },
     {
-        "name_en": "Management Program",
-        "name_ar": "برنامج الإدارة",
+        "name_en": "Management",
+        "name_ar": "الإدارة",
         "duration_years": 4,
         "faculty_id": 1
     },
     {
-        "name_en": "Finance & Investment Program",
-        "name_ar": "برنامج المالية والاستثمار",
+        "name_en": "Finance & Investment",
+        "name_ar": "المالية والاستثمار",
         "duration_years": 4,
         "faculty_id": 1
     },
     {
-        "name_en": "Accounting & Information Systems Program",
-        "name_ar": "برنامج المحاسبة ونظم المعلومات",
+        "name_en": "Accounting & Information Systems",
+        "name_ar": "المحاسبة ونظم المعلومات",
         "duration_years": 4,
         "faculty_id": 1
     },
     {
-        "name_en": "Marketing Program",
-        "name_ar": "برنامج التسويق",
+        "name_en": "Marketing",
+        "name_ar": "التسويق",
         "duration_years": 4,
         "faculty_id": 1
     },
     {
-        "name_en": "Logistics & Supply-Chains Management Program",
-        "name_ar": "برنامج اللوجستيات وإدارة سلاسل التوريد",
+        "name_en": "Logistics & Supply-Chains Management",
+        "name_ar": "اللوجستيات وإدارة سلاسل التوريد",
         "duration_years": 4,
         "faculty_id": 1
     },
     {
-        "name_en": "Economics & Political Sciences Program",
-        "name_ar": "برنامج الاقتصاد والعلوم السياسية",
+        "name_en": "Economics & Political Sciences",
+        "name_ar": "الاقتصاد والعلوم السياسية",
         "duration_years": 4,
         "faculty_id": 1
     },
     {
-        "name_en": "Law Program",
-        "name_ar": "برنامج القانون",
+        "name_en": "Law",
+        "name_ar": "القانون",
         "duration_years": 4,
         "faculty_id": 2
     },
     {
-        "name_en": "Media Engineering & Technology Program",
-        "name_ar": "برنامج هندسة الإعلام والتكنولوجيا",
+        "name_en": "Media Engineering & Technology",
+        "name_ar": "هندسة الإعلام والتكنولوجيا",
         "duration_years": 4,
         "faculty_id": 3
     },
     {
-        "name_en": "Engineering & Technology Implementation of Civil Works Program",
-        "name_ar": "برنامج تنفيذ الأعمال المدنية في الهندسة والتكنولوجيا",
+        "name_en": "Engineering & Technology Implementation of Civil Works",
+        "name_ar": "هندسة وتكنولوجيا تنفيذ الأعمال المدنية",
         "duration_years": 4,
         "faculty_id": 3
     },
     {
-        "name_en": "Product Development Engineering Program",
-        "name_ar": "برنامج هندسة تطوير المنتجات",
+        "name_en": "Product Development Engineering",
+        "name_ar": "هندسة تطوير المنتجات",
         "duration_years": 4,
         "faculty_id": 3
     },
     {
-        "name_en": "Aeronautical & Aerospace Engineering Program",
-        "name_ar": "برنامج هندسة الطيران والفضاء",
+        "name_en": "Aeronautical & Aerospace Engineering",
+        "name_ar": "هندسة الطيران والفضاء",
         "duration_years": 4,
         "faculty_id": 3
     },
     {
-        "name_en": "Petroleum & Gas Engineering Program",
-        "name_ar": "برنامج هندسة البترول والغاز",
+        "name_en": "Petroleum & Gas Engineering",
+        "name_ar": "هندسة البترول والغاز",
         "duration_years": 4,
         "faculty_id": 3
     },
     {
-        "name_en": "Environmental Architecture & Technology Program",
-        "name_ar": "برنامج العمارة والتكنولوجيا البيئية",
+        "name_en": "Environmental Architecture & Technology",
+        "name_ar": "العمارة البيئية وتكنولوجيا البناء",
         "duration_years": 4,
         "faculty_id": 3
     },
     {
-        "name_en": "Mechatronics Engineering Program",
-        "name_ar": "برنامج هندسة الميكاترونيك",
+        "name_en": "Mechatronics Engineering",
+        "name_ar": "هندسة الميكاترونيك",
         "duration_years": 4,
         "faculty_id": 3
     },
     {
-        "name_en": "Energy Engineering Program",
-        "name_ar": "برنامج هندسة الطاقة",
+        "name_en": "Energy Engineering",
+        "name_ar": "هندسة الطاقة",
         "duration_years": 4,
         "faculty_id": 3
     },
     {
-        "name_en": "Biomedical Engineering Program",
-        "name_ar": "برنامج الهندسة الطبية الحيوية",
+        "name_en": "Biomedical Engineering",
+        "name_ar": "الهندسة الطبية الحيوية",
         "duration_years": 4,
         "faculty_id": 3
     },
     {
-        "name_en": "Computer Engineering Program",
-        "name_ar": "برنامج هندسة الحاسب",
+        "name_en": "Computer Engineering",
+        "name_ar": "هندسة الحاسب",
         "duration_years": 4,
         "faculty_id": 4
     },
     {
-        "name_en": "Artificial Intelligence Engineering Program",
-        "name_ar": "برنامج هندسة الذكاء الاصطناعي",
+        "name_en": "Artificial Intelligence Engineering",
+        "name_ar": "هندسة الذكاء الاصطناعي",
         "duration_years": 4,
         "faculty_id": 4
     },
     {
-        "name_en": "Computer Science Program",
-        "name_ar": "برنامج علوم الحاسب",
+        "name_en": "Computer Science",
+        "name_ar": "علوم الحاسب",
         "duration_years": 4,
         "faculty_id": 4
     },
     {
-        "name_en": "Artificial Intelligence Science Program",
-        "name_ar": "برنامج علوم الذكاء الاصطناعي",
+        "name_en": "Artificial Intelligence Science",
+        "name_ar": "علوم الذكاء الاصطناعي",
         "duration_years": 4,
         "faculty_id": 4
     },
     {
-        "name_en": "Biomedical Informatics Program",
-        "name_ar": "برنامج المعلوماتية الطبية الحيوية",
+        "name_en": "Biomedical Informatics",
+        "name_ar": "المعلوماتية الطبية الحيوية",
         "duration_years": 4,
         "faculty_id": 4
     },
     {
-        "name_en": "Industrial Chemistry Program",
-        "name_ar": "برنامج الكيمياء الصناعية",
+        "name_en": "Industrial Chemistry",
+        "name_ar": "الكيمياء الصناعية",
         "duration_years": 4,
         "faculty_id": 5
     },
     {
-        "name_en": "Molecular Biology Program",
-        "name_ar": "برنامج البيولوجيا الجزيئية",
+        "name_en": "Molecular Biology",
+        "name_ar": "البيولوجيا الجزيئية",
         "duration_years": 4,
         "faculty_id": 5
     },
     {
-        "name_en": "Forensic Science Program",
-        "name_ar": "برنامج العلوم الجنائية",
+        "name_en": "Forensic Science",
+        "name_ar": "علوم الأدلة الجنائية",
         "duration_years": 4,
         "faculty_id": 5
     },
     {
-        "name_en": "Molecular Biotechnology Program",
-        "name_ar": "برنامج البيوتكنولوجيا الجزيئية",
+        "name_en": "Molecular Biotechnology",
+        "name_ar": "التكنولوجيا الحيوية",
         "duration_years": 4,
         "faculty_id": 5
     },
     {
-        "name_en": "Medicine & Surgery Program",
-        "name_ar": "برنامج الطب والجراحة",
+        "name_en": "Medicine & Surgery",
+        "name_ar": "الطب والجراحة",
         "duration_years": 6,
         "faculty_id": 6
     },
     {
-        "name_en": "Dentistry Program",
-        "name_ar": "برنامج طب الأسنان",
+        "name_en": "Dentistry",
+        "name_ar": "طب الأسنان",
         "duration_years": 6,
         "faculty_id": 7
     },
     {
-        "name_en": "Doctor Of Pharmacy (PharmD) Program",
-        "name_ar": "برنامج دكتور صيدلة (PharmD)",
+        "name_en": "Pharm-D Clinical",
+        "name_ar": "فارم دي كلينيكال",
         "duration_years": 4,
         "faculty_id": 8
     },
     {
-        "name_en": "Medical Laboratory Technology Program",
-        "name_ar": "برنامج تكنولوجيا المختبرات الطبية",
+        "name_en": "Medical Laboratory Technology",
+        "name_ar": "تكنولوجيا المختبرات الطبية",
         "duration_years": 4,
         "faculty_id": 9
     },
     {
-        "name_en": "Technology of Radiology & Medical Imaging Program",
-        "name_ar": "برنامج تكنولوجيا الأشعة والتصوير الطبي",
+        "name_en": "Technology of Radiology & Medical Imaging",
+        "name_ar": "تكنولوجيا الأشعة والتصوير الطبي",
         "duration_years": 4,
         "faculty_id": 9
     },
     {
-        "name_en": "Technology of Prosthetic Dentistry Program",
-        "name_ar": "برنامج تكنولوجيا الأطراف الصناعية لطب الأسنان",
+        "name_en": "Technology of Prosthetic Dentistry",
+        "name_ar": "تكنولوجيا تصنيع الأسنان",
         "duration_years": 4,
         "faculty_id": 9
     },
     {
-        "name_en": "Technology of Anesthesia & Intensive Care Program",
-        "name_ar": "برنامج تكنولوجيا التخدير والعناية المركزة",
+        "name_en": "Technology of Anesthesia & Intensive Care",
+        "name_ar": "تكنولوجيا التخدير والعناية المركزة",
         "duration_years": 4,
         "faculty_id": 9
     },
     {
-        "name_en": "Technology of Respiratory Therapy Program",
-        "name_ar": "برنامج تكنولوجيا العلاج التنفسي",
+        "name_en": "Technology of Respiratory Therapy",
+        "name_ar": "تكنولوجيا العلاج التنفسي",
         "duration_years": 4,
         "faculty_id": 9
     },
     {
-        "name_en": "Technology of Prosthetic & Orthotic Devices Program",
-        "name_ar": "برنامج تكنولوجيا الأطراف الصناعية والأجهزة التقويمية",
+        "name_en": "Technology of Prosthetic & Orthotic Devices",
+        "name_ar": "تكنولوجيا الأطراف الصناعية والأجهزة التقويمية",
         "duration_years": 4,
         "faculty_id": 9
     },
     {
-        "name_en": "Occupational Therapy Program",
-        "name_ar": "برنامج العلاج الوظيفي",
+        "name_en": "Occupational Therapy",
+        "name_ar": "العلاج الوظيفي",
         "duration_years": 4,
         "faculty_id": 9
     },
     {
-        "name_en": "Technology of Optics Program",
-        "name_ar": "برنامج تكنولوجيا البصريات",
+        "name_en": "Technology of Optics",
+        "name_ar": "تكنولوجيا البصريات",
         "duration_years": 4,
         "faculty_id": 9
     },
     {
-        "name_en": "Nursing Science Program",
-        "name_ar": "برنامج علوم التمريض",
+        "name_en": "Nursing Science",
+        "name_ar": "علوم التمريض",
         "duration_years": 4,
         "faculty_id": 10
     },
     {
-        "name_en": "Textile Material Science & Engineering Program",
-        "name_ar": "برنامج علوم وهندسة مواد النسيج",
+        "name_en": "Textile Material Science & Engineering",
+        "name_ar": "علوم وهندسة مواد النسيج",
         "duration_years": 4,
         "faculty_id": 11
     },
     {
-        "name_en": "Textile Polymer & Color Chemistry Engineering Program",
-        "name_ar": "برنامج هندسة البوليمرات والألوان في النسيج",
+        "name_en": "Textile Polymer & Color Chemistry Engineering",
+        "name_ar": "هندسة البوليمرات والألوان في النسيج",
         "duration_years": 4,
         "faculty_id": 11
     },
     {
-        "name_en": "Textile & Apparel Management & Merchandising Program",
-        "name_ar": "برنامج إدارة النسيج والأزياء والترويج",
+        "name_en": "Textile & Apparel Management & Merchandising",
+        "name_ar": "إدارة النسيج والأزياء والترويج",
         "duration_years": 4,
         "faculty_id": 11
     },
     {
-        "name_en": "Textile & Fashion Design Program",
-        "name_ar": "برنامج تصميم النسيج والأزياء",
+        "name_en": "Textile & Fashion Design",
+        "name_ar": "تصميم النسيج والأزياء",
         "duration_years": 4,
         "faculty_id": 11
     },

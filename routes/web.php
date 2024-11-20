@@ -77,5 +77,11 @@ Route::post('/permissions/{permission}/request', [StudentPermissionController::c
 
 Route::get('/permissions/manage', [StudentPermissionController::class, 'manage'])->name('admin.student-permissions.manage');
 Route::post('/permissions/store', [StudentPermissionController::class, 'store'])->name('admin.student-permissions.store');
-Route::post('/permissions/update/{id}', [StudentPermissionController::class, 'update'])->name('admin.student-permissions.update');
-Route::delete('/permissions/destroy/{id}', [StudentPermissionController::class, 'destroy'])->name('admin.student-permissions.destroy');
+// Show edit form for permission
+Route::get('/admin/student-permissions/{permission}/edit', [StudentPermissionController::class, 'edit'])->name('admin.student-permissions.edit');
+
+// Update permission
+Route::put('/admin/student-permissions/{permission}', [StudentPermissionController::class, 'update'])->name('admin.student-permissions.update');
+
+// Delete permission
+Route::delete('/admin/student-permissions/{permission}', [StudentPermissionController::class, 'destroy'])->name('admin.student-permissions.destroy');
