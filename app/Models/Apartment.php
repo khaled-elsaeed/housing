@@ -19,7 +19,6 @@ class Apartment extends Model
         'description',
     ];
 
-    // Define the relationship with the Building model
     public function building()
     {
         return $this->belongsTo(Building::class);

@@ -26,7 +26,7 @@ class UserNationalLink extends Model
     // Define the relationship to UniversityArchive
     public function universityArchive()
     {
-        return $this->belongsTo(UniversityArchive::class, 'university_Archive_id');
+        return $this->belongsTo(UniversityArchive::class);
     }
 
     public static function findUserByNationalID(string $nationalId): ?self

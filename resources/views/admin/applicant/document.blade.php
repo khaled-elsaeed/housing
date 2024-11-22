@@ -29,7 +29,7 @@
                         <span class="action-icon badge badge-primary-inverse me-0"><i class="feather icon-user"></i></span>
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
-                        <h5 class="card-title font-14">Applicants</h5>
+                        <h5 class="card-title font-14">Student Upload Documents</h5>
                         <h4 class="mb-0">{{ $totalApplicants }}</h4>
                      </div>
                   </div>
@@ -45,7 +45,7 @@
                   </div>
                   <div class="row align-items-center">
                      <div class="col-9 text-start">
-                        <span class="font-13">Preliminary Accepted</span>
+                        <span class="font-13">Accepted</span>
                      </div>
                      <div class="col-3 text-end">
                         <span class="font-13"><i class="feather feather icon-check-circle text-success "></i> {{ $totalPreliminaryAcceptedCount }}</span>
@@ -170,7 +170,7 @@
    <div class="col-lg-12">
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
          <!-- Title on the Left -->
-         <h2 class="page-title text-primary mb-2 mb-md-0">Applicants</h2>
+         <h2 class="page-title text-primary mb-2 mb-md-0">Applicant Documents</h2>
          <!-- Toggle Button on the Right -->
          <div class="div">
             <button class="btn btn-outline-primary btn-sm toggle-btn" id="toggleButton" type="button" data-bs-toggle="collapse"
@@ -219,9 +219,7 @@
                         <th>Name</th>
                         <th>National ID</th>
                         <th>Faculty</th>
-                        <th>Email</th>
                         <th>Mobile</th>
-                        <th>Registration Date</th>
                         <th>Actions</th>
                      </tr>
                   </thead>
@@ -231,12 +229,15 @@
                         <td>{{ $applicant->student->name_en ?? 'N/A' }}</td>
                         <td>{{ $applicant->student->national_id ?? 'N/A' }}</td>
                         <td>{{ $applicant->student->faculty->name_en ?? 'N/A' }}</td>
-                        <td>{{ $applicant->email ?? 'N/A' }}</td>
                         <td>{{ $applicant->student->mobile ?? 'N/A' }}</td>
-                        <td>{{ $applicant->created_at->format('F j, Y, g:i A') }}</td>
                         <td>
-                           <button type="button" class="btn btn-round btn-info-rgba" data-applicant-id="{{ $applicant->id }}" id="details-btn" title="More Details">
-                           <i class="feather icon-info"></i>
+                        <button type="button" class="btn btn-round btn-info-rgba" 
+                               data-applicant-id="{{ $applicant->id }}" 
+                               id="details-btn" 
+                               data-bs-toggle="modal" 
+                               data-bs-target="#applicantDetailsModal" 
+                               title="View Documents">
+                               <i class="feather icon-info"></i> 
                            </button>
                         </td>
                         </td>
@@ -251,43 +252,18 @@
    </div>
    <!-- End col -->
 </div>
-<!-- End row -->
+
 <!-- Applicant Details Modal -->
 <div class="modal fade" id="applicantDetailsModal" tabindex="-1" role="dialog" aria-labelledby="applicantDetailsModalLabel" aria-hidden="true">
    <div class="modal-dialog" role="document">
       <div class="modal-content">
          <div class="modal-header">
-            <h5 class="modal-title" id="applicantDetailsModalLabel">Applicant Details</h5>
+            <h5 class="modal-title" id="applicantDetailsModalLabel">Applicant Documents</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
          <div class="modal-body">
-            <div class="form-group">
-               <label for="faculty">Faculty</label>
-               <input type="text" class="form-control" id="faculty" readonly>
-            </div>
-            <div class="form-group">
-               <label for="program">Program</label>
-               <input type="text" class="form-control" id="program" readonly>
-            </div>
-            <div class="form-group">
-               <label for="score">Score</label>
-               <input type="text" class="form-control" id="score" readonly>
-            </div>
-            <div class="form-group">
-               <label for="percent">Percent</label>
-               <input type="text" class="form-control" id="percent" readonly>
-            </div>
-            <div class="form-group">
-               <label for="governorate">Governorate</label>
-               <input type="text" class="form-control" id="governorate" readonly>
-            </div>
-            <div class="form-group">
-               <label for="city">City</label>
-               <input type="text" class="form-control" id="city" readonly>
-            </div>
-            <div class="form-group">
-               <label for="street">Street</label>
-               <input type="text" class="form-control" id="street" readonly>
+            <div id="documents-list">
+               <!-- Documents will be dynamically loaded here -->
             </div>
          </div>
          <div class="modal-footer">
@@ -296,6 +272,7 @@
       </div>
    </div>
 </div>
+
 @endsection
 @section('scripts')
 <!-- Datatable JS -->
@@ -307,14 +284,17 @@
 <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 <script src="{{ asset('js/custom/custom-table-datatable.js') }}"></script>
 <script src="{{ asset('plugins/sweet-alert2/sweetalert2.min.js') }}"></script>
-<script src="{{ asset('js/pages/applicants.js') }}"></script>
+<script src="{{ asset('js/pages/applicant-documents.js') }}"></script>
 <script>
    window.routes = {
     exportExcel: "{{ route('export.applicants.excel') }}",
-   
-    getApplicantMoreDetails: "{{ route('admin.applicant.more-details', ':id') }}",
-   
+    getApplicantDocuments: "{{ route('admin.applicant.documents.get-documents', ':id') }}",
    };
+
+  
    
 </script>
 @endsection
+
+
+

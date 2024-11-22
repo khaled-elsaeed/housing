@@ -17,6 +17,7 @@ class Building extends Model
         'number',
         'gender',
         'status',
+        'max_apartments',
         'description',
     ];
 

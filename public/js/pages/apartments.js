@@ -1,109 +1,90 @@
 $(document).ready(function () {
-    // Reference to the already initialized DataTable
-    const table = $('#default-datatable').DataTable();
 
-    // Function to export files
+    const table = $.fn.DataTable.isDataTable('#default-datatable') 
+        ? $('#default-datatable').DataTable() 
+        : $('#default-datatable').DataTable();
+
+
+    function toggleButtonLoading(button, isLoading) {
+        const hasClassBtnRound = button.hasClass('btn-round');
+        
+        if (isLoading) {
+            if (!button.data('original-text')) {
+                button.data('original-text', button.html()); 
+            }
+    
+            if (hasClassBtnRound) {
+                button.html('<i class="fa fa-spinner fa-spin"></i>')
+                    .addClass('loading')
+                    .prop('disabled', true);
+            } else {
+                button.html('<i class="fa fa-spinner fa-spin"></i> Loading...') 
+                    .addClass('loading')
+                    .prop('disabled', true);
+            }
+        } else {
+            button.html(button.data('original-text'))
+                .removeClass('loading')
+                .prop('disabled', false);
+            button.removeData('original-text'); 
+        }
+    }
+    
+
+
     function exportFile(button, url, filename) {
-        const originalText = button.html(); // Store original button text
-        button.html('<i class="fa fa-spinner fa-spin"></i> Downloading...'); // Change button text and add spinner
-        button.addClass('loading'); // Disable button interactions
 
-        // Get the CSRF token from a meta tag
+        toggleButtonLoading(button, true)
+
         const csrfToken = $('meta[name="csrf-token"]').attr('content');
 
-        // Make the fetch request
         fetch(url, {
-            method: 'GET', // Use GET request
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest', // Indicate an AJAX request
-                'X-CSRF-Token': csrfToken // Include CSRF token for security
-            }
-        })
-            .then(response => {
-                if (response.ok) {
-                    return response.blob(); // Get the response as a Blob
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-Token': csrfToken
                 }
-                throw new Error('Network response was not ok.');
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+                return response.blob();
             })
             .then(blob => {
-                const url = window.URL.createObjectURL(blob); // Create a URL for the Blob
-                const a = document.createElement('a'); // Create an anchor element
-                a.style.display = 'none';
-                a.href = url;
-                a.download = filename; // Set the desired filename
-                document.body.appendChild(a); // Append the anchor to the body
-                a.click(); // Trigger the download
-                a.remove(); // Clean up: remove the anchor element from the DOM
-                window.URL.revokeObjectURL(url); // Clean up the URL object
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.style.display = 'none';
+                link.href = downloadUrl;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                window.URL.revokeObjectURL(downloadUrl);
             })
             .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
-                alert('Error downloading the file. Please try again.'); // User feedback
+                console.error('Download error:', error);
+                alert('Error downloading the file. Please try again.');
             })
             .finally(() => {
-                button.html(originalText); // Reset the button text to original
-                button.removeClass('loading'); // Enable button interactions
+                toggleButtonLoading(button, false)
+
             });
     }
 
-    // Attach the click event to export buttons using the dynamic routes
-    $('#exportExcel').on('click', function (e) {
-        e.preventDefault(); // Prevent default action
-        exportFile($('#downloadButton'), window.routes.exportExcel, 'applicants.xlsx'); // Use dynamic URL
+    $('#exportExcel').off('click').on('click', function(e) {
+        e.preventDefault();
+
+        const downloadBtn = $('#downloadBtn');
+
+        exportFile(downloadBtn, window.routes.exportExcel, 'Apartments.xlsx');
+
+        $(downloadBtn).next('.dropdown-menu').removeClass('show');
     });
 
-    $('#exportPDF').on('click', function (e) {
-        e.preventDefault(); // Prevent default action
-        exportFile($('#downloadButton'), window.routes.exportPdf, 'applicants.pdf'); // Use dynamic URL
-    });
-
-    // Attach click events for applicant actions
-    $(document).on('click', '#email-btn', function () {
-        sendEmail();
-    });
-
-    $(document).on('click', '#reset-password-btn', function () {
-        resetPassword();
-    });
-
-    $(document).on('click', '#delete-btn', function () {
-        deleteApplication();
-    });
-
-    $(document).on('click', '#details-btn', function () {
-        showMoreDetails();
-    });
-
-    // Function to send an email
-    function sendEmail() {
-        alert('Send email functionality is triggered.');
-        // Implement your email sending logic here
-    }
-
-    // Function to reset the password
-    function resetPassword() {
-        let confirmReset = confirm('Are you sure you want to reset the password?');
-        if (confirmReset) {
-            alert('Password reset functionality is triggered.');
-            // Implement your password reset logic here
-        }
-    }
-
-    // Function to delete the application
-    function deleteApplication() {
-        let confirmDelete = confirm('Are you sure you want to delete this application?');
-        if (confirmDelete) {
-            alert('Delete application functionality is triggered.');
-            // Implement your application deletion logic here
-        }
-    }
-
-    // Function to show more details
-    function showMoreDetails() {
-        alert('Show more details functionality is triggered.');
-        // You can implement a modal or a new page to show details here
-    }
-
+      
+    
+           
     // Filter functionality for DataTable based on status
 $('#statusFilter').on('change', function() {
     const selectedStatus = $(this).val();
@@ -137,5 +118,116 @@ $('#statusFilter').on('change', function() {
             table.column(1).search('').draw();
         }
     });
+
+
+        
+    
+        $('#editStatusForm').on('submit', function (e) {
+            e.preventDefault();
+            const formData = {
+                apartment_id: $('#editApartmentStatusModal').attr('data-apartment-id'),
+                status: $('#editApartmentStatus').val(),
+                _token: $('meta[name="csrf-token"]').attr('content')
+            };
+    
+            $.ajax({
+                url: window.routes.updateApartmentStatus,
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        swal('Success!', response.message || 'Status updated successfully.', 'success');
+                        $('#editApartmentStatusModal').modal('hide');
+                        location.reload();
+                    }
+                },
+                error: function (xhr) {
+                    swal('Error!', (xhr.responseJSON && xhr.responseJSON.message) || 'An error occurred.', 'error');
+                }
+            });
+        });
+    
+        $('#editNoteForm').on('submit', function (e) {
+            e.preventDefault();
+            const formData = {
+                apartment_id: $('#editApartmentNoteModal').attr('data-apartment-id'),
+                note: $('#editApartmentNote').val(),
+                _token: $('meta[name="csrf-token"]').attr('content')
+            };
+    
+            $.ajax({
+                url: window.routes.updateApartmentNote,
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    if (response.success) {
+                        swal('Success!', response.message || 'Note updated successfully.', 'success');
+                        $('#editApartmentNoteModal').modal('hide');
+                        location.reload();
+                    }
+                },
+                error: function (xhr) {
+                    swal('Error!', (xhr.responseJSON && xhr.responseJSON.message) || 'An error occurred.', 'error');
+                }
+            });
+        });
+    
+        function deleteApartment(apartmentId) {
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonClass: 'btn btn-success',
+                cancelButtonClass: 'btn btn-danger m-l-10',
+                confirmButtonText: 'Yes, delete it!'
+            }).then(function () {
+                $.ajax({
+                    url: window.routes.deleteApartment.replace(':id', apartmentId),
+                    type: 'DELETE',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            swal('Deleted!', response.message || 'Apartment deleted successfully.', 'success').
+                            then(() => {
+                                location.reload();
+                            });
+                         }
+                    },
+                    error: function () {
+                        swal('Error!', 'Failed to delete the apartment. Please try again.', 'error');
+                    }
+                });
+            })
+            
+        }
+    
+        $(document).on('click', '[id^="delete-btn-"]', function () {
+            const apartmentId = $(this).attr('id').split('-').pop();
+            deleteApartment(apartmentId);
+        });
+    
+        $(document).on('click', '[id^="edit-note-btn-"]', function () {
+            const button = $(this);
+            const row = button.closest('tr');
+            const apartmentId = button.attr('id').split('-').pop();
+            const note = row.find('td:nth-last-child(2)').text().trim();
+            console.log(note);
+    
+            $('#editApartmentNote').val(note === 'No description available' ? '' : note);
+            $('#editApartmentNoteModal').attr('data-apartment-id', apartmentId).modal('show');
+        });
+    
+        $(document).on('click', '[id^="edit-status-btn-"]', function () {
+            const button = $(this);
+            const row = button.closest('tr');
+            const apartmentId = button.attr('id').split('-').pop();
+            const status = row.find('td:nth-last-child(3)').text().trim();
+    
+            $('#editApartmentStatus').val(status.toLowerCase().replace(' ', '_'));
+            $('#editApartmentStatusModal').attr('data-apartment-id', apartmentId).modal('show');
+        });
 
 });

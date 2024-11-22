@@ -102,7 +102,7 @@ class UniversityArchivePhpspreadsheetSeeder extends Seeder
             'academic_email' => isset($data[40]) && strtoupper($data[40]) !== "NULL" ? $data[40] : null,
             'mobile' => isset($data[44]) && strtoupper($data[44]) !== "NULL" ? $data[44] : null,
             'whatsapp' => isset($data[45]) && strtoupper($data[45]) !== "NULL" ? $data[45] : null,
-            'gender' => isset($data[47]) && strtoupper($data[47]) !== "NULL" ? $data[47] : null,
+            'gender' => isset($data[4]) && strtoupper($data[4]) !== "NULL" ? $data[4] : null,
             'governorate' => isset($data[6]) && strtoupper($data[6]) !== "NULL" ? $data[6] : null,
             'city' => isset($data[7]) && strtoupper($data[7]) !== "NULL" ? $data[7] : null,
             'street' => isset($data[8]) && strtoupper($data[8]) !== "NULL" ? $data[8] : null,
@@ -138,9 +138,10 @@ class UniversityArchivePhpspreadsheetSeeder extends Seeder
 
     private function createUser(array $data, $residentRole): \App\Models\User
     {
+         // Extract and format English names
         $nameEn = explode(' ', $data[32] ?? '');
-        $firstNameEn = $nameEn[0] ?? null;
-        $lastNameEn = end($nameEn) ?: null;
+        $firstNameEn = isset($nameEn[0]) ? ucwords(strtolower($nameEn[0])) : null;
+        $lastNameEn = isset($nameEn) ? ucwords(strtolower(end($nameEn))) : null;
 
         $nameAr = explode(' ', $data[33] ?? '');
         $firstNameAr = $nameAr[0] ?? null;
@@ -184,7 +185,7 @@ class UniversityArchivePhpspreadsheetSeeder extends Seeder
         
         Student::create([
             'user_id' => $user->id,
-            'name_en' => $data[1],
+            'name_en' => ucwords(strtolower($data[1])),
             'name_ar' => $data[2],
             'national_id' => $data[5],
             'mobile' => $data[9],

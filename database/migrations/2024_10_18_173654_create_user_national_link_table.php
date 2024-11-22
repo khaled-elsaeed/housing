@@ -11,8 +11,12 @@ return new class extends Migration
         Schema::create('user_national_link', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade')->onUpdate('cascade');
-            $table->foreignId('university_Archive_id')->unique()->constrained('university_Archives')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('national_id')->unique();
+            $table->foreignId('university_archive_id') // Lowercase 'a' in archive
+            ->unique()
+            ->constrained('university_archives')
+            ->onDelete('cascade')
+            ->onUpdate('cascade');
+                    $table->string('national_id')->unique();
             $table->timestamps();
         });
     }

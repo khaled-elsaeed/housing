@@ -27,21 +27,10 @@
                 </a>
                 <ul class="vertical-submenu">
                     <li><a href="{{ route('admin.applicant.view') }}">View Applicants</a></li>
-                    <li><a href="{{ route('admin.applicant.invoice') }}">Documents</a></li>
+                    <li><a href="{{ route('admin.applicant.documents.view') }}">Documents</a></li>
                 </ul>
             </li>
 
-            <li>
-                <a href="javaScript:void();">
-                    <img src="{{ asset('images/svg-icon/basic.svg') }}" class="img-fluid" alt="reservations">
-                    <span>Reservations</span>
-                    <i class="feather icon-chevron-right pull-right"></i>
-                </a>
-                <ul class="vertical-submenu">
-                    <li><a href="{{ route('admin.reservation.criteria') }}">Criteria</a></li>
-                    <li><a href="#">Reservation</a></li>
-                </ul>
-            </li>
 
             <li>
                 <a href="javaScript:void();">
@@ -62,25 +51,14 @@
                     <i class="feather icon-chevron-right pull-right"></i>
                 </a>
                 <ul class="vertical-submenu">
-                    <li><a href="{{ route('admin.housing.building') }}">Buildings</a></li>
-                    <li><a href="{{ route('admin.housing.apartment') }}">Apartments</a></li>
-                    <li><a href="{{ route('admin.housing.room') }}">Rooms</a></li>
+                    <li><a href="{{ route('admin.unit.building') }}">Buildings</a></li>
+                    <li><a href="{{ route('admin.unit.apartment') }}">Apartments</a></li>
+                    <li><a href="{{ route('admin.unit.room') }}">Rooms</a></li>
                 </ul>
             </li>
 
 
-            <li>
-                <a href="javaScript:void();">
-                    <img src="{{ asset('images/svg-icon/components.svg') }}" class="img-fluid" alt="housing">
-                    <span>Permissions</span>
-                    <i class="feather icon-chevron-right pull-right"></i>
-                </a>
-                <ul class="vertical-submenu">
-                    <li><a href="{{ route('admin.student-permissions.index') }}">view</a></li>
-                    <li><a href="{{ route('admin.student-permissions.manage') }}">manage</a></li>
-                </ul>
-            </li>
-
+            
 
             <li>
                 <a href="#">

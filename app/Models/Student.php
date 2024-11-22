@@ -21,6 +21,28 @@ class Student extends Model
         return $this->belongsTo(UniversityArchive::class);
     }
 
+    public function faculty()
+    {
+        return $this->belongsTo(Faculty::class);
+    }
+
+    public function program()
+    {
+        return $this->belongsTo(Program::class);
+    }
+
+    public function governorate()
+{
+    return $this->belongsTo(Governorate::class);
+}
+
+public function city()
+{
+    return $this->belongsTo(City::class);
+}
+
+    
+
     public function reservations()
     {
         return $this->hasMany(Reservation::class);

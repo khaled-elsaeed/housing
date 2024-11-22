@@ -41,27 +41,31 @@ class User extends Authenticatable
         'profile_picture' => 'string', 
     ];
 
+    public function userNationalLink()
+{
+    return $this->hasOne(UserNationalLink::class);
+}
+
+public function universityArchive()
+{
+    return $this->hasOneThrough(
+        UniversityArchive::class,
+        UserNationalLink::class,
+        'user_id',                 // Foreign key on UserNationalLink table
+        'id',                      // Foreign key on UniversityArchives table
+        'id',                      // Local key on Users table
+        'university_archive_id'    // Local key on UserNationalLink table
+    );
+}
+
+
     public function student()
     {
         return $this->hasOne(Student::class);
     }
 
-    public function nationalLink()
-    {
-        return $this->hasOne(UserNationalLink::class);
-    }
 
-    public function universityArchive()
-    {
-        return $this->hasOneThrough(
-            UniversityArchive::class,
-            UserNationalLink::class,
-            'user_id', // Foreign key on UserNationalLink table
-            'id', // Foreign key on UniversityArchive table
-            'id', // Local key on User table
-            'university_Archive_id' // Local key on UserNationalLink table
-        );
-    }
+
     public function isAdmin(): bool
     {
         return $this->hasRole('admin');
@@ -90,6 +94,12 @@ class User extends Authenticatable
     public function hasStudentProfile(): bool
     {
         return $this->student()->exists();
+    }
+
+    // Define the relationship to documents
+    public function documents()
+    {
+        return $this->hasMany(Document::class);
     }
 
     public function allowLateProfileCompletion(): bool

@@ -12,41 +12,9 @@
         pointer-events: none; /* Disable button interactions */
     }
 
-    /* Basic Styling */
-.room-btn {
-    display: inline-block;
-    width: 50px;
-    height: 50px;
-    margin: 5px;
-    text-align: center;
-    line-height: 50px;
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
+    
 
-.room-btn.selected {
-    background-color: #4CAF50; /* Green for selected */
-    color: white;
-}
-
-.room-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin-top: 10px;
-}
-
-.apartment-container {
-    margin-bottom: 20px;
-}
-
-#apartmentSelection {
-    margin-top: 20px;
-}
-
+  
 </style>
 @endsection
 
@@ -207,40 +175,43 @@
 </div>
 
 
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
-    <!-- Title on the Left -->
-    <h2 class="page-title text-primary mb-2 mb-md-0">Buildings</h2>
-    <!-- Toggle Button on the Right -->
-    <div class="div">
-        <button class="btn btn-outline-primary btn-sm toggle-btn" id="toggleButton" type="button" data-bs-toggle="collapse"
+<div class="d-flex flex-column mb-3">
+    <!-- Title in its own row -->
+    <h2 class="page-title text-primary mb-2">Buildings</h2>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <!-- Left Section with Add Building Button -->
+    <div class="d-flex">
+        <button type="button" class="btn btn-outline-secondary ms-2" data-bs-toggle="modal" data-bs-target="#addBuilidngModal">
+            <i class="fa fa-plus-circle"></i> Add Building
+        </button>
+    </div>
+
+    <!-- Right Section with Toggle and Download Dropdown -->
+    <div class="d-flex align-items-center">
+        <!-- Toggle Button -->
+        <button class="btn btn-outline-primary btn-sm ms-2 toggle-btn" id="toggleButton" type="button" data-bs-toggle="collapse" 
             data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
             <i class="fa fa-search-plus"></i>
         </button>
-        <div class="btn-group ms-2" role="group" aria-label="Download Options">
-            <button type="button" class="btn btn-outline-primary dropdown-toggle" id="downloadButton" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fa fa-download"></i> Download
-            </button>
-            <ul class="dropdown-menu">
-                <li>
-                    <a class="dropdown-item" href="#" id="exportExcel">
-                        <i class="fa fa-file-excel"></i> Buildings (Excel)
-                    </a>
-                </li>
-                <li>
-                    <a class="dropdown-item" href="#" id="exportPDF">
-                        <i class="fa fa-file-pdf"></i> Report (PDF)
-                    </a>
-                </li>
-            </ul>
-        </div>
-        
-       <!-- Button to Open Modal -->
-<button type="button" class="btn btn-outline-success btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#buildingModal">
-    <i class="fa fa-plus-circle"></i> Add Building
-</button>
 
+        <div class="btn-group ms-2" role="group" aria-label="Download Options">
+               <button type="button" class="btn btn-outline-primary dropdown-toggle" id="downloadBtn"  data-bs-toggle="dropdown" aria-expanded="false">
+               <i class="fa fa-download"></i> Download
+               </button>
+               <ul class="dropdown-menu">
+                  <li>
+                     <a class="dropdown-item" href="#" id="exportExcel">
+                     <i class="fa fa-file-excel"></i> Building (Excel)
+                     </a>
+                  </li>
+               </ul>
+            </div>
     </div>
 </div>
+
+
 
 
 <div class="collapse" id="collapseExample">
@@ -292,10 +263,10 @@
                                     <td>{{ ucfirst($building->gender) }}</td>
                                     <td>{{ $building->max_apartments }}</td> <!-- Display max apartments -->
                                     <td>{{ ucfirst(str_replace('_', ' ', $building->status)) }}</td>
-                                    <td>{{ $building->description }}</td>
+                                    <td>{{ $building->note ?: 'No description available' }}</td>
                                     <td>
-                                        <!-- Edit Notes Button -->
-                                        <button type="button" class="btn btn-round btn-warning-rgba" id="edit-notes-btn-{{ $building->id }}" title="Edit Notes">
+                                        <!-- Edit Note Button -->
+                                        <button type="button" class="btn btn-round btn-warning-rgba" id="edit-note-btn-{{ $building->id }}" title="Edit Note">
                                             <i class="feather icon-edit"></i>
                                         </button>
                                         
@@ -321,61 +292,113 @@
 </div>
 <!-- End row -->
 
+
+
+
+
 <!-- Modal -->
-<div class="modal fade" id="buildingModal" tabindex="-1" aria-labelledby="buildingModalLabel" aria-hidden="true">
+<div class="modal fade" id="addBuilidngModal" tabindex="-1" aria-labelledby="addBuilidngModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="buildingModalLabel">Create Building</h5>
+                <h5 class="modal-title" id="addBuilidngModalLabel">Create Building</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="buildingForm">
-                <!-- Modal Form -->
-<!-- Modal Content -->
-<div class="modal-body">
-    <form id="buildingForm">
-        <!-- Building Info Section -->
-        <div class="mb-3">
-            <label for="buildingNumber" class="form-label">Building Number</label>
-            <input type="text" class="form-control" id="buildingNumber" name="building_number" required>
-        </div>
-        <div class="mb-3">
-            <label for="gender" class="form-label">Gender</label>
-            <select class="form-control" id="gender" name="gender" required>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-            </select>
-        </div>
+                <!-- Modal Content -->
+                <div class="modal-body">
+    <!-- Building Number -->
+    <div class="mb-3">
+        <label for="newBuildingNumber" class="form-label">Building Number</label>
+        <input type="text" class="form-control border border-primary" id="newBuildingNumber" name="building_number" required>
+    </div>
 
-        <!-- Apartment and Room Selection -->
-        <div class="mb-3">
-            <label for="createApartments" class="form-label">Create Apartments</label>
-            <input type="checkbox" id="createApartments">
-        </div>
+    <!-- Gender -->
+    <div class="mb-3">
+        <label for="newBuildingGender" class="form-label">Gender</label>
+        <select class="form-control border border-primary" id="newBuildingGender" name="gender" required>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
+    </div>
 
-        <!-- Display Apartment Options When Checked -->
-        <div id="maxRoomsContainer" style="display:none;">
-            <label for="maxApartments">Max Apartments</label>
-            <input type="number" id="maxApartments" name="max_apartments" min="1" required>
-        </div>
+    <!-- Max Apartments per Building -->
+    <div class="mb-3">
+        <label for="newBuildingMaxApartments" class="form-label">Maximum Number of Apartments Per Building</label>
+        <input type="number" class="form-control border border-primary" id="newBuildingMaxApartments" name="max_apartments" required>
+    </div>
 
-        <!-- Double Room Section -->
-        <div id="doubleRoomsSection" style="display:none;">
-            <label for="doubleApartments">Number of Apartments with Double Rooms</label>
-            <input type="number" id="doubleApartments" name="double_apartments" min="0">
-            
-            <!-- Dynamic Apartment Room Selector -->
-            <div id="apartmentSelection"></div>
-        </div>
-        
-        <button type="submit" class="btn btn-primary">Save</button>
-    </form>
+    <!-- Max Rooms per Apartment -->
+    <div class="mb-3">
+        <label for="newBuildingMaxRooms" class="form-label">Maximum Number of Rooms per Apartment</label>
+        <input type="number" class="form-control border border-primary" id="newBuildingMaxRooms" name="max_rooms" required>
+    </div>
 </div>
 
-
+                <!-- Modal Footer -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save Building</button>
+                    <button type="submit" class="btn btn-primary" id="saveBuildingBtn">Save Building</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Status Modal -->
+<div class="modal fade" id="editBuildingStatusModal" tabindex="-1" aria-labelledby="editBuildingStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editBuildingStatusModalLabel">Edit Building Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editStatusForm">
+                <!-- Modal Content -->
+                <div class="modal-body">
+                    <!-- Building Status -->
+                    <div class="mb-3">
+                        <label for="editBuildingStatus" class="form-label">Status</label>
+                        <select class="form-control border border-primary" id="editBuildingStatus" name="status" required>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="under_maintenance">Under Maintenance</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="saveStatusBtn">Save Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit/Add Note Modal -->
+<div class="modal fade" id="editBuildingNoteModal" tabindex="-1" aria-labelledby="editBuildingNoteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editBuildingNoteModalLabel">Edit/Add Building Note</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editNoteForm">
+                <!-- Modal Content -->
+                <div class="modal-body">
+                    <!-- Building Note -->
+                    <div class="mb-3">
+                        <label for="editBuildingNote" class="form-label">Note</label>
+                        <textarea class="form-control border border-primary" id="editBuildingNote" name="note" rows="4" required></textarea>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="saveNoteBtn">Save Note</button>
                 </div>
             </form>
         </div>
@@ -396,128 +419,14 @@
 <script src="{{ asset('js/custom/custom-table-datatable.js') }}"></script>
 <script src="{{ asset('plugins/sweet-alert2/sweetalert2.min.js') }}"></script>
 <script src="{{ asset('js/pages/buildings.js') }}"></script>
-
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const createApartmentsCheckbox = document.getElementById('createApartments');
-    const maxRoomsContainer = document.getElementById('maxRoomsContainer');
-    const doubleRoomsSection = document.getElementById('doubleRoomsSection');
-    const doubleApartmentsInput = document.getElementById('doubleApartments');
-    const apartmentSelectionContainer = document.getElementById('apartmentSelection');
-    let apartments = [];
-
-    // Toggle visibility of room-related fields based on checkbox
-    createApartmentsCheckbox.addEventListener('change', function () {
-        if (createApartmentsCheckbox.checked) {
-            maxRoomsContainer.style.display = 'block'; // Show max rooms field
-            doubleRoomsSection.style.display = 'block'; // Show double room section
-        } else {
-            maxRoomsContainer.style.display = 'none'; // Hide max rooms field
-            doubleRoomsSection.style.display = 'none'; // Hide double room section
-            apartmentSelectionContainer.innerHTML = ''; // Clear apartment selection
-        }
-    });
-
-    // Show apartment selection inputs when double apartments are specified
-    doubleApartmentsInput.addEventListener('input', function () {
-        const numApartments = parseInt(doubleApartmentsInput.value);
-        apartments = [];
-        apartmentSelectionContainer.innerHTML = ''; // Clear previous selections
-        
-        if (numApartments > 0) {
-            for (let i = 1; i <= numApartments; i++) {
-                // Create apartment selection button (or grid)
-                const apartmentDiv = document.createElement('div');
-                apartmentDiv.classList.add('apartment-container');
-                apartmentDiv.innerHTML = `<h5>Apartment ${i}</h5>`;
-
-                // Add room selection buttons dynamically
-                const roomGrid = document.createElement('div');
-                roomGrid.classList.add('room-grid');
-                
-                for (let j = 1; j <= 5; j++) {  // Assume 5 rooms per apartment for now
-                    const roomButton = document.createElement('button');
-                    roomButton.classList.add('room-btn');
-                    roomButton.textContent = `Room ${j}`;
-                    roomButton.dataset.apartment = i;
-                    roomButton.dataset.room = j;
-
-                    // Add click event to mark room as "double"
-                    roomButton.addEventListener('click', function() {
-                        toggleRoomSelection(roomButton, i, j);
-                    });
-                    roomGrid.appendChild(roomButton);
-                }
-
-                apartmentDiv.appendChild(roomGrid);
-                apartmentSelectionContainer.appendChild(apartmentDiv);
-            }
-        }
-    });
-
-    // Toggle Room Selection (double)
-    function toggleRoomSelection(button, apartment, room) {
-        button.classList.toggle('selected');
-        
-        // Update apartments array with double room info
-        const apartmentIndex = apartments.findIndex(a => a.apartment === apartment);
-        if (apartmentIndex === -1) {
-            apartments.push({ apartment: apartment, rooms: [room] });
-        } else {
-            const roomIndex = apartments[apartmentIndex].rooms.indexOf(room);
-            if (roomIndex === -1) {
-                apartments[apartmentIndex].rooms.push(room);
-            } else {
-                apartments[apartmentIndex].rooms.splice(roomIndex, 1);
-            }
-        }
-    }
-
-    // Handle form submission
-    const buildingForm = document.getElementById('buildingForm');
-    buildingForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        // Prepare the form data
-        const formData = {
-            building_number: document.getElementById('buildingNumber').value,
-            gender: document.getElementById('gender').value,
-            max_apartments: document.getElementById('maxApartments').value,
-            double_apartments: apartments, // The selected apartments and rooms
-            _token: '{{ csrf_token() }}'  // CSRF token
-        };
-
-        // Send data to the backend using AJAX
-        $.ajax({
-            url: '{{ route('admin.buildings.store') }}',
-            method: 'POST',
-            data: formData,
-            success: function(response) {
-                if (response.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Building Created',
-                        text: response.message
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: response.message
-                    });
-                }
-            },
-            error: function(xhr, status, error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Server Error',
-                    text: 'There was an error saving the building. Please try again.'
-                });
-            }
-        });
-    });
-});
-
+window.routes = {
+    exportExcel : '{{ route('admin.unit.building.export-excel') }}',
+    saveBuilding: '{{ route('admin.unit.building.store') }}',
+    deleteBuilding: '{{ route('admin.unit.building.destroy', ':id') }}',
+    updateBuildingStatus: '{{ route('admin.unit.building.update-status') }}', 
+    updateBuildingNote: '{{ route('admin.unit.building.update-note') }}'    
+};
 
 
 </script>

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exports;
+namespace App\Exports\Applicants;
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -14,20 +14,21 @@ class ApplicantsExport
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Set column headings
-        $sheet->setCellValue('A1', 'ID');
-        $sheet->setCellValue('B1', 'Username');
-        $sheet->setCellValue('C1', 'Email');
-        $sheet->setCellValue('D1', 'Created At');
+        $sheet->setCellValue('A1', 'Name');
+        $sheet->setCellValue('B1', 'National ID');
+        $sheet->setCellValue('C1', 'Faculty');
+        $sheet->setCellValue('D1', 'Email');
+        $sheet->setCellValue('E1', 'Mobile');
 
         // Fetch and populate data
-        $applicants = User::all();
+        $applicants = User::role('resident')->get();
         $row = 2;
         foreach ($applicants as $applicant) {
-            $sheet->setCellValue("A{$row}", $applicant->id);
-            $sheet->setCellValue("B{$row}", $applicant->username_ar);
-            $sheet->setCellValue("C{$row}", $applicant->email);
-            $sheet->setCellValue("D{$row}", $applicant->created_at);
+            $sheet->setCellValue("A{$row}", $applicant->student->name_en ?? 'N/A');
+            $sheet->setCellValue("B{$row}", $applicant->student->national_id ?? 'N/A');
+            $sheet->setCellValue("C{$row}", $applicant->student->faculty->name_en ?? 'N/A');
+            $sheet->setCellValue("D{$row}", $applicant->email ?? 'N/A');
+            $sheet->setCellValue("E{$row}", $applicant->student->mobile ?? 'N/A');
             $row++;
         }
 

@@ -181,22 +181,17 @@
                     <i class="fa fa-search-plus"></i>
                 </button>
                 <div class="btn-group ms-2" role="group" aria-label="Download Options">
-                    <button type="button" class="btn btn-outline-primary dropdown-toggle" id="downloadButton" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fa fa-download"></i> Download
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="dropdown-item" href="#" id="exportExcel">
-                                <i class="fa fa-file-excel"></i> Apartments (Excel) <!-- Updated text -->
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="#" id="exportPDF">
-                                <i class="fa fa-file-pdf"></i> Report (PDF)
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+               <button type="button" class="btn btn-outline-primary dropdown-toggle" id="downloadBtn"  data-bs-toggle="dropdown" aria-expanded="false">
+               <i class="fa fa-download"></i> Download
+               </button>
+               <ul class="dropdown-menu">
+                  <li>
+                     <a class="dropdown-item" href="#" id="exportExcel">
+                     <i class="fa fa-file-excel"></i> Apartment (Excel)
+                     </a>
+                  </li>
+               </ul>
+            </div>
             </div>
         </div>
     </div>
@@ -244,7 +239,7 @@
                                 <th>Gender</th>
                                 <th>Max Rooms</th> <!-- This might need to be renamed based on your context -->
                                 <th>Status</th>
-                                <th>Description</th>
+                                <th>Notes</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -257,14 +252,19 @@
                                     <td>{{ $apartment->max_rooms }}</td>
                                     
                                     <td>{{ ucfirst(str_replace('_', ' ', $apartment->status)) }}</td>
-                                    <td>{{ $apartment->description }}</td>
+                                    <td>{{ $apartment->note ?: 'No description available' }}</td>
                                     <td>
-                                        <button type="button" class="btn btn-round btn-warning-rgba" id="edit-notes-btn-{{ $apartment->id }}" title="Edit Notes">
+                                        <!-- Edit Note Button -->
+                                        <button type="button" class="btn btn-round btn-warning-rgba" id="edit-note-btn-{{ $apartment->id }}" title="Edit Note">
                                             <i class="feather icon-edit"></i>
                                         </button>
+                                        
+                                        <!-- Edit Status Button -->
                                         <button type="button" class="btn btn-round btn-primary-rgba" id="edit-status-btn-{{ $apartment->id }}" title="Edit Status">
                                             <i class="feather icon-settings"></i>
                                         </button>
+                                        
+                                        <!-- Delete Apartment Button -->
                                         <button type="button" class="btn btn-round btn-danger-rgba" id="delete-btn-{{ $apartment->id }}" title="Delete Apartment">
                                             <i class="feather icon-trash-2"></i>
                                         </button>
@@ -279,6 +279,65 @@
     </div>
 </div>
 <!-- End row -->
+<!-- Edit Status Modal -->
+<div class="modal fade" id="editApartmentStatusModal" tabindex="-1" aria-labelledby="editApartmentStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editApartmentStatusModalLabel">Edit Apartment Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editStatusForm">
+                <!-- Modal Content -->
+                <div class="modal-body">
+                    <!-- Apartment Status -->
+                    <div class="mb-3">
+                        <label for="editApartmentStatus" class="form-label">Status</label>
+                        <select class="form-control border border-primary" id="editApartmentStatus" name="status" required>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="under_maintenance">Under Maintenance</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="saveStatusBtn">Save Status</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit/Add Note Modal -->
+<div class="modal fade" id="editApartmentNoteModal" tabindex="-1" aria-labelledby="editApartmentNoteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editApartmentNoteModalLabel">Edit/Add Apartment Note</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editNoteForm">
+                <!-- Modal Content -->
+                <div class="modal-body">
+                    <!-- Apartment Note -->
+                    <div class="mb-3">
+                        <label for="editApartmentNote" class="form-label">Note</label>
+                        <textarea class="form-control border border-primary" id="editApartmentNote" name="note" rows="4" required></textarea>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="saveNoteBtn">Save Note</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @endsection
 
@@ -286,18 +345,21 @@
 <!-- Datatable JS -->
 <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables/dataTables.buttons.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables/buttons.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables/jszip.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables/pdfmake.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables/vfs_fonts.js') }}"></script>
-<script src="{{ asset('plugins/datatables/buttons.html5.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables/buttons.print.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables/buttons.colVis.min.js') }}"></script>
 <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
 <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 <script src="{{ asset('js/custom/custom-table-datatable.js') }}"></script>
 <script src="{{ asset('plugins/sweet-alert2/sweetalert2.min.js') }}"></script>
 <script src="{{ asset('js/pages/apartments.js') }}"></script> <!-- Updated script reference -->
+<script>
+   
+window.routes = {
+    exportExcel : '{{ route('admin.unit.apartment.export-excel') }}',
+    saveApartment: '{{ route('admin.unit.apartment.store') }}',
+    deleteApartment: '{{ route('admin.unit.apartment.destroy', ':id') }}',
+    updateApartmentStatus: '{{ route('admin.unit.apartment.update-status') }}', 
+    updateApartmentNote: '{{ route('admin.unit.apartment.update-note') }}'    
+};
 
+
+</script>
 @endsection

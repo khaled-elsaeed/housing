@@ -1,9 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin\Unit;
 
 use App\Models\Room;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Exports\Units\RoomsExport;
+
+
 
 class RoomController extends Controller
 {
@@ -121,7 +125,7 @@ class RoomController extends Controller
             }
         }
 
-        return view('admin.housing.room', compact(
+        return view('admin.unit.room', compact(
             'rooms',
             'buildingNumbers',
             'apartmentNumbers',
@@ -144,6 +148,68 @@ class RoomController extends Controller
             'underMaintenanceDoubleFemales'
         ));
     }
+
+    public function destroy($id)
+    {
+        try {
+            $room = Room::findOrFail($id);
+            $room->delete();
+    
+            return response()->json(['success' => true, 'message' => 'Room deleted successfully.']);
+        } catch (\Exception $e) {
+            Log::error('Error deleting room ' . $id . ': ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Error deleting room.'], 500);
+        }
+    }
+    
+    public function updateStatus(Request $request)
+    {
+        $request->validate([
+            'room_id' => 'required|exists:rooms,id',
+            'status' => 'required|in:active,inactive,under_maintenance'
+        ]);
+    
+        $room = Room::find($request->room_id);
+        $room->status = $request->status;
+        $room->save();
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Room status updated successfully.'
+        ]);
+    }
+    
+    public function updateNote(Request $request)
+    {
+        $request->validate([
+            'room_id' => 'required|exists:rooms,id',
+            'note' => 'required|string'
+        ]);
+    
+        $room = Room::find($request->room_id);
+        $room->note = $request->note;
+        $room->save();
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Room note updated successfully.'
+        ]);
+    }
+    
+    public function downloadRoomsExcel()
+    {
+        try {
+            $export = new RoomsExport();
+            return $export->downloadExcel();
+        } catch (\Exception $e) {
+            Log::error('Error exporting rooms to Excel', [
+                'exception' => $e->getMessage(),
+                'stack_trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json(['error' => 'Failed to export rooms to Excel'], 500);
+        }
+    }
+
 
     
 }

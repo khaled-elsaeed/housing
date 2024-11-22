@@ -10,7 +10,7 @@ class UniversityArchive extends Model
     use HasFactory;
 
     // It's a good idea to follow Laravel's naming convention for tables (snake_case).
-    protected $table = 'university_archive'; // Changed to 'university_archives'
+    protected $table = 'university_archives'; // Changed to 'university_archives'
 
     protected $fillable = [
         'name_en',

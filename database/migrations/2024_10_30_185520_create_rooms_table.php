@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('rooms', function (Blueprint $table) {
             $table->id(); // Auto-incrementing ID
             $table->foreignId('apartment_id')->constrained('apartments')->cascadeOnDelete()->cascadeOnUpdate(); // FK to apartments
-            $table->integer('number')->unique(); // Unique room number
+            $table->integer('number'); // Unique room number
             $table->tinyInteger('full_occupied')->default(0); // Full occupancy flag
             $table->integer('max_occupancy'); // Maximum number of occupants
             $table->integer('current_occupancy')->default(0); // Current occupancy count
