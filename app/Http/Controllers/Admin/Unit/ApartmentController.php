@@ -17,16 +17,13 @@ class ApartmentController extends Controller
      */
     public function index()
     {
-        // Fetch all apartments with their associated buildings
-        $apartments = Apartment::with('building')->get();
-        // Get unique building IDs directly from the apartments
- // Get unique building numbers directly from the apartments
+        try{
+            $apartments = Apartment::with('building')->get();
  $buildingNumbers = $apartments->pluck('building.number')->unique();        // Calculate necessary counts
         $totalApartments = $apartments->count();
         $occupiedCount = $apartments->where('occupancy_status', 'full_occupied')->count();
         $emptyCount = $apartments->where('occupancy_status', 'empty')->count();
 
-        // Count male apartments
         $maleApartments = $apartments->filter(function ($apartment) {
             return $apartment->building->gender === 'male';
         });
@@ -34,7 +31,6 @@ class ApartmentController extends Controller
         $maleOccupiedCount = $maleApartments->where('occupancy_status', 'full_occupied')->count();
         $malePartiallyOccupiedCount = $maleApartments->where('occupancy_status', 'partially_occupied')->count();
 
-        // Count female apartments
         $femaleApartments = $apartments->filter(function ($apartment) {
             return $apartment->building->gender === 'female';
         });
@@ -42,15 +38,13 @@ class ApartmentController extends Controller
         $femaleOccupiedCount = $femaleApartments->where('occupancy_status', 'full_occupied')->count();
         $femalePartiallyOccupiedCount = $femaleApartments->where('occupancy_status', 'partially_occupied')->count();
 
-        // Count apartments under maintenance
         $maintenanceCount = $apartments->where('status', 'under_maintenance')->count();
         $maleUnderMaintenanceCount = $maleApartments->where('status', 'under_maintenance')->count();
         $femaleUnderMaintenanceCount = $femaleApartments->where('status', 'under_maintenance')->count();
 
-        // Return the view with the required data
         return view('admin.unit.apartment', compact(
             'apartments', 
-        'buildingNumbers', // Pass only the unique building numbers
+        'buildingNumbers', 
             'totalApartments', 
             'occupiedCount', 
             'emptyCount',
@@ -64,6 +58,15 @@ class ApartmentController extends Controller
             'maleUnderMaintenanceCount',
             'femaleUnderMaintenanceCount'
         ));
+    } catch (Exception $e) {
+        Log::error('Error retrieving apartment page data: ' . $e->getMessage(), [
+            'exception' => $e,
+            'stack' => $e->getTraceAsString(),
+        ]);
+
+        return response()->view('errors.505');
+    }
+        
     }
 
 

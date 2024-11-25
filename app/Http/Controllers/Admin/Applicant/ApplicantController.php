@@ -66,7 +66,7 @@ class ApplicantController extends Controller
                 'stack' => $e->getTraceAsString(),
             ]);
 
-            return response()->view('error.page_init');
+            return response()->view('errors.505');
         }
     }
 

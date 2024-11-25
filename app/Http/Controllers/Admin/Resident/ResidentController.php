@@ -53,7 +53,7 @@ Log::info('First 5 residents fetched:', $firstFiveresidents->toArray());
             ]);
     
             // Return a generic error page with the error message
-            return response()->view('error.page_init', ['errorMessage' => $e->getMessage()]);
+            return response()->view('errors.505');
         }
     }
     

@@ -88,7 +88,7 @@ class RoomController extends Controller
             'stack' => $e->getTraceAsString(),
         ]);
 
-        return view('error.page_init');
+        return response()->view('errors.505');
     }
         
     }

@@ -57,7 +57,7 @@ class ApplicantDocumentController extends Controller
                 'exception' => $e->getMessage(),
                 'stack_trace' => $e->getTraceAsString(),
             ]);
-            return response()->view('errors.500', [], 500);
+            return response()->view('errors.505');
         }
     }
 

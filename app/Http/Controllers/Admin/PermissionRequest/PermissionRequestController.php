@@ -10,7 +10,8 @@ class PermissionRequestController extends Controller
 {
     public function index()
     {
-        $permissionRequests = StudentPermissionRequest::with(['user', 'studentPermission'])
+        try{
+            $permissionRequests = StudentPermissionRequest::with(['user', 'studentPermission'])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -54,5 +55,14 @@ class PermissionRequestController extends Controller
             'maleRejectedPermissionRequestsCount',
             'femaleRejectedPermissionRequestsCount'
         ));
+        }catch (Exception $e) {
+            Log::error('Error retrieving permissions page data: ' . $e->getMessage(), [
+                'exception' => $e,
+                'stack' => $e->getTraceAsString(),
+            ]);
+
+            return response()->view('errors.505');
+        }
+        
     }
 }
