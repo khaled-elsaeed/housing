@@ -78,7 +78,7 @@ class UniversityArchivePhpspreadsheetSeeder extends Seeder
     {
         DB::table('documents')->insert([
             'user_id' => $user->id,
-            'file_path' => $filePath,
+            'document_path' => $filePath,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -154,6 +154,7 @@ class UniversityArchivePhpspreadsheetSeeder extends Seeder
             'last_name_en' => $lastNameEn,
             'first_name_ar' => $firstNameAr,
             'last_name_ar' => $lastNameAr,
+            'gender' => $data[4],
             'is_active' => 1,
             'is_verified' => 1,
             'created_at' => now(),

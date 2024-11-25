@@ -13,31 +13,41 @@ class ApplicantController extends Controller
     public function index()
     {
         try {
-            $applicants = $this->fetchApplicants();
+            $applicants = User::role('resident')
+                ->with(['student'])
+                ->leftJoin('students', 'students.user_id', '=', 'users.id')
+                ->orderBy('users.created_at', 'desc')
+                ->select('users.*', 'students.application_status')
+                ->get()
+                ->map(function ($applicant) {
+                    $applicant->has_student_profile = $applicant->hasStudentProfile();
+                    return $applicant;
+                });
 
             $totalApplicants = $applicants->count();
-            $maleCount = $this->countByGender($applicants, 'male');
-            $femaleCount = $this->countByGender($applicants, 'female');
+            $totalMaleCount = $applicants->where('gender', 'male')->count();
+            $totalFemaleCount = $applicants->where('gender', 'female')->count();
+            $totalPendingCount = $applicants->where('application_status', 'pending')->count();
+            $totalPreliminaryAcceptedCount = $applicants->where('application_status', 'preliminary_accepted')->count();
+            $totalFinalAcceptedCount = $applicants->where('application_status', 'final_accepted')->count();
 
-            $totalPendingCount = $this->countByStatus($applicants, 'pending');
-            $totalPreliminaryAcceptedCount = $this->countByStatus($applicants, 'preliminary_accepted');
-            $totalFinalAcceptedCount = $this->countByStatus($applicants, 'final_accepted');
+            $malePreliminaryAcceptedCount = $applicants->where('gender', 'male')->where('application_status', 'preliminary_accepted')->count();
+            $malePendingCount = $applicants->where('gender', 'male')->where('application_status', 'pending')->count();
+            $maleFinalAcceptedCount = $applicants->where('gender', 'male')->where('application_status', 'final_accepted')->count();
 
-            $malePreliminaryAcceptedCount = $this->countByGenderAndStatus($applicants, 'male', 'preliminary_accepted');
-            $malePendingCount = $this->countByGenderAndStatus($applicants, 'male', 'pending');
-            $maleFinalAcceptedCount = $this->countByGenderAndStatus($applicants, 'male', 'final_accepted');
+            $femalePreliminaryAcceptedCount = $applicants->where('gender', 'female')->where('application_status', 'preliminary_accepted')->count();
+            $femalePendingCount = $applicants->where('gender', 'female')->where('application_status', 'pending')->count();
+            $femaleFinalAcceptedCount = $applicants->where('gender', 'female')->where('application_status', 'final_accepted')->count();
 
-            $femaleFinalAcceptedCount = $this->countByGenderAndStatus($applicants, 'female', 'final_accepted');
-            $femalePreliminaryAcceptedCount = $this->countByGenderAndStatus($applicants, 'female', 'preliminary_accepted');
-            $femalePendingCount = $this->countByGenderAndStatus($applicants, 'female', 'pending');
+            $filteredApplicants = $applicants->whereIn('application_status', ['pending', 'preliminary_accepted']);
 
             return view(
                 'admin.applicant.view',
                 compact(
                     'applicants',
                     'totalApplicants',
-                    'maleCount',
-                    'femaleCount',
+                    'totalMaleCount',
+                    'totalFemaleCount',
                     'totalPendingCount',
                     'totalPreliminaryAcceptedCount',
                     'totalFinalAcceptedCount',
@@ -46,63 +56,17 @@ class ApplicantController extends Controller
                     'maleFinalAcceptedCount',
                     'femalePreliminaryAcceptedCount',
                     'femalePendingCount',
-                    'femaleFinalAcceptedCount'
+                    'femaleFinalAcceptedCount',
+                    'filteredApplicants'
                 )
             );
-        } catch (\Exception $e) {
-            Log::error('Error displaying applicant page', [
-                'exception' => $e->getMessage(),
-                'stack_trace' => $e->getTraceAsString(),
+        } catch (Exception $e) {
+            Log::error('Error retrieving applicant page data: ' . $e->getMessage(), [
+                'exception' => $e,
+                'stack' => $e->getTraceAsString(),
             ]);
-            return response()->view('errors.500', [], 500);
-        }
-    }
 
-    private function countByGender($applicants, $gender)
-    {
-        return $applicants
-            ->filter(function ($applicant) use ($gender) {
-                return strtolower($applicant->gender) === strtolower($gender);
-            })
-            ->count();
-    }
-
-    private function countByStatus($applicants, $status)
-    {
-        return $applicants
-            ->filter(function ($applicant) use ($status) {
-                return strtolower(optional($applicant->student)->application_status) === strtolower($status);
-            })
-            ->count();
-    }
-
-    private function countByGenderAndStatus($applicants, $gender, $status)
-    {
-        return $applicants
-            ->filter(function ($applicant) use ($gender, $status) {
-                return strtolower($applicant->gender) === strtolower($gender) && strtolower(optional($applicant->student)->application_status) === strtolower($status);
-            })
-            ->count();
-    }
-
-    private function fetchApplicants()
-    {
-        try {
-            return User::role('resident')
-                ->with(['student'])
-                ->orderBy('created_at', 'desc')
-                ->get()
-                ->map(function ($applicant) {
-                    $applicant->has_student_profile = $applicant->hasStudentProfile();
-                    $applicant->gender = optional($applicant->student)->gender ?? 'N/A';
-                    return $applicant;
-                });
-        } catch (\Exception $e) {
-            Log::error('Error fetching applicants', [
-                'exception' => $e->getMessage(),
-                'stack_trace' => $e->getTraceAsString(),
-            ]);
-            return collect(); 
+            return response()->view('error.page_init');
         }
     }
 
@@ -135,65 +99,6 @@ class ApplicantController extends Controller
         }
     }
 
-    public function getApplicantAcademicEmail($id)
-    {
-        try {
-            $applicant = User::findOrFail($id);
-            $academicEmail = $applicant->student->universityArchive->academic_email ?? null;
-            $hasAcademicEmail = !is_null($academicEmail);
-
-            return response()->json([
-                'academic_email' => $academicEmail,
-                'has_academic_email' => $hasAcademicEmail,
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Error fetching applicant university email', [
-                'exception' => $e->getMessage(),
-                'stack_trace' => $e->getTraceAsString(),
-                'applicant_id' => $id
-            ]);
-            return response()->json(['error' => 'Failed to fetch applicant email'], 500);
-        }
-    }
-
-    public function updateApplicantEmail(Request $request)
-    {
-        try {
-            $validated = $request->validate([
-                'email-option' => 'required|string|in:manual,university',
-                'manual-email' => 'nullable|email',
-                'university-email' => 'nullable|email',
-                'applicant-id' => 'required|integer|exists:users,id',
-            ]);
-
-            $applicantId = $request->input('applicant-id');
-            $applicant = User::findOrFail($applicantId);
-
-            $newEmail = null;
-
-            if ($request->input('email-option') == 'manual') {
-                $newEmail = $request->input('manual-email');
-            } elseif ($request->input('email-option') == 'university') {
-                $newEmail = $request->input('university-email');
-            }
-
-            if (!$newEmail) {
-                return response()->json(['message' => 'No email provided for the selected option'], 400);
-            }
-
-            $applicant->email = filter_var($newEmail, FILTER_SANITIZE_EMAIL);
-            $applicant->save();
-
-            return response()->json(['message' => 'Email updated successfully']);
-        } catch (\Exception $e) {
-            Log::error('Error updating applicant email', [
-                'exception' => $e->getMessage(),
-                'stack_trace' => $e->getTraceAsString(),
-            ]);
-            return response()->json(['error' => 'Failed to update email'], 500);
-        }
-    }
-
     public function getApplicantMoreDetails($id)
     {
         try {
@@ -213,19 +118,18 @@ class ApplicantController extends Controller
                 'street' => $applicant->student->street ?? 'Not available',
             ];
             
-                return response()->json([
-                    'success' => true,
-                    'data' => $details
-                ]);
-            } catch (\Exception $e) {
+            return response()->json([
+                'success' => true,
+                'data' => $details
+            ]);
+        } catch (\Exception $e) {
             Log::error('Error fetching applicant details', [
                 'exception' => $e->getMessage(),
                 'stack_trace' => $e->getTraceAsString(),
                 'applicant_id' => $id
             ]);
-    
+
             return response()->json(['error' => 'Applicant not found or an error occurred', 'user' => $id], 404);
         }
     }
 }
-

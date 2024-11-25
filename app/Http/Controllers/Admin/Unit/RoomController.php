@@ -13,118 +13,53 @@ class RoomController extends Controller
 {
     public function index()
     {
-        // Fetch all rooms with related data
-        $rooms = Room::with(['apartment.building'])->get();
-
-        // Get unique building numbers
-        $buildingNumbers = Room::with('apartment.building')
-            ->get()
-            ->pluck('apartment.building.number') // Adjust 'number' to match your building attribute name
-            ->unique()
-            ->sort()
-            ->values()
-            ->all();
-
-        // Get unique apartment numbers
-        $apartmentNumbers = Room::with('apartment')
-            ->get()
-            ->pluck('apartment.number') // Adjust 'number' to match your apartment attribute name
-            ->unique()
-            ->sort()
-            ->values()
-            ->all();
-
-        // Initialize counts
-        $singleRoomCount = 0;
-        $doubleRoomCount = 0;
-        $underMaintenanceCount = 0;
-
-        // Occupancy tracking
-        $singleRoomOccupiedMales = 0;
-        $singleRoomOccupiedFemales = 0;
-        $doubleRoomOccupiedMales = 0;
-        $doubleRoomOccupiedFemales = 0;
-        $singleRoomEmptyMales = 0;
-        $singleRoomEmptyFemales = 0;
-        $doubleRoomEmptyMales = 0;
-        $doubleRoomEmptyFemales = 0;
-
-        // Partially occupied counts for double rooms
-        $doubleRoomPartiallyOccupiedMales = 0;
-        $doubleRoomPartiallyOccupiedFemales = 0;
-
-        // Maintenance counts
-        $underMaintenanceSingleMales = 0;
-        $underMaintenanceSingleFemales = 0;
-        $underMaintenanceDoubleMales = 0;
-        $underMaintenanceDoubleFemales = 0;
-
-        foreach ($rooms as $room) {
-            // Get gender information safely with optional
-            $gender = optional($room->apartment->building)->gender;
-
-            // Count total rooms by type
-            if ($room->type === 'single') {
-                $singleRoomCount++;
-                if ($room->status === 'active') {
-                    // Increment occupied counts based on gender
-                    if ($gender === 'male') {
-                        $singleRoomOccupiedMales++;
-                    } elseif ($gender === 'female') {
-                        $singleRoomOccupiedFemales++;
-                    }
-                } elseif ($room->status === 'empty') {
-                    // Increment empty counts based on gender
-                    if ($gender === 'male') {
-                        $singleRoomEmptyMales++;
-                    } elseif ($gender === 'female') {
-                        $singleRoomEmptyFemales++;
-                    }
-                }
-            } elseif ($room->type === 'double') {
-                $doubleRoomCount++;
-                if ($room->status === 'active') {
-                    if ($gender === 'male') {
-                        $doubleRoomOccupiedMales++;
-                    } elseif ($gender === 'female') {
-                        $doubleRoomOccupiedFemales++;
-                    }
-                } elseif ($room->status === 'partially occupied') {
-                    // Increment partially occupied counts based on gender
-                    if ($gender === 'male') {
-                        $doubleRoomPartiallyOccupiedMales++;
-                    } elseif ($gender === 'female') {
-                        $doubleRoomPartiallyOccupiedFemales++;
-                    }
-                } elseif ($room->status === 'empty') {
-                    // Increment empty counts based on gender
-                    if ($gender === 'male') {
-                        $doubleRoomEmptyMales++;
-                    } elseif ($gender === 'female') {
-                        $doubleRoomEmptyFemales++;
-                    }
-                }
-            }
-
-            // Count rooms under maintenance
-            if ($room->status === 'under_maintenance') {
-                $underMaintenanceCount++;
-                if ($room->type === 'single') {
-                    if ($gender === 'male') {
-                        $underMaintenanceSingleMales++;
-                    } elseif ($gender === 'female') {
-                        $underMaintenanceSingleFemales++;
-                    }
-                } elseif ($room->type === 'double') {
-                    if ($gender === 'male') {
-                        $underMaintenanceDoubleMales++;
-                    } elseif ($gender === 'female') {
-                        $underMaintenanceDoubleFemales++;
-                    }
-                }
-            }
-        }
-
+        try{
+            $rooms = Room::with(['apartment.building'])->get();
+    
+        // Get unique building and apartment numbers
+        $buildingNumbers = $rooms->pluck('apartment.building.number')->unique()->sort()->values();
+        $apartmentNumbers = $rooms->pluck('apartment.number')->unique()->sort()->values();
+    
+        // Count rooms by type
+        $singleRoomCount = $rooms->where('type', 'single')->count();
+        $doubleRoomCount = $rooms->where('type', 'double')->count();
+    
+        // Count under maintenance rooms
+        $underMaintenanceCount = $rooms->where('status', 'under_maintenance')->count();
+    
+        // Filter rooms by type and gender
+        $singleRooms = $rooms->where('type', 'single');
+        $doubleRooms = $rooms->where('type', 'double');
+    
+        $maleSingleRooms = $singleRooms->filter(fn($room) => optional($room->apartment->building)->gender === 'male');
+        $femaleSingleRooms = $singleRooms->filter(fn($room) => optional($room->apartment->building)->gender === 'female');
+    
+        $maleDoubleRooms = $doubleRooms->filter(fn($room) => optional($room->apartment->building)->gender === 'male');
+        $femaleDoubleRooms = $doubleRooms->filter(fn($room) => optional($room->apartment->building)->gender === 'female');
+    
+        // Count occupancy statuses
+        $singleRoomOccupiedMales = $maleSingleRooms->where('status', 'active')->count();
+        $singleRoomOccupiedFemales = $femaleSingleRooms->where('status', 'active')->count();
+    
+        $singleRoomEmptyMales = $maleSingleRooms->where('status', 'empty')->count();
+        $singleRoomEmptyFemales = $femaleSingleRooms->where('status', 'empty')->count();
+    
+        $doubleRoomOccupiedMales = $maleDoubleRooms->where('status', 'active')->count();
+        $doubleRoomOccupiedFemales = $femaleDoubleRooms->where('status', 'active')->count();
+    
+        $doubleRoomPartiallyOccupiedMales = $maleDoubleRooms->where('status', 'partially occupied')->count();
+        $doubleRoomPartiallyOccupiedFemales = $femaleDoubleRooms->where('status', 'partially occupied')->count();
+    
+        $doubleRoomEmptyMales = $maleDoubleRooms->where('status', 'empty')->count();
+        $doubleRoomEmptyFemales = $femaleDoubleRooms->where('status', 'empty')->count();
+    
+        // Count under maintenance by type and gender
+        $underMaintenanceSingleMales = $maleSingleRooms->where('status', 'under_maintenance')->count();
+        $underMaintenanceSingleFemales = $femaleSingleRooms->where('status', 'under_maintenance')->count();
+    
+        $underMaintenanceDoubleMales = $maleDoubleRooms->where('status', 'under_maintenance')->count();
+        $underMaintenanceDoubleFemales = $femaleDoubleRooms->where('status', 'under_maintenance')->count();
+    
         return view('admin.unit.room', compact(
             'rooms',
             'buildingNumbers',
@@ -147,7 +82,17 @@ class RoomController extends Controller
             'underMaintenanceDoubleMales',
             'underMaintenanceDoubleFemales'
         ));
+    } catch (Exception $e) {
+        Log::error('Error retrieving admin room page data: ' . $e->getMessage(), [
+            'exception' => $e,
+            'stack' => $e->getTraceAsString(),
+        ]);
+
+        return view('error.page_init');
     }
+        
+    }
+    
 
     public function destroy($id)
     {
@@ -162,15 +107,20 @@ class RoomController extends Controller
         }
     }
     
-    public function updateStatus(Request $request)
+    public function updateRoomDetails(Request $request)
     {
         $request->validate([
             'room_id' => 'required|exists:rooms,id',
-            'status' => 'required|in:active,inactive,under_maintenance'
+            'status' => 'required|in:active,inactive,under_maintenance',
+            'type' => 'required|in:single,double',
+            'purpose' => 'required|in:accommodation,office,utility'
         ]);
     
         $room = Room::find($request->room_id);
         $room->status = $request->status;
+        $room->type = $request->type;
+        $room->purpose = $request->purpose;
+
         $room->save();
     
         return response()->json([

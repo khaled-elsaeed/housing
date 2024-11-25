@@ -7,7 +7,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-class ApplicantsExport
+class ApplicantDocumentsExport
 {
     public function downloadExcel()
     {
@@ -20,11 +20,9 @@ class ApplicantsExport
         $sheet->setCellValue('D1', 'Email');
         $sheet->setCellValue('E1', 'Mobile');
 
-        $applicants = User::role('resident')
-            ->whereHas('student', function ($query) {
-                $query->whereIn('application_status', ['pending', 'preliminary_accepted']);
-            })
-            ->get();
+        $applicants = User::whereHas('documents') 
+                         ->role('resident') 
+                         ->get();
 
         $row = 2;
         foreach ($applicants as $applicant) {
@@ -40,6 +38,7 @@ class ApplicantsExport
         header('Content-Disposition: attachment;filename="applicants.xlsx"');
         header('Cache-Control: max-age=0');
 
+        // Output the file
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
         exit;
@@ -47,14 +46,11 @@ class ApplicantsExport
 
     public function downloadPDF()
     {
-        $applicants = User::role('resident')
-            ->whereHas('student', function ($query) {
-                $query->whereIn('application_status', ['pending', 'preliminary_accepted']);
-            })
-            ->get();
-
+        // Get only users who have uploaded documents (assuming there's a "documents" relationship)
+        $applicants = User::whereHas('documents')->get(); // Filter only users with documents
         $pdf = Pdf::loadView('reports.applicants_report', compact('applicants'));
         $pdf->setPaper('a4', 'portrait');
-        return $pdf->download('applicants_report.pdf');
+        return $pdf;
     }
 }
+

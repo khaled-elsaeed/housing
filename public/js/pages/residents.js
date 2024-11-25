@@ -66,20 +66,21 @@ $(document).ready(function() {
      }
 
 
-    function showMoreDetails(applicantId) {
+    function showMoreDetails(residentId) {
+        const url = window.routes.getResidentMoreDetails.replace(':id', residentId);
 
         toggleButtonLoading($('#details-btn'), true);
         $.ajax({
-            url: window.routes.getApplicantMoreDetails.replace(':id', applicantId),
+            url: url,
             type: 'GET',
             success: function(response) {
 
-                populateApplicantDetails(response.data);
+                populateResidentDetails(response.data);
                 $('#details-modal').modal('show');
             },
             error: function(xhr, status, error) {
                 console.error('Details fetch error:', error);
-                alert('Failed to fetch applicant details. Please try again.');
+                alert('Failed to fetch resident details. Please try again.');
             },
             complete: function() {
                 toggleButtonLoading($('#details-btn'), false);
@@ -88,7 +89,7 @@ $(document).ready(function() {
     }
 
 
-    function populateApplicantDetails(data) {
+    function populateResidentDetails(data) {
         $('#faculty').val(data.faculty);
         $('#program').val(data.program);
         $('#score').val(data.score);
@@ -97,7 +98,7 @@ $(document).ready(function() {
         $('#city').val(data.city);
         $('#street').val(data.street);
 
-        $('#applicantDetailsModal').modal('show');
+        $('#residentDetailsModal').modal('show');
 
     }
 
@@ -107,20 +108,21 @@ $(document).ready(function() {
 
         const downloadBtn = $('#downloadBtn');
 
-        exportFile(downloadBtn, window.routes.exportExcel, 'applicants.xlsx');
+        exportFile(downloadBtn, window.routes.exportExcel, 'residents.xlsx');
 
         $(downloadBtn).next('.dropdown-menu').removeClass('show');
     });
 
     $('#exportPDF').on('click', function(e) {
         e.preventDefault();
-        exportFile($('#downloadBtn'), window.routes.exportPdf, 'applicants.pdf');
+        exportFile($('#downloadBtn'), window.routes.exportPdf, 'residents.pdf');
     });
 
 
     $(document).on('click', '#details-btn', function() {
-        const applicantId = $(this).data('applicant-id');
-        showMoreDetails(applicantId);
+        const residentId = $(this).data('resident-id');
+        showMoreDetails(residentId);
 
     });
+
 });

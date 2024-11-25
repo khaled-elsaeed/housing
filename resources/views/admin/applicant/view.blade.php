@@ -37,18 +37,18 @@
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">Pending</span>
+                        <span class="font-13">Male</span>
                      </div>
                      <div class="col-6 text-end">
-                        <span class="font-13"><i class="feather icon-clock text-warning "></i> {{ $totalPendingCount }}</span>
+                        <span class="font-13"><i class="feather icon-clock text-warning "></i> {{ $totalMaleCount }}</span>
                      </div>
                   </div>
                   <div class="row align-items-center">
-                     <div class="col-9 text-start">
-                        <span class="font-13">Preliminary Accepted</span>
+                     <div class="col-6 text-start">
+                        <span class="font-13">Female</span>
                      </div>
-                     <div class="col-3 text-end">
-                        <span class="font-13"><i class="feather feather icon-check-circle text-success "></i> {{ $totalPreliminaryAcceptedCount }}</span>
+                     <div class="col-6 text-end">
+                        <span class="font-13"><i class="feather icon-check-circle text-success "></i> {{ $totalFemaleCount }}</span>
                      </div>
                   </div>
                </div>
@@ -64,26 +64,26 @@
                         <span class="action-icon badge badge-success-inverse me-0"><i class="feather icon-award"></i></span>
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
-                        <h5 class="card-title font-14">Males</h5>
-                        <h4 class="mb-0">{{ $maleCount }}</h4>
+                        <h5 class="card-title font-14">Pending</h5>
+                        <h4 class="mb-0">{{ $totalPendingCount }}</h4>
                      </div>
                   </div>
                </div>
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">Pending</span>
+                        <span class="font-13">Male</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13"><i class="feather icon-clock text-warning "></i> {{ $malePendingCount }}</span>
                      </div>
                   </div>
                   <div class="row align-items-center">
-                     <div class="col-9 text-start">
-                        <span class="font-13">Preliminary Accepted</span>
+                     <div class="col-6 text-start">
+                        <span class="font-13">Female</span>
                      </div>
-                     <div class="col-3 text-end">
-                        <span class="font-13"><i class="feather feather icon-check-circle text-success "></i> {{ $malePreliminaryAcceptedCount }}</span>
+                     <div class="col-6 text-end">
+                        <span class="font-13"><i class="feather icon-check-circle text-success "></i> {{ $femalePendingCount }}</span>
                      </div>
                   </div>
                </div>
@@ -99,26 +99,26 @@
                         <span class="action-icon badge badge-warning-inverse me-0"><i class="feather icon-briefcase"></i></span>
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
-                        <h5 class="card-title font-14">Females</h5>
-                        <h4 class="mb-0">{{ $femaleCount }}</h4>
+                        <h5 class="card-title font-14">Preliminary Accepted</h5>
+                        <h4 class="mb-0">{{ $totalPreliminaryAcceptedCount }}</h4>
                      </div>
                   </div>
                </div>
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">Pending</span>
+                        <span class="font-13">Male</span>
                      </div>
                      <div class="col-6 text-end">
-                        <span class="font-13"><i class="feather icon-clock text-warning "></i> {{ $femalePendingCount }}</span>
+                        <span class="font-13"><i class="feather icon-clock text-warning "></i> {{ $malePreliminaryAcceptedCount }}</span>
                      </div>
                   </div>
                   <div class="row align-items-center">
-                     <div class="col-9 text-start">
-                        <span class="font-13">Preliminary Accepted</span>
+                     <div class="col-6 text-start">
+                        <span class="font-13">Female</span>
                      </div>
-                     <div class="col-3 text-end">
-                        <span class="font-13"><i class="feather feather icon-check-circle text-success "></i> {{ $femalePreliminaryAcceptedCount }}</span>
+                     <div class="col-6 text-end">
+                        <span class="font-13"><i class="feather icon-check-circle text-success "></i> {{ $femalePreliminaryAcceptedCount }}</span>
                      </div>
                   </div>
                </div>
@@ -135,25 +135,25 @@
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
                         <h5 class="card-title font-14">Final Accepted</h5>
-                        <h4 class="mb-0">{{$totalFinalAcceptedCount}}</h4>
+                        <h4 class="mb-0">{{ $totalFinalAcceptedCount }}</h4>
                      </div>
                   </div>
                </div>
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">Males</span>
+                        <span class="font-13">Male</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13"><i class="feather icon-clock text-warning "></i> {{ $maleFinalAcceptedCount }}</span>
                      </div>
                   </div>
                   <div class="row align-items-center">
-                     <div class="col-9 text-start">
-                        <span class="font-13">Females</span>
+                     <div class="col-6 text-start">
+                        <span class="font-13">Female</span>
                      </div>
-                     <div class="col-3 text-end">
-                        <span class="font-13"><i class="feather feather icon-check-circle text-success "></i> {{ $femaleFinalAcceptedCount }}</span>
+                     <div class="col-6 text-end">
+                        <span class="font-13"><i class="feather icon-check-circle text-success "></i> {{ $femaleFinalAcceptedCount }}</span>
                      </div>
                   </div>
                </div>
@@ -226,7 +226,7 @@
                      </tr>
                   </thead>
                   <tbody>
-                     @foreach($applicants as $applicant)
+                     @foreach($filteredApplicants as $applicant)
                      <tr>
                         <td>{{ $applicant->student->name_en ?? 'N/A' }}</td>
                         <td>{{ $applicant->student->national_id ?? 'N/A' }}</td>

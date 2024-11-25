@@ -10,17 +10,28 @@ use App\Http\Controllers\Auth\{
 };
 use App\Http\Controllers\Admin\{
     AdminHomeController,
+    AdminProfileController,
+    AdminSettingsController,
+    AdminMaintenanceController,
+
 };
+
 use App\Http\Controllers\Admin\Applicant\{
     ApplicantController,
     ApplicantDocumentController,
+    
 };
-use App\Http\Controllers\Student\StudentHomeController;
+
+
 use App\Http\Controllers\Admin\Unit\{
     BuildingController,
     ApartmentController,
     RoomController
 };
+
+use App\Http\Controllers\Admin\PermissionRequest\PermissionRequestController;
+
+use App\Http\Controllers\Admin\Resident\ResidentController;
 
 // Welcome Route
 Route::get('/welcome', function () {
@@ -50,9 +61,15 @@ Route::middleware(['auth'])->group(function () {
         // Admin Dashboard and Applicant Routes
         Route::get('/home', [AdminHomeController::class, 'index'])->name('home');
         Route::get('/applicant', [ApplicantController::class, 'index'])->name('applicant.view');
-        Route::get('/applicant/documents', [ApplicantDocumentController::class, 'index'])->name('applicant.documents.view');
-        Route::get('/admin/applicant/documents/{id}', [ApplicantDocumentController::class, 'getDocuments'])->name('applicant.documents.get-documents');
+        Route::get('/applicant/documents', [ApplicantDocumentController::class, 'index'])->name('applicant.document.view');
+        Route::get('/applicants/documents/excel', [ApplicantDocumentController::class, 'downloadApplicantsExcel'])->name('applicant.document.excel');
 
+        Route::get('/applicant/documents/{id}', [ApplicantDocumentController::class, 'getDocuments'])->name('applicant.document.get-documents');
+        Route::get('/profile', [AdminProfileController::class, 'index'])->name('profile');
+        // Update profile
+        Route::put('/profile/update', [AdminProfileController::class, 'update'])->name('profile.update');
+        Route::post('profile/update-picture', [AdminProfileController::class, 'updateProfilePicture'])->name('profile.update-picture');
+        Route::delete('profile/delete-picture', [AdminProfileController::class, 'deleteProfilePicture'])->name('profile.delete-picture');
         // Unit Management (Building, Apartment, Room Routes)
         Route::prefix('unit')->name('unit.')->group(function () {
             // Building Routes
@@ -80,13 +97,50 @@ Route::middleware(['auth'])->group(function () {
                 Route::post('/store', [RoomController::class, 'store'])->name('room.store');
                 Route::delete('/delete/{id}', [RoomController::class, 'destroy'])->name('room.destroy');
                 Route::get('/export', [RoomController::class, 'downloadRoomsExcel'])->name('room.export-excel');
-                Route::post('/update-status', [RoomController::class, 'updateStatus'])->name('room.update-status');
+                Route::post('/update-details', [RoomController::class, 'updateRoomDetails'])->name('room.update-details');
                 Route::post('/update-note', [RoomController::class, 'updateNote'])->name('room.update-note');
             });
 
             // Room Routes
             Route::get('/room', [RoomController::class, 'index'])->name('room');
         });
+
+
+Route::prefix('residents')->name('residents.')->group(function () {
+
+    // Route to display the list of residents
+    Route::get('/', [ResidentController::class, 'index'])->name('index');
+
+    // Route to download residents' data as an Excel file
+    Route::get('/export/excel', [ResidentController::class, 'downloadResidentsExcel'])->name('export-excel');
+
+    // Route to download residents' data as a PDF file
+    Route::get('/export/pdf', [ResidentController::class, 'downloadResidentsPDF'])->name('export.pdf');
+
+    // Route to get more details about a specific resident
+    Route::get('/details/{id}', [ResidentController::class, 'getResidentMoreDetails'])->name('more-details');
+});
+
+
+         // Index page for listing all permission requests
+    Route::get('/permissions', [PermissionRequestController::class, 'index'])->name('permissions.index');
+
+    // Show a specific permission request details
+    Route::get('/permissions/{id}', [PermissionRequestController::class, 'show'])->name('permissions.show');
+
+    // Update the status of a permission request (Approve or Reject)
+    Route::post('/permissions/{id}/approve', [PermissionRequestController::class, 'approve'])->name('permissions.approve');
+    Route::post('/permissions/{id}/reject', [PermissionRequestController::class, 'reject'])->name('permissions.reject');
+
+
+
+
+       Route::get('/maintenance',[AdminMaintenanceController::class,'index'])->name('maintenance.index');
+       Route::get('/maintenance/excel',[AdminMaintenanceController::class,'downloadMaintenanceRequestsExcel'])->name('maintenance.excel');
+       Route::put('maintenance/update-status/{id}', [AdminMaintenanceController::class, 'updateStatus'])
+       ->name('maintenance.updateStatus');
+        Route::get('settings', [AdminSettingsController::class, 'index'])->name('setting');
+    Route::post('settings/reservation-update', [AdminSettingsController::class, 'updateReservationSettings'])->name('setting.update-reservation');
     });
 
     // Student Routes

@@ -21,9 +21,8 @@ $(document).ready(function() {
         icon.classList.add("fa-search-plus");
     });
 
-    // Search functionality for DataTable using custom search box
     $('#searchBox').on('keyup', function() {
-        table.search(this.value).draw(); // Use the DataTable API to search
+        table.search(this.value).draw(); 
     });
 
     

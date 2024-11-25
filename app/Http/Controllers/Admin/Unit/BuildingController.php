@@ -8,6 +8,7 @@ use App\Models\Room;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Exports\Units\BuildingsExport;
+use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Log;
 
@@ -17,26 +18,31 @@ class BuildingController extends Controller
     {
         try {
             $buildings = Building::all();
-
+    
             $totalBuildings = $buildings->count();
-            $activeBuildingsCount = $this->countBuildingsByCriteria($buildings, 'status', 'active');
-            $inactiveBuildingsCount = $this->countBuildingsByCriteria($buildings, 'status', 'inactive');
-            $underMaintenanceCount = $this->countBuildingsByCriteria($buildings, 'status', 'under_maintenance');
-
-            $maleBuildingCount = $this->countBuildingsByCriteria($buildings, 'gender', 'male');
-            $femaleBuildingCount = $this->countBuildingsByCriteria($buildings, 'gender', 'female');
-
-            $maleActiveCount = $this->countBuildingsByCriteria($buildings, 'gender', 'male', 'status', 'active');
-            $maleInactiveCount = $this->countBuildingsByCriteria($buildings, 'gender', 'male', 'status', 'inactive');
-
-            $femaleActiveCount = $this->countBuildingsByCriteria($buildings, 'gender', 'female', 'status', 'active');
-            $femaleInactiveCount = $this->countBuildingsByCriteria($buildings, 'gender', 'female', 'status', 'inactive');
-
-            $maleUnderMaintenanceCount = $this->countBuildingsByCriteria($buildings, 'gender', 'male', 'status', 'under_maintenance');
-            $femaleUnderMaintenanceCount = $this->countBuildingsByCriteria($buildings, 'gender', 'female', 'status', 'under_maintenance');
-
+            $activeBuildingsCount = $buildings->where('status', 'active')->count();
+            $inactiveBuildingsCount = $buildings->where('status', 'inactive')->count();
+            $underMaintenanceCount = $buildings->where('status', 'under_maintenance')->count();
+    
+            // Filtering by gender
+            $maleBuildings = $buildings->where('gender', 'male');
+            $femaleBuildings = $buildings->where('gender', 'female');
+    
+            $maleBuildingCount = $maleBuildings->count();
+            $femaleBuildingCount = $femaleBuildings->count();
+    
+            // Further filtering by status
+            $maleActiveCount = $maleBuildings->where('status', 'active')->count();
+            $maleInactiveCount = $maleBuildings->where('status', 'inactive')->count();
+            $maleUnderMaintenanceCount = $maleBuildings->where('status', 'under_maintenance')->count();
+    
+            $femaleActiveCount = $femaleBuildings->where('status', 'active')->count();
+            $femaleInactiveCount = $femaleBuildings->where('status', 'inactive')->count();
+            $femaleUnderMaintenanceCount = $femaleBuildings->where('status', 'under_maintenance')->count();
+    
+            // Total maintenance count
             $maintenanceCount = $maleUnderMaintenanceCount + $femaleUnderMaintenanceCount;
-
+    
             return view('admin.unit.building', compact(
                 'buildings',
                 'totalBuildings',
@@ -53,26 +59,28 @@ class BuildingController extends Controller
                 'femaleUnderMaintenanceCount',
                 'maintenanceCount'
             ));
-        } catch (\Exception $e) {
-            Log::error('Error fetching building data for builidng index page : ' . $e->getMessage(), [
+        } catch (Exception $e) {
+            Log::error('Error retrieving admin building page data: ' . $e->getMessage(), [
+                'exception' => $e,
                 'stack' => $e->getTraceAsString(),
-                'user' => auth()->user() ? auth()->user()->id : 'Guest',
-            ]);            
-            return redirect()->route('error.page') 
-            ->with('error', 'An error occurred while fetching building data. Please try again later or contact IT support.');
+            ]);
+    
+            return view('error.page_init');
         }
-        
     }
+    
 
-    public function store(Request $request)
+
+public function store(Request $request)
 {
     $validated = $request->validate([
-        'building_number' => 'required',
+        'building_number' => 'required|integer',
         'gender' => 'required',
         'max_apartments' => 'required|integer',
         'max_rooms_per_apartment' => 'required|integer',
     ]);
 
+    
     $existingBuilding = Building::where('number', $request->building_number)->first();
 
     if ($existingBuilding) {
@@ -82,7 +90,11 @@ class BuildingController extends Controller
         ], 422); 
     }
 
+    
+    DB::beginTransaction();
+
     try {
+        
         $building = Building::create([
             'number' => $request->building_number,
             'gender' => $request->gender,
@@ -90,7 +102,11 @@ class BuildingController extends Controller
             'max_rooms_per_apartment' => $request->max_rooms_per_apartment,
         ]);
 
+        
         $this->createApartments($building, $request->max_apartments, $request->max_rooms_per_apartment);
+
+        
+        DB::commit();
 
         return response()->json([
             'success' => true,
@@ -99,6 +115,9 @@ class BuildingController extends Controller
         ]);
 
     } catch (\Exception $e) {
+        
+        DB::rollBack();
+
         Log::error('Error adding building: ' . $e->getMessage());
         return response()->json([
             'success' => false,
@@ -107,10 +126,20 @@ class BuildingController extends Controller
     }
 }
 
+
 private function createApartments(Building $building, $maxApartments, $maxRoomsPerApartment)
 {
     try {
         for ($i = 1; $i <= $maxApartments; $i++) {
+            
+            $existingApartment = Apartment::where('building_id', $building->id)
+                ->where('number', $i)
+                ->exists();
+
+            if ($existingApartment) {
+                throw new \Exception("Duplicate apartment number {$i} detected in building {$building->id}");
+            }
+
             $apartment = Apartment::create([
                 'building_id' => $building->id,
                 'number' => $i,
@@ -119,18 +148,29 @@ private function createApartments(Building $building, $maxApartments, $maxRoomsP
                 'status' => 'active',
             ]);
 
+            
             $this->createRooms($apartment, $maxRoomsPerApartment);
         }
     } catch (\Exception $e) {
         Log::error('Error creating apartments: ' . $e->getMessage());
-        throw new \Exception('Error creating apartments.');
+        throw $e; 
     }
 }
+
 
 private function createRooms(Apartment $apartment, $maxRooms)
 {
     try {
         for ($j = 1; $j <= $maxRooms; $j++) {
+            
+            $existingRoom = Room::where('apartment_id', $apartment->id)
+                ->where('number', $j)
+                ->exists();
+
+            if ($existingRoom) {
+                throw new \Exception("Duplicate room number {$j} detected in apartment {$apartment->id}");
+            }
+
             Room::create([
                 'apartment_id' => $apartment->id,
                 'number' => $j,
@@ -143,24 +183,12 @@ private function createRooms(Apartment $apartment, $maxRooms)
         }
     } catch (\Exception $e) {
         Log::error('Error creating rooms: ' . $e->getMessage());
-        throw new \Exception('Error creating rooms.');
+        throw $e; 
     }
 }
 
 
-    private function countBuildingsByCriteria($buildings, $key, $value, $secondKey = null, $secondValue = null)
-    {
-        try {
-            $filtered = $buildings->where($key, $value);
-            if ($secondKey && $secondValue) {
-                $filtered = $filtered->where($secondKey, $secondValue);
-            }
-            return $filtered->count();
-        } catch (\Exception $e) {
-            Log::error('Error counting buildings by criteria: ' . $e->getMessage());
-            return 0;
-        }
-    }
+
 
     public function destroy($id)
 {

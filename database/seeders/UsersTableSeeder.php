@@ -35,6 +35,7 @@ class UsersTableSeeder extends Seeder
             'last_name_ar' => $last_name_ar,
             'first_name_en' => $first_name_en,
             'last_name_en' => $last_name_en,
+            'gender' => 'male',
             'password' => bcrypt('password'),
             'is_active' => true,
             'profile_picture' => null,

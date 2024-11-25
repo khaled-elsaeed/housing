@@ -1,19 +1,19 @@
 $(document).ready(function() {
 
     function toggleButtonLoading(button, isLoading) {
-        const isRounded = button.css('border-radius') !== '0px';
+        const hasClassBtnRound = button.hasClass('btn-round');
         
         if (isLoading) {
             if (!button.data('original-text')) {
                 button.data('original-text', button.html()); 
             }
     
-            if (isRounded) {
+            if (hasClassBtnRound) {
                 button.html('<i class="fa fa-spinner fa-spin"></i>')
                     .addClass('loading')
                     .prop('disabled', true);
             } else {
-                button.html('<i class="fa fa-spinner fa-spin"></i> Loading...')
+                button.html('<i class="fa fa-spinner fa-spin"></i> Downloading...') 
                     .addClass('loading')
                     .prop('disabled', true);
             }
@@ -27,47 +27,48 @@ $(document).ready(function() {
     
     function exportFile(button, url, filename) {
         toggleButtonLoading(button, true);
-
+    
         const csrfToken = $('meta[name="csrf-token"]').attr('content');
-
+    
         fetch(url, {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-Token': csrfToken
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok.');
-                }
-                return response.blob();
-            })
-            .then(blob => {
-                const downloadUrl = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.style.display = 'none';
-                link.href = downloadUrl;
-                link.download = filename;
-                document.body.appendChild(link);
-                link.click();
-                link.remove();
-                window.URL.revokeObjectURL(downloadUrl);
-            })
-            .catch(error => {
-                console.error('Download error:', error);
-                alert('Error downloading the file. Please try again.');
-            })
-            .finally(() => {
-                toggleButtonLoading(button, false);
-            });
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': csrfToken
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.style.display = 'none';
+            link.href = downloadUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(downloadUrl);
+        })
+        .catch(error => {
+            console.error('Download error:', error);
+            swal('Error!', 'Error downloading the file. Please try again later.', 'error');
+        })
+        .finally(() => {
+            toggleButtonLoading(button, false);
+        });
     }
+    
 
     $('#exportExcel').off('click').on('click', function(e) {
         e.preventDefault();
 
         const downloadBtn = $('#downloadBtn');
-        exportFile(downloadBtn, window.routes.exportExcel, 'applicants.xlsx');
+        exportFile(downloadBtn, window.routes.exportExcel, 'applicants-documents.xlsx');
         $(downloadBtn).next('.dropdown-menu').removeClass('show');
     });
 

@@ -288,15 +288,15 @@
     <!-- End col -->
 </div>
 <!-- End row -->
-<!-- Edit Status Modal -->
-<div class="modal fade" id="editRoomStatusModal" tabindex="-1" aria-labelledby="editRoomStatusModalLabel" aria-hidden="true">
+<!-- Edit Room Details Modal -->
+<div class="modal fade" id="editRoomDetailsModal" tabindex="-1" aria-labelledby="editRoomDetailsModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editRoomStatusModalLabel">Edit Room Status</h5>
+                <h5 class="modal-title" id="editRoomDetailsModalLabel">Edit Room Details</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="editStatusForm">
+            <form id="editRoomDetailsForm">
                 <!-- Modal Content -->
                 <div class="modal-body">
                     <!-- Room Status -->
@@ -308,17 +308,37 @@
                             <option value="under_maintenance">Under Maintenance</option>
                         </select>
                     </div>
+
+                    <!-- Room Purpose -->
+                    <div class="mb-3">
+                        <label for="editRoomPurpose" class="form-label">Purpose</label>
+                        <select class="form-control border border-primary" id="editRoomPurpose" name="purpose" required>
+                            <option value="accommodation">Accommodation</option>
+                            <option value="office">Office</option>
+                            <option value="utility">Utility</option>
+                        </select>
+                    </div>
+
+                    <!-- Room Type -->
+                    <div class="mb-3">
+                        <label for="editRoomType" class="form-label">Type</label>
+                        <select class="form-control border border-primary" id="editRoomType" name="type" required>
+                            <option value="single">Single</option>
+                            <option value="double">Double</option>
+                        </select>
+                    </div>
                 </div>
 
                 <!-- Modal Footer -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" id="saveStatusBtn">Save Status</button>
+                    <button type="submit" class="btn btn-primary" id="saveDetailsBtn">Save Changes</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
 
 <!-- Edit/Add Note Modal -->
 <div class="modal fade" id="editRoomNoteModal" tabindex="-1" aria-labelledby="editRoomNoteModalLabel" aria-hidden="true">
@@ -365,7 +385,7 @@ window.routes = {
     exportExcel : '{{ route('admin.unit.room.export-excel') }}',
     saveRoom: '{{ route('admin.unit.room.store') }}',
     deleteRoom: '{{ route('admin.unit.room.destroy', ':id') }}',
-    updateRoomStatus: '{{ route('admin.unit.room.update-status') }}', 
+    updateRoomStatus: '{{ route('admin.unit.room.update-details') }}', 
     updateRoomNote: '{{ route('admin.unit.room.update-note') }}'    
 };
 

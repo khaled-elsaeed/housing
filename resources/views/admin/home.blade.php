@@ -153,7 +153,7 @@
             <div class="building-slider">
             @foreach ($buildings as $building)
     <div class="building-slider-item">
-        <h4 class="my-0">{{ $building['name'] }}</h4>
+        <h4 class="my-0">Building {{ $building['name'] }}</h4>
         <div class="row align-items-center my-4 py-3">
             <div class="col-4 p-0">
                 <h4>{{ $building['occupied'] }}</h4>

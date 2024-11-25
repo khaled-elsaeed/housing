@@ -12,17 +12,23 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('reservations', function (Blueprint $table) {
-            $table->id('reservation_id'); // Primary key
+            $table->id(); // Primary key
 
             // Foreign key constraints
             $table->foreignId('user_id')->constrained()->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('room_id')->constrained('rooms')->restrictOnDelete()->cascadeOnUpdate();
 
-            // Reservation details
-            $table->dateTime('start_date'); // Start date of the reservation
-            $table->dateTime('end_date'); // End date of the reservation
-            $table->enum('status', ['pending', 'active', 'cancelled', 'completed'])->default('pending'); // Status of the reservation
-            
+            // Academic year and term
+            $table->year('year'); 
+            $table->enum('term', ['first_term', 'second_term', 'summer']); 
+
+            // Dates for the reservation
+            $table->date('start_date')->nullable; 
+            $table->date('end_date')->nullable; 
+
+            // Status of the reservation
+            $table->enum('status', ['pending', 'active', 'cancelled', 'completed'])->default('pending'); 
+
             $table->timestamps(); 
         });
     }
@@ -35,3 +41,5 @@ return new class extends Migration
         Schema::dropIfExists('reservations');
     }
 };
+
+

@@ -1,5 +1,6 @@
 <div class="sidebar">
 
+    <!-- Logo Section -->
     <div class="logobar">
         <a href="{{ route('admin.home') }}" class="logo logo-large">
             <img src="{{ asset('images/logo-wide.png') }}" class="img-fluid" alt="logo">
@@ -9,9 +10,11 @@
         </a>
     </div>
 
+    <!-- Navigation Section -->
     <div class="navigationbar">
         <ul class="vertical-menu">
 
+            <!-- Dashboard Link -->
             <li>
                 <a href="{{ route('admin.home') }}">
                     <img src="{{ asset('images/svg-icon/dashboard.svg') }}" class="img-fluid" alt="dashboard">
@@ -19,19 +22,20 @@
                 </a>
             </li>
 
+            <!-- Applicants Section -->
             <li>
                 <a href="javaScript:void();">
-                    <img src="{{ asset('images/svg-icon/layouts.svg') }}" class="img-fluid" alt="applicants">
+                    <img src="{{ asset('images/svg-icon/form_elements.svg') }}" class="img-fluid" alt="applicants">
                     <span>Applicants</span>
                     <i class="feather icon-chevron-right pull-right"></i>
                 </a>
                 <ul class="vertical-submenu">
                     <li><a href="{{ route('admin.applicant.view') }}">View Applicants</a></li>
-                    <li><a href="{{ route('admin.applicant.documents.view') }}">Documents</a></li>
+                    <li><a href="{{ route('admin.applicant.document.view') }}">View Documents</a></li>
                 </ul>
             </li>
 
-
+            <!-- Residents Section -->
             <li>
                 <a href="javaScript:void();">
                     <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="residents">
@@ -39,11 +43,12 @@
                     <i class="feather icon-chevron-right pull-right"></i>
                 </a>
                 <ul class="vertical-submenu">
-                    <li><a href="#">View Residents</a></li>
+                    <li><a href="{{ route('admin.residents.index') }}">View Residents</a></li>
                     <li><a href="#">Add Resident</a></li>
                 </ul>
             </li>
 
+            <!-- Housing Section -->
             <li>
                 <a href="javaScript:void();">
                     <img src="{{ asset('images/svg-icon/components.svg') }}" class="img-fluid" alt="housing">
@@ -51,29 +56,45 @@
                     <i class="feather icon-chevron-right pull-right"></i>
                 </a>
                 <ul class="vertical-submenu">
-                    <li><a href="{{ route('admin.unit.building') }}">Buildings</a></li>
-                    <li><a href="{{ route('admin.unit.apartment') }}">Apartments</a></li>
-                    <li><a href="{{ route('admin.unit.room') }}">Rooms</a></li>
+                    <li><a href="{{ route('admin.unit.building') }}">View Buildings</a></li>
+                    <li><a href="{{ route('admin.unit.apartment') }}">View Apartments</a></li>
+                    <li><a href="{{ route('admin.unit.room') }}">View Rooms</a></li>
                 </ul>
             </li>
 
-
-            
-
+            <!-- Maintenance Section -->
             <li>
-                <a href="#">
+                <a href="{{ route('admin.maintenance.index') }}">
+                    <img src="{{ asset('images/svg-icon/tables.svg') }}" class="img-fluid" alt="maintenance">
+                    <span>Maintenance</span>
+                </a>
+            </li>
+
+            <!-- Permissions Section -->
+            <li>
+                <a href="{{ route('admin.permissions.index') }}">
+                    <img src="{{ asset('images/svg-icon/widgets.svg') }}" class="img-fluid" alt="permissions">
+                    <span>Permissions</span>
+                </a>
+            </li>
+
+            <!-- Profile Section -->
+            <li>
+                <a href="{{ route('admin.profile') }}">
                     <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="profile">
                     <span>Profile</span>
                 </a>
             </li>
 
+            <!-- Settings Section -->
             <li>
-                <a href="#">
+                <a href="{{ route('admin.setting') }}">
                     <img src="{{ asset('images/svg-icon/settings.svg') }}" class="img-fluid" alt="settings">
                     <span>Settings</span>
                 </a>
             </li>
 
+            <!-- Logout Link -->
             <li>
                 <a href="#" onclick="logout()">
                     <img src="{{ asset('images/svg-icon/logout.svg') }}" class="img-fluid" alt="logout">
@@ -85,6 +106,7 @@
     </div>
 </div>
 
+<!-- Logout Script -->
 <script>
     function logout() {
         if (confirm("Are you sure you want to logout?")) {

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade')->onUpdate('cascade');
             $table->foreignId('student_permission_id')->constrained('student_permissions')->onDelete('cascade');  // Link to the dorm permission
-            $table->string('status')->default('pending');  // Status: 'pending', 'approved', 'denied'
+            $table->enum('status', ['pending', 'approved', 'denied'])->default('pending');
             $table->text('reason')->nullable();  // Reason for the request
             $table->datetime('requested_at')->nullable();  // Date/time when the request is made
             $table->text('admin_comments')->nullable();  // Optional comments by the admin

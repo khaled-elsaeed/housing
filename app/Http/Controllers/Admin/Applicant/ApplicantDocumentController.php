@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Document;
 
-use App\Exports\Applicants\ApplicantsExport;
+use App\Exports\Applicants\ApplicantDocumentsExport;
 use Illuminate\Support\Facades\Log;
 
 class ApplicantDocumentController extends Controller
@@ -117,7 +117,7 @@ class ApplicantDocumentController extends Controller
     public function downloadApplicantsExcel()
     {
         try {
-            $export = new ApplicantsExport();
+            $export = new ApplicantDocumentsExport();
             return $export->downloadExcel();
         } catch (\Exception $e) {
             Log::error('Error exporting applicants to Excel', [

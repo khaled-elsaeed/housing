@@ -41,6 +41,12 @@ class User extends Authenticatable
         'profile_picture' => 'string', 
     ];
 
+
+    public function maintenanceRequests()
+    {
+        return $this->hasMany(MaintenanceRequest::class, 'resident_id');
+    }
+
     public function userNationalLink()
 {
     return $this->hasOne(UserNationalLink::class);
@@ -59,9 +65,9 @@ public function universityArchive()
 }
 
 
-    public function student()
+   public function student()
     {
-        return $this->hasOne(Student::class);
+        return $this->hasOne(Student::class); // Assuming one user has one student record
     }
 
 
