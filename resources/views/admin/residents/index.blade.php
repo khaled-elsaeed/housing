@@ -138,9 +138,9 @@
                   <thead>
                      <tr>
                         <th>Name</th>
+                        <th>Location</th>
                         <th>National ID</th>
                         <th>Faculty</th>
-                        <th>Email</th>
                         <th>Mobile</th>
                         <th>Registration Date</th>
                         <th>Actions</th>
@@ -150,17 +150,24 @@
                      @foreach($residents as $resident)
                      <tr>
                         <td>{{ $resident->student->name_en ?? 'N/A' }}</td>
+
+                        <!-- Location Column -->
+                        <td>
+                           @php
+                              // Get the concatenated location details
+                              $locationDetails = $resident->getLocationDetails();
+                           @endphp
+                           {{ $locationDetails ?? 'N/A' }}
+                        </td>
+
                         <td>{{ $resident->student->national_id ?? 'N/A' }}</td>
                         <td>{{ $resident->student->faculty->name_en ?? 'N/A' }}</td>
-                        <td>{{ $resident->email ?? 'N/A' }}</td>
                         <td>{{ $resident->student->mobile ?? 'N/A' }}</td>
                         <td>{{ $resident->created_at->format('F j, Y, g:i A') }}</td>
                         <td>
                            <button type="button" class="btn btn-round btn-info-rgba" data-resident-id="{{ $resident->id }}" id="details-btn" title="More Details">
                            <i class="feather icon-info"></i>
                            </button>
-                        </td>
-                        </td>
                         </td>
                      </tr>
                      @endforeach
@@ -172,6 +179,8 @@
    </div>
    <!-- End col -->
 </div>
+<!-- End row -->
+
 <!-- End row -->
 <!-- resident Details Modal -->
 <div class="modal fade" id="residentDetailsModal" tabindex="-1" role="dialog" aria-labelledby="residentDetailsModalLabel" aria-hidden="true">

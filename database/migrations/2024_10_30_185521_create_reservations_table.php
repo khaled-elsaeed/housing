@@ -22,9 +22,9 @@ return new class extends Migration
             $table->year('year'); 
             $table->enum('term', ['first_term', 'second_term', 'summer']); 
 
-            // Dates for the reservation
-            $table->date('start_date')->nullable; 
-            $table->date('end_date')->nullable; 
+             // Dates for the reservation
+            $table->date('start_date')->nullable();  // Corrected here
+            $table->date('end_date')->nullable();    // Corrected here
 
             // Status of the reservation
             $table->enum('status', ['pending', 'active', 'cancelled', 'completed'])->default('pending'); 

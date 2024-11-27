@@ -70,6 +70,11 @@ public function universityArchive()
         return $this->hasOne(Student::class); // Assuming one user has one student record
     }
 
+    public function reservation()
+    {
+        return $this->hasOne(reservation::class); // Assuming one user has one student record
+    }
+
 
 
     public function isAdmin(): bool
@@ -133,5 +138,20 @@ public function universityArchive()
     {
         return $this->first_name_en . ' ' . $this->last_name_en;
     }
+
+    public function getLocationDetails()
+{
+    // Access the related room for this reservation
+    $room = $this->reservation->room;
+
+    // Retrieve the room number, apartment number, and building number
+    $roomNumber = $room->number;
+    $apartmentNumber = $room->apartment->number;
+    $buildingNumber = $room->apartment->building->number;
+
+    // Return the concatenated string
+    return 'B' . $buildingNumber . '-A' . $apartmentNumber . '-R' . $roomNumber;
+}
+
     
 }

@@ -13,6 +13,8 @@ use Database\Seeders\FacultiesTableSeeder;
 use Database\Seeders\ProgramsTableSeeder; 
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Database\Seeders\UniversityArchiveSeeder;
+use Database\Seeders\UnitsSeeder;
+
 use Database\Seeders\UniversityArchivePhpspreadsheetSeeder;
 
 
@@ -30,6 +32,8 @@ class DatabaseSeeder extends Seeder
         $this->call(CitiesTableSeeder::class);
         $this->call(FacultiesTableSeeder::class);
         $this->call(ProgramsTableSeeder::class);
+        $this->call(UnitsSeeder::class);
+
         $this->call(UniversityArchivePhpspreadsheetSeeder::class);
 
     }

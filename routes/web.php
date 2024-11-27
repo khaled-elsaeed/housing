@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\Applicant\{
     ApplicantDocumentController,
     
 };
+use App\Http\Controllers\Student\StudentHomeController;
 
 
 use App\Http\Controllers\Admin\Unit\{
@@ -32,6 +33,7 @@ use App\Http\Controllers\Admin\Unit\{
 use App\Http\Controllers\Admin\PermissionRequest\PermissionRequestController;
 
 use App\Http\Controllers\Admin\Resident\ResidentController;
+use App\Http\Controllers\Student\StudentMaintenanceController;
 
 // Welcome Route
 Route::get('/welcome', function () {
@@ -144,7 +146,16 @@ Route::prefix('residents')->name('residents.')->group(function () {
     });
 
     // Student Routes
-    Route::get('/student/home', [StudentHomeController::class, 'showHomePage'])->name('student.home');
+    Route::get('/student/home', [StudentHomeController::class, 'index'])->name('student.home');
+
+Route::prefix('student')->name('student.')->group(function () {
+    // Show the maintenance request form
+    Route::get('maintenance', [StudentMaintenanceController::class, 'showForm'])->name('maintenance.form');
+
+    // Handle the form submission
+    Route::post('maintenance', [StudentMaintenanceController::class, 'store'])->name('maintenance.store');
+});
+
 });
 
 // Logout Route

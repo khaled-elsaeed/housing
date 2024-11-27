@@ -14,23 +14,23 @@
     <div class="navigationbar">
         <ul class="vertical-menu">
             <li>
-                <a href="#">
+                <a href="{{ route('student.home') }}">
                     <img src="{{ asset('images/svg-icon/dashboard.svg') }}" class="img-fluid" alt="dashboard">
-                    <span>Dashboard</span>
+                    <span>Home</span>
                 </a>
             </li>
 
             <li>
-                <a href="#">
+                <a href="{{ route('student.maintenance.form') }}">
                     <img src="{{ asset('images/svg-icon/questionnaire.svg') }}" class="img-fluid" alt="questionnaires">
-                    <span>Questionnaires</span>
+                    <span>Maintenance</span>
                 </a>
             </li>
 
             <li>
                 <a href="#">
                     <img src="{{ asset('images/svg-icon/results.svg') }}" class="img-fluid" alt="results">
-                    <span>Results</span>
+                    <span>Perrmissions</span>
                 </a>
             </li>
 
