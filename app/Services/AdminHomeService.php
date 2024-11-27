@@ -11,7 +11,9 @@ class AdminHomeService
 {
     public function getHomeData()
     {
-        $students = Student::select('gender', 'created_at')->get();
+        $students = Student::select('gender', 'created_at','application_status')
+        ->where('application_status','final_accepted')
+        ->get();
         
         $maleStudents = $this->filterStudentsByGender($students, 'male');
         $femaleStudents = $this->filterStudentsByGender($students, 'female');
