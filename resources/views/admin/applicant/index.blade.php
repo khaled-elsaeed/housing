@@ -20,7 +20,7 @@
    <div class="col-lg-12">
       <!-- Start row -->
       <div class="row">
-         <!-- Start col -->
+         <!-- Start col for Applicants -->
          <div class="col-lg-3 col-md-6 mb-2">
             <div class="card m-b-30">
                <div class="card-body">
@@ -30,7 +30,11 @@
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
                         <h5 class="card-title font-14">Applicants</h5>
-                        <h4 class="mb-0">{{ $totalApplicants }}</h4>
+                        <h4 class="mb-0" id="totalApplicantsCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </h4>
                      </div>
                   </div>
                </div>
@@ -40,7 +44,11 @@
                         <span class="font-13">Male</span>
                      </div>
                      <div class="col-6 text-end">
-                        <span class="font-13"><i class="feather icon-clock text-warning "></i> {{ $totalMaleCount }}</span>
+                        <span class="font-13" id="maleCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </span>
                      </div>
                   </div>
                   <div class="row align-items-center">
@@ -48,14 +56,19 @@
                         <span class="font-13">Female</span>
                      </div>
                      <div class="col-6 text-end">
-                        <span class="font-13"><i class="feather icon-check-circle text-success "></i> {{ $totalFemaleCount }}</span>
+                        <span class="font-13" id="femaleCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </span>
                      </div>
                   </div>
                </div>
             </div>
          </div>
-         <!-- End col -->
-         <!-- Start col -->
+         <!-- End col for Applicants -->
+
+         <!-- Start col for Pending -->
          <div class="col-lg-3 col-md-6 mb-2">
             <div class="card m-b-30">
                <div class="card-body">
@@ -65,7 +78,11 @@
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
                         <h5 class="card-title font-14">Pending</h5>
-                        <h4 class="mb-0">{{ $totalPendingCount }}</h4>
+                        <h4 class="mb-0" id="totalPendingCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </h4>
                      </div>
                   </div>
                </div>
@@ -75,7 +92,11 @@
                         <span class="font-13">Male</span>
                      </div>
                      <div class="col-6 text-end">
-                        <span class="font-13"><i class="feather icon-clock text-warning "></i> {{ $malePendingCount }}</span>
+                        <span class="font-13" id="malePendingCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </span>
                      </div>
                   </div>
                   <div class="row align-items-center">
@@ -83,14 +104,19 @@
                         <span class="font-13">Female</span>
                      </div>
                      <div class="col-6 text-end">
-                        <span class="font-13"><i class="feather icon-check-circle text-success "></i> {{ $femalePendingCount }}</span>
+                        <span class="font-13" id="femalePendingCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </span>
                      </div>
                   </div>
                </div>
             </div>
          </div>
-         <!-- End col -->
-         <!-- Start col -->
+         <!-- End col for Pending -->
+
+         <!-- Start col for Preliminary Accepted -->
          <div class="col-lg-3 col-md-6 mb-2">
             <div class="card m-b-30">
                <div class="card-body">
@@ -100,7 +126,11 @@
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
                         <h5 class="card-title font-14">Preliminary Accepted</h5>
-                        <h4 class="mb-0">{{ $totalPreliminaryAcceptedCount }}</h4>
+                        <h4 class="mb-0" id="totalPreliminaryAcceptedCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </h4>
                      </div>
                   </div>
                </div>
@@ -110,7 +140,11 @@
                         <span class="font-13">Male</span>
                      </div>
                      <div class="col-6 text-end">
-                        <span class="font-13"><i class="feather icon-clock text-warning "></i> {{ $malePreliminaryAcceptedCount }}</span>
+                        <span class="font-13" id="malePreliminaryAcceptedCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </span>
                      </div>
                   </div>
                   <div class="row align-items-center">
@@ -118,14 +152,19 @@
                         <span class="font-13">Female</span>
                      </div>
                      <div class="col-6 text-end">
-                        <span class="font-13"><i class="feather icon-check-circle text-success "></i> {{ $femalePreliminaryAcceptedCount }}</span>
+                        <span class="font-13" id="femalePreliminaryAcceptedCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </span>
                      </div>
                   </div>
                </div>
             </div>
          </div>
-         <!-- End col -->
-         <!-- Start col -->
+         <!-- End col for Preliminary Accepted -->
+
+         <!-- Start col for Final Accepted -->
          <div class="col-lg-3 col-md-6 mb-2">
             <div class="card m-b-30">
                <div class="card-body">
@@ -135,7 +174,11 @@
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
                         <h5 class="card-title font-14">Final Accepted</h5>
-                        <h4 class="mb-0">{{ $totalFinalAcceptedCount }}</h4>
+                        <h4 class="mb-0" id="totalFinalAcceptedCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </h4>
                      </div>
                   </div>
                </div>
@@ -145,7 +188,11 @@
                         <span class="font-13">Male</span>
                      </div>
                      <div class="col-6 text-end">
-                        <span class="font-13"><i class="feather icon-clock text-warning "></i> {{ $maleFinalAcceptedCount }}</span>
+                        <span class="font-13" id="maleFinalAcceptedCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </span>
                      </div>
                   </div>
                   <div class="row align-items-center">
@@ -153,18 +200,24 @@
                         <span class="font-13">Female</span>
                      </div>
                      <div class="col-6 text-end">
-                        <span class="font-13"><i class="feather icon-check-circle text-success "></i> {{ $femaleFinalAcceptedCount }}</span>
+                        <span class="font-13" id="femaleFinalAcceptedCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </span>
                      </div>
                   </div>
                </div>
             </div>
          </div>
-         <!-- End col -->
+         <!-- End col for Final Accepted -->
       </div>
       <!-- End row -->
    </div>
    <!-- End col -->
 </div>
+<!-- End row -->
+
 <!-- End row -->
 <div class="row">
    <div class="col-lg-12">
@@ -193,65 +246,50 @@
       </div>
    </div>
 </div>
+<!-- Search Filter -->
 <div class="collapse" id="collapseExample">
    <div class="search-filter-container card card-body">
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
-         <!-- Search Box with Icon on the Left -->
-         <div class="search-container d-flex align-items-center mb-3 mb-md-0">
-            <div class="search-icon-container">
-               <i class="fa fa-search search-icon"></i>
-            </div>
-            <input type="search" class="form-control search-input" id="searchBox" placeholder="Search..." />
-         </div>
+        <!-- Search Box with Icon on the Left -->
+        <div class="search-container d-flex align-items-center mb-3 mb-md-0">
+           <div class="search-icon-container">
+              <i class="fa fa-search search-icon"></i>
+           </div>
+           <input type="search" class="form-control search-input" id="searchBox" placeholder="Search..." />
+        </div>
       </div>
    </div>
 </div>
-<!-- Start row -->
 <div class="row">
-   <!-- Start col -->
-   <div class="col-lg-12">
-      <div class="card m-b-30 table-card">
-         <div class="card-body table-container">
-            <div class="table-responsive">
-               <table id="default-datatable" class="display table table-bordered">
-                  <thead>
-                     <tr>
-                        <th>Name</th>
-                        <th>National ID</th>
-                        <th>Faculty</th>
-                        <th>Email</th>
-                        <th>Mobile</th>
-                        <th>Registration Date</th>
-                        <th>Actions</th>
-                     </tr>
-                  </thead>
-                  <tbody>
-                     @foreach($filteredApplicants as $applicant)
-                     <tr>
-                        <td>{{ $applicant->student->name_en ?? 'N/A' }}</td>
-                        <td>{{ $applicant->student->national_id ?? 'N/A' }}</td>
-                        <td>{{ $applicant->student->faculty->name_en ?? 'N/A' }}</td>
-                        <td>{{ $applicant->email ?? 'N/A' }}</td>
-                        <td>{{ $applicant->student->mobile ?? 'N/A' }}</td>
-                        <td>{{ $applicant->created_at->format('F j, Y, g:i A') }}</td>
-                        <td>
-                           <button type="button" class="btn btn-round btn-info-rgba" data-applicant-id="{{ $applicant->id }}" id="details-btn" title="More Details">
-                           <i class="feather icon-info"></i>
-                           </button>
-                        </td>
-                        </td>
-                        </td>
-                     </tr>
-                     @endforeach
-                  </tbody>
-               </table>
+    <!-- Start col -->
+    <div class="col-lg-12">
+        <div class="card m-b-30 table-card">
+            <div class="card-body table-container">
+                <div class="table-responsive">
+                    <table id="default-datatable" class="display table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>National ID</th>
+                                <th>Faculty</th>
+                                <th>Email</th> <!-- Add Email column here -->
+                                <th>Mobile</th>
+                                <th>Registration Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be populated by DataTables -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
-         </div>
-      </div>
-   </div>
-   <!-- End col -->
+        </div>
+    </div>
+    <!-- End col -->
 </div>
-<!-- End row -->
+
+
 <!-- Applicant Details Modal -->
 <div class="modal fade" id="applicantDetailsModal" tabindex="-1" role="dialog" aria-labelledby="applicantDetailsModalLabel" aria-hidden="true">
    <div class="modal-dialog" role="document">
@@ -305,15 +343,15 @@
 <script src="{{ asset('plugins/datatables/buttons.bootstrap4.min.js') }}"></script>
 <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
 <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('js/custom/custom-table-datatable.js') }}"></script>
 <script src="{{ asset('plugins/sweet-alert2/sweetalert2.min.js') }}"></script>
 <script src="{{ asset('js/pages/applicants.js') }}"></script>
 <script>
    window.routes = {
-    exportExcel: "{{ route('export.applicants.excel') }}",
+    exportExcel: "{{ route('admin.applicants.export-excel') }}",
    
-    getApplicantMoreDetails: "{{ route('admin.applicant.more-details', ':id') }}",
-   
+    getApplicantMoreDetails: "{{ route('admin.applicants.show', ':id') }}",
+   fetchResidents: "{{ route('admin.applicants.fetch') }}",
+      getSummary: "{{ route('admin.applicants.get-summary') }}"
    };
    
 </script>

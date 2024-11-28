@@ -2,7 +2,7 @@ $(document).ready(function() {
     // Initialize DataTable
     const table = $('#default-datatable').DataTable({
         "order": [[0, "asc"]],
-        responsive: true
+        responsive: true,
     });
 
     // Reference to the toggle button and icon

@@ -334,7 +334,6 @@
    <script>
     window.routes = {
         exportExcel: "{{ route('admin.maintenance.excel') }}",
-        getApplicantMoreDetails: "{{ route('admin.applicant.more-details', ':id') }}",
         updateStatus: "{{ route('admin.maintenance.updateStatus', ':id') }}",  // Add updateStatus route
     };
 </script>

@@ -75,7 +75,7 @@
                                     <div class="userbox">
                                         <ul class="list-unstyled mb-0">
                                             <li class="d-flex p-2 mt-1 dropdown-item">
-                                                <a href="#" class="profile-icon"><img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="user">My Profile</a>
+                                                <a href="{{ route('admin.profile') }}" class="profile-icon"><img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="user">My Profile</a>
                                             </li>
                                          
                                             <li class="d-flex p-2 mt-1 dropdown-item">

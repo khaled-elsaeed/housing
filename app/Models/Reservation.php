@@ -20,7 +20,7 @@ class Reservation extends Model
     /**
      * Get the student that owns the reservation.
      */
-    public function student()
+    public function user()
     {
         return $this->belongsTo(user::class);
     }

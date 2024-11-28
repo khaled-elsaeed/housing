@@ -52,6 +52,21 @@ class User extends Authenticatable
     return $this->hasOne(UserNationalLink::class);
 }
 
+
+
+// User model
+public static function getUserByNationalId(string $national_id): ?self
+{
+    $userNationalLink = UserNationalLink::where('national_id', $national_id)->first();
+    
+    if ($userNationalLink) {
+        return $userNationalLink->user; 
+    }
+
+    return null; 
+}
+
+
 public function universityArchive()
 {
     return $this->hasOneThrough(
@@ -140,18 +155,23 @@ public function universityArchive()
     }
 
     public function getLocationDetails()
-{
-    // Access the related room for this reservation
-    $room = $this->reservation->room;
-
-    // Retrieve the room number, apartment number, and building number
-    $roomNumber = $room->number;
-    $apartmentNumber = $room->apartment->number;
-    $buildingNumber = $room->apartment->building->number;
-
-    // Return the concatenated string
-    return 'B' . $buildingNumber . '-A' . $apartmentNumber . '-R' . $roomNumber;
-}
+    {
+        // Access the related room for this reservation
+        $room = $this->reservation->room;
+    
+        // Retrieve the room number, apartment number, and building number
+        $roomNumber = $room->number;
+        $apartmentNumber = $room->apartment->number;
+        $buildingNumber = $room->apartment->building->number;
+    
+        // Return each location detail separately
+        return [
+            'building' => $buildingNumber,
+            'apartment' => $apartmentNumber,
+            'room' => $roomNumber
+        ];
+    }
+    
 
     
 }

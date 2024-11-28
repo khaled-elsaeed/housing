@@ -1,7 +1,79 @@
 $(document).ready(function () {
-    const table = $.fn.DataTable.isDataTable('#default-datatable') ?
-       $('#default-datatable').DataTable() :
-       $('#default-datatable').DataTable();
+   const toggleButton = document.getElementById("toggleButton");
+   const icon = toggleButton.querySelector("i");
+
+   document.getElementById("collapseExample").addEventListener("shown.bs.collapse", function() {
+       icon.classList.remove("fa-search-plus");
+       icon.classList.add("fa-search-minus");
+   });
+
+   document.getElementById("collapseExample").addEventListener("hidden.bs.collapse", function() {
+       icon.classList.remove("fa-search-minus");
+       icon.classList.add("fa-search-plus");
+   });
+
+   const table = $('#default-datatable').DataTable({
+       processing: true,
+       serverSide: true,
+       responsive: true,
+       ajax: {
+           url: window.routes.fetchbuildings,
+           data: function (d) {
+               d.customSearch = $('#searchBox').val();
+           }
+       },
+       columns: [
+         { data: "building_number" },
+         { data: "gender" },
+         { data: "max_apartments" },
+         { data: "status" },
+         { data: "description" },
+         { 
+             data: null,
+             render: function(data, type, row) {
+                 return `
+                     <button type="button" class="btn btn-round btn-warning-rgba" id="edit-note-btn-${row.id}" title="Edit Note">
+                         <i class="feather icon-edit"></i>
+                     </button>
+                     <button type="button" class="btn btn-round btn-primary-rgba" id="edit-status-btn-${row.id}" title="Edit Status">
+                         <i class="feather icon-settings"></i>
+                     </button>
+                     <button type="button" class="btn btn-round btn-danger-rgba" id="delete-btn-${row.id}" title="Delete Building">
+                         <i class="feather icon-trash-2"></i>
+                     </button>
+                 `;
+             }
+         }
+       ]
+   });
+
+   $('#searchBox').on('keyup', function() {
+       table.ajax.reload();
+   });
+
+   function fetchSummaryData() {
+       $.ajax({
+           url: window.routes.getSummary,
+           method: 'GET',
+           dataType: 'json',
+           success: function(data) {
+               $('#totalApplicantsCount').text(data.totalApplicants);
+               $('#maleCount').text(data.totalMaleCount);
+               $('#femaleCount').text(data.totalFemaleCount);
+               $('#totalPendingCount').text(data.totalPendingCount);
+               $('#malePendingCount').text(data.malePendingCount);
+               $('#femalePendingCount').text(data.femalePendingCount);
+               $('#totalPreliminaryAcceptedCount').text(data.totalPreliminaryAcceptedCount);
+               $('#malePreliminaryAcceptedCount').text(data.malePreliminaryAcceptedCount);
+               $('#femalePreliminaryAcceptedCount').text(data.femalePreliminaryAcceptedCount);
+               $('#totalFinalAcceptedCount').text(data.totalFinalAcceptedCount);
+               $('#maleFinalAcceptedCount').text(data.maleFinalAcceptedCount);
+               $('#femaleFinalAcceptedCount').text(data.femaleFinalAcceptedCount);
+           }
+       });
+   }
+
+   fetchSummaryData();
  
     $('#saveBuildingBtn').on('click', function (e) {
        e.preventDefault();

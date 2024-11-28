@@ -24,20 +24,31 @@
 
             <!-- Applicants Section -->
             <li>
-                <a href="javaScript:void();">
+                <a href="javascript:void(0);">
                     <img src="{{ asset('images/svg-icon/form_elements.svg') }}" class="img-fluid" alt="applicants">
                     <span>Applicants</span>
                     <i class="feather icon-chevron-right pull-right"></i>
                 </a>
                 <ul class="vertical-submenu">
-                    <li><a href="{{ route('admin.applicant.view') }}">View Applicants</a></li>
-                    <li><a href="{{ route('admin.applicant.document.view') }}">View Documents</a></li>
-                </ul>
+                    <li><a href="{{ route('admin.applicants.index') }}">View Applicants</a></li>
+    </ul>
             </li>
+<!-- Reservation Section -->
+<li>
+    <a href="javascript:void(0);">
+        <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="reservation">
+        <span>Reservation</span>
+        <i class="feather icon-chevron-right pull-right"></i>
+    </a>
+    <ul class="vertical-submenu">
+        <li><a href="{{ route('admin.reservation.relocation') }}">Reservation Relocation</a></li>
+    </ul>
+</li>
+
 
             <!-- Residents Section -->
             <li>
-                <a href="javaScript:void();">
+                <a href="javascript:void(0);">
                     <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="residents">
                     <span>Residents</span>
                     <i class="feather icon-chevron-right pull-right"></i>
@@ -50,7 +61,7 @@
 
             <!-- Housing Section -->
             <li>
-                <a href="javaScript:void();">
+                <a href="javascript:void(0);">
                     <img src="{{ asset('images/svg-icon/components.svg') }}" class="img-fluid" alt="housing">
                     <span>Housing</span>
                     <i class="feather icon-chevron-right pull-right"></i>
@@ -78,27 +89,13 @@
                 </a>
             </li>
 
-            <!-- Profile Section -->
-            <li>
-                <a href="{{ route('admin.profile') }}">
-                    <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="profile">
-                    <span>Profile</span>
-                </a>
-            </li>
+           
 
             <!-- Settings Section -->
             <li>
                 <a href="{{ route('admin.setting') }}">
                     <img src="{{ asset('images/svg-icon/settings.svg') }}" class="img-fluid" alt="settings">
                     <span>Settings</span>
-                </a>
-            </li>
-
-            <!-- Logout Link -->
-            <li>
-                <a href="#" onclick="logout()">
-                    <img src="{{ asset('images/svg-icon/logout.svg') }}" class="img-fluid" alt="logout">
-                    <span>Logout</span>
                 </a>
             </li>
 

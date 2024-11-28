@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Exports\Residents\ResidentsExport;
 use Illuminate\Support\Facades\Log;
+use Yajra\DataTables\DataTables;
 use Exception;
 
 class ResidentController extends Controller
@@ -14,49 +15,87 @@ class ResidentController extends Controller
     public function index()
     {
         try {
-
-            $residents = User::role('resident')
-            ->whereHas('student', function ($query) {
-                $query->where('application_status', 'final_accepted');
-            })
-            ->with(['student'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-        
-
-// Log the first 5 residents
-$firstFiveresidents = $residents->take(5);
-
-Log::info('First 5 residents fetched:', $firstFiveresidents->toArray());
-
-    
-            // Count the total number of residents, males, and females
-            $totalResidents = $residents->count();
-            $totalMaleCount = $residents->filter(fn($resident) => $resident->gender === 'male')->count();
-            $totalFemaleCount = $residents->filter(fn($resident) => $resident->gender === 'female')->count();
-    
-            // Return the view with the necessary data
-            return view(
-                'admin.residents.index',
-                compact(
-                    'residents',
-                    'totalResidents',
-                    'totalMaleCount',
-                    'totalFemaleCount'
-                )
-            );
+            return view('admin.residents.index');
         } catch (Exception $e) {
-            // Log the exception for debugging
             Log::error('Error retrieving resident page data: ' . $e->getMessage(), [
                 'exception' => $e,
                 'stack' => $e->getTraceAsString(),
             ]);
-    
-            // Return a generic error page with the error message
             return response()->view('errors.505');
         }
     }
-    
+
+    public function fetchResidents(Request $request)
+    {
+        try {
+            $query = User::role('resident')
+                ->whereHas('student', function ($query) {
+                    $query->where('application_status', 'final_accepted');
+                })
+                ->with(['student', 'student.faculty']);
+
+            if ($request->filled('customSearch')) {
+                $searchTerm = $request->get('customSearch');
+                $query->where(function ($query) use ($searchTerm) {
+                    $query->whereHas('student', function ($query) use ($searchTerm) {
+                        $query->where('name_en', 'like', "%$searchTerm%")
+                            ->orWhere('national_id', 'like', "%$searchTerm%")
+                            ->orWhere('mobile', 'like', "%$searchTerm%");
+                    })
+                    ->orWhereHas('student.faculty', function ($query) use ($searchTerm) {
+                        $query->where('name_en', 'like', "%$searchTerm%");
+                    });
+                });
+            }
+
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->addColumn('name', function ($resident) {
+                    return $resident->student->name_en ?? 'N/A';
+                })
+                ->addColumn('location', function ($resident) {
+                    return $resident->getLocationDetails() ?? 'N/A';
+                })
+                ->addColumn('national_id', function ($resident) {
+                    return $resident->student->national_id ?? 'N/A';
+                })
+                ->addColumn('faculty', function ($resident) {
+                    return $resident->student->faculty->name_en ?? 'N/A';
+                })
+                ->addColumn('mobile', function ($resident) {
+                    return $resident->student->mobile ?? 'N/A';
+                })
+                ->addColumn('registration_date', function ($resident) {
+                    return $resident->created_at->format('F j, Y, g:i A');
+                })
+                ->addColumn('actions', function ($resident) {
+                    return '<button type="button" class="btn btn-round btn-info-rgba" data-resident-id="' . $resident->id . '" id="details-btn" title="More Details"><i class="feather icon-info"></i></button>';
+                })
+                ->rawColumns(['actions'])
+                ->make(true);
+        } catch (Exception $e) {
+            Log::error('Error fetching residents data: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to fetch residents data.'], 500);
+        }
+    }
+
+    public function getSummary()
+    {
+        try {
+            $totalResidents = User::role('resident')->count();
+            $totalMaleCount = User::role('resident')->where('gender', 'male')->count();
+            $totalFemaleCount = User::role('resident')->where('gender', 'female')->count();
+
+            return response()->json([
+                'totalResidents' => $totalResidents,
+                'totalMaleCount' => $totalMaleCount,
+                'totalFemaleCount' => $totalFemaleCount,
+            ]);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Error fetching summary data'], 500);
+        }
+    }
+
     public function downloadResidentsExcel()
     {
         try {
@@ -89,14 +128,12 @@ Log::info('First 5 residents fetched:', $firstFiveresidents->toArray());
     public function getResidentMoreDetails($id)
     {
         try {
-            // Retrieve the resident by ID
             $resident = User::find($id);
 
             if (!$resident) {
                 return response()->json(['error' => 'Resident not found', 'user' => $id], 404);
             }
-    
-            // Gather detailed information about the resident
+
             $details = [
                 'faculty' => optional($resident->student->faculty)->name_en ?? 'Not available',
                 'program' => optional($resident->student->program)->name_en ?? 'Not available',
@@ -106,7 +143,7 @@ Log::info('First 5 residents fetched:', $firstFiveresidents->toArray());
                 'city' => optional($resident->student->city)->name_ar ?? 'Not available',
                 'street' => $resident->student->street ?? 'Not available',
             ];
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $details
@@ -117,7 +154,6 @@ Log::info('First 5 residents fetched:', $firstFiveresidents->toArray());
                 'stack_trace' => $e->getTraceAsString(),
                 'resident_id' => $id
             ]);
-    
             return response()->json(['error' => 'Resident not found or an error occurred', 'user' => $id], 404);
         }
     }

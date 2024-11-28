@@ -130,5 +130,34 @@ class ApartmentController extends Controller
             return response()->json(['error' => 'Failed to export apartments to Excel'], 500);
         }
     }
+
+    public function fetchEmptyApartments($buildingID)
+    {
+        // Fetch apartments for a specific building with empty rooms
+        $emptyApartments = Apartment::with(['rooms' => function($query) {
+            // Ensure rooms are not fully occupied
+            $query->where('full_occupied', '!=', 1)
+                ->where('status', 'active')
+                ->where('purpose', 'accommodation'); 
+        }])
+        ->where('building_id', $buildingID)  
+        ->select('id', 'number')  
+        ->get();
+    
+        
+        $emptyApartments = $emptyApartments->map(function ($apartment) {
+            return [
+                'id' => $apartment->id,
+                'number' => $apartment->number,
+            ];
+        });
+    
+        // Return the response
+        return response()->json([
+            'success' => true,
+            'apartments' => $emptyApartments,
+        ]);
+    }
+    
     
 }

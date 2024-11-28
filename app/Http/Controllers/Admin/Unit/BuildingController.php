@@ -251,5 +251,33 @@ public function downloadBuildingsExcel()
     }
 }
 
+public function fetchEmptyBuildings()
+{
+    $emptyBuildings = Building::with(['apartments.rooms' => function($query) {
+        $query->where('full_occupied', '!=', 1)
+              ->where('status', 'active')
+              ->where('purpose', 'accommodation'); // Conditions on the room model itself
+    }])
+    ->select('id', 'number')  // Only select the building id and number
+    ->get();
+
+    // Now, we will transform the result to exclude the apartment details entirely
+    $emptyBuildings = $emptyBuildings->map(function ($building) {
+        return [
+            'id' => $building->id,
+            'number' => $building->number,
+        ];
+    });
+
+    return response()->json([
+        'success' => true,
+        'buildings' => $emptyBuildings,
+    ]);
+}
+
+
+
+
+
 
 }

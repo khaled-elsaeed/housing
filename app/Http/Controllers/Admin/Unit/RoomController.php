@@ -161,5 +161,32 @@ class RoomController extends Controller
     }
 
 
+    public function fetchEmptyRooms($apartmentID)
+{
+    // Fetch rooms for a specific apartment with empty rooms (full_occupied != 1)
+    $emptyRooms = Room::where('full_occupied', '!=', 1)
+            ->where('status', 'active')
+              ->where('purpose', 'accommodation') // Conditions on the room model itself
+        ->where('apartment_id', $apartmentID)  // Filter by the given apartment ID
+        ->select('id', 'number')  // Only select the room id and number
+        ->get();
+    
+    // Map the result to only include room id and number
+    $emptyRooms = $emptyRooms->map(function ($room) {
+        return [
+            'id' => $room->id,
+            'number' => $room->number,
+        ];
+    });
+    
+    // Return the response
+    return response()->json([
+        'success' => true,
+        'rooms' => $emptyRooms,
+    ]);
+}
+
+
+
     
 }

@@ -12,54 +12,21 @@ use Illuminate\Support\Facades\Log;
 class ApplicantDocumentController extends Controller
 {
     public function index()
-    {
-        try {
-            $applicants = $this->fetchApplicants();
+{
+    try {
+        
 
-            $totalApplicants = $applicants->count();
-            $maleCount = $this->countByGender($applicants, 'male');
-            $femaleCount = $this->countByGender($applicants, 'female');
-
-            // Count the documents' statuses
-            $totalPendingCount = $this->countByDocumentStatus($applicants, 'pending');
-            $totalPreliminaryAcceptedCount = $this->countByDocumentStatus($applicants, 'preliminary_accepted');
-            $totalFinalAcceptedCount = $this->countByDocumentStatus($applicants, 'final_accepted');
-
-            // Count by gender and document status
-            $malePendingCount = $this->countByGenderAndDocumentStatus($applicants, 'male', 'pending');
-            $malePreliminaryAcceptedCount = $this->countByGenderAndDocumentStatus($applicants, 'male', 'preliminary_accepted');
-            $maleFinalAcceptedCount = $this->countByGenderAndDocumentStatus($applicants, 'male', 'final_accepted');
-
-            $femalePendingCount = $this->countByGenderAndDocumentStatus($applicants, 'female', 'pending');
-            $femalePreliminaryAcceptedCount = $this->countByGenderAndDocumentStatus($applicants, 'female', 'preliminary_accepted');
-            $femaleFinalAcceptedCount = $this->countByGenderAndDocumentStatus($applicants, 'female', 'final_accepted');
-
-            return view(
-                'admin.applicant.document',
-                compact(
-                    'applicants',
-                    'totalApplicants',
-                    'maleCount',
-                    'femaleCount',
-                    'totalPendingCount',
-                    'totalPreliminaryAcceptedCount',
-                    'totalFinalAcceptedCount',
-                    'malePendingCount',
-                    'malePreliminaryAcceptedCount',
-                    'maleFinalAcceptedCount',
-                    'femalePendingCount',
-                    'femalePreliminaryAcceptedCount',
-                    'femaleFinalAcceptedCount'
-                )
-            );
-        } catch (\Exception $e) {
-            Log::error('Error displaying applicant page', [
-                'exception' => $e->getMessage(),
-                'stack_trace' => $e->getTraceAsString(),
-            ]);
-            return response()->view('errors.505');
-        }
+        return view(
+            'admin.applicant.document');
+    } catch (\Exception $e) {
+        Log::error('Error displaying applicant documents page', [
+            'exception' => $e->getMessage(),
+            'stack_trace' => $e->getTraceAsString(),
+        ]);
+        return response()->view('errors.505');
     }
+}
+
 
     private function countByGender($applicants, $gender)
     {
@@ -114,7 +81,7 @@ class ApplicantDocumentController extends Controller
         }
     }
 
-    public function downloadApplicantsExcel()
+    public function downloadApplicantDocumentsExcel()
     {
         try {
             $export = new ApplicantDocumentsExport();
@@ -128,7 +95,7 @@ class ApplicantDocumentController extends Controller
         }
     }
 
-    public function getApplicantMoreDetails($id)
+    public function show($id)
     {
         try {
             $applicant = User::find($id);

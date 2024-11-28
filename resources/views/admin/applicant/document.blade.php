@@ -287,8 +287,8 @@
 <script src="{{ asset('js/pages/applicant-documents.js') }}"></script>
 <script>
    window.routes = {
-    exportExcel: "{{ route('admin.applicant.document.excel') }}",
-    getApplicantDocuments: "{{ route('admin.applicant.document.get-documents', ':id') }}",
+    exportExcel: "{{ route('admin.applicants.document.export-excel') }}",
+    getApplicantDocuments: "{{ route('admin.applicants.document.show', ':id') }}",
    };
 
   
