@@ -27,7 +27,7 @@ return new class extends Migration
             $table->date('end_date')->nullable();    // Corrected here
 
             // Status of the reservation
-            $table->enum('status', ['pending', 'active', 'cancelled', 'completed'])->default('pending'); 
+            $table->enum('status', ['pending', 'confirmed', 'completed', 'cancelled', 'expired'])->default('pending'); 
 
             $table->timestamps(); 
         });

@@ -5,148 +5,200 @@ namespace App\Http\Controllers\Admin\Reservation;
 use App\Models\Reservation;
 use App\Models\User;
 use Illuminate\Http\Request;
-
 use App\Http\Controllers\Controller;
+use Exception;
+use Log;
 
 class ReservationController extends Controller
 {
+    // Display the reservation index page
     public function index()
+    {
+        return view('admin.reservation.index');
+    }
+
+    // Fetch reservations with filters, pagination, and search
+    public function fetchReservations(Request $request)
+    {
+        try {
+            $query = Reservation::with(['user']); // Base query with relationships
+
+            // Apply search filter
+            if ($request->filled('customSearch')) {
+                $query->whereHas('user.student', function ($q) use ($request) {
+                    $q->where('name_en', 'like', '%' . $request->customSearch . '%');
+                })->orWhere('status', 'like', '%' . $request->customSearch . '%');
+            }
+
+            // Clone query for filtered records count
+            $filteredQuery = clone $query;
+            $totalRecords = Reservation::count();
+            $filteredRecords = $filteredQuery->count();
+
+            // Pagination
+            $start = $request->get('start', 0);
+            $length = $request->get('length', 10);
+            $reservations = $query->skip($start)->take($length)->get();
+
+            // Map response data
+            return response()->json([
+                'draw' => $request->get('draw'),
+                'recordsTotal' => $totalRecords,
+                'recordsFiltered' => $filteredRecords,
+                'data' => $reservations->map(function ($reservation) {
+                    $location = $reservation->room
+                        ? $reservation->room->getLocation()
+                        : ['building' => 'N/A', 'apartment' => 'N/A', 'room' => 'N/A'];
+
+                    $locationString = implode(' - ', $location);
+
+                    return [
+                        'reservation_id' => $reservation->id,
+                        'name' => $reservation->user->student->name_en ?? 'N/A',
+                        'location' => $locationString,
+                        'start_date' => $reservation->start_date ? $reservation->start_date->format('F j, Y, g:i A') : 'N/A',
+                        'end_date' => $reservation->end_date ? $reservation->end_date->format('F j, Y, g:i A') : 'N/A',
+                        'status' => $reservation->status,
+                        'actions' => '<button type="button" class="btn btn-round btn-info-rgba" data-reservation-id="' . $reservation->id . '" id="details-btn" title="More Details"><i class="feather icon-info"></i></button>',
+                    ];
+                }),
+            ]);
+        } catch (Exception $e) {
+            Log::error('Error fetching reservations data: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to fetch reservations data.'], 500);
+        }
+    }
+
+    // Fetch reservation summary statistics
+    public function getReservationsSummary()
+    {
+        try {
+            $reservations = Reservation::with(['user'])->get();
+
+            $summary = [
+                'totalReservations' => $reservations->count(),
+                'totalMaleCount' => $reservations->where('user.gender', 'male')->count(),
+                'totalFemaleCount' => $reservations->where('user.gender', 'female')->count(),
+                'totalPendingCount' => $reservations->where('status', 'pending')->count(),
+                'malePendingCount' => $reservations->where('status', 'pending')->where('user.gender', 'male')->count(),
+                'femalePendingCount' => $reservations->where('status', 'pending')->where('user.gender', 'female')->count(),
+                'totalConfirmedCount' => $reservations->where('status', 'confirmed')->count(),
+                'maleConfirmedCount' => $reservations->where('status', 'confirmed')->where('user.gender', 'male')->count(),
+                'femaleConfirmedCount' => $reservations->where('status', 'confirmed')->where('user.gender', 'female')->count(),
+                'totalCancelledCount' => $reservations->where('status', 'cancelled')->count(),
+                'maleCancelledCount' => $reservations->where('status', 'cancelled')->where('user.gender', 'male')->count(),
+                'femaleCancelledCount' => $reservations->where('status', 'cancelled')->where('user.gender', 'female')->count(),
+            ];
+
+            return response()->json($summary);
+        } catch (Exception $e) {
+            Log::error('Error fetching reservation summary: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to fetch reservation summary.'], 500);
+        }
+    }
+
+    // Display relocation view
+    public function relocation()
     {
         return view('admin.reservation.relocation');
     }
 
     public function show($nationalId)
-    {
-        $user = User::getUserByNationalId($nationalId);
-    
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-    
-        $reservation = $user->reservation;
-        $location = $user->getLocationDetails();  
-    
-        if ($reservation) {
-            // Get student details
-            $student = $user->student;  // This will fetch the related student data
-    
-            // Append name_en and faculty to the reservation if student exists
-            if ($student) {
-                // Only append the necessary data
-                $reservation->name_en = $student->name_en;
-                $reservation->faculty = $student->faculty->name_en;
-            }
-    
-            // Check if location details exist and append them to the reservation
-            if ($location) {
-                $reservation->room_number = $location['room'] ?? null; // Use null if the key doesn't exist
-                $reservation->building_number = $location['building'] ?? null;
-                $reservation->apartment_number = $location['apartment'] ?? null;
-            }
-    
-            // Only return specific fields in the reservation response
-            return response()->json([
-                'success' => true,
-                'reservation' => [
-                    'id' => $reservation->id,
+{
+    // Fetch the user using the provided national ID
+    $user = User::getUserByNationalId($nationalId);
 
-                    'room_number' => $reservation->room_number,
-                    'building_number' => $reservation->building_number,
-                    'apartment_number' => $reservation->apartment_number
-                ],
-                'student' => [
-                   
-                    'name_en' => $reservation->name_en,
-                    'faculty' => $reservation->faculty,
-                   
-                ]
-            ]);
-        } else {
-            return response()->json(['message' => 'Reservation not found'], 404);
-        }
+    // Check if the user exists
+    if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
     }
 
+    // Log the user details
+    Log::info('User found', [
+        'nationalId' => $nationalId,
+        'user' => $user->toArray(),
+    ]);
+
+    // Check if the user has a reservation
+    $reservation = $user->reservation;
+    if (!$reservation) {
+        Log::warning('User has no reservation', ['nationalId' => $nationalId]);
+        return response()->json(['message' => 'Reservation not found'], 404);
+    }
+
+    // Fetch the location details of the reservation
+    $location = $user->getLocationDetails();
+
+    // Fetch student details if available
+    $student = $user->student;
+
+    // Return reservation and student details
+    return response()->json([
+        'success' => true,
+        'reservation' => [
+            'id' => $reservation->id,
+            'room_number' => $location['room'] ?? null,
+            'building_number' => $location['building'] ?? null,
+            'apartment_number' => $location['apartment'] ?? null,
+        ],
+        'student' => [
+            'name_en' => $student->name_en ?? 'N/A',
+            'faculty' => $student->faculty->name_en ?? 'N/A',
+        ],
+    ]);
+}
+
+
+    // Swap reservation locations
     public function swapReservationLocation(Request $request)
     {
-        // Validate the input
         $validatedData = $request->validate([
             'reservation_id_1' => 'required|exists:reservations,id',
             'reservation_id_2' => 'required|exists:reservations,id',
         ]);
-    
-        // Fetch the reservations using the validated IDs
+
         $reservation1 = Reservation::find($validatedData['reservation_id_1']);
         $reservation2 = Reservation::find($validatedData['reservation_id_2']);
-    
-        // Check if both reservations exist
+
         if (!$reservation1 || !$reservation2) {
             return response()->json(['error' => 'Reservations not found'], 404);
         }
-    
-        // Swap the locations of the reservations
+
         $tempRoomId = $reservation1->room_id;
         $reservation1->room_id = $reservation2->room_id;
         $reservation2->room_id = $tempRoomId;
-    
-        // Save the updated reservations
+
         $reservation1->save();
         $reservation2->save();
-    
-        // Return a success response
+
         return response()->json([
             'message' => 'Reservation locations swapped successfully',
             'reservation1' => $reservation1,
             'reservation2' => $reservation2,
         ]);
     }
-    
 
+    // Reallocate a reservation to a new room
     public function reallocateReservation(Request $request)
     {
-    // Validate the input
-    $validatedData = $request->validate([
-        'reservation_id' => 'required|exists:reservations,id',
-        'room_id' => 'required|exists:rooms,id',
-    ]);
+        $validatedData = $request->validate([
+            'reservation_id' => 'required|exists:reservations,id',
+            'room_id' => 'required|exists:rooms,id',
+        ]);
 
-    // Fetch the reservation and room
-    $reservation = Reservation::find($validatedData['reservation_id']);
-    $newRoomId = $validatedData['room_id'];
+        $reservation = Reservation::find($validatedData['reservation_id']);
+        $newRoomId = $validatedData['room_id'];
 
-    // Check if the reservation exists
-    if (!$reservation) {
-        return response()->json(['error' => 'Reservation not found'], 404);
-    }
+        if (Reservation::where('room_id', $newRoomId)->exists()) {
+            return response()->json(['error' => 'Room is already assigned to another reservation'], 400);
+        }
 
-    // Check if the new room is already assigned to another reservation
-    $existingReservation = Reservation::where('room_id', $newRoomId)->first();
-    if ($existingReservation) {
+        $reservation->room_id = $newRoomId;
+        $reservation->save();
+
         return response()->json([
-            'error' => 'Room is already assigned to another reservation',
-            'existingReservation' => $existingReservation,
-        ], 400);
+            'message' => 'Reservation reallocated successfully',
+            'reservation' => $reservation,
+        ]);
     }
-
-    // Reallocate the reservation to the new room
-    $reservation->room_id = $newRoomId;
-    $reservation->save();
-
-    // Return a success response
-    return response()->json([
-        'message' => 'Reservation reallocated successfully',
-        'reservation' => $reservation,
-    ]);
 }
-
-    
-    
-    
-    
-
-    
-    
-
-    
-
-}
-

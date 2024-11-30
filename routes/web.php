@@ -29,13 +29,20 @@ use App\Http\Controllers\Admin\Unit\{
 };
 use App\Http\Controllers\Admin\PermissionRequest\PermissionRequestController;
 use App\Http\Controllers\Admin\Resident\ResidentController;
+use App\Http\Controllers\Admin\Invoice\InvoiceController;
+
 use App\Http\Controllers\Student\StudentMaintenanceController;
 use App\Http\Controllers\DataTableController;
 
-// Welcome Route
-Route::get('/welcome', function () {
-    return view('welcome');
-});
+
+
+
+
+
+
+
+
+
 
 // Authentication Routes
 Route::get('/', [LoginController::class, 'showLoginPage']);
@@ -55,24 +62,42 @@ Route::prefix('password')->name('password.')->group(function () {
 
 // Protected Routes (require authentication)
 Route::middleware(['auth'])->group(function () {
-    // Admin Routes
-    Route::prefix('admin')->name('admin.')->group(function () {
 
-        // Admin Dashboard
-        Route::get('/home', [AdminHomeController::class, 'index'])->name('home');
+    // Admin Routes (require admin role)
+    Route::prefix('admin')->name('admin.')->middleware('can:is-admin')->group(function () {
 
-        // Applicant Routes
-        Route::prefix('applicants')->name('applicants.')->group(function () {
-            Route::get('/', [ApplicantController::class, 'index'])->name('index'); // View applicant page
-            Route::get('/data', [ApplicantController::class, 'fetchApplicants'])->name('fetch'); // Fetch applicants data
-            Route::get('/summary', [ApplicantController::class, 'getApplicantsSummary'])->name('get-summary'); // Fetch applicants summary statistics
-            Route::get('/{id}', [ApplicantController::class, 'show'])->name('show'); // Fetch details for a specific applicant
+       
 
+        Route::prefix('home')->name('home')->group(function () {
+            Route::get('/', [AdminHomeController::class, 'showDashboard'])->name('');
+            Route::get('/stats', [AdminHomeController::class, 'fetchStats'])->name('.stats');
+        });
+        
+
+        Route::prefix('applicants')->name('applicants')->group(function () {
+            Route::get('/', [ApplicantController::class, 'showApplicantPage'])->name(''); 
+            Route::get('/fetch', [ApplicantController::class, 'fetchApplicants'])->name('.fetch'); 
+            Route::get('/stats', [ApplicantController::class, 'fetchStats'])->name('.stats'); 
+            Route::get('/{id}', [ApplicantController::class, 'fetchApplicantInfo'])->name('.details');
             // Export Routes
-            Route::prefix('export')->name('export-')->group(function () {
-                Route::get('/excel', [ApplicantController::class, 'downloadApplicantsExcel'])->name('excel'); // Export applicants to Excel
+            Route::prefix('export')->name('.export-')->group(function () {
+                Route::get('/excel', [ApplicantController::class, 'downloadApplicantsExcel'])->name('excel'); 
             });
         });
+
+        Route::prefix('invoices')->name('invoices')->group(function () {
+            Route::get('/', [InvoiceController::class, 'showInvoicesPage'])->name('.index');  // Show invoices page
+            Route::get('/fetch', [InvoiceController::class, 'fetchInvoices'])->name('.fetch');  // Fetch invoices data for DataTables
+            Route::get('/stats', [InvoiceController::class, 'fetchStats'])->name('.stats');  // Fetch statistics for invoices
+            Route::get('/{id}', [InvoiceController::class, 'fetchInvoice'])->name('.show');  // Fetch a specific invoice by ID
+            // Update Payment Status
+            Route::post('/payment/{paymentId}/status', [InvoiceController::class, 'updatePaymentStatus'])->name('.payment.update'); // Update payment status
+            // Export Routes
+            Route::prefix('export')->name('.export-')->group(function () {
+                Route::get('/excel', [InvoiceController::class, 'downloadInvoicesExcel'])->name('excel');  // Export invoices to Excel
+            });
+        });
+        
 
         // Admin Profile Routes
         Route::get('/profile', [AdminProfileController::class, 'index'])->name('profile');
@@ -116,12 +141,24 @@ Route::middleware(['auth'])->group(function () {
         });
 
         Route::prefix('reservation')->name('reservation.')->group(function () {
-            Route::get('/relocation', [ReservationController::class, 'index'])->name('relocation');
-            Route::get('/{userId}', [ReservationController::class, 'show'])->name('show');
-            Route::post('/swap', [ReservationController::class, 'swapReservationLocation'])->name('swap');
-            Route::post('/reallocate', [ReservationController::class, 'reallocateReservation'])->name('reallocate');
-
+            // Reservation routes
+            Route::get('/', [ReservationController::class, 'index'])->name('index');
+            Route::get('/export-excel', [ReservationController::class, 'exportExcel'])->name('export-excel');
+            Route::get('/{id}/show', [ReservationController::class, 'show'])->name('show');
+            Route::get('/fetch', [ReservationController::class, 'fetchReservations'])->name('fetch');
+            Route::get('/get-summary', [ReservationController::class, 'getReservationsSummary'])->name('get-summary');
+        
+            // Relocation routes
+            Route::prefix('relocation')->name('relocation.')->group(function () {
+                Route::get('/', [ReservationController::class, 'relocation'])->name('index');
+                Route::get('/{userId}', [ReservationController::class, 'show'])->name('show');
+                Route::post('/swap', [ReservationController::class, 'swapReservationLocation'])->name('swap');
+                Route::post('/reallocate', [ReservationController::class, 'reallocateReservation'])->name('reallocate');
+            });
         });
+        
+
+
         
 
         // Resident Routes

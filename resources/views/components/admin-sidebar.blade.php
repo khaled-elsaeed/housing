@@ -22,28 +22,35 @@
                 </a>
             </li>
 
-            <!-- Applicants Section -->
+            <!-- Dashboard Link -->
+            <li>
+                <a href="{{ route('admin.applicants') }}">
+                    <img src="{{ asset('images/svg-icon/dashboard.svg') }}" class="img-fluid" alt="dashboard">
+                    <span>Applicants</span>
+                </a>
+            </li>
+
+             <!-- Dashboard Link -->
+             <li>
+                <a href="{{ route('admin.invoices.index') }}">
+                    <img src="{{ asset('images/svg-icon/dashboard.svg') }}" class="img-fluid" alt="dashboard">
+                    <span>Invoices</span>
+                </a>
+            </li>
+
+           
             <li>
                 <a href="javascript:void(0);">
-                    <img src="{{ asset('images/svg-icon/form_elements.svg') }}" class="img-fluid" alt="applicants">
-                    <span>Applicants</span>
+                    <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="reservation">
+                    <span>Reservation</span>
                     <i class="feather icon-chevron-right pull-right"></i>
                 </a>
                 <ul class="vertical-submenu">
-                    <li><a href="{{ route('admin.applicants.index') }}">View Applicants</a></li>
-    </ul>
+                <li><a href="{{ route('admin.reservation.index') }}">Reservation</a></li>
+
+                    <li><a href="{{ route('admin.reservation.relocation.index') }}">Relocation</a></li>
+                </ul>
             </li>
-<!-- Reservation Section -->
-<li>
-    <a href="javascript:void(0);">
-        <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="reservation">
-        <span>Reservation</span>
-        <i class="feather icon-chevron-right pull-right"></i>
-    </a>
-    <ul class="vertical-submenu">
-        <li><a href="{{ route('admin.reservation.relocation') }}">Reservation Relocation</a></li>
-    </ul>
-</li>
 
 
             <!-- Residents Section -->

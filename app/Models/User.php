@@ -87,7 +87,7 @@ public function universityArchive()
 
     public function reservation()
     {
-        return $this->hasOne(reservation::class); // Assuming one user has one student record
+        return $this->hasOne(Reservation::class); // Assuming one user has one student record
     }
 
 
@@ -123,10 +123,7 @@ public function universityArchive()
     }
 
     // Define the relationship to documents
-    public function documents()
-    {
-        return $this->hasMany(Document::class);
-    }
+   
 
     public function allowLateProfileCompletion(): bool
     {

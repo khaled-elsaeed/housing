@@ -8,12 +8,24 @@ use App\Models\User;
 use App\Exports\Applicants\ApplicantsExport;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Gate;
+
 
 class ApplicantController extends Controller
 {
-    public function index()
+    /**
+     * Display the applicant page.
+     *
+     *
+     * @return \Illuminate\View\View|\Illuminate\Http\Response
+     */
+    public function showApplicantPage()
     {
         try {
+            if (Gate::denies('is-admin')) {
+                return response()->view('errors.403', [], 403);
+            }
+
             return view('admin.applicant.index');
         } catch (Exception $e) {
             Log::error('Error retrieving applicant page data: ' . $e->getMessage(), [
@@ -24,6 +36,13 @@ class ApplicantController extends Controller
         }
     }
 
+    /**
+     * Fetch applicants based on search and filtering criteria.
+     *
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function fetchApplicants(Request $request)
     {
         try {
@@ -37,7 +56,8 @@ class ApplicantController extends Controller
                 $searchTerm = $request->get('customSearch');
                 $query->where(function ($query) use ($searchTerm) {
                     $query->whereHas('student', function ($query) use ($searchTerm) {
-                        $query->where('name_en', 'like', "%$searchTerm%")
+                        $query
+                            ->where('name_en', 'like', "%$searchTerm%")
                             ->orWhere('national_id', 'like', "%$searchTerm%")
                             ->orWhere('email', 'like', "%$searchTerm%")
                             ->orWhere('mobile', 'like', "%$searchTerm%");
@@ -53,7 +73,8 @@ class ApplicantController extends Controller
             $totalRecords = $query->count();
             $filteredRecords = $query->count();
 
-            $applicants = $query->skip($request->get('start', 0))
+            $applicants = $query
+                ->skip($request->get('start', 0))
                 ->take($request->get('length', 10))
                 ->get();
 
@@ -71,7 +92,7 @@ class ApplicantController extends Controller
                         'registration_date' => $applicant->created_at->format('F j, Y, g:i A'),
                         'actions' => '<button type="button" class="btn btn-round btn-info-rgba" data-applicant-id="' . $applicant->id . '" id="details-btn" title="More Details"><i class="feather icon-info"></i></button>',
                     ];
-                })
+                }),
             ]);
         } catch (Exception $e) {
             Log::error('Error fetching applicants data: ' . $e->getMessage(), ['exception' => $e]);
@@ -79,9 +100,24 @@ class ApplicantController extends Controller
         }
     }
 
-    public function getApplicantsSummary()
+    /**
+     * Fetch summary statistics for applicants.
+     *
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function fetchStats()
     {
         try {
+            if (Gate::denies('is-admin')) {
+                return response()->json(
+                    [
+                        'error' => 'Unauthorized access to statistics data.',
+                    ],
+                    403
+                );
+            }
+
             $applicants = User::role('resident')
                 ->with(['student'])
                 ->leftJoin('students', 'students.user_id', '=', 'users.id')
@@ -95,13 +131,31 @@ class ApplicantController extends Controller
             $totalPreliminaryAcceptedCount = $applicants->where('application_status', 'preliminary_accepted')->count();
             $totalFinalAcceptedCount = $applicants->where('application_status', 'final_accepted')->count();
 
-            $malePreliminaryAcceptedCount = $applicants->where('gender', 'male')->where('application_status', 'preliminary_accepted')->count();
-            $malePendingCount = $applicants->where('gender', 'male')->where('application_status', 'pending')->count();
-            $maleFinalAcceptedCount = $applicants->where('gender', 'male')->where('application_status', 'final_accepted')->count();
+            $malePreliminaryAcceptedCount = $applicants
+                ->where('gender', 'male')
+                ->where('application_status', 'preliminary_accepted')
+                ->count();
+            $malePendingCount = $applicants
+                ->where('gender', 'male')
+                ->where('application_status', 'pending')
+                ->count();
+            $maleFinalAcceptedCount = $applicants
+                ->where('gender', 'male')
+                ->where('application_status', 'final_accepted')
+                ->count();
 
-            $femalePreliminaryAcceptedCount = $applicants->where('gender', 'female')->where('application_status', 'preliminary_accepted')->count();
-            $femalePendingCount = $applicants->where('gender', 'female')->where('application_status', 'pending')->count();
-            $femaleFinalAcceptedCount = $applicants->where('gender', 'female')->where('application_status', 'final_accepted')->count();
+            $femalePreliminaryAcceptedCount = $applicants
+                ->where('gender', 'female')
+                ->where('application_status', 'preliminary_accepted')
+                ->count();
+            $femalePendingCount = $applicants
+                ->where('gender', 'female')
+                ->where('application_status', 'pending')
+                ->count();
+            $femaleFinalAcceptedCount = $applicants
+                ->where('gender', 'female')
+                ->where('application_status', 'final_accepted')
+                ->count();
 
             return response()->json([
                 'totalApplicants' => $totalApplicants,
@@ -126,8 +180,53 @@ class ApplicantController extends Controller
         }
     }
 
-    
+    /**
+     * Fetch additional data for specific applicants.
+     *
+     * @param \Model\User
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function fetchApplicantInfo($id)
+    {
+        try {
+            Log::error('we are in page now ya 7ag');
+            $applicant = User::find($id);
 
+            if (!$applicant) {
+                return response()->json(['error' => 'Applicant not found', 'user' => $id], 404);
+            }
+
+            $details = [
+                'faculty' => $applicant->student->faculty->name_en ?? 'Not available',
+                'program' => $applicant->student->program->name_en ?? 'Not available',
+                'score' => $applicant->student->universityArchive->score ?? 'Not available',
+                'percent' => $applicant->student->universityArchive->percent ?? 'Not available',
+                'governorate' => $applicant->student->governorate->name_ar ?? 'Not available',
+                'city' => $applicant->student->city->name_ar ?? 'Not available',
+                'street' => $applicant->student->street ?? 'Not available',
+            ];
+            
+            return response()->json([
+                'success' => true,
+                'data' => $details
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching applicant details', [
+                'exception' => $e->getMessage(),
+                'stack_trace' => $e->getTraceAsString(),
+                'applicant_id' => $id
+            ]);
+
+            return response()->json(['error' => 'Applicant not found or an error occurred', 'user' => $id], 404);
+        }
+    }
+
+    /**
+     * Download applicants data as an Excel file.
+     *
+     *
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function downloadApplicantsExcel()
     {
         try {
@@ -142,6 +241,12 @@ class ApplicantController extends Controller
         }
     }
 
+    /**
+     * Download applicants data as a PDF file.
+     *
+     *
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function downloadApplicantsPDF()
     {
         try {
@@ -156,6 +261,4 @@ class ApplicantController extends Controller
             return response()->json(['error' => 'Failed to export applicants to PDF'], 500);
         }
     }
-
-    
 }

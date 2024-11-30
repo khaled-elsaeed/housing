@@ -16,7 +16,7 @@ return new class extends Migration
 
             $table->string('name_en')->nullable();  // English name
             $table->string('name_ar')->nullable();  // Arabic name
-            $table->string('university_id')->nullable()->unique();  // University ID (unique + index)
+            $table->string('academic_id')->nullable()->unique();  // University ID (unique + index)
             $table->string('national_id')->nullable()->unique();  // National ID (unique + index)
             
             // Replaced foreign key with string columns

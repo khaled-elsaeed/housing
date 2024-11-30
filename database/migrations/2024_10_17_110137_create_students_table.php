@@ -22,7 +22,8 @@ return new class extends Migration
             
             $table->string('name_en', 250); // English name
             $table->string('name_ar', 250); // Arabic name
-            $table->string('national_id')->nullable()->unique()->index(); // National ID (unique + index)
+            $table->string('national_id')->nullable()->unique();
+            $table->string('academic_id')->nullable()->unique();
             $table->string('mobile', 20); // Mobile number
             $table->date('birthdate'); // Birthdate
             $table->enum('gender', ['male', 'female']); // Gender

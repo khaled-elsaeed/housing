@@ -78,23 +78,39 @@ class ResidentController extends Controller
             return response()->json(['error' => 'Failed to fetch residents data.'], 500);
         }
     }
-
     public function getSummary()
     {
         try {
-            $totalResidents = User::role('resident')->count();
-            $totalMaleCount = User::role('resident')->where('gender', 'male')->count();
-            $totalFemaleCount = User::role('resident')->where('gender', 'female')->count();
-
+            $totalResidents = User::role('resident')
+                ->whereHas('student', function($query) {
+                    $query->where('application_status', 'final_accepted');
+                })
+                ->count();
+    
+            $totalMaleCount = User::role('resident')
+                ->whereHas('student', function($query) {
+                    $query->where('gender', 'male')->where('application_status', 'final_accepted');
+                })
+                ->count();
+    
+            $totalFemaleCount = User::role('resident')
+                ->whereHas('student', function($query) {
+                    $query->where('gender', 'female')->where('application_status', 'final_accepted');
+                })
+                ->count();
+    
             return response()->json([
                 'totalResidents' => $totalResidents,
                 'totalMaleCount' => $totalMaleCount,
                 'totalFemaleCount' => $totalFemaleCount,
             ]);
         } catch (Exception $e) {
+            Log::error('Error fetching summary data: ' . $e->getMessage(), ['exception' => $e]);
             return response()->json(['error' => 'Error fetching summary data'], 500);
         }
     }
+    
+
 
     public function downloadResidentsExcel()
     {

@@ -46,9 +46,9 @@ class UniversityArchive extends Model
         'is_new_comer' => 'boolean',
     ];
 
-    public function users()
+    public function user()
     {
-        return $this->hasMany(UserNationalLink::class);
+        return $this->belongsTo(UserNationalLink::class);
     }
     
     public function city()

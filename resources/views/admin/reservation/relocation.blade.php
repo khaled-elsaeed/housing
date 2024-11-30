@@ -333,10 +333,9 @@ function showForm(formType, selectedCard) {
    
    
    // Fetch Resident Details for Relocate when National ID is entered (Resident 1)
-   // Fetch Resident Details for Relocate when National ID is entered (Resident 1)
    $('#resident_nid_1').on('keyup', function() {
    let nid = $(this).val();
-   let url = '{{ route('admin.reservation.show', ':userId') }}'.replace(':userId', nid);
+   let url = '{{ route('admin.reservation.relocation.show', ':userId') }}'.replace(':userId', nid);
    
    if (nid.length == 14) {  
        $.get(url, function(data) {
@@ -370,7 +369,7 @@ function showForm(formType, selectedCard) {
    // Fetch Resident Details for Swap when National ID is entered (Resident 1)
    $('#resident_nid_1_swap').on('keyup', function() {
    let nid = $(this).val();
-   let url = '{{ route('admin.reservation.show', ':userId') }}'.replace(':userId', nid);
+   let url = '{{ route('admin.reservation.relocation.show', ':userId') }}'.replace(':userId', nid);
    
    if (nid.length == 14) {  
        $.get(url, function(data) {
@@ -402,7 +401,7 @@ function showForm(formType, selectedCard) {
    // Fetch Resident Details for Swap when National ID is entered (Resident 2)
    $('#resident_nid_2_swap').on('keyup', function() {
    let nid = $(this).val();
-   let url = '{{ route('admin.reservation.show', ':userId') }}'.replace(':userId', nid);
+   let url = '{{ route('admin.reservation.relocation.show', ':userId') }}'.replace(':userId', nid);
    
    if (nid.length == 14) {  
        $.get(url, function(data) {
@@ -442,7 +441,7 @@ function showForm(formType, selectedCard) {
    
    // Send AJAX request for relocation
    $.ajax({
-    url: '{{route('admin.reservation.reallocate')}}',
+    url: '{{route('admin.reservation.relocation.reallocate')}}',
     method: 'POST',
        data: {
            _token: '{{ csrf_token() }}',
@@ -469,7 +468,7 @@ function showForm(formType, selectedCard) {
    
    // Send AJAX request for room swap
    $.ajax({
-       url: '{{route('admin.reservation.swap')}}',
+       url: '{{route('admin.reservation.relocation.swap')}}',
        method: 'POST',
        data: {
            _token: '{{ csrf_token() }}',

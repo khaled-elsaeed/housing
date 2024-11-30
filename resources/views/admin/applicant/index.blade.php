@@ -347,11 +347,10 @@
 <script src="{{ asset('js/pages/applicants.js') }}"></script>
 <script>
    window.routes = {
-    exportExcel: "{{ route('admin.applicants.export-excel') }}",
-   
-    getApplicantMoreDetails: "{{ route('admin.applicants.show', ':id') }}",
-   fetchResidents: "{{ route('admin.applicants.fetch') }}",
-      getSummary: "{{ route('admin.applicants.get-summary') }}"
+      exportExcel: "{{ route('admin.applicants.export-excel') }}",
+      getApplicantMoreDetails: "{{ route('admin.applicants.details', ':id') }}",
+      fetchApplicants: "{{ route('admin.applicants.fetch') }}",
+      fetchStats: "{{ route('admin.applicants.stats') }}"
    };
    
 </script>
