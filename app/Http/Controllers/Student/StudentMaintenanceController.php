@@ -4,8 +4,13 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\MaintenanceRequest;
+use App\Models\MaintenanceIssue;
+use App\Models\MaintenanceImage;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+
 
 class StudentMaintenanceController extends Controller
 {
@@ -15,37 +20,65 @@ class StudentMaintenanceController extends Controller
         return view('student.maintenance');
     }
 
-    // Handle the form submission and store the request
     public function store(Request $request)
     {
         // Validate the incoming request
-        $request->validate([
-            'issue_type' => 'required|string',
-            'water_issues' => 'nullable|array',
-            'electrical_issues' => 'nullable|array',
+        $validated = $request->validate([
+            'additional_info' => 'nullable|string|max:500',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Image validation
             'housing_issues' => 'nullable|array',
-            'image' => 'nullable|image|max:2048', // Max 2MB for the image
+            'housing_issues.*' => 'string',
         ]);
 
-        // Prepare the data for storing
-        $data = [
-            'issue_type' => $request->input('issue_type'),
-            'water_issues' => json_encode($request->input('water_issues', [])),
-            'electrical_issues' => json_encode($request->input('electrical_issues', [])),
-            'housing_issues' => json_encode($request->input('housing_issues', [])),
-        ];
+        // Start a database transaction
+        \DB::beginTransaction();
 
-        // Handle image upload (if there's an image)
-        if ($request->hasFile('image')) {
-            // Store the image in 'maintenance-images' directory
-            $path = $request->file('image')->store('maintenance-images', 'public');
-            $data['image'] = $path;
+        try {
+            // Create the maintenance request
+            $maintenanceRequest = MaintenanceRequest::create([
+                'user_id' => Auth::id(),
+                'additional_info' => $validated['additional_info'] ?? null,
+            ]);
+
+            // Handle housing issues, if any
+            if (!empty($validated['housing_issues'])) {
+                foreach ($validated['housing_issues'] as $issue) {
+                    MaintenanceIssue::create([
+                        'maintenance_request_id' => $maintenanceRequest->id,
+                        'issue_type' => 'General Housing',
+                        'description' => $issue,
+                    ]);
+                }
+            }
+
+            // Handle image upload, if any
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('maintenance', 'public');
+
+                MaintenanceImage::create([
+                    'maintenance_request_id' => $maintenanceRequest->id,
+                    'image_path' => $imagePath,
+                ]);
+            }
+
+            // Commit the transaction
+            \DB::commit();
+
+            // Return a successful response
+           
+            return response()->json([
+                'success' => true,
+                'message' => 'Maintenance request submitted successfully.'
+            ], 201);
+        } catch (\Exception $e) {
+            // Rollback transaction in case of an error
+            \DB::rollBack();
+
+            // Return an error response
+            return response()->json([
+                'message' => 'Error while submitting the maintenance request.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-        // Save the maintenance request in the database
-        MaintenanceRequest::create($data);
-
-        // Redirect or show success message
-        return redirect()->route('student.maintenance.form')->with('success', 'Your maintenance request has been submitted successfully.');
     }
 }

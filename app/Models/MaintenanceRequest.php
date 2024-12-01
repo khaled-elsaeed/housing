@@ -9,27 +9,27 @@ class MaintenanceRequest extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'resident_id',
-        'room_id',
-        'issue_type',
-        'description',
-        'status',
-    ];
+   // Table name (optional if it's the default 'maintenance_requests')
+   protected $table = 'maintenance_requests';
 
-    
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+   protected $fillable = [
+    'user_id',
+    'additional_info',
+    'status',
+];
 
-    public function room()
-    {
-        return $this->belongsTo(Room::class);
-    }
+public function user()
+{
+    return $this->belongsTo(User::class); // A request belongs to a user
+}
 
-    public function images()
-    {
-        return $this->hasMany(MaintenanceRequestImage::class);
-    }
+public function issues()
+{
+    return $this->hasMany(MaintenanceIssue::class); // A request can have many issues
+}
+
+public function images()
+{
+    return $this->hasMany(MaintenanceImage::class); // A request can have many images
+}
 }

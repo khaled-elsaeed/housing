@@ -14,22 +14,16 @@ class StudentHomeController extends Controller
     public function index()
     {
         try {
-            // Get the authenticated student
             $user = auth()->user();
 
-            // Fetch the active reservation
-            $activeReservation = $user->reservation()
-                ->where('status', 'active') // Filter for active reservations
-                ->latest() // Get the most recent active reservation
+            $Reservation = $user->reservation()
+                ->where('status', 'confirmed') 
+                ->latest()
                 ->first();
 
-            // Pass the user and reservation data to the view
-            return view('student.home', compact('user', 'activeReservation'));
+            return view('student.home', compact('user', 'Reservation'));
         } catch (\Exception $e) {
-            // Log the error for debugging
             Log::error('Error loading student home: ' . $e->getMessage());
-
-            // Redirect with an error message
             return redirect()->route('home')->with('error', 'Something went wrong while loading the page.');
         }
     }

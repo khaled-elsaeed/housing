@@ -3,7 +3,7 @@
 @section('title', 'Criteria Management')
 
 @section('links')
-    <link href="{{ asset('plugins/sweet-alert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+    
 
     <style>
         .loading {
@@ -77,8 +77,7 @@
 @endsection
 
 @section('scripts')
-    <script src="{{ asset('plugins/sweet-alert2/sweetalert2.min.js') }}"></script>
-
+    
     <script>
         // Mock data for criteria
         const mockCriteriaData = {

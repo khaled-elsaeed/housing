@@ -22,43 +22,19 @@
 
             <li>
                 <a href="{{ route('student.maintenance.form') }}">
-                    <img src="{{ asset('images/svg-icon/questionnaire.svg') }}" class="img-fluid" alt="questionnaires">
+                    <img src="{{ asset('images/svg-icon/components.svg') }}" class="img-fluid" alt="questionnaires">
                     <span>Maintenance</span>
                 </a>
             </li>
 
             <li>
-                <a href="#">
-                    <img src="{{ asset('images/svg-icon/results.svg') }}" class="img-fluid" alt="results">
+                <a href="{{ route('student.permission.form') }}">
+                    <img src="{{ asset('images/svg-icon/tables.svg') }}" class="img-fluid" alt="results">
                     <span>Perrmissions</span>
                 </a>
             </li>
 
-            <li>
-                <a href="#">
-                    <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="profile">
-                    <span>Profile</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="javaScript:void();">
-                    <img src="{{ asset('images/svg-icon/settings.svg') }}" class="img-fluid" alt="settings">
-                    <span>Settings</span>
-                    <i class="feather icon-chevron-right pull-right"></i>
-                </a>
-                <ul class="vertical-submenu">
-                    <li><a href="#">Change Password</a></li>
-                    <li><a href="#">Notification Settings</a></li>
-                </ul>
-            </li>
-
-            <li>
-                <a href="#">
-                    <img src="{{ asset('images/svg-icon/logout.svg') }}" class="img-fluid" alt="logout">
-                    <span>Logout</span>
-                </a>
-            </li>
+          
         </ul>
     </div>
     <!-- End Navigationbar -->

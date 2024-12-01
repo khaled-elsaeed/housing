@@ -5,7 +5,7 @@
 <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('plugins/datatables/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-<link href="{{ asset('plugins/sweet-alert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+
 <link href="{{ asset('css/custom-datatable.css') }}" rel="stylesheet" type="text/css" />
 <style>
     .loading {
@@ -311,7 +311,6 @@
 <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
 <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
 <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('plugins/sweet-alert2/sweetalert2.min.js') }}"></script>
 <script src="{{ asset('js/pages/datatables.init.js') }}"></script>
 <script>
 $(document).ready(function () {

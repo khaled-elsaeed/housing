@@ -22,6 +22,7 @@
       <link href="{{ asset('css/icons.css') }}" rel="stylesheet" type="text/css">
       <link href="{{ asset('css/flag-icon.min.css') }}" rel="stylesheet" type="text/css">
       <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css">
+      <link href="{{ asset('plugins/sweet-alert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 
       <!-- Page-Specific CSS -->
       @yield('links')
@@ -68,6 +69,8 @@
       <script src="{{ asset('js/detect.js') }}"></script>
       <script src="{{ asset('js/jquery.slimscroll.js') }}"></script>
       <script src="{{ asset('js/vertical-menu.js') }}"></script>
+      <script src="{{ asset('plugins/sweet-alert2/sweetalert2.min.js') }}"></script>
+
     <!-- Page-Specific JS -->
     @yield('scripts')
       <!-- Core JS -->

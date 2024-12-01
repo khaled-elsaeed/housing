@@ -23,7 +23,7 @@
                 <h4 class="mb-0 text-white"><i class="fa fa-hotel"></i> Active Reservation</h4>
             </div>
             <div class="card-body">
-                @if($activeReservation)
+                @if($Reservation)
                     <!-- Cards for Each Detail -->
                     <div class="row text-center">
                         <!-- Building Number Card -->
@@ -32,7 +32,7 @@
                                 <div class="card-body">
                                     <i class="fa fa-building fa-2x text-primary"></i>
                                     <h5 class="card-title mt-3">Building</h5>
-                                    <p class="card-text">{{ $activeReservation->room->apartment->building->number }}</p>
+                                    <p class="card-text">{{ $Reservation->room->apartment->building->number }}</p>
                                 </div>
                             </div>
                         </div>
@@ -43,7 +43,7 @@
                                 <div class="card-body">
                                     <i class="fa fa-home fa-2x text-primary"></i>
                                     <h5 class="card-title mt-3">Apartment</h5>
-                                    <p class="card-text">{{ $activeReservation->room->apartment->number }}</p>
+                                    <p class="card-text">{{ $Reservation->room->apartment->number }}</p>
                                 </div>
                             </div>
                         </div>
@@ -52,9 +52,9 @@
                         <div class="col-md-4 mb-3">
                             <div class="card border-primary h-100">
                                 <div class="card-body">
-                                    <i class="fa fa-bedroom fa-2x text-primary"></i>
+                                    <i class="fa fa-bed fa-2x text-primary"></i>
                                     <h5 class="card-title mt-3">Room</h5>
-                                    <p class="card-text">{{ $activeReservation->room->number }}</p>
+                                    <p class="card-text">{{ $Reservation->room->number }}</p>
                                 </div>
                             </div>
                         </div>
@@ -68,8 +68,8 @@
                                 <div class="card-body">
                                     <i class="fa fa-check-circle fa-2x text-success"></i>
                                     <h5 class="card-title mt-3">Status</h5>
-                                    <span class="badge badge-{{ $activeReservation->status === 'pending' ? 'warning' : ($activeReservation->status === 'active' ? 'success' : 'danger') }}">
-                                        {{ ucfirst($activeReservation->status) }}
+                                    <span class="badge badge-{{ $Reservation->status === 'pending' ? 'warning' : ($Reservation->status === 'confirmed' ? 'success' : 'danger') }}">
+                                        {{ ucfirst($Reservation->status) }}
                                     </span>
                                 </div>
                             </div>
@@ -79,10 +79,10 @@
                         <div class="col-md-4 mb-3">
                             <div class="card border-primary h-100">
                                 <div class="card-body">
-                                    <i class="fa fa-calendar-alt fa-2x text-secondary"></i>
+                                    <i class="fa fa-calendar fa-2x text-secondary"></i>
                                     <h5 class="card-title mt-3">Term</h5>
                                     <p class="card-text">
-    {{ ucfirst(str_replace('_', ' ', $activeReservation->term)) }}
+    {{ ucfirst(str_replace('_', ' ', $Reservation->term)) }}
 </p>
                                 </div>
                             </div>
@@ -92,9 +92,9 @@
                         <div class="col-md-4 mb-3">
                             <div class="card border-primary h-100">
                                 <div class="card-body">
-                                    <i class="fa fa-clock fa-2x text-secondary"></i>
+                                    <i class="fa fa-calendar-check-o fa-2x text-secondary"></i>
                                     <h5 class="card-title mt-3">Year</h5>
-                                    <p class="card-text">{{ $activeReservation->year }}</p>
+                                    <p class="card-text">{{ $Reservation->year }}</p>
                                 </div>
                             </div>
                         </div>
@@ -104,7 +104,7 @@
 
                 @else
                     <div class="text-center py-5">
-                        <h5 class="text-muted"><i class="fa fa-info-circle"></i> No active reservations at the moment.</h5>
+                        <h5 class="text-muted"><i class="fa fa-info-circle"></i> No Active reservations at the moment.</h5>
                         <a href="#" class="btn btn-success btn-lg mt-4">
                             <i class="fa fa-plus-circle"></i> Create a New Reservation
                         </a>

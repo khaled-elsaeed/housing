@@ -32,6 +32,8 @@ use App\Http\Controllers\Admin\Resident\ResidentController;
 use App\Http\Controllers\Admin\Invoice\InvoiceController;
 
 use App\Http\Controllers\Student\StudentMaintenanceController;
+use App\Http\Controllers\Student\StudentPermissionController;
+
 use App\Http\Controllers\DataTableController;
 
 
@@ -189,7 +191,10 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('student')->name('student.')->group(function () {
         Route::get('/home', [StudentHomeController::class, 'index'])->name('home');
         Route::get('maintenance', [StudentMaintenanceController::class, 'showForm'])->name('maintenance.form');
-        Route::post('maintenance', [StudentMaintenanceController::class, 'store'])->name('maintenance.store');
+        Route::post('maintenance/store', [StudentMaintenanceController::class, 'store'])->name('maintenance.store');
+
+        Route::get('permission', [StudentPermissionController::class, 'showForm'])->name('permission.form');
+        Route::post('permission/store', [StudentPermissionController::class, 'store'])->name('permission.store');
     });
 });
 

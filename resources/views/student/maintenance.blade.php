@@ -22,7 +22,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(140, 47, 57, 0.5); /* Updated with #8C2F39 */
+        background-color: rgba(140, 47, 57, 0.5);
         display: none;
         justify-content: center;
         align-items: center;
@@ -40,7 +40,7 @@
 
     /* Active Card Style */
     .active-card {
-        border-color: #8C2F39; /* Updated with #8C2F39 */
+        border-color: #8C2F39;
     }
 
     /* Style for issue image */
@@ -53,18 +53,69 @@
     .additional-info {
         display: none;
     }
+
+    /* Upload Zone */
+.upload-zone {
+    border: 2px dashed #007bff;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    color: #6c757d;
+    background-color: #f8f9fa;
+}
+
+.upload-zone:hover {
+    background-color: #e9ecef;
+    border-color: #0056b3;
+}
+
+.upload-text {
+    font-size: 16px;
+    margin: 0;
+}
+
+.upload-link {
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.upload-zone.dragging {
+    background-color: #e3f2fd;
+    border-color: #007bff;
+}
+
+/* Thumbnail Preview */
+.thumbnail-wrapper {
+    display: inline-block;
+    max-width: 100%;
+    position: relative;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.thumbnail {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+}
+
+
 </style>
 @endsection
 
 @section('content')
 <div class="container my-5">
     <div class="row justify-content-center">
-        <!-- Wrapper for the background with border -->
         <div class="col-md-8">
             <div class="p-4 border rounded shadow-sm bg-white">
-                <!-- Maintenance Request Form -->
-                <form action="#" method="POST" enctype="multipart/form-data">
-                    @csrf
+                <form id="maintenanceRequestForm" method="POST" enctype="multipart/form-data">
+                @csrf
 
                     <!-- Issue Type Selection with Cards -->
                     <div class="row mb-4">
@@ -108,7 +159,6 @@
 
                     <!-- Issue Details (Conditionally displayed) -->
                     <div id="issue_details" class="mb-3">
-                        
                         <!-- Water & Sanitary Issues -->
                         <div id="water_sanitary_issues" class="d-none">
                             <h5><i class="fa fa-tint"></i> Water and Sanitary Issues</h5>
@@ -124,11 +174,6 @@
                                 <input type="checkbox" class="form-check-input" name="water_issues[]" value="plumbing_problem" id="plumbing_problem">
                                 <label class="form-check-label" for="plumbing_problem">Plumbing Problem</label>
                             </div>
-
-                            <!-- Additional Info Button -->
-                        <div class="form-group text-start mb-3 mt-3">
-                            <button type="button" class="btn btn-secondary" id="additionalInfoBtn">Add Additional Information</button>
-                        </div>
                         </div>
 
                         <!-- Electrical Issues -->
@@ -150,15 +195,10 @@
                                 <input type="checkbox" class="form-check-input" name="electrical_issues[]" value="electricity_problem" id="electricity_problem">
                                 <label class="form-check-label" for="electricity_problem">Electricity Problem</label>
                             </div>
-
-                            <!-- Additional Info Button -->
-                        <div class="form-group text-start mb-3 mt-3">
-                            <button type="button" class="btn btn-secondary" id="additionalInfoBtn">Add Additional Information</button>
-                        </div>
                         </div>
 
                         <!-- General Housing Issues -->
-                        <div id="general_housing_issues" class="d-none">
+                        <div id="housing_issues" class="d-none">
                             <h5><i class="fa fa-couch"></i> General Housing Issues</h5>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" name="housing_issues[]" value="furniture_damage" id="furniture_damage">
@@ -172,36 +212,34 @@
                                 <input type="checkbox" class="form-check-input" name="housing_issues[]" value="door_window_issue" id="door_window_issue">
                                 <label class="form-check-label" for="door_window_issue">Door/Window Problem</label>
                             </div>
-
-                            <!-- Additional Info Button -->
-                        <div class="form-group text-start mb-3 mt-3">
-                            <button type="button" class="btn btn-secondary" id="additionalInfoBtn">Add Additional Information</button>
                         </div>
-
-                        </div>
-
-                        
                     </div>
 
-                  
-                    <!-- Additional Information Text Input (Initially Hidden) -->
+                    <!-- Additional Information Text Input -->
                     <div id="additionalInfoDiv" class="additional-info form-group">
                         <label for="additional_info">Additional Information</label>
                         <textarea class="form-control" id="additional_info" name="additional_info" rows="4" placeholder="Enter any additional details about the issue"></textarea>
                     </div>
 
-                    <!-- Image Upload -->
-                    <div class="form-group">
-                        <label for="image" class="font-weight-semibold">Attach Image (Optional)</label>
-                        <input type="file" class="form-control-file" id="image" name="image">
-                    </div>
+                    <div id="uploadZone" class="upload-zone">
+    <p class="upload-text">Drag & drop an image here, or <span class="upload-link">browse</span></p>
+    <input type="file" id="image" name="image" accept="image/*" class="d-none">
+</div>
+<div id="imagePreview" class="mt-3 d-none">
+    <div class="thumbnail-wrapper position-relative">
+        <img id="previewImage" alt="Uploaded Image" class="thumbnail border rounded">
+        <button id="removeImageBtn" type="button" class="btn btn-round btn-danger"><i class="feather icon-trash-2"></i></button>
+        </div>
+</div>
+
 
                     <!-- Submit Button -->
                     <div class="text-center">
-                        <button type="submit" class="btn btn-primary btn-lg mt-3">
-                            <i class="fa fa-paper-plane"></i> Submit Request
-                        </button>
-                    </div>
+    <button type="submit" class="btn btn-primary btn-lg mt-3">
+        <i class="bi bi-send-fill"></i> Submit Request
+    </button>
+</div>
+
                 </form>
             </div>
         </div>
@@ -210,50 +248,13 @@
 @endsection
 
 @section('scripts')
+<script src="{{ asset('js/pages/student-maintenance.js') }}"></script>
 <script>
-    // Handle card selection and show corresponding issues
-    document.querySelectorAll('.issue-card').forEach(function(card) {
-        card.addEventListener('click', function() {
-            var issueType = this.id.replace('_card', '');
-            showIssueDetails(issueType);
-            highlightSelectedCard(this);  // Highlight selected card with overlay and checkmark
-        });
-    });
-
-    // Function to show the issue details based on selected card
-    function showIssueDetails(issueType) {
-        // Hide all issue sections
-        document.getElementById('water_sanitary_issues').classList.add('d-none');
-        document.getElementById('electrical_issues').classList.add('d-none');
-        document.getElementById('general_housing_issues').classList.add('d-none');
-
-        // Show the relevant issue section
-        if (issueType === 'water_sanitary') {
-            document.getElementById('water_sanitary_issues').classList.remove('d-none');
-        } else if (issueType === 'electrical') {
-            document.getElementById('electrical_issues').classList.remove('d-none');
-        } else if (issueType === 'housing') {
-            document.getElementById('general_housing_issues').classList.remove('d-none');
-        }
-    }
-
-    // Function to highlight the selected card
-    function highlightSelectedCard(card) {
-        // Remove active state from all cards
-        document.querySelectorAll('.issue-card').forEach(function(card) {
-            card.classList.remove('active-card');
-            card.querySelector('.card-overlay').classList.remove('show');
-        });
-
-        // Add active state to the selected card
-        card.classList.add('active-card');
-        card.querySelector('.card-overlay').classList.add('show');
-    }
-
-    // Toggle additional information text area
-    document.getElementById('additionalInfoBtn').addEventListener('click', function() {
-        var additionalInfoDiv = document.getElementById('additionalInfoDiv');
-        additionalInfoDiv.classList.toggle('additional-info'); // Toggle visibility
-    });
+    window.routes = {
+        maintenanceStore: "{{ route('student.maintenance.store') }}", // Corrected with ":" instead of "="
+    };
 </script>
 @endsection
+
+
+
