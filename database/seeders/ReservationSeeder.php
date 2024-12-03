@@ -11,13 +11,9 @@ class ReservationSeeder extends Seeder
 {
     public function run()
     {
-        // Path to the Excel file
-        $filePath = database_path('data' . DIRECTORY_SEPARATOR . 'male_reservations.csv');
+        $filePath = database_path('data' . DIRECTORY_SEPARATOR . 'female_reservations.csv');
         
-        // Log the start of the seeding process
         Log::info("Starting to seed reservations from file: {$filePath}");
-
-        // Load the spreadsheet
         try {
             $spreadsheet = IOFactory::load($filePath);
             Log::info("Spreadsheet loaded successfully.");
