@@ -1,4 +1,5 @@
 $(document).ready(function () {
+
    const toggleButton = document.getElementById("toggleButton");
    const icon = toggleButton.querySelector("i");
 
@@ -13,62 +14,82 @@ $(document).ready(function () {
    });
 
    const table = $('#default-datatable').DataTable({
-       processing: true,
-       serverSide: true,
-       responsive: true,
-       ajax: {
-           url: window.routes.fetchbuildings,
-           data: function (d) {
-               d.customSearch = $('#searchBox').val();
-           }
-       },
-       columns: [
-         { data: "building_number" },
-         { data: "gender" },
-         { data: "max_apartments" },
-         { data: "status" },
-         { data: "description" },
-         { 
-             data: null,
-             render: function(data, type, row) {
-                 return `
-                     <button type="button" class="btn btn-round btn-warning-rgba" id="edit-note-btn-${row.id}" title="Edit Note">
-                         <i class="feather icon-edit"></i>
-                     </button>
-                     <button type="button" class="btn btn-round btn-primary-rgba" id="edit-status-btn-${row.id}" title="Edit Status">
-                         <i class="feather icon-settings"></i>
-                     </button>
-                     <button type="button" class="btn btn-round btn-danger-rgba" id="delete-btn-${row.id}" title="Delete Building">
-                         <i class="feather icon-trash-2"></i>
-                     </button>
-                 `;
-             }
-         }
-       ]
-   });
+      processing: true,
+      serverSide: true,
+      responsive: true,
+      ajax: {
+          url: window.routes.fetchBuildings,
+          data: function (d) {
+              d.customSearch = $('#searchBox').val();
+              // Use 'gender' and 'status' for the backend
+              d.gender = $('#genderFilter').val();   // For gender
+              d.status = $('#statusFilter').val();   // For status
+          }
+      },
+      columns: [
+          { data: "number" },
+          { data: "gender" },
+          { data: "max_apartments" },
+          { data: "status" },
+          { data: "description" },
+          {
+              data: null,
+              render: function (data, type, row) {
+                  return `
+                      <button type="button" class="btn btn-round btn-warning-rgba" id="edit-note-btn-${row.id}" title="Edit Note">
+                          <i class="feather icon-edit"></i>
+                      </button>
+                      <button type="button" class="btn btn-round btn-primary-rgba" id="edit-status-btn-${row.id}" title="Edit Status">
+                          <i class="feather icon-settings"></i>
+                      </button>
+                      <button type="button" class="btn btn-round btn-danger-rgba" id="delete-btn-${row.id}" title="Delete Building">
+                          <i class="feather icon-trash-2"></i>
+                      </button>
+                  `;
+              }
+          }
+      ]
+  });
+  
+  
+  $('#genderFilter').on('change', function () {
+   table.draw(); // Redraw table when filter changes
+});
 
-   $('#searchBox').on('keyup', function() {
-       table.ajax.reload();
-   });
+$('#statusFilter').on('change', function () {
+   table.draw(); // Redraw table when filter changes
+});
+
+  
+      // Optional: Trigger search when the user types in the search box
+      $('#searchBox').on('keyup', function () {
+          table.draw();
+      });
+  
+  
 
    function fetchSummaryData() {
        $.ajax({
-           url: window.routes.getSummary,
+           url: window.routes.fetchStats,
            method: 'GET',
            dataType: 'json',
            success: function(data) {
-               $('#totalApplicantsCount').text(data.totalApplicants);
-               $('#maleCount').text(data.totalMaleCount);
-               $('#femaleCount').text(data.totalFemaleCount);
-               $('#totalPendingCount').text(data.totalPendingCount);
-               $('#malePendingCount').text(data.malePendingCount);
-               $('#femalePendingCount').text(data.femalePendingCount);
-               $('#totalPreliminaryAcceptedCount').text(data.totalPreliminaryAcceptedCount);
-               $('#malePreliminaryAcceptedCount').text(data.malePreliminaryAcceptedCount);
-               $('#femalePreliminaryAcceptedCount').text(data.femalePreliminaryAcceptedCount);
-               $('#totalFinalAcceptedCount').text(data.totalFinalAcceptedCount);
-               $('#maleFinalAcceptedCount').text(data.maleFinalAcceptedCount);
-               $('#femaleFinalAcceptedCount').text(data.femaleFinalAcceptedCount);
+               // Update the statistics on the page
+               document.getElementById('totalBuildings').innerText = data.totalBuildings || 0;
+               document.getElementById('activeBuildingsCount').innerText = data.activeBuildingsCount || 0;
+               document.getElementById('inactiveBuildingsCount').innerText = data.inactiveBuildingsCount || 0;
+
+               document.getElementById('maleBuildingCount').innerText = data.maleBuildingCount || 0;
+               document.getElementById('maleActiveCount').innerText = data.maleActiveCount || 0;
+               document.getElementById('maleInactiveCount').innerText = data.maleInactiveCount || 0;
+               document.getElementById('maleUnderMaintenanceCount').innerText = data.maleUnderMaintenanceCount || 0;
+
+               document.getElementById('femaleBuildingCount').innerText = data.femaleBuildingCount || 0;
+               document.getElementById('femaleActiveCount').innerText = data.femaleActiveCount || 0;
+               document.getElementById('femaleInactiveCount').innerText = data.femaleInactiveCount || 0;
+               document.getElementById('femaleUnderMaintenanceCount').innerText = data.femaleUnderMaintenanceCount || 0;
+
+               document.getElementById('maintenanceCount').innerText = data.maintenanceCount || 0;
            }
        });
    }

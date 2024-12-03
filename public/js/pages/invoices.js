@@ -106,27 +106,24 @@ $(document).ready(function() {
             { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ],
         drawCallback: function(settings) {
-            // After table is drawn, you can handle enabling/disabling buttons dynamically if needed
             $('#default-datatable tbody').find('button').each(function() {
                 const row = $(this).closest('tr');
-                const invoiceStatus = row.find('td:eq(4)').text().trim(); // Get the invoice status (column index 4)
+                const invoiceStatus = row.find('td:eq(4)').text().trim(); 
                 const button = $(this);
     
                 if (invoiceStatus === 'Paid') {
-                    button.prop('disabled', false); // Enable button if invoice is paid
+                    button.prop('disabled', false); 
                 } else {
-                    button.prop('disabled', true); // Disable button if invoice is not paid
+                    button.prop('disabled', true); 
                 }
             });
         }
     });
     
-    // Custom search reload on keyup
     $('#searchBox').on('keyup', function() {
         table.ajax.reload();
     });
     
-    // Reload the table when gender filter changes
     $('#genderFilter').on('change', function() {
         table.ajax.reload();
     });

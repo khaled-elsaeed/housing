@@ -14,24 +14,112 @@ use Illuminate\Support\Facades\Log;
 
 class BuildingController extends Controller
 {
-    public function index()
+
+    public function showBuildingPage(){
+        try{
+
+            return view('admin.unit.building');
+        } catch (Exception $e) {
+            Log::error('Error showing admin building page: ' . $e->getMessage(), [
+                'exception' => $e,
+                'stack' => $e->getTraceAsString(),
+            ]);
+    
+            return response()->view('errors.505');
+
+        }
+    }
+
+    public function fetchBuildings(Request $request)
+{
+    try {
+        // Log incoming request to debug
+        Log::info('Request Parameters:', $request->all());
+
+        // Initialize the query for buildings
+        $query = Building::query()->orderBy('number', 'asc');
+
+        // Apply custom search filter if present
+        if ($request->filled('customSearch')) {
+            $searchTerm = $request->get('customSearch');
+            $query->where('number', 'like', "%$searchTerm%");
+        }
+
+        // Apply gender filter if present
+        if ($request->filled('gender')) {
+            $gender = $request->get('gender');
+            $query->where('gender', $gender);
+        }
+
+        // Apply status filter if present
+        if ($request->filled('status')) {
+            $status = $request->get('status');
+            $query->where('status', $status);
+        }
+
+        // Retrieve total and filtered record counts
+        $totalRecords = Building::count();
+        $filteredRecords = $query->count();
+
+        // Paginate results
+        $buildings = $query
+            ->skip($request->get('start', 0))
+            ->take($request->get('length', 10))
+            ->get();
+
+        // Prepare JSON response
+        return response()->json([
+            'draw' => $request->get('draw'),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $filteredRecords,
+            'data' => $buildings->map(function ($building) {
+                return [
+                    'number' => $building->number ?? 'N/A',
+                    'gender' => ucfirst($building->gender ?? 'N/A'),
+                    'max_apartments' => $building->max_apartments ?? 'N/A',
+                    'status' => ucfirst($building->status ?? 'unknown'),
+                    'description' => $building->description ?? 'N/A',
+                    'actions' => '
+                        <button type="button" class="btn btn-round btn-warning-rgba" id="edit-note-btn-' . $building->id . '" title="Edit Note">
+                            <i class="feather icon-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-round btn-primary-rgba" id="edit-status-btn-' . $building->id . '" title="Edit Status">
+                            <i class="feather icon-settings"></i>
+                        </button>
+                        <button type="button" class="btn btn-round btn-danger-rgba" id="delete-btn-' . $building->id . '" title="Delete Building">
+                            <i class="feather icon-trash-2"></i>
+                        </button>',
+                ];
+            }),
+        ]);
+    } catch (Exception $e) {
+        // Log the error and return a JSON error response
+        Log::error('Error fetching building data: ' . $e->getMessage(), [
+            'exception' => $e,
+            'stack' => $e->getTraceAsString(),
+        ]);
+        return response()->json(['error' => 'Failed to fetch building data.'], 500);
+    }
+}
+
+    
+    public function fetchStats()
     {
         try {
             $buildings = Building::all();
     
+            // Calculate statistics
             $totalBuildings = $buildings->count();
             $activeBuildingsCount = $buildings->where('status', 'active')->count();
             $inactiveBuildingsCount = $buildings->where('status', 'inactive')->count();
             $underMaintenanceCount = $buildings->where('status', 'under_maintenance')->count();
     
-            // Filtering by gender
             $maleBuildings = $buildings->where('gender', 'male');
             $femaleBuildings = $buildings->where('gender', 'female');
     
             $maleBuildingCount = $maleBuildings->count();
             $femaleBuildingCount = $femaleBuildings->count();
     
-            // Further filtering by status
             $maleActiveCount = $maleBuildings->where('status', 'active')->count();
             $maleInactiveCount = $maleBuildings->where('status', 'inactive')->count();
             $maleUnderMaintenanceCount = $maleBuildings->where('status', 'under_maintenance')->count();
@@ -40,34 +128,37 @@ class BuildingController extends Controller
             $femaleInactiveCount = $femaleBuildings->where('status', 'inactive')->count();
             $femaleUnderMaintenanceCount = $femaleBuildings->where('status', 'under_maintenance')->count();
     
-            // Total maintenance count
             $maintenanceCount = $maleUnderMaintenanceCount + $femaleUnderMaintenanceCount;
     
-            return view('admin.unit.building', compact(
-                'buildings',
-                'totalBuildings',
-                'activeBuildingsCount',
-                'inactiveBuildingsCount',
-                'underMaintenanceCount',
-                'maleBuildingCount',
-                'femaleBuildingCount',
-                'maleActiveCount',
-                'maleInactiveCount',
-                'femaleActiveCount',
-                'femaleInactiveCount',
-                'maleUnderMaintenanceCount',
-                'femaleUnderMaintenanceCount',
-                'maintenanceCount'
-            ));
+            // Return statistics as JSON
+            return response()->json([
+                'totalBuildings' => $totalBuildings,
+                'activeBuildingsCount' => $activeBuildingsCount,
+                'inactiveBuildingsCount' => $inactiveBuildingsCount,
+                'underMaintenanceCount' => $underMaintenanceCount,
+                'maleBuildingCount' => $maleBuildingCount,
+                'femaleBuildingCount' => $femaleBuildingCount,
+                'maleActiveCount' => $maleActiveCount,
+                'maleInactiveCount' => $maleInactiveCount,
+                'maleUnderMaintenanceCount' => $maleUnderMaintenanceCount,
+                'femaleActiveCount' => $femaleActiveCount,
+                'femaleInactiveCount' => $femaleInactiveCount,
+                'femaleUnderMaintenanceCount' => $femaleUnderMaintenanceCount,
+                'maintenanceCount' => $maintenanceCount,
+            ]);
         } catch (Exception $e) {
-            Log::error('Error retrieving admin building page data: ' . $e->getMessage(), [
+            Log::error('Error fetching building statistics: ' . $e->getMessage(), [
                 'exception' => $e,
                 'stack' => $e->getTraceAsString(),
             ]);
     
-            return response()->view('errors.505');
+            return response()->json(['error' => 'Failed to fetch building statistics.'], 500);
         }
     }
+    
+
+
+    
     
 
 

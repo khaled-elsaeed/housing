@@ -96,7 +96,18 @@
                 </a>
             </li>
 
-           
+            <li>
+                <a href="javascript:void(0);">
+                    <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="reservation">
+                    <span>Accounts Management</span>
+                    <i class="feather icon-chevron-right pull-right"></i>
+                </a>
+                <ul class="vertical-submenu">
+                <li><a href="{{ route('admin.account.student.index') }}">Students</a></li>
+
+                    <li><a href="#">Admins</a></li>
+                </ul>
+            </li>
 
             <!-- Settings Section -->
             <li>

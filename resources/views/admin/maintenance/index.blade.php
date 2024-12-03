@@ -245,7 +245,7 @@
                   <tbody>
                   @foreach($maintenanceRequests as $request)
                     @php
-                        $location = $request->room ? $request->room->getLocation() : ['building' => 'N/A', 'apartment' => 'N/A', 'room' => 'N/A'];
+                        $location = $request->user ? $request->user->getLocationDetails() : ['building' => 'N/A', 'apartment' => 'N/A', 'room' => 'N/A'];
                     @endphp
                     <tr>
                         <td>{{ $loop->iteration }}</td>
@@ -253,12 +253,16 @@
                         <td>
                             Building {{ $location['building'] }} - Apartment {{ $location['apartment'] }} - Room {{ $location['room'] }}
                         </td>
-                        <td>{{ $request->issue_type ?? 'Unknown' }}</td>
+                        <td>
+    @foreach($request->issues as $issue)
+        <p>{{ $issue->issue_type ?? 'Unknown' }}</p>
+    @endforeach
+</td>
                         <td>{{ $request->description ?? 'No Description' }}</td>
                         <td>
                             @if($request->status === 'pending')
                                 <span class="badge bg-warning text-dark">Pending</span>
-                            @elseif($request->status === 'accepted')
+                            @elseif($request->status === 'in_progress')
                                 <span class="badge bg-success">Accepted</span><br>
                                 <small>Accepted At: {{ $request->updated_at->format('d M Y, h:i A') }}</small>
                             @elseif($request->status === 'rejected')
@@ -269,7 +273,7 @@
                         <td>
                             @if($request->status === 'pending')
                                 <!-- Accept Button -->
-                                <button type="button" class="btn btn-rounded btn-success-rgba" id="accept-status-btn-{{ $request->id }}" title="Accept request">
+                                <button type="button" class="btn btn-rounded btn-success-rgba" id="in-progress-status-btn-{{ $request->id }}" title="Accept request">
                                     <i class="feather icon-check-circle"></i> Accept
                                 </button>
 

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class UsersTableSeeder extends Seeder
@@ -14,30 +15,27 @@ class UsersTableSeeder extends Seeder
      */
     public function run(): void
     {
-        // Define full Arabic and English names
-        $fullNameAr = 'خالد زهران';
-        $fullNameEn = 'Khaled Zahran';
+        // Define first user details
+        $fullNameAr1 = 'خالد زهران';
+        $fullNameEn1 = 'Khaled Zahran';
 
-        // Split the Arabic name into first and last names
-        $namePartsAr = explode(' ', $fullNameAr);
-        $first_name_ar = $namePartsAr[0]; // First name in Arabic
-        $last_name_ar = isset($namePartsAr[1]) ? $namePartsAr[1] : ''; // Last name in Arabic
+        $namePartsAr1 = explode(' ', $fullNameAr1);
+        $first_name_ar1 = $namePartsAr1[0];
+        $last_name_ar1 = $namePartsAr1[1] ?? '';
 
-        // Split the English name into first and last names
-        $namePartsEn = explode(' ', $fullNameEn);
-        $first_name_en = $namePartsEn[0]; // First name in English
-        $last_name_en = isset($namePartsEn[1]) ? $namePartsEn[1] : ''; // Last name in English
+        $namePartsEn1 = explode(' ', $fullNameEn1);
+        $first_name_en1 = $namePartsEn1[0];
+        $last_name_en1 = $namePartsEn1[1] ?? '';
 
-        // Create the user and store first and last names separately
-        $user = User::create([
-            'email' => 'khaled@gmail.com',
-            'first_name_ar' => $first_name_ar,
-            'last_name_ar' => $last_name_ar,
-            'first_name_en' => $first_name_en,
-            'last_name_en' => $last_name_en,
+        $user1 = User::create([
+            'email' => 'khaled.elsaeidzahran@gmail.com',
+            'first_name_ar' => $first_name_ar1,
+            'last_name_ar' => $last_name_ar1,
+            'first_name_en' => $first_name_en1,
+            'last_name_en' => $last_name_en1,
             'gender' => 'male',
-            'password' => bcrypt('password'),
-            'is_active' => true,
+            'password' => Hash::make('admin'),
+            'status' => 'active',
             'profile_picture' => null,
             'last_login' => now(),
             'is_verified' => true,
@@ -45,7 +43,36 @@ class UsersTableSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
-        // Assign the 'admin' role to the user
-        $user->assignRole('admin');
+        $user1->assignRole('admin');
+
+        // Define second user details
+        $fullNameAr2 = 'Mohamed Abdullah';
+        $fullNameEn2 = 'محمد عبدالله';
+
+        $namePartsAr2 = explode(' ', $fullNameAr2);
+        $first_name_ar2 = $namePartsAr2[0];
+        $last_name_ar2 = $namePartsAr2[1] ?? '';
+
+        $namePartsEn2 = explode(' ', $fullNameEn2);
+        $first_name_en2 = $namePartsEn2[0];
+        $last_name_en2 = $namePartsEn2[1] ?? '';
+
+        $user2 = User::create([
+            'email' => 'm.abdullah@nmu.edu.eg',
+            'first_name_ar' => $first_name_ar2,
+            'last_name_ar' => $last_name_ar2,
+            'first_name_en' => $first_name_en2,
+            'last_name_en' => $last_name_en2,
+            'gender' => 'male',
+            'password' => Hash::make('admin'),
+            'status' => 'active',
+            'profile_picture' => null,
+            'last_login' => now(),
+            'is_verified' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $user2->assignRole('admin'); 
     }
 }

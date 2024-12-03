@@ -11,7 +11,7 @@
 
 <style>
    .loading {
-   pointer-events: none; /* Disable button interactions */
+   pointer-events: none; 
    }
 </style>
 @endsection

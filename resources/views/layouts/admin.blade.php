@@ -70,11 +70,14 @@
       <script src="{{ asset('js/jquery.slimscroll.js') }}"></script>
       <script src="{{ asset('js/vertical-menu.js') }}"></script>
       <script src="{{ asset('plugins/sweet-alert2/sweetalert2.min.js') }}"></script>
-
+      <script>
+  
+      </script>
     <!-- Page-Specific JS -->
     @yield('scripts')
       <!-- Core JS -->
       <script src="{{ asset('js/core.js') }}"></script>
+      
 
       
 

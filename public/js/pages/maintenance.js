@@ -105,7 +105,7 @@ $(document).ready(function () {
            data: formData,
            beforeSend: function () {
                // Disable the button while processing
-               toggleButtonLoading($('#accept-status-btn-' + requestId), true);
+               toggleButtonLoading($('#in-progress-status-btn-' + requestId), true);
                toggleButtonLoading($('#reject-status-btn-' + requestId), true);
            },
            success: function (response) {
@@ -119,17 +119,17 @@ $(document).ready(function () {
            },
            complete: function () {
                // Re-enable the buttons after the process is complete
-               toggleButtonLoading($('#accept-status-btn-' + requestId), false);
+               toggleButtonLoading($('#in-progress-status-btn-' + requestId), false);
                toggleButtonLoading($('#reject-status-btn-' + requestId), false);
            }
        });
    }
 
-   // Accept button click event
-   $(document).on('click', '[id^="accept-status-btn-"]', function () {
+   // in-progress button click event
+   $(document).on('click', '[id^="in-progress-status-btn-"]', function () {
        const button = $(this);
        const requestId = button.attr('id').split('-').pop();
-       updateStatus(requestId, 'accepted'); // Update status to accepted
+       updateStatus(requestId, 'in_progress'); // Update status to accepted
    });
 
    // Reject button click event

@@ -35,6 +35,7 @@ use App\Http\Controllers\Student\StudentMaintenanceController;
 use App\Http\Controllers\Student\StudentPermissionController;
 
 use App\Http\Controllers\DataTableController;
+use App\Http\Controllers\Admin\Account\StudentAccountController;
 
 
 
@@ -92,13 +93,24 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/fetch', [InvoiceController::class, 'fetchInvoices'])->name('.fetch');  // Fetch invoices data for DataTables
             Route::get('/stats', [InvoiceController::class, 'fetchStats'])->name('.stats');  // Fetch statistics for invoices
             Route::get('/{id}', [InvoiceController::class, 'fetchInvoice'])->name('.show');  // Fetch a specific invoice by ID
-            // Update Payment Status
             Route::post('/payment/{paymentId}/status', [InvoiceController::class, 'updatePaymentStatus'])->name('.payment.update'); // Update payment status
-            // Export Routes
             Route::prefix('export')->name('.export-')->group(function () {
                 Route::get('/excel', [InvoiceController::class, 'downloadInvoicesExcel'])->name('excel');  // Export invoices to Excel
             });
         });
+
+
+        Route::prefix('account')->name('account.')->group(function () {
+            // Show the student account page
+            Route::get('students', [StudentAccountController::class, 'showStudentPage'])->name('student.index');
+
+            // Edit student email
+            Route::post('students/edit-email', [StudentAccountController::class, 'editEmail'])->name('student.editEmail');
+
+            // Reset student password
+            Route::post('students/reset-password', [StudentAccountController::class, 'resetPassword'])->name('student.resetPassword');
+        });
+
         
 
         // Admin Profile Routes
@@ -110,7 +122,9 @@ Route::middleware(['auth'])->group(function () {
         // Unit Management (Building, Apartment, Room Routes)
         Route::prefix('unit')->name('unit.')->group(function () {
             Route::prefix('building')->group(function () {
-                Route::get('/', [BuildingController::class, 'index'])->name('building');
+                Route::get('/', [BuildingController::class, 'showBuildingPage'])->name('building');
+                Route::get('/fetch', [BuildingController::class, 'fetchBuildings'])->name('building.fetch'); 
+                Route::get('/stats', [BuildingController::class, 'fetchStats'])->name('building.stats'); 
                 Route::post('/store', [BuildingController::class, 'store'])->name('building.store');
                 Route::delete('/delete/{id}', [BuildingController::class, 'destroy'])->name('building.destroy');
                 Route::get('/export', [BuildingController::class, 'downloadBuildingsExcel'])->name('building.export-excel');

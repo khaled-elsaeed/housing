@@ -162,15 +162,12 @@ class InvoiceController extends Controller
     public function fetchInvoice($paymentId)
     {
         try {
-            // Retrieve the payment with the given paymentId
             $payment = Payment::where('id', $paymentId)->first(['id', 'receipt_image', 'reservation_id']);
             
-            // If payment not found, return error
             if (!$payment) {
                 return response()->json(['error' => 'Payment not found'], 404);
             }
     
-            // Retrieve the user directly using the reservation associated with the payment
             $reservation = $payment->reservation;
             if (!$reservation || !$reservation->user) {
                 return response()->json(['error' => 'User not found'], 404);
@@ -178,13 +175,11 @@ class InvoiceController extends Controller
     
             $user = $reservation->user;
     
-            // Prepare student details with optional checks
             $studentDetails = [
                 'name' => optional($user->student)->name_en ?? 'N/A',
                 'faculty' => optional($user->student->faculty)->name_en ?? 'N/A',
             ];
     
-            // Get location details
             $location = $user->getLocationDetails();
             if ($location) {
                 $studentDetails['building'] = $location['building'] ?? 'N/A';
@@ -224,28 +219,24 @@ class InvoiceController extends Controller
     public function updatePaymentStatus(Request $request, $paymentId)
     {
         try {
-            // Validate the request to ensure a status ('accepted' or 'rejected') is provided
+
             $validated = $request->validate([
                 'status' => 'required|in:accepted,rejected',
             ]);
 
             $status = $validated['status'];
 
-            // Find the payment by ID
             $payment = Payment::find($paymentId);
 
             if (!$payment) {
                 return response()->json(['error' => 'Payment not found'], 404);
             }
 
-            // Update the payment status
             $payment->status = $status;
             $payment->save();
 
-            // Optionally, you can add logic to update the associated invoice status
             $invoice = $payment->reservation->invoice;
             if ($invoice) {
-                // If the payment is accepted, update the invoice status to 'paid'
                 if ($status === 'accepted') {
                     $invoice->status = 'paid';
                     $invoice->save();
@@ -255,10 +246,8 @@ class InvoiceController extends Controller
                 }
             }
 
-            // Log the payment status update
             Log::info("Payment status updated to '{$status}' for payment ID: {$paymentId}");
 
-            // Return a success response
             return response()->json([
                 'message' => 'Payment status updated successfully',
                 'status' => $status,
@@ -266,7 +255,6 @@ class InvoiceController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            // Log any errors
             Log::error('Error updating payment status: ' . $e->getMessage(), ['exception' => $e]);
             return response()->json(['error' => 'Failed to update payment status.'], 500);
         }

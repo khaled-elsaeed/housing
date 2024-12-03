@@ -22,11 +22,11 @@ return new class extends Migration
             $table->string('last_name_en', 100)->nullable();
             $table->string('activation_token')->nullable();
             $table->timestamp('activation_expires_at')->nullable();
-            $table->boolean('is_active')->default(0);
             $table->string('profile_picture', 255)->nullable(); 
             $table->timestamp('last_login')->nullable();
             $table->boolean('is_verified')->default(0);
             $table->timestamp('email_verified_at')->nullable();
+            $table->enum('status', ['active', 'Suspended'])->default('active'); 
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();

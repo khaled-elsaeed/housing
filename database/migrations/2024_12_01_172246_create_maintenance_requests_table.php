@@ -15,6 +15,7 @@ class CreateMaintenanceRequestsTable extends Migration
             ->onDelete('cascade')
             ->onUpdate('cascade');
             $table->text('additional_info')->nullable();
+            $table->enum('status', ['pending', 'in_progress', 'completed', 'rejected'])->default('pending');
             $table->timestamps();
         });
     }

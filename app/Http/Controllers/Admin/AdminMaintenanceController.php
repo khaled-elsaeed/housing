@@ -15,10 +15,10 @@ class AdminMaintenanceController extends Controller
 {
     try {
         
-        $maintenanceRequests = MaintenanceRequest::with(['user', 'room'])
-            ->orderBy('requested_at', 'desc')
-            ->get();
-        
+        $maintenanceRequests = MaintenanceRequest::with(['user','issues'])
+        ->orderByRaw("FIELD(status, 'pending', 'in_progress', 'completed', 'rejected')")
+        ->get();
+            
         $totalMaintenanceRequests = $maintenanceRequests->count();
 
         
@@ -77,7 +77,7 @@ public function updateStatus(Request $request, $id)
 {
     try {
         $validated = $request->validate([
-            'status' => 'required|in:accepted,completed,rejected',
+            'status' => 'required|in:in_progress,completed,rejected',
         ]);
 
         $maintenanceRequest = MaintenanceRequest::findOrFail($id);

@@ -191,7 +191,7 @@ class UniversityArchivePhpspreadsheetSeeder extends Seeder
             'first_name_ar' => $firstNameAr,
             'last_name_ar' => $lastNameAr,
             'gender' => $data[4],
-            'is_active' => 1,
+            'status' => 'active',
             'is_verified' => 1,
             'created_at' => now(),
             'updated_at' => now(),

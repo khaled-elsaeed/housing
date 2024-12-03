@@ -30,7 +30,11 @@
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
                         <h5 class="card-title font-14">Total Buildings</h5>
-                        <h4 class="mb-0">{{ $totalBuildings }}</h4>
+                        <h4 class="mb-0" id="totalBuildings">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </h4>
                      </div>
                   </div>
                </div>
@@ -40,7 +44,11 @@
                         <span class="font-13">Active</span>
                      </div>
                      <div class="col-6 text-end">
-                        <span class="font-13"><i class="feather icon-check-circle text-success"></i> {{ $activeBuildingsCount }}</span>
+                     <span class="font-13" id="activeBuildingsCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </span>
                      </div>
                   </div>
                   <div class="row align-items-center">
@@ -48,7 +56,11 @@
                         <span class="font-13">Inactive</span>
                      </div>
                      <div class="col-3 text-end">
-                        <span class="font-13"><i class="feather icon-x-circle text-danger"></i> {{ $inactiveBuildingsCount }}</span>
+                     <span class="font-13" id="inactiveBuildingsCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </span>
                      </div>
                   </div>
                </div>
@@ -65,7 +77,11 @@
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
                         <h5 class="card-title font-14">Male Buildings</h5>
-                        <h4 class="mb-0">{{ $maleBuildingCount }}</h4>
+                        <h4 class="mb-0" id="maleBuildingCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </h4>
                      </div>
                   </div>
                </div>
@@ -75,7 +91,11 @@
                         <span class="font-13">Active</span>
                      </div>
                      <div class="col-6 text-end">
-                        <span class="font-13"><i class="feather icon-check-circle text-success"></i> {{ $maleActiveCount }}</span>
+                     <span class="font-13" id="maleActiveCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </span>
                      </div>
                   </div>
                   <div class="row align-items-center">
@@ -83,7 +103,11 @@
                         <span class="font-13">Inactive</span>
                      </div>
                      <div class="col-3 text-end">
-                        <span class="font-13"><i class="feather icon-x-circle text-danger"></i> {{ $maleInactiveCount }}</span>
+                     <span class="font-13" id="maleInactiveCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </span>
                      </div>
                   </div>
                </div>
@@ -100,7 +124,11 @@
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
                         <h5 class="card-title font-14">Female Buildings</h5>
-                        <h4 class="mb-0">{{ $femaleBuildingCount }}</h4>
+                        <h4 class="mb-0" id="femaleBuildingCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </h4>
                      </div>
                   </div>
                </div>
@@ -110,7 +138,11 @@
                         <span class="font-13">Active</span>
                      </div>
                      <div class="col-6 text-end">
-                        <span class="font-13"><i class="feather icon-check-circle text-success"></i> {{ $femaleActiveCount }}</span>
+                     <span class="font-13" id="femaleActiveCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </span>
                      </div>
                   </div>
                   <div class="row align-items-center">
@@ -118,7 +150,11 @@
                         <span class="font-13">Inactive</span>
                      </div>
                      <div class="col-3 text-end">
-                        <span class="font-13"><i class="feather icon-x-circle text-danger"></i> {{ $femaleInactiveCount }}</span>
+                     <span class="font-13" id="femaleInactiveCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </span>
                      </div>
                   </div>
                </div>
@@ -135,7 +171,11 @@
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
                         <h5 class="card-title font-14">Under Maintenance</h5>
-                        <h4 class="mb-0">{{ $maintenanceCount }}</h4>
+                        <h4 class="mb-0" id="maintenanceCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </h4>
                      </div>
                   </div>
                </div>
@@ -145,7 +185,11 @@
                         <span class="font-13">Males</span>
                      </div>
                      <div class="col-6 text-end">
-                        <span class="font-13"><i class="feather icon-clock text-warning"></i> {{ $maleUnderMaintenanceCount }}</span>
+                        <span class="font-13" id="maleUnderMaintenanceCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </span>
                      </div>
                   </div>
                   <div class="row align-items-center">
@@ -153,7 +197,11 @@
                         <span class="font-13">Females</span>
                      </div>
                      <div class="col-3 text-end">
-                        <span class="font-13"><i class="feather icon-clock text-warning"></i> {{ $femaleUnderMaintenanceCount }}</span>
+                     <span class="font-13" id="femaleUnderMaintenanceCount">
+                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </span>
                      </div>
                   </div>
                </div>
@@ -207,13 +255,20 @@
             </div>
             <input type="search" class="form-control search-input" id="searchBox" placeholder="Search..." />
          </div>
+         <div class="d-flex flex-column flex-md-row filters-container">
+            <select id="genderFilter" class="form-select mb-2 mb-md-0">
+               <option value="">Gender</option>
+               <option value="male">Male</option>
+               <option value="female">Female</option>
+            </select>
+         </div>
          <!-- Filters on the Right -->
          <div class="d-flex flex-column flex-md-row filters-container">
             <select id="statusFilter" class="form-select mb-2 mb-md-0">
                <option value="">Status</option>
-               <option value="Active">Active</option>
-               <option value="Inactive">Inactive</option>
-               <option value="Under maintenance">Under maintenance</option>
+               <option value="active">Active</option>
+               <option value="inactive">Inactive</option>
+               <option value="under_maintenance">Under maintenance</option>
             </select>
          </div>
       </div>
@@ -239,30 +294,7 @@
                      </tr>
                   </thead>
                   <tbody>
-                     @foreach($buildings as $building)
-                     <tr>
-                        <td>Building {{ $building->number }}</td>
-                        <td>{{ ucfirst($building->gender) }}</td>
-                        <td>{{ $building->max_apartments }}</td>
-                        <!-- Display max apartments -->
-                        <td>{{ ucfirst(str_replace('_', ' ', $building->status)) }}</td>
-                        <td>{{ $building->note ?: 'No description available' }}</td>
-                        <td>
-                           <!-- Edit Note Button -->
-                           <button type="button" class="btn btn-round btn-warning-rgba" id="edit-note-btn-{{ $building->id }}" title="Edit Note">
-                           <i class="feather icon-edit"></i>
-                           </button>
-                           <!-- Edit Status Button -->
-                           <button type="button" class="btn btn-round btn-primary-rgba" id="edit-status-btn-{{ $building->id }}" title="Edit Status">
-                           <i class="feather icon-settings"></i>
-                           </button>
-                           <!-- Delete Building Button -->
-                           <button type="button" class="btn btn-round btn-danger-rgba" id="delete-btn-{{ $building->id }}" title="Delete Building">
-                           <i class="feather icon-trash-2"></i>
-                           </button>
-                        </td>
-                     </tr>
-                     @endforeach
+                    
                   </tbody>
                </table>
             </div>
@@ -379,17 +411,16 @@
 <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
 <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
 <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('js/custom/custom-table-datatable.js') }}"></script>
 <script src="{{ asset('js/pages/buildings.js') }}"></script>
 <script>
    window.routes = {
+      fetchBuildings: '{{ route('admin.unit.building.fetch') }}',
+      fetchStats: '{{ route('admin.unit.building.stats') }}',
        exportExcel : '{{ route('admin.unit.building.export-excel') }}',
        saveBuilding: '{{ route('admin.unit.building.store') }}',
        deleteBuilding: '{{ route('admin.unit.building.destroy', ':id') }}',
        updateBuildingStatus: '{{ route('admin.unit.building.update-status') }}', 
        updateBuildingNote: '{{ route('admin.unit.building.update-note') }}'    
    };
-   
-   
 </script>
 @endsection

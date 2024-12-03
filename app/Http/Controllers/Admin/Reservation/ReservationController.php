@@ -121,9 +121,14 @@ class ReservationController extends Controller
 
     // Check if the user has a reservation
     $reservation = $user->reservation;
+
     if (!$reservation) {
         Log::warning('User has no reservation', ['nationalId' => $nationalId]);
-        return response()->json(['message' => 'Reservation not found'], 404);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'No active reservation found'
+        ], 404);
     }
 
     // Fetch the location details of the reservation
@@ -149,7 +154,6 @@ class ReservationController extends Controller
 }
 
 
-    // Swap reservation locations
     public function swapReservationLocation(Request $request)
     {
         $validatedData = $request->validate([
@@ -172,6 +176,7 @@ class ReservationController extends Controller
         $reservation2->save();
 
         return response()->json([
+            'success' => true,
             'message' => 'Reservation locations swapped successfully',
             'reservation1' => $reservation1,
             'reservation2' => $reservation2,
@@ -197,6 +202,7 @@ class ReservationController extends Controller
         $reservation->save();
 
         return response()->json([
+            'success' => true,
             'message' => 'Reservation reallocated successfully',
             'reservation' => $reservation,
         ]);
