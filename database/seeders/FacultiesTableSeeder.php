@@ -15,7 +15,7 @@ class FacultiesTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $faculties_file = database_path('data\faculties.json');
+        $faculties_file = database_path('data/faculties.json');
         $faculties_json = File::get($faculties_file);
         $faculties = json_decode($faculties_json,true);
         $facultiesWithTimestamps = array_map(function ($faculty) {

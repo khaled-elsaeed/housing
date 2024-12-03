@@ -15,7 +15,7 @@ class CountriesTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $countries_file = database_path('data\countries.json');
+        $countries_file = database_path('data/countries.json');
         $countries_json = File::get($countries_file);
         $countries = json_decode($countries_json,true);
         $countriesWithTimestamps = array_map(function ($country) {

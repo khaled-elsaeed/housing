@@ -14,7 +14,7 @@ class GovernoratesTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $governorates_file = database_path('data\governorates.json');
+        $governorates_file = database_path('data/governorates.json');
         $governorates_json = File::get($governorates_file);
         $governorates = json_decode($governorates_json,true);
         $governoratesWithTimestamps = array_map(function ($governorate) {

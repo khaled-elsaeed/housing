@@ -15,7 +15,7 @@ class CitiesTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $cities_file = database_path('data\cities.json');
+        $cities_file = database_path('data/cities.json');
         $cities_json = File::get($cities_file);
         $cities = json_decode($cities_json,true);
         $citiesWithTimestamps = array_map(function ($city) {

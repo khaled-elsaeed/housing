@@ -15,7 +15,7 @@ class ProgramsTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $programs_file = database_path('data\programs.json');
+        $programs_file = database_path('data/programs.json');
         $programs_json = File::get($programs_file);
         $programs = json_decode($programs_json,true);
         $programsWithTimestamps = array_map(function ($program) {
