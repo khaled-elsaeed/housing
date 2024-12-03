@@ -17,8 +17,8 @@
 @section('content')
 <!-- Start row for Room View -->
 <div class="row">
-    <!-- Start col for Single Rooms -->
-    <div class="col-lg-3 col-md-6 mb-2">
+    <!-- Start col for Total Rooms (This will span the whole row) -->
+    <div class="col-lg-12 mb-2">
         <div class="card m-b-30">
             <div class="card-body">
                 <div class="row align-items-center">
@@ -27,16 +27,16 @@
                     </div>
                     <div class="col-7 text-end mt-2 mb-2">
                         <h5 class="card-title font-14">Total Rooms</h5>
-                        <h4 class="mb-0">{{ $totalRoomsCount }}</h4> <!-- Total Number of Single Rooms -->
+                        <h4 class="mb-0">{{ $totalRoomsCount }}</h4> <!-- Total Number of Rooms -->
                     </div>
                 </div>
             </div>
-            
         </div>
     </div>
-    <!-- End col -->
+    <!-- End col for Total Rooms -->
+
     <!-- Start col for Single Rooms -->
-    <div class="col-lg-3 col-md-6 mb-2">
+    <div class="col-lg-4 col-md-6 mb-2">
         <div class="card m-b-30">
             <div class="card-body">
                 <div class="row align-items-center">
@@ -75,10 +75,10 @@
             </div>
         </div>
     </div>
-    <!-- End col -->
+    <!-- End col for Single Rooms -->
 
     <!-- Start col for Double Rooms -->
-    <div class="col-lg-3 col-md-6 mb-2">
+    <div class="col-lg-4 col-md-6 mb-2">
         <div class="card m-b-30">
             <div class="card-body">
                 <div class="row align-items-center">
@@ -128,10 +128,10 @@
             </div>
         </div>
     </div>
-    <!-- End col -->
+    <!-- End col for Double Rooms -->
 
     <!-- Start col for Under Maintenance -->
-    <div class="col-lg-3 col-md-6 mb-2">
+    <div class="col-lg-4 col-md-6 mb-2">
         <div class="card m-b-30">
             <div class="card-body">
                 <div class="row align-items-center">
@@ -171,8 +171,9 @@
             </div>
         </div>
     </div>
-    <!-- End col -->
+    <!-- End col for Under Maintenance -->
 </div>
+<!-- End row -->
 
 
 

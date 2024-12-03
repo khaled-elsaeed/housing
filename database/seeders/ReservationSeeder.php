@@ -11,7 +11,7 @@ class ReservationSeeder extends Seeder
 {
     public function run()
     {
-        $filePath = database_path('data' . DIRECTORY_SEPARATOR . 'female_reservations.csv');
+        $filePath = database_path('data' . DIRECTORY_SEPARATOR . 'male_reservations.csv');
         
         Log::info("Starting to seed reservations from file: {$filePath}");
         try {
