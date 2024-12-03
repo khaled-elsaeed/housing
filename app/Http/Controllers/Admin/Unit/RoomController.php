@@ -19,7 +19,7 @@ class RoomController extends Controller
         // Get unique building and apartment numbers
         $buildingNumbers = $rooms->pluck('apartment.building.number')->unique()->sort()->values();
         $apartmentNumbers = $rooms->pluck('apartment.number')->unique()->sort()->values();
-    
+        $totalRoomsCount = $rooms->count();
         // Count rooms by type
         $singleRoomCount = $rooms->where('type', 'single')->count();
         $doubleRoomCount = $rooms->where('type', 'double')->count();
@@ -62,6 +62,7 @@ class RoomController extends Controller
     
         return view('admin.unit.room', compact(
             'rooms',
+            'totalRoomsCount',
             'buildingNumbers',
             'apartmentNumbers',
             'singleRoomCount',

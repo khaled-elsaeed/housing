@@ -18,7 +18,25 @@
 <!-- Start row for Room View -->
 <div class="row">
     <!-- Start col for Single Rooms -->
-    <div class="col-lg-4 col-md-6 mb-2">
+    <div class="col-lg-3 col-md-6 mb-2">
+        <div class="card m-b-30">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-5">
+                        <span class="action-icon badge badge-primary-inverse me-0"><i class="feather icon-user"></i></span>
+                    </div>
+                    <div class="col-7 text-end mt-2 mb-2">
+                        <h5 class="card-title font-14">Total Rooms</h5>
+                        <h4 class="mb-0">{{ $totalRoomsCount }}</h4> <!-- Total Number of Single Rooms -->
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <!-- End col -->
+    <!-- Start col for Single Rooms -->
+    <div class="col-lg-3 col-md-6 mb-2">
         <div class="card m-b-30">
             <div class="card-body">
                 <div class="row align-items-center">
@@ -60,7 +78,7 @@
     <!-- End col -->
 
     <!-- Start col for Double Rooms -->
-    <div class="col-lg-4 col-md-6 mb-2">
+    <div class="col-lg-3 col-md-6 mb-2">
         <div class="card m-b-30">
             <div class="card-body">
                 <div class="row align-items-center">
@@ -113,7 +131,7 @@
     <!-- End col -->
 
     <!-- Start col for Under Maintenance -->
-    <div class="col-lg-4 col-md-6 mb-2">
+    <div class="col-lg-3 col-md-6 mb-2">
         <div class="card m-b-30">
             <div class="card-body">
                 <div class="row align-items-center">
