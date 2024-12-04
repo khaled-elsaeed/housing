@@ -74,8 +74,8 @@ class ResidentController extends Controller
                 return [
                     'resident_id' => $resident->id,
                     'name' => $resident->student->name_en ?? 'N/A',
-                    'location' => $locationString,
                     'national_id' => $resident->student->national_id ?? 'N/A',
+                    'location' => $locationString,
                     'faculty' => $resident->student->faculty->name_en ?? 'N/A',
                     'mobile' => $resident->student->mobile ?? 'N/A',
                     'registration_date' => $resident->created_at ? $resident->created_at->format('F j, Y, g:i A') : 'N/A',
