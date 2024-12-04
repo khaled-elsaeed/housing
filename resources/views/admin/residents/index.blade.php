@@ -151,8 +151,8 @@
                   <thead>
                      <tr>
                         <th>Name</th>
-                        <th>Location</th>
                         <th>National ID</th>
+                        <th>Location</th>
                         <th>Faculty</th>
                         <th>Mobile</th>
                         <th>Registration Date</th>
