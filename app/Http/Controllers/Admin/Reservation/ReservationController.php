@@ -18,73 +18,56 @@ class ReservationController extends Controller
     }
 
     // Fetch reservations with filters, pagination, and search
-    public function fetchResidents(Request $request)
+    public function fetchReservations(Request $request)
     {
         try {
-            // Base query with relationships
-            $query = User::role('resident')
-                ->whereHas('student', function ($q) {
-                    $q->where('application_status', 'final_accepted');
-                })
-                ->with(['student', 'student.faculty']);
-    
+            $query = Reservation::with(['user']); // Base query with relationships
+
             // Apply search filter
             if ($request->filled('customSearch')) {
-                $searchTerm = $request->get('customSearch');
-                $query->where(function ($q) use ($searchTerm) {
-                    $q->whereHas('student', function ($q) use ($searchTerm) {
-                        $q->where('name_en', 'like', "%$searchTerm%")
-                            ->orWhere('national_id', 'like', "%$searchTerm%")
-                            ->orWhere('mobile', 'like', "%$searchTerm%");
-                    })->orWhereHas('student.faculty', function ($q) use ($searchTerm) {
-                        $q->where('name_en', 'like', "%$searchTerm%");
-                    });
-                });
+                $query->whereHas('user.student', function ($q) use ($request) {
+                    $q->where('name_en', 'like', '%' . $request->customSearch . '%');
+                })->orWhere('status', 'like', '%' . $request->customSearch . '%');
             }
-    
+
             // Clone query for filtered records count
             $filteredQuery = clone $query;
-            $totalRecords = User::role('resident')->count();
+            $totalRecords = Reservation::count();
             $filteredRecords = $filteredQuery->count();
-    
+
             // Pagination
             $start = $request->get('start', 0);
             $length = $request->get('length', 10);
-            $residents = $query->skip($start)->take($length)->get();
-    
+            $reservations = $query->skip($start)->take($length)->get();
+
             // Map response data
             return response()->json([
                 'draw' => $request->get('draw'),
                 'recordsTotal' => $totalRecords,
                 'recordsFiltered' => $filteredRecords,
-                'data' => $residents->map(function ($resident) {
-                    $location = method_exists($resident, 'getLocationDetails') 
-                        ? $resident->getLocationDetails() 
+                'data' => $reservations->map(function ($reservation) {
+                    $location = $reservation->room
+                        ? $reservation->room->getLocation()
                         : ['building' => 'N/A', 'apartment' => 'N/A', 'room' => 'N/A'];
-    
+
                     $locationString = implode(' - ', $location);
-    
+
                     return [
-                        'resident_id' => $resident->id,
-                        'name' => $resident->student->name_en ?? 'N/A',
+                        'reservation_id' => $reservation->id,
+                        'name' => $reservation->user->student->name_en ?? 'N/A',
                         'location' => $locationString,
-                        'national_id' => $resident->student->national_id ?? 'N/A',
-                        'faculty' => $resident->student->faculty->name_en ?? 'N/A',
-                        'mobile' => $resident->student->mobile ?? 'N/A',
-                        'registration_date' => $resident->created_at ? $resident->created_at->format('F j, Y, g:i A') : 'N/A',
-                        'actions' => '<button type="button" class="btn btn-round btn-info-rgba" 
-                                    data-resident-id="' . $resident->id . '" id="details-btn" 
-                                    title="More Details"><i class="feather icon-info"></i></button>',
+                        'start_date' => $reservation->start_date ? $reservation->start_date->format('F j, Y, g:i A') : 'N/A',
+                        'end_date' => $reservation->end_date ? $reservation->end_date->format('F j, Y, g:i A') : 'N/A',
+                        'status' => $reservation->status,
+                        'actions' => '<button type="button" class="btn btn-round btn-info-rgba" data-reservation-id="' . $reservation->id . '" id="details-btn" title="More Details"><i class="feather icon-info"></i></button>',
                     ];
                 }),
             ]);
         } catch (Exception $e) {
-            // Log the error and return a failure response
-            Log::error('Error fetching residents data: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to fetch residents data.'], 500);
+            Log::error('Error fetching reservations data: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to fetch reservations data.'], 500);
         }
     }
-    
 
     // Fetch reservation summary statistics
     public function getReservationsSummary()
