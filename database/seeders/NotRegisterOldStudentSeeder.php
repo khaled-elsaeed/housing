@@ -71,7 +71,7 @@ class NotRegisterOldStudentSeeder extends Seeder
 
     private function findExistingUser(array $data): bool
     {
-        $nationalId = $data[4] ?? null;  // National ID from data
+        $nationalId = $data[5] ?? null;  // National ID from data
         $academicId = $data[1] ?? null;  // Academic ID from data
         
         // If neither National ID nor Academic ID are provided, skip the row
@@ -118,9 +118,11 @@ class NotRegisterOldStudentSeeder extends Seeder
             'name_en' => isset($data[4]) && strtoupper($data[4]) !== "NULL" ? $data[4] : null,
             'name_ar' => isset($data[3]) && strtoupper($data[3]) !== "NULL" ? $data[3] : null,
             'academic_id' => $academicId,
-            'national_id' => isset($data[4]) && strtoupper($data[4]) !== "NULL" ? $data[4] : null,
+            'national_id' => isset($data[5]) && strtoupper($data[5]) !== "NULL" ? $data[5] : null,
             'faculty' => isset($data[0]) && strtoupper($data[0]) !== "NULL" ? $data[0] : null,
             'academic_email' => isset($data[2]) && strtoupper($data[2]) !== "NULL" ? $data[2] : null,
+            'gender' => $data[7],
+
             'created_at' => now(),
             'updated_at' => now(),
             'birthdate' => null, // Explicitly set birthdate to NULL
@@ -146,12 +148,12 @@ class NotRegisterOldStudentSeeder extends Seeder
         // Create a new user record
         $user = \App\Models\User::create([
             'email' => $academicEmail,
-            'password' => Hash::make($data[4]),  // Assuming data[4] is the password (or a fallback)
+            'password' => Hash::make($data[5]),  // Assuming data[4] is the password (or a fallback)
             'first_name_en' => $firstNameEn,
             'last_name_en' => $lastNameEn,
             'first_name_ar' => $firstNameAr,
             'last_name_ar' => $lastNameAr,
-            'gender' => $data[7] ?? null,
+            'gender' => $data[7],
             'status' => 'active',
             'is_verified' => 1,
             'profile_completed' => 0,
