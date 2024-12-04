@@ -193,6 +193,9 @@ class UniversityArchivePhpspreadsheetSeeder extends Seeder
             'gender' => $data[4],
             'status' => 'active',
             'is_verified' => 1,
+            'profile_completed' => 1,
+            'profile_completed_at' => now(),
+            'can_complete_late' => 0,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -240,9 +243,7 @@ class UniversityArchivePhpspreadsheetSeeder extends Seeder
             'street' => $data[8],
             'faculty_id' => $faculty,
             'program_id' => $program,
-            'profile_completed' => 1,
-            'profile_completed_at' => now(),
-            'can_complete_late' => 0,
+            
             'university_Archive_id' => $archiveId,
             'application_status' => 'preliminary_accepted',
             'created_at' => now(),
@@ -403,9 +404,9 @@ class UniversityArchivePhpspreadsheetSeeder extends Seeder
        Log::info('Attempting to retrieve academic email for National ID: ' . $nationalId);
    
        // Query the students table to get the academic email using the National ID.
-       $email = DB::table('new_student_last')
+       $email = DB::table('new_students')
            ->where('national_id', $nationalId)
-           ->value('academic_email');  // Assuming the column storing academic email is 'academic_email'.
+           ->value('academic_mail');  // Assuming the column storing academic email is 'academic_email'.
        
        // Log the result or lack thereof
        if ($email) {
@@ -429,7 +430,7 @@ class UniversityArchivePhpspreadsheetSeeder extends Seeder
        Log::info('Attempting to retrieve academic ID for National ID: ' . $nationalId);
    
        // Query the students table to get the academic ID using the National ID.
-       $academicId = DB::table('new_student_last')
+       $academicId = DB::table('new_students')
            ->where('national_id', $nationalId)
            ->value('academic_id');  // Assuming the column storing academic ID is 'academic_id'.
        

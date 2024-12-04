@@ -58,7 +58,7 @@ class LoginService
             ];
         }
 
-        if (!$user->hasStudentProfile()) {
+        if (!$user->isProfileComplete()) {
             return [
                 'profile' => __('auth.profile_incomplete'),
             ];

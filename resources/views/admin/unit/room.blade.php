@@ -269,9 +269,10 @@
                         <tbody>
                             @foreach($rooms as $room)
                                 <tr>
-                                    <td>Room {{ $room->number }}</td>
-                                    <td>Apartment {{ $room->apartment->number }}</td>
-                                    <td>Building {{ $room->apartment->building->number }}</td>
+                                <td>Room {{ $room->number ?? 'N/A' }}</td>
+                                 <td>Apartment {{ $room->apartment->number ?? 'N/A' }}</td>  <!-- Default to 'N/A' if apartment number is null -->
+                                   <td>Building {{ $room->apartment->building->number ?? 'N/A' }}</td>  <!-- Default to 'N/A' if building number is null -->
+
                                     <td>{{ $room->purpose }}</td>
                                     <td>{{ $room->type }}</td>
                                     <td>{{ ucfirst(str_replace('_', ' ', $room->status)) }}</td>

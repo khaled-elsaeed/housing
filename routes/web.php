@@ -33,6 +33,8 @@ use App\Http\Controllers\Admin\Invoice\InvoiceController;
 
 use App\Http\Controllers\Student\StudentMaintenanceController;
 use App\Http\Controllers\Student\StudentPermissionController;
+use App\Http\Controllers\Student\StudentProfileController;
+
 
 use App\Http\Controllers\DataTableController;
 use App\Http\Controllers\Admin\Account\StudentAccountController;
@@ -214,3 +216,5 @@ Route::middleware(['auth'])->group(function () {
 
 // Logout Route
 Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
+Route::get('/get-cities/{governorateId}', [StudentProfileController::class, 'getCitiesByGovernorate'])->name('get-cities');
+Route::get('/student/profile', [StudentProfileController::class, 'index'])->name('student.profile');

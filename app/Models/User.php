@@ -117,17 +117,16 @@ public function universityArchive()
         return !is_null($this->deleted_at);
     }
 
-    public function hasStudentProfile(): bool
+    public function isProfileComplete(): bool
     {
-        return $this->student()->exists();
+        return $this->profile_completed;
     }
 
-    // Define the relationship to documents
    
 
     public function allowLateProfileCompletion(): bool
     {
-        return optional($this->student)->can_complete_late ?? false;
+        return $this->can_complete_late ?? false;
     }
 
     public static function findUserByEmail(string $email): ?self

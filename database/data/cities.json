@@ -561,7 +561,7 @@
     },
     {
        "governorate_id":"3",
-       "name_ar":"سيدى بشر",
+       "name_ar":"سيدي بشر",
        "name_en":"Sidi Bishr"
     },
     {
@@ -1060,6 +1060,11 @@
        "name_ar":"شبين الكوم",
        "name_en":"Shbeen El Koom"
     },
+    {
+      "governorate_id":"10",
+      "name_ar":"زنارة",
+      "name_en":"Zinnara"
+   },
     {
        "governorate_id":"10",
        "name_ar":"مدينة السادات",

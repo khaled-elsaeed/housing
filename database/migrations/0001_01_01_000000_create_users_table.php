@@ -27,6 +27,9 @@ return new class extends Migration
             $table->boolean('is_verified')->default(0);
             $table->timestamp('email_verified_at')->nullable();
             $table->enum('status', ['active', 'Suspended'])->default('active'); 
+            $table->boolean('profile_completed')->default(0); // Profile completion status
+            $table->timestamp('profile_completed_at')->nullable(); // Profile completion timestamp
+            $table->boolean('can_complete_late')->default(0); // Late completion permission
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();

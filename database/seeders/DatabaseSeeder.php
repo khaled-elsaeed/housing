@@ -14,6 +14,13 @@ use Database\Seeders\ProgramsTableSeeder;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Database\Seeders\UniversityArchiveSeeder;
 use Database\Seeders\UnitsSeeder;
+use Database\Seeders\NotRegisterOldStudentSeeder;
+use Database\Seeders\NotRegisterTransStudentSeeder;
+use Database\Seeders\NotRegisterNewStudentSeeder;
+// use Database\Seeders\ReservationSeeder;
+// use Database\Seeders\InvoiceAndPaymentsSeeder;
+
+
 
 use Database\Seeders\UniversityArchivePhpspreadsheetSeeder;
 
@@ -35,6 +42,13 @@ class DatabaseSeeder extends Seeder
         $this->call(UnitsSeeder::class);
 
         $this->call(UniversityArchivePhpspreadsheetSeeder::class);
+        $this->call(NotRegisterTransStudentSeeder::class);
+        $this->call(NotRegisterNewStudentSeeder::class);
+        $this->call(NotRegisterOldStudentSeeder::class);
+        // $this->call(ReservationSeeder::class);
+        // $this->call(InvoiceAndPaymentsSeeder::class);
+
+
 
     }
 }

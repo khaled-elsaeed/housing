@@ -55,9 +55,7 @@ return new class extends Migration
                 ->onDelete('restrict')
                 ->onUpdate('cascade');
             
-            $table->boolean('profile_completed')->default(0); // Profile completion status
-            $table->timestamp('profile_completed_at')->nullable(); // Profile completion timestamp
-            $table->boolean('can_complete_late')->default(0); // Late completion permission
+            
             
             $table->foreignId('university_archive_id') // Foreign key referencing university_archives table
                 ->unique()

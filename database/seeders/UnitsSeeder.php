@@ -60,8 +60,8 @@ class UnitsSeeder extends Seeder
                 $maxOccupancy = 1;
 
                 // Check if it's Building 1, Apartments 5 to 18 (except apartment 17)
-                if ($buildingNumber == 1 && $apartmentNumber >= 5 && $apartmentNumber <= 18 && $apartmentNumber != 17 && $roomNumber == 3) {
-                    $maxOccupancy = 2; // Double room for room 3 in apartments 5-18 (excluding 17)
+                if ($buildingNumber == 1 && $apartmentNumber >= 5 && $apartmentNumber <= 16 && $roomNumber == 3) {
+                    $maxOccupancy = 2; // Double room for room 3 in apartments 5-16 
                 }
 
                 // Check if it's Building 12 and specific apartments (7, 8, 9, 10, 11, 12, 13, 15, 16, 17)
