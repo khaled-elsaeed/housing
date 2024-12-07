@@ -34,6 +34,13 @@
                 </a>
             </li>
 
+            <li>
+                <a href="{{ route('student.profile') }}">
+                    <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="profile">
+                    <span>My Profile</span>
+                </a>
+            </li>
+
           
         </ul>
     </div>

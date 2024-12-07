@@ -90,6 +90,22 @@ public function universityArchive()
         return $this->hasOne(Reservation::class); // Assuming one user has one student record
     }
 
+    public function parent(){
+        return $this->hasOne(Parents::class);
+    }
+
+    // User Model
+
+public function sibling()
+{
+    return $this->hasOne(Sibling::class);
+}
+
+public function emergencyContact()
+{
+    return $this->hasOne(EmergencyContact::class);
+}
+
 
 
     public function isAdmin(): bool
@@ -101,11 +117,11 @@ public function universityArchive()
     {
         return $this->hasRole('resident');
     }
-
     public function isActive(): bool
     {
-        return (bool) $this->is_active;
+        return $this->status === 'active';
     }
+    
 
     public function isVerified(): bool
     {
@@ -123,7 +139,6 @@ public function universityArchive()
     }
 
    
-
     public function allowLateProfileCompletion(): bool
     {
         return $this->can_complete_late ?? false;
