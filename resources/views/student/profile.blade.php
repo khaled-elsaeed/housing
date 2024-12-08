@@ -436,7 +436,7 @@
                            <input type="hidden" name="parent_living_abroad" value="{{ $user->parent->living_abroad }}">
                            @endif
                         </div>
-                        <div class="col-md-6" id="abroad_country_container" style="{{ old('parent_living_abroad', $user->parent->living_abroad) == 1 ? '' : 'display:none;' }}">
+                        <div class="col-md-6"  style="{{ old('parent_living_abroad', $user->parent->living_abroad) == 1 ? '' : 'display:none;' }}">
                            <label for="parent_abroad_country_id">Abroad Country</label>
                            <select class="form-control" 
                            id="parent_abroad_country_id" 
@@ -535,13 +535,13 @@
                         <div class="col-md-6">
                            <label for="parent_living_abroad">Living Abroad</label>
                            <select class="form-control" 
-                              id="parent_living_abroad" 
+                              id="parent_living_abroad_not_fill" 
                               name="parent_living_abroad">
                            <option value="0" {{ old('parent_living_abroad') == '0' ? 'selected' : '' }}>No</option>
                            <option value="1" {{ old('parent_living_abroad') == '1' ? 'selected' : '' }}>Yes</option>
                            </select>
                         </div>
-                        <div class="col-md-6" id="abroad_country_container" style="{{ old('parent_living_abroad') == '1' ? '' : 'display:none;' }}">
+                        <div class="col-md-6" id="abroad_country_container_fill"  style="{{ old('parent_living_abroad') == '1' ? '' : 'display:none;' }}">
                            <label for="parent_abroad_country_id">Abroad Country</label>
                            <select class="form-control" 
                            id="parent_abroad_country_id" 
@@ -845,21 +845,31 @@
          });
    }
    
-   // JavaScript to populate cities based on the selected governorate
-   document.getElementById('governorate_id').addEventListener('change', function () {
+   const governorateDropdown = document.getElementById('governorate_id');
+
+// Ensure the governorate dropdown exists
+if (governorateDropdown) {
+   governorateDropdown.addEventListener('change', function () {
       const governorateId = this.value;
-   
-      // Clear existing options in the select element
+
+      // Get the city dropdown element
       const cityList = document.getElementById('city_id');
-      cityList.innerHTML = '<option value="">Select City</option>'; // Reset dropdown
-   
-      if (!governorateId) {
-         return; // Exit if no governorate is selected
+      if (!cityList) {
+         console.error('City dropdown element not found.');
+         return;
       }
-   
+
+      // Reset the city dropdown options
+      cityList.innerHTML = '<option value="">Select City</option>';
+
+      // Exit if no governorate is selected
+      if (!governorateId) {
+         return;
+      }
+
       // Fetch cities for the selected governorate
       const route = `{{ route('get-cities', ':governorateId') }}`.replace(':governorateId', governorateId);
-   
+
       fetch(route)
          .then(response => {
             if (!response.ok) {
@@ -877,6 +887,10 @@
          })
          .catch(error => console.error('Error fetching cities:', error));
    });
+} else {
+   console.error('Governorate dropdown element not found.');
+}
+
    
    // JavaScript to populate cities based on the selected governorate for parent location
    document.getElementById('parent_governorate_id').addEventListener('change', function () {
@@ -911,17 +925,38 @@
          .catch(error => console.error('Error fetching cities:', error));
    });
    
-   document.getElementById('parent_living_abroad').addEventListener('change', function () {
-      const abroadFieldContainer = document.getElementById('abroad_country_container');
-      const abroadField = document.getElementById('parent_parent_abroad_country_id');
+
+
+const parentLivingAbroadNotFill = document.getElementById('parent_living_abroad_not_fill');
+
+// Check if parent_living_abroad_not_fill element exists
+if (parentLivingAbroadNotFill) {
+   parentLivingAbroadNotFill.addEventListener('change', function () {
+      const abroadFieldContainerFill = document.getElementById('abroad_country_container_fill');
+
+      // Check if abroadField is found
+      if (!abroadField) {
+         console.error('Abroad field element not found.');
+         return;
+      }
+
       if (this.value === "1") { // If "Yes" is selected
-         abroadFieldContainer.style.display = '';
-         abroadField.disabled = false;
+         if (abroadFieldContainerFill) { 
+            abroadFieldContainerFill.style.display = ''; // Show container
+         }
+        
       } else { // If "No" is selected
-         abroadFieldContainer.style.display = 'none';
-         abroadField.disabled = true;
+         if (abroadFieldContainerNotFill) {
+            abroadFieldContainerNotFill.style.display = 'none'; // Hide container
+         }
+        
       }
    });
+} else {
+   console.error('Parent living abroad not fill element not found.');
+}
+
+
    
    
    document.getElementById('parent_living_with').addEventListener('change', function () {
