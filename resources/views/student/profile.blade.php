@@ -406,7 +406,7 @@
                            value="{{ old('parent_email', $user->parent->email) }}" 
                            {{ $user->parent->email ? 'disabled' : '' }}>
                            @if($user->parent->email)
-                           <input type="hidden" name="email" value="{{ $user->parent->email }}">
+                           <input type="hidden" name="parent_email" value="{{ $user->parent->email }}">
                            @endif
                         </div>
                         <!-- Parent Mobile -->

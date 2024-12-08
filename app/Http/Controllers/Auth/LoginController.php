@@ -57,13 +57,19 @@ class LoginController extends Controller
                 return redirect()->route('admin.home');
             }
 
-            if ($this->loginService->isResident($user)) {
-                $studentChecks = $this->loginService->handleStudentAfterLogin($user);
+            // if ($this->loginService->isResident($user)) {
+            //     $studentChecks = $this->loginService->handleStudentAfterLogin($user);
                
-                if (is_array($studentChecks)) {
-                    return back()->withErrors($studentChecks);
+            //     if (is_array($studentChecks)) {
+            //         return back()->withErrors($studentChecks);
+            //     }
+            //     return redirect()->route('student.home');
+            // }
+            if ($this->loginService->isResident($user)) {
+                if ($user->can_complete_late) {
+                    return redirect()->route('student.home');
                 }
-                return redirect()->route('student.home');
+                return back()->withErrors(['error' => 'Access is currently unavailable. Please try again later.']);
             }
 
             return redirect()->intended('home');
