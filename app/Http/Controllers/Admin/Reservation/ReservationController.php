@@ -183,7 +183,6 @@ class ReservationController extends Controller
         ]);
     }
 
-    // Reallocate a reservation to a new room
     public function reallocateReservation(Request $request)
     {
         $validatedData = $request->validate([
@@ -198,6 +197,18 @@ class ReservationController extends Controller
             return response()->json(['error' => 'Room is already assigned to another reservation'], 400);
         }
 
+        if ($reservation->room_id) {
+            $previousRoom = Room::find($reservation->room_id);
+            if ($previousRoom) {
+                $previousRoom->current_occupancy -= 1;
+                $previousRoom->save();
+            }
+        }
+
+        $newRoom = Room::find($newRoomId);
+        $newRoom->current_occupancy += 1;
+        $newRoom->save();
+
         $reservation->room_id = $newRoomId;
         $reservation->save();
 
@@ -207,4 +218,5 @@ class ReservationController extends Controller
             'reservation' => $reservation,
         ]);
     }
+
 }
