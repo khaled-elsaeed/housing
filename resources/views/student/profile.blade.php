@@ -604,7 +604,7 @@
                         <!-- Sibling Faculty -->
                         <div class="col-md-6">
                            <label for="sibling_faculty">Sibling's Faculty</label>
-                           <input type="text" class="form-control" id="sibling_faculty" name="sibling_faculty" value="{{ old('sibling_faculty', $user->sibling->faculty->name_en) }}">
+                           <input type="text" class="form-control" id="sibling_faculty" name="sibling_faculty" value="{{ old('sibling_faculty', optional($user->sibling->faculty)->name_en) }}">
                         </div>
                      </div>
                      @else <!-- No sibling data, allow user to enter all data -->
