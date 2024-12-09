@@ -74,9 +74,19 @@
                                     </div>
                                     <div class="userbox">
                                         <ul class="list-unstyled mb-0">
-                                            <li class="d-flex p-2 mt-1 dropdown-item">
-                                                <a href="{{ route('admin.profile') }}" class="profile-icon"><img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="user">My Profile</a>
-                                            </li>
+                                        <li class="d-flex p-2 mt-1 dropdown-item">
+                                            @if (Auth::user()->hasRole('admin'))
+                                                <a href="{{ route('admin.profile') }}" class="profile-icon">
+                                                    <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="user">My Profile
+                                                </a>
+                                            @elseif (Auth::user()->hasRole('resident'))
+                                                <a href="{{ route('student.profile') }}" class="profile-icon">
+                                                    <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="user">My Profile
+                                                </a>
+                                            @endif
+                                        </li>
+
+
                                          
                                             <li class="d-flex p-2 mt-1 dropdown-item">
                                                 <a href="javascript:void(0);" class="profile-icon" onclick="logout();">

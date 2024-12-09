@@ -246,7 +246,7 @@ class StudentProfileController extends Controller
                 'parent_name' => 'required|string|max:255',
                 'parent_relation' => 'required|string',
                 'parent_email' => 'nullable|email',
-                'parent_mobile' => 'nullable|string|max:15',
+                'parent_mobile' => 'nullable|string|max:25',
                 'parent_living_abroad' => 'required|boolean',
                 'parent_abroad_country_id' => 'nullable|exists:countries,id',
                 'parent_living_with' => 'nullable|string',
