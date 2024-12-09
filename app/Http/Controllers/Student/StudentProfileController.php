@@ -32,8 +32,6 @@ class StudentProfileController extends Controller
         $programs = Program::all();
         $countries = Country::all();
         $faculties = Faculty::all();
-        $notifications = $user->notifications; // Retrieve notifications for the authenticated user
-
         return view('student.profile', compact('user', 'notifications', 'governorates', 'programs', 'countries', 'faculties'));
     }
 
@@ -269,18 +267,18 @@ class StudentProfileController extends Controller
                     'city_id' => $request->input('parent_city_id'),
                 ]);
             } else {
-                $parent = new Parents();
-                $parent->user_id = $request->user()->id;
-                $parent->name = $request->input('parent_name');
-                $parent->relation = $request->input('parent_relation');
-                $parent->email = $request->input('parent_email');
-                $parent->mobile = $request->input('parent_mobile');
-                $parent->living_abroad = $request->input('parent_living_abroad');
-                $parent->abroad_country_id = $request->input('parent_abroad_country_id');
-                $parent->living_with = $request->input('parent_living_with');
-                $parent->governorate_id = $request->input('parent_governorate_id');
-                $parent->city_id = $request->input('parent_city_id');
-                $parent->save();
+                Parents::create([
+                    'user_id' => $request->user()->id,
+                    'name' => $request->input('parent_name'),
+                    'relation' => $request->input('parent_relation'),
+                    'email' => $request->input('parent_email'),
+                    'mobile' => $request->input('parent_mobile'),
+                    'living_abroad' => $request->input('parent_living_abroad'),
+                    'abroad_country_id' => $request->input('parent_abroad_country_id'),
+                    'living_with' => $request->input('parent_living_with'),
+                    'governorate_id' => $request->input('parent_governorate_id'),
+                    'city_id' => $request->input('parent_city_id'),
+                ]);
             }
 
             return redirect()->back()->with('success', 'Parent information updated successfully.');
