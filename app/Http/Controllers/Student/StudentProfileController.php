@@ -32,7 +32,7 @@ class StudentProfileController extends Controller
         $programs = Program::all();
         $countries = Country::all();
         $faculties = Faculty::all();
-        return view('student.profile', compact('user', 'notifications', 'governorates', 'programs', 'countries', 'faculties'));
+        return view('student.profile', compact('user', 'governorates', 'programs', 'countries', 'faculties'));
     }
 
     /**
