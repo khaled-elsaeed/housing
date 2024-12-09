@@ -28,12 +28,7 @@
                   href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="true">
                <i class="feather icon-user me-2"></i>My Profile
                </a>
-               <!-- Notifications Tab -->
-               <a class="nav-link mb-2" id="v-pills-notifications-tab" data-bs-toggle="pill"
-                  href="#v-pills-notifications" role="tab" aria-controls="v-pills-notifications"
-                  aria-selected="false">
-               <i class="feather icon-bell me-2"></i>Notifications
-               </a>
+              
                <!-- My Address Tab -->
                <a class="nav-link mb-2" id="v-pills-address-tab" data-bs-toggle="pill"
                   href="#v-pills-address" role="tab" aria-controls="v-pills-address" aria-selected="false">
@@ -205,41 +200,7 @@
             </div>
          </div>
          <!-- End My Profile Tab -->
-         <!-- My Notifications Tab -->
-         <div class="tab-pane fade" id="v-pills-notifications" role="tabpanel"
-            aria-labelledby="v-pills-notifications-tab">
-            <div class="card m-b-30">
-               <div class="card-header">
-                  <h5 class="card-title mb-0">Notifications</h5>
-               </div>
-               <div class="card-body">
-                  <div class="ecom-notification-box">
-                     <ul class="list-unstyled">
-                        @forelse ($notifications as $notification)
-                        <li class="d-flex p-2 mt-1">
-                           <span class="me-3 action-icon badge 
-                              {{ $notification->type == 'success' ? 'badge-success-inverse' : 'badge-danger-inverse' }}">
-                           <i class="feather icon-{{ $notification->type == 'success' ? 'check' : 'alert-circle' }}"></i>
-                           </span>
-                           <div class="media-body">
-                              <h5 class="action-title">{{ $notification->title }}</h5>
-                              <p class="my-3">{{ $notification->message }}</p>
-                              <p>
-                                 <span class="badge badge-info-inverse me-2">{{ strtoupper($notification->category) }}</span>
-                                 <span class="timing">{{ $notification->created_at->format('d M Y, h:i A') }}</span>
-                              </p>
-                           </div>
-                        </li>
-                        @empty
-                        <li class="p-2">No notifications available.</li>
-                        @endforelse
-                     </ul>
-                  </div>
-               </div>
-            </div>
-         </div>
-         <!-- End My Notifications Tab -->
-         <!-- My Address -->
+               <!-- My Address -->
          <div class="tab-pane fade" id="v-pills-address" role="tabpanel" aria-labelledby="v-pills-address-tab">
             <div class="card m-b-30">
                <div class="card-header">
