@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
    <head>
       <meta charset="UTF-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -18,10 +18,16 @@
       <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16x16.png') }}">
 
       <!-- Global CSS -->
-      <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
-      <link href="{{ asset('css/icons.css') }}" rel="stylesheet" type="text/css">
+      @if(app()->isLocale('en'))
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css">
+@else
+    <link href="{{ asset('css/bootstrap.rtl.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('css/style.rtl.css') }}" rel="stylesheet" type="text/css">
+@endif
+
+     <link href="{{ asset('css/icons.css') }}" rel="stylesheet" type="text/css">
       <link href="{{ asset('css/flag-icon.min.css') }}" rel="stylesheet" type="text/css">
-      <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css">
       <link href="{{ asset('plugins/sweet-alert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
 
       <!-- Page-Specific CSS -->

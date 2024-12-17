@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Exception;
 use Log;
+use Illuminate\Support\Facades\App;
+
 
 class ReservationController extends Controller
 {
@@ -20,15 +22,21 @@ class ReservationController extends Controller
     // Fetch reservations with filters, pagination, and search
     public function fetchReservations(Request $request)
     {
+        $currentLang = App::getLocale(); // Get current locale
+
         try {
             $query = Reservation::with(['user']); // Base query with relationships
 
             // Apply search filter
             if ($request->filled('customSearch')) {
-                $query->whereHas('user.student', function ($q) use ($request) {
-                    $q->where('name_en', 'like', '%' . $request->customSearch . '%');
-                })->orWhere('status', 'like', '%' . $request->customSearch . '%');
+                $query->where(function ($q) use ($request, $currentLang) {
+                    $q->whereHas('user.student', function ($q) use ($request, $currentLang) {
+                        $q->where('name_' . ($currentLang == 'ar' ? 'ar' : 'en'), 'like', '%' . $request->customSearch . '%');
+                    })
+                    ->orWhere('status', 'like', '%' . $request->customSearch . '%');
+                });
             }
+            
 
             // Clone query for filtered records count
             $filteredQuery = clone $query;
@@ -45,21 +53,32 @@ class ReservationController extends Controller
                 'draw' => $request->get('draw'),
                 'recordsTotal' => $totalRecords,
                 'recordsFiltered' => $filteredRecords,
-                'data' => $reservations->map(function ($reservation) {
+                'data' => $reservations->map(function ($reservation) use ($currentLang) {
                     $location = $reservation->room
-                        ? $reservation->room->getLocation()
-                        : ['building' => 'N/A', 'apartment' => 'N/A', 'room' => 'N/A'];
+    ? $reservation->room->getLocation()
+    : [
+        'building' => 'N/A',
+        'apartment' => 'N/A',
+        'room' => 'N/A',
+    ];
 
-                    $locationString = implode(' - ', $location);
+// Construct the location string
+$locationString = __(
+    'pages.admin.apartment.building'
+) . ' ' . $location['building'] . ' - ' . __(
+    'pages.admin.rooms.apartment'
+) . ' ' .$location['apartment'] . ' - ' . __(
+    'pages.admin.rooms.room'
+) . ' ' . $location['room'];
+
 
                     return [
                         'reservation_id' => $reservation->id,
-                        'name' => $reservation->user->student->name_en ?? 'N/A',
+                        'name' => $reservation->user->student->{'name_' . ($currentLang == 'ar' ? 'ar' : 'en')} ?? 'N/A',  
                         'location' => $locationString,
                         'start_date' => $reservation->start_date ? $reservation->start_date->format('F j, Y, g:i A') : 'N/A',
                         'end_date' => $reservation->end_date ? $reservation->end_date->format('F j, Y, g:i A') : 'N/A',
                         'status' => $reservation->status,
-                        'actions' => '<button type="button" class="btn btn-round btn-info-rgba" data-reservation-id="' . $reservation->id . '" id="details-btn" title="More Details"><i class="feather icon-info"></i></button>',
                     ];
                 }),
             ]);
@@ -105,21 +124,17 @@ class ReservationController extends Controller
 
     public function show($nationalId)
 {
-    // Fetch the user using the provided national ID
     $user = User::getUserByNationalId($nationalId);
 
-    // Check if the user exists
     if (!$user) {
         return response()->json(['message' => 'User not found'], 404);
     }
 
-    // Log the user details
     Log::info('User found', [
         'nationalId' => $nationalId,
         'user' => $user->toArray(),
     ]);
 
-    // Check if the user has a reservation
     $reservation = $user->reservation;
 
     if (!$reservation) {
@@ -131,13 +146,10 @@ class ReservationController extends Controller
         ], 404);
     }
 
-    // Fetch the location details of the reservation
     $location = $user->getLocationDetails();
 
-    // Fetch student details if available
     $student = $user->student;
 
-    // Return reservation and student details
     return response()->json([
         'success' => true,
         'reservation' => [

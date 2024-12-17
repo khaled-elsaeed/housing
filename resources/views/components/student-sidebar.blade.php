@@ -20,7 +20,7 @@
                 </a>
             </li>
 
-            <!-- <li>
+            <li>
                 <a href="{{ route('student.maintenance.form') }}">
                     <img src="{{ asset('images/svg-icon/components.svg') }}" class="img-fluid" alt="questionnaires">
                     <span>Maintenance</span>
@@ -32,7 +32,7 @@
                     <img src="{{ asset('images/svg-icon/tables.svg') }}" class="img-fluid" alt="results">
                     <span>Perrmissions</span>
                 </a>
-            </li> -->
+            </li>
 
             <li>
                 <a href="{{ route('student.profile') }}">

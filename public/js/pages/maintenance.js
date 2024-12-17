@@ -1,142 +1,205 @@
 $(document).ready(function () {
-   const table = $.fn.DataTable.isDataTable('#default-datatable') ?
-       $('#default-datatable').DataTable() :
-       $('#default-datatable').DataTable();
+    const isArabic = $('html').attr('dir') === 'rtl';
+
+    // Initialize DataTable
+    const table = $('#default-datatable').DataTable({
+        responsive: true,
+        language: isArabic ? {
+            url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json",
+        } : {},
+
+    });
+
+    // Reference to the toggle button and icon
+    const toggleButton = document.getElementById("toggleButton");
+    if (toggleButton) {
+        const icon = toggleButton.querySelector("i");
+        document.getElementById("collapseExample").addEventListener("shown.bs.collapse", function () {
+            icon.classList.remove("fa-search-plus");
+            icon.classList.add("fa-search-minus");
+        });
+    
+        document.getElementById("collapseExample").addEventListener("hidden.bs.collapse", function () {
+            icon.classList.remove("fa-search-minus");
+            icon.classList.add("fa-search-plus");
+        });
+    }
+    function toggleButtonLoading(button, isLoading) {
+        const hasClassBtnRound = button.hasClass('btn-round');
+
+        if (isLoading) {
+            if (!button.data('original-text')) {
+                button.data('original-text', button.html());
+            }
+
+            if (hasClassBtnRound) {
+                button.html('<i class="fa fa-spinner fa-spin"></i>')
+                    .addClass('loading')
+                    .prop('disabled', true);
+            } else {
+                button.html('<i class="fa fa-spinner fa-spin"></i> Downloading...')
+                    .addClass('loading')
+                    .prop('disabled', true);
+            }
+        } else {
+            button.html(button.data('original-text'))
+                .removeClass('loading')
+                .prop('disabled', false);
+            button.removeData('original-text');
+        }
+    }
+
    
-   // Function to toggle button loading state
-   function toggleButtonLoading(button, isLoading) {
-       const hasClassBtnRound = button.hasClass('btn-round');
 
-       if (isLoading) {
-           if (!button.data('original-text')) {
-               button.data('original-text', button.html());
-           }
+    function updateStatus(requestId, status) {
+        let updateStatusUrl = window.routes.updateStatus.replace(':id', requestId);
 
-           if (hasClassBtnRound) {
-               button.html('<i class="fa fa-spinner fa-spin"></i>')
-                   .addClass('loading')
-                   .prop('disabled', true);
-           } else {
-               button.html('<i class="fa fa-spinner fa-spin"></i> Downloading...')
-                   .addClass('loading')
-                   .prop('disabled', true);
-           }
-       } else {
-           button.html(button.data('original-text'))
-               .removeClass('loading')
-               .prop('disabled', false);
-           button.removeData('original-text');
-       }
-   }
+        const formData = {
+            status: status,
+            _token: $('meta[name="csrf-token"]').attr('content')
+        };
 
-   // Function to export the file
-   function exportFile(button, url, filename) {
-       toggleButtonLoading(button, true);
+        $.ajax({
+            url: updateStatusUrl,
+            type: 'PUT',
+            data: formData,
+            beforeSend: function () {
+                toggleButtonLoading($('#in-progress-status-btn-' + requestId), true);
+                toggleButtonLoading($('#reject-status-btn-' + requestId), true);
+            },
+            success: function (response) {
+                if (response.success) {
+                    swal('Success!', response.message || 'Status updated successfully.', 'success');
+                    location.reload();
+                }
+            },
+            error: function (xhr) {
+                swal('Error!', (xhr.responseJSON && xhr.responseJSON.message) || 'An error occurred.', 'error');
+            },
+            complete: function () {
+                toggleButtonLoading($('#in-progress-status-btn-' + requestId), false);
+                toggleButtonLoading($('#reject-status-btn-' + requestId), false);
+            }
+        });
+    }
 
-       const csrfToken = $('meta[name="csrf-token"]').attr('content');
+    $(document).on('click', '[id^="in-progress-status-btn-"]', function () {
+        const button = $(this);
+        const requestId = button.attr('id').split('-').pop();
+        updateStatus(requestId, 'in_progress');
+    });
 
-       fetch(url, {
-           method: 'GET',
-           headers: {
-               'X-Requested-With': 'XMLHttpRequest',
-               'X-CSRF-Token': csrfToken
-           }
-       })
-       .then(response => {
-           if (!response.ok) {
-               throw new Error('Network response was not ok.');
-           }
-           return response.blob();
-       })
-       .then(blob => {
-           const downloadUrl = window.URL.createObjectURL(blob);
-           const link = document.createElement('a');
-           link.style.display = 'none';
-           link.href = downloadUrl;
-           link.download = filename;
-           document.body.appendChild(link);
-           link.click();
-           link.remove();
-           window.URL.revokeObjectURL(downloadUrl);
-       })
-       .catch(error => {
-           console.error('Download error:', error);
-           swal('Error!', 'Error downloading the file. Please try again later.', 'error');
-       })
-       .finally(() => {
-           toggleButtonLoading(button, false);
-       });
-   }
+    $(document).on('click', '[id^="reject-status-btn-"]', function () {
+        const button = $(this);
+        const requestId = button.attr('id').split('-').pop();
+        updateStatus(requestId, 'rejected');
+    });
 
-   // Export button click event
-   $('#exportExcel').off('click').on('click', function (e) {
-       e.preventDefault();
+    $(document).on('click', '[id^="complete-status-btn-"]', function () {
+        const button = $(this);
+        const requestId = button.attr('id').split('-').pop();
+        updateStatus(requestId, 'completed');
+    });
 
-       const downloadBtn = $('#downloadBtn');
+    $('#viewRequestModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var requestId = button.data('request-id');
+    
+        // Define the mapping of issue types and descriptions in both English and Arabic
+        var issueTypeMapping = {
+            'electrical_issues': {
+                en: 'Electrical Issues',
+                ar: 'مشاكل كهربائية'
+            },
+            'water_issues': {
+                en: 'Water Issues',
+                ar: 'مشاكل مائية'
+            },
+            'housing_issues': {
+                en: 'Housing Issues',
+                ar: 'مشاكل سكنية'
+            },
+            'General Housing': {
+                en: 'General Housing',
+                ar: 'مشاكل السكن العامة'
+            }
+        };
+    
+    var descriptionMapping = {
+    'leakage': {
+        en: 'Water Leakage',
+        ar: 'تسرب مياه'
+    },
+    'sewage_problem': {
+        en: 'Sewage Problem',
+        ar: 'مشكلة في الصرف الصحي'
+    },
+    'plumbing_problem': {
+        en: 'Plumbing Problem',
+        ar: 'مشكلة في السباكة'
+    },
+    'bulb_replacement': {
+        en: 'Bulb Replacement',
+        ar: 'استبدال مصباح'
+    },
+    'fan_issue': {
+        en: 'Fan Issue',
+        ar: 'مشكلة في المروحة'
+    },
+    'water_heater_issue': {
+        en: 'Water Heater Issue',
+        ar: 'مشكلة في سخان المياه'
+    },
+    'electricity_problem': {
+        en: 'Electricity Problem',
+        ar: 'مشكلة كهربائية'
+    },
+    'furniture_damage': {
+        en: 'Furniture Damage',
+        ar: 'تلف الأثاث'
+    },
+    'appliance_issue': {
+        en: 'Appliance Issue',
+        ar: 'مشكلة في الأجهزة'
+    },
+    'door_window_issue': {
+        en: 'Door/Window Problem',
+        ar: 'مشكلة في الباب/النافذة'
+    }
+};
 
-       exportFile(downloadBtn, window.routes.exportExcel, 'Maintenance.xlsx');
+    
+        // Detect current language of the page (check <html> tag's lang attribute)
+        var currentLang = $('html').attr('lang') || 'en'; // Default to 'en' if lang attribute is not set
+    
+        $.ajax({
+            url: window.routes.getIssues.replace(':id', requestId),
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                $('#issueList').empty();
+    
+                if (response.issues.length > 0) {
+                    response.issues.forEach(function (issue) {
+                        var issueTypeDescription = issueTypeMapping[issue.issue_type] && issueTypeMapping[issue.issue_type][currentLang] || issue.issue_type;
+                        var issueDescription = descriptionMapping[issue.description] && descriptionMapping[issue.description][currentLang] || issue.description;
+    
+                        $('#issueList').append('<li class="list-group-item">' + issueTypeDescription + ': ' + issueDescription + '</li>');
+                    });
+                } else {
+                    $('#issueList').append('<li class="list-group-item">' + (currentLang === 'ar' ? 'لا توجد مشكلات' : 'No issues available') + '</li>'); // Adjust based on language
+                }
+    
+                $('#additionalInfo').text(response.additional_info || (currentLang === 'ar' ? 'لا توجد معلومات إضافية' : 'No additional information available'));
+            },
+            error: function () {
+                alert(currentLang === 'ar' ? 'حدث خطأ أثناء جلب المشكلات' : 'Error fetching issues');
+            }
+        });
+    });
+    
 
-       $(downloadBtn).next('.dropdown-menu').removeClass('show');
-   });
+   
 
-   // Status filter for DataTable
-   $('#statusFilter').on('change', function () {
-       const selectedStatus = $(this).val();
-       table.search('').draw(); // Clear previous search
-       if (selectedStatus) {
-           table.column(5).search('^' + selectedStatus + '$', true, false).draw(); // Apply the new status filter
-       } else {
-           table.column(5).search('').draw(); // Clear filter if none is selected
-       }
-   });
-
-   // Function to update the status of the maintenance request
-   function updateStatus(requestId, status) {
-       let updateStatusUrl = window.routes.updateStatus.replace(':id', requestId);
-
-       const formData = {
-           status: status, // Status ('accepted' or 'rejected')
-           _token: $('meta[name="csrf-token"]').attr('content') // CSRF token for security
-       };
-
-       $.ajax({
-           url: updateStatusUrl,
-           type: 'PUT', // We are updating an existing resource, so use PUT
-           data: formData,
-           beforeSend: function () {
-               // Disable the button while processing
-               toggleButtonLoading($('#in-progress-status-btn-' + requestId), true);
-               toggleButtonLoading($('#reject-status-btn-' + requestId), true);
-           },
-           success: function (response) {
-               if (response.success) {
-                   swal('Success!', response.message || 'Status updated successfully.', 'success');
-                   location.reload(); // Reload page to reflect status changes
-               }
-           },
-           error: function (xhr) {
-               swal('Error!', (xhr.responseJSON && xhr.responseJSON.message) || 'An error occurred.', 'error');
-           },
-           complete: function () {
-               // Re-enable the buttons after the process is complete
-               toggleButtonLoading($('#in-progress-status-btn-' + requestId), false);
-               toggleButtonLoading($('#reject-status-btn-' + requestId), false);
-           }
-       });
-   }
-
-   // in-progress button click event
-   $(document).on('click', '[id^="in-progress-status-btn-"]', function () {
-       const button = $(this);
-       const requestId = button.attr('id').split('-').pop();
-       updateStatus(requestId, 'in_progress'); // Update status to accepted
-   });
-
-   // Reject button click event
-   $(document).on('click', '[id^="reject-status-btn-"]', function () {
-       const button = $(this);
-       const requestId = button.attr('id').split('-').pop();
-       updateStatus(requestId, 'rejected'); // Update status to rejected
-   });
-
+   
 });

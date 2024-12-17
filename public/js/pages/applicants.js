@@ -1,44 +1,57 @@
 $(document).ready(function() {
     // Toggle button and icon for collapse functionality
     const toggleButton = document.getElementById("toggleButton");
+if (toggleButton) {
     const icon = toggleButton.querySelector("i");
-
-    document.getElementById("collapseExample").addEventListener("shown.bs.collapse", function() {
+    document.getElementById("collapseExample").addEventListener("shown.bs.collapse", function () {
         icon.classList.remove("fa-search-plus");
         icon.classList.add("fa-search-minus");
     });
 
-    document.getElementById("collapseExample").addEventListener("hidden.bs.collapse", function() {
+    document.getElementById("collapseExample").addEventListener("hidden.bs.collapse", function () {
         icon.classList.remove("fa-search-minus");
         icon.classList.add("fa-search-plus");
     });
+}
 
-    // Initialize DataTable with server-side processing and custom search
-    const table = $('#default-datatable').DataTable({
-        processing: true,
-        serverSide: true,
-        responsive: true,
-        ajax: {
-            url: window.routes.fetchApplicants,
-            data: function (d) {
-                d.customSearch = $('#searchBox').val();
-            }
-        },
-        columns: [
-            { data: 'name', name: 'name', searchable: true },
-            { data: 'national_id', name: 'national_id', searchable: true },
-            { data: 'faculty', name: 'faculty', searchable: true },
-            { data: 'email', name: 'email', searchable: true },
-            { data: 'mobile', name: 'mobile', searchable: true },
-            { data: 'registration_date', name: 'registration_date', searchable: false },
-            { data: 'actions', name: 'actions', orderable: false, searchable: false }
-        ]
-    });
+
+        // Check if the page is in Arabic (RTL)
+        const isArabic = $('html').attr('dir') === 'rtl';
+    
+        // Initialize DataTable with server-side processing and custom search
+        const table = $('#default-datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            responsive: true,
+            ajax: {
+                url: window.routes.fetchApplicants,
+                data: function (d) {
+                    d.customSearch = $('#searchBox').val();
+                }
+            },
+            columns: [
+                { data: 'name', name: 'name', searchable: true },
+                { data: 'national_id', name: 'national_id', searchable: true },
+                { data: 'faculty', name: 'faculty', searchable: true },
+                { data: 'email', name: 'email', searchable: true },
+                { data: 'mobile', name: 'mobile', searchable: true },
+                { data: 'registration_date', name: 'registration_date', searchable: false },
+                { data: 'actions', name: 'actions', orderable: false, searchable: false }
+            ],
+            // Apply RTL settings if the language is Arabic
+            language: isArabic ? {
+                url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json",
+            } : {},
+            
+        });
+        $('#searchBox').on('keyup', function() {
+            table.ajax.reload();
+        });
+    
+    
 
     // Custom search reload on keyup
-    $('#searchBox').on('keyup', function() {
-        table.ajax.reload();
-    });
+    
 
     // Fetch Stats data for applicants
     function fetchStats() {
@@ -163,18 +176,18 @@ $(document).ready(function() {
     }
 
     // Export to Excel
-    $('#exportExcel').off('click').on('click', function(e) {
-        e.preventDefault();
-        const downloadBtn = $('#downloadBtn');
-        exportFile(downloadBtn, window.routes.exportExcel, 'applicants.xlsx');
-        $(downloadBtn).next('.dropdown-menu').removeClass('show');
-    });
+    // $('#exportExcel').off('click').on('click', function(e) {
+    //     e.preventDefault();
+    //     const downloadBtn = $('#downloadBtn');
+    //     exportFile(downloadBtn, window.routes.exportExcel, 'applicants.xlsx');
+    //     $(downloadBtn).next('.dropdown-menu').removeClass('show');
+    // });
 
     // Export to PDF
-    $('#exportPDF').on('click', function(e) {
-        e.preventDefault();
-        exportFile($('#downloadBtn'), window.routes.exportPdf, 'applicants.pdf');
-    });
+    // $('#exportPDF').on('click', function(e) {
+    //     e.preventDefault();
+    //     exportFile($('#downloadBtn'), window.routes.exportPdf, 'applicants.pdf');
+    // });
 
     // Show more details when clicking the button
     $(document).on('click', '#details-btn', function() {

@@ -4,6 +4,12 @@ return [
     'failed' => 'بيانات الاعتماد هذه لا تتطابق مع سجلاتنا.',
     'password' => 'كلمة المرور المقدمة غير صحيحة.',
     'throttle' => 'عدد محاولات تسجيل الدخول كثير جدًا. يرجى المحاولة مرة أخرى خلال :seconds ثوانٍ.',
+    'too_many_login_attempts' => 'تم الوصول إلى الحد الأقصى لعدد محاولات تسجيل الدخول. يرجى المحاولة لاحقًا.',
+    
+    'account_deleted' => 'تم حذف حسابك.',
+    'account_inactive' => 'حسابك غير نشط.',
+    'account_not_verified' => 'لم يتم التحقق من حسابك.',
+    'profile_incomplete' => 'ملفك الشخصي غير مكتمل.',
     'login' => [
         'page_title' => 'الإسكان بجامعة المنصورة الجديدة - تسجيل الدخول',
         'welcome_back' => 'مرحبًا بعودتك',
@@ -20,5 +26,32 @@ return [
         'login_image_alt' => 'صورة تسجيل الدخول',
         'university_name' => 'جامعة المنصورة الجديدة',
         'rights_reserved' => 'جميع الحقوق محفوظة',
-    ]
+        'account_deleted' => 'تم حذف حسابك.',
+        'account_inactive' => 'حسابك غير نشط.',
+        'account_not_verified' => 'لم يتم التحقق من حسابك.',
+        'profile_incomplete' => 'ملفك الشخصي غير مكتمل.',
+        'user_not_found' => 'لا يوجد مستخدم بالمعرف المقدم.',
+        'invalid_credentials' => 'بيانات الاعتماد غير صالحة.',
+    ],
+
+
+
+    'register' => [
+        'page_title' => 'الإسكان بجامعة المنصورة الجديدة - إنشاء حساب',
+        'create_account' => 'إنشاء حسابك',
+        'national_id_placeholder' => 'أدخل الرقم القومي',
+        'national_id_label' => 'الرقم القومي',
+        'email_placeholder' => 'name@example.com',
+        'email_label' => 'البريد الإلكتروني',
+        'password_placeholder' => 'كلمة المرور',
+        'password_label' => 'كلمة المرور',
+        'confirm_password_placeholder' => 'تأكيد كلمة المرور',
+        'confirm_password_label' => 'تأكيد كلمة المرور',
+        'register_button' => 'تسجيل',
+        'already_have_account' => 'هل لديك حساب بالفعل؟',
+        'login' => 'تسجيل الدخول',
+        'register_image_alt' => 'صورة إنشاء حساب',
+        'success' => 'تم إنشاء الحساب بنجاح!',
+        'error' => 'حدث خطأ. يرجى المحاولة مرة أخرى.',
+    ],
 ];

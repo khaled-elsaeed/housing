@@ -42,30 +42,31 @@ class LoginService
     {
         if ($user->isDeleted()) {
             return [
-                'account' => __('auth.account_deleted'),
+                'account' => __('auth.login.account_deleted'),
             ];
         }
-
+    
         if (!$user->isActive()) {
             return [
-                'account' => __('auth.account_inactive'),
+                'account' => __('auth.login.account_inactive'),
             ];
         }
-
+    
         if (!$user->isVerified()) {
             return [
-                'account' => __('auth.account_not_verified'),
+                'account' => __('auth.login.account_not_verified'),
             ];
         }
-
+    
         if (!$user->isProfileComplete()) {
             return [
-                'profile' => __('auth.profile_incomplete'),
+                'profile' => __('auth.login.profile_incomplete'),
             ];
         }
-
+    
         return true;
     }
+    
 }
 
 

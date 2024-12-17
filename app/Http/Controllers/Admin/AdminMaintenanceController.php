@@ -115,6 +115,34 @@ public function downloadMaintenanceRequestsExcel()
     }
 }
 
+  /**
+     * Fetch the issues for a specific maintenance request.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getIssues($id)
+    {
+        try {
+            // Find the maintenance request by its ID
+            $maintenanceRequest = MaintenanceRequest::with('issues')->findOrFail($id);
+
+            // Return issues and additional data as JSON
+            return response()->json([
+                'issues' => $maintenanceRequest->issues,
+                'additional_info' => $maintenanceRequest->description,
+                'status' => $maintenanceRequest->status
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching issues for maintenance request: ' . $e->getMessage(), [
+                'exception' => $e,
+                'stack_trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json(['error' => 'Failed to fetch issues for this maintenance request.'], 500);
+        }
+    }
+
 
     
 }

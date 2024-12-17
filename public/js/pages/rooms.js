@@ -1,18 +1,43 @@
 $(document).ready(function () {
-   
-    // Filter functionality for DataTable based on status
+    const isArabic = $('html').attr('dir') === 'rtl';
+
+    // Initialize DataTable
+    const table = $('#default-datatable').DataTable({
+        responsive: true,
+        language: isArabic ? {
+            url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json",
+        } : {},
+
+    });
+
+    // Reference to the toggle button and icon
+    const toggleButton = document.getElementById("toggleButton");
+    const icon = toggleButton.querySelector("i");
+
+    // Toggle icon on collapse show
+    document.getElementById("collapseExample").addEventListener("shown.bs.collapse", function() {
+        icon.classList.remove("fa-search-plus");
+        icon.classList.add("fa-search-minus");
+    });
+
+    // Toggle icon on collapse hide
+    document.getElementById("collapseExample").addEventListener("hidden.bs.collapse", function() {
+        icon.classList.remove("fa-search-minus");
+        icon.classList.add("fa-search-plus");
+    });
+
+    $('#searchBox').on('keyup', function() {
+        table.search(this.value).draw(); 
+    });
+
 $('#statusFilter').on('change', function() {
     const selectedStatus = $(this).val();
 
-    // Clear any existing search
     table.search('').draw();
 
-    // Apply the status filter
     if (selectedStatus) {
-        // Use the selected status to filter the DataTable
-        table.column(5).search('^' + selectedStatus + '$', true, false).draw(); // Exact match filter
+        table.column(5).search('^' + selectedStatus + '$', true, false).draw(); 
     } else {
-        // If no status is selected, show all entries
         table.column(5).search('').draw();
     }
 });
@@ -20,16 +45,11 @@ $('#statusFilter').on('change', function() {
     // Filter functionality for DataTable based on status
     $('#buildingFilter').on('change', function() {
         const selectedBuilding = $(this).val();
+            table.search('').draw();
     
-        // Clear any existing search
-        table.search('').draw();
-    
-        // Apply the status filter
         if (selectedBuilding) {
-            // Use the selected status to filter the DataTable
-            table.column(2).search('^' + selectedBuilding + '$', true, false).draw(); // Exact match filter
+            table.column(2).search('^' + selectedBuilding + '$', true, false).draw(); 
         } else {
-            // If no status is selected, show all entries
             table.column(2).search('').draw();
         }
     });
@@ -38,22 +58,16 @@ $('#statusFilter').on('change', function() {
     $('#apartmentFilter').on('change', function() {
         const selectedApartment = $(this).val();
     
-        // Clear any existing search
         table.search('').draw();
     
         // Apply the status filter
         if (selectedApartment) {
-            // Use the selected status to filter the DataTable
-            table.column(1).search('^' + selectedApartment + '$', true, false).draw(); // Exact match filter
+            table.column(1).search('^' + selectedApartment + '$', true, false).draw(); 
         } else {
-            // If no status is selected, show all entries
             table.column(1).search('').draw();
         }
     });
 
-    const table = $.fn.DataTable.isDataTable('#default-datatable') 
-    ? $('#default-datatable').DataTable() 
-    : $('#default-datatable').DataTable();
 
 
     function toggleButtonLoading(button, isLoading) {
@@ -132,58 +146,66 @@ $('#exportExcel').off('click').on('click', function(e) {
 });
 
  
-    $('#editRoomDetailsModal').on('submit', function (e) {
-        e.preventDefault();
-        const formData = {
-            room_id: $('#editRoomDetailsModal').attr('data-room-id'),
-            status: $('#editRoomStatus').val(),
-            purpose: $('#editRoomPurpose').val(), // Correct field for purpose
-            type: $('#editRoomType').val(), // Added .val()
-            _token: $('meta[name="csrf-token"]').attr('content')
-        };
-        
+   // Handle Edit Room Details Form Submission
+$('#editRoomDetailsModal').on('submit', function (e) {
+    e.preventDefault();
 
-        $.ajax({
-            url: window.routes.updateRoomStatus,
-            type: 'POST',
-            data: formData,
-            success: function (response) {
-                if (response.success) {
-                    swal('Success!', response.message || 'Status updated successfully.', 'success');
-                    $('#editRoomDetailsModal').modal('hide');
-                    location.reload();
-                }
-            },
-            error: function (xhr) {
-                swal('Error!', (xhr.responseJSON && xhr.responseJSON.message) || 'An error occurred.', 'error');
+    // Get the form data
+    const formData = {
+        room_id: $('#editRoomDetailsModal').attr('data-room-id'),
+        status: $('#editRoomStatus').val(), // Get selected status
+        purpose: $('#editRoomPurpose').val(), // Get selected purpose
+        type: $('#editRoomType').val(), // Get selected room type
+        _token: $('meta[name="csrf-token"]').attr('content') // Get CSRF token
+    };
+
+    // Send the AJAX request
+    $.ajax({
+        url: window.routes.updateRoomStatus, // URL for updating room status
+        type: 'POST',
+        data: formData,
+        success: function (response) {
+            if (response.success) {
+                swal('Success!', response.message || 'Status updated successfully.', 'success');
+                $('#editRoomDetailsModal').modal('hide'); // Close the modal
+                location.reload(); // Reload the page to reflect changes
             }
-        });
+        },
+        error: function (xhr) {
+            swal('Error!', (xhr.responseJSON && xhr.responseJSON.message) || 'An error occurred.', 'error');
+        }
     });
-    
-        $('#editNoteForm').on('submit', function (e) {
-            e.preventDefault();
-            const formData = {
-                room_id: $('#editRoomNoteModal').attr('data-room-id'),
-                note: $('#editRoomNote').val(),
-                _token: $('meta[name="csrf-token"]').attr('content')
-            };
-    
-            $.ajax({
-                url: window.routes.updateRoomNote,
-                type: 'POST',
-                data: formData,
-                success: function (response) {
-                    if (response.success) {
-                        swal('Success!', response.message || 'Note updated successfully.', 'success');
-                        $('#editRoomNoteModal').modal('hide');
-                        location.reload();
-                    }
-                },
-                error: function (xhr) {
-                    swal('Error!', (xhr.responseJSON && xhr.responseJSON.message) || 'An error occurred.', 'error');
-                }
-            });
-        });
+});
+
+// Handle Edit/Add Room Note Form Submission
+$('#editNoteForm').on('submit', function (e) {
+    e.preventDefault();
+
+    // Get the form data
+    const formData = {
+        room_id: $('#editRoomNoteModal').attr('data-room-id'), // Get the room ID from modal data attribute
+        note: $('#editRoomNote').val(), // Get the note value from the textarea
+        _token: $('meta[name="csrf-token"]').attr('content') // Get CSRF token
+    };
+
+    // Send the AJAX request
+    $.ajax({
+        url: window.routes.updateRoomNote, // URL for updating room note
+        type: 'POST',
+        data: formData,
+        success: function (response) {
+            if (response.success) {
+                swal('Success!', response.message || 'Note updated successfully.', 'success');
+                $('#editRoomNoteModal').modal('hide'); // Close the modal
+                location.reload(); // Reload the page to reflect changes
+            }
+        },
+        error: function (xhr) {
+            swal('Error!', (xhr.responseJSON && xhr.responseJSON.message) || 'An error occurred.', 'error');
+        }
+    });
+});
+
     
         function deleteRoom(roomId) {
             swal({
@@ -226,10 +248,7 @@ $('#exportExcel').off('click').on('click', function(e) {
             const button = $(this);
             const row = button.closest('tr');
             const roomId = button.attr('id').split('-').pop();
-            const note = row.find('td:nth-last-child(2)').text().trim();
-            console.log(note);
-    
-            $('#editRoomNote').val(note === 'No description available' ? '' : note);
+          
             $('#editRoomNoteModal').attr('data-room-id', roomId).modal('show');
         });
     
@@ -237,13 +256,8 @@ $('#exportExcel').off('click').on('click', function(e) {
             const button = $(this);
             const row = button.closest('tr');
             const roomId = button.attr('id').split('-').pop();
-            const status = row.find('td:nth-last-child(5)').text().trim() || '';
-            const purpose = row.find('td:nth-last-child(7)').text().trim() || '';
-            const type = row.find('td:nth-last-child(6)').text().trim() || '';
             
-            $('#editRoomStatus').val(status.toLowerCase().replace(' ','_'));
-            $('#editRoomPurpose').val(purpose.toLowerCase());
-            $('#editRoomType').val(type.toLowerCase());
+    
             
             $('#editRoomDetailsModal').attr('data-room-id', roomId).modal('show');
         });

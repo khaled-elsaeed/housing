@@ -28,6 +28,10 @@ class StudentMaintenanceController extends Controller
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Image validation
             'housing_issues' => 'nullable|array',
             'housing_issues.*' => 'string',
+            'electrical_issues' => 'nullable|array',
+            'electrical_issues.*' => 'string',
+            'water_issues' => 'nullable|array',
+            'water_issues.*' => 'string',
         ]);
 
         // Start a database transaction
@@ -41,8 +45,39 @@ class StudentMaintenanceController extends Controller
             ]);
 
             // Handle housing issues, if any
+            if (!empty($validated['electrical_issues'])) {
+                foreach ($validated['electrical_issues'] as $issue) {
+                    MaintenanceIssue::create([
+                        'maintenance_request_id' => $maintenanceRequest->id,
+                        'issue_type' => 'electrical_issues',
+                        'description' => $issue,
+                    ]);
+                }
+            }
+            
+
+            if (!empty($validated['water_issues'])) {
+                foreach ($validated['water_issues'] as $issue) {
+                    MaintenanceIssue::create([
+                        'maintenance_request_id' => $maintenanceRequest->id,
+                        'issue_type' => 'water_issues',
+                        'description' => $issue,
+                    ]);
+                }
+            }
+
             if (!empty($validated['housing_issues'])) {
                 foreach ($validated['housing_issues'] as $issue) {
+                    MaintenanceIssue::create([
+                        'maintenance_request_id' => $maintenanceRequest->id,
+                        'issue_type' => 'housing_issues',
+                        'description' => $issue,
+                    ]);
+                }
+            }
+
+            if (!empty($validated['electrical_issues'])) {
+                foreach ($validated['electrical_issues'] as $issue) {
                     MaintenanceIssue::create([
                         'maintenance_request_id' => $maintenanceRequest->id,
                         'issue_type' => 'General Housing',

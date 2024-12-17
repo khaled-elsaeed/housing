@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('title', 'Apartments')
+@section('title', __('pages.admin.apartment.title'))
 @section('links')
 <!-- DataTables CSS -->
 <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
@@ -26,33 +26,17 @@
             <div class="card m-b-30">
                <div class="card-body">
                   <div class="row align-items-center">
-                     <div class="col-5">
-                        <span class="action-icon badge badge-primary-inverse me-0"><i class="feather icon-home"></i></span>
-                     </div>
-                     <div class="col-7 text-end mt-2 mb-2">
-                        <h5 class="card-title font-14">Total Apartments</h5>
+                    
+                     <div class="col-7 text-start mt-2 mb-2">
+                        <h5 class="card-title font-14">{{ __('pages.admin.apartment.total_apartments') }}</h5>
                         <h4 class="mb-0">{{ $totalApartments }}</h4>
                      </div>
-                  </div>
-               </div>
-               <div class="card-footer">
-                  <div class="row align-items-center">
-                     <div class="col-6 text-start">
-                        <span class="font-13">Occupied</span>
-                     </div>
-                     <div class="col-6 text-end">
-                        <span class="font-13"><i class="feather icon-check-circle text-success"></i> {{ $occupiedCount }}</span>
-                     </div>
-                  </div>
-                  <div class="row align-items-center">
-                     <div class="col-9 text-start">
-                        <span class="font-13">Empty</span>
-                     </div>
-                     <div class="col-3 text-end">
-                        <span class="font-13"><i class="feather icon-x-circle text-danger"></i> {{ $emptyCount }}</span>
+                      <div class="col-5 text-end">
+                        <span class="action-icon badge badge-primary-inverse me-0"><i class="feather icon-home"></i></span>
                      </div>
                   </div>
                </div>
+               
             </div>
          </div>
          <!-- End col -->
@@ -62,33 +46,17 @@
             <div class="card m-b-30">
                <div class="card-body">
                   <div class="row align-items-center">
-                     <div class="col-5">
-                        <span class="action-icon badge badge-success-inverse me-0"><i class="feather icon-user-check"></i></span>
-                     </div>
-                     <div class="col-7 text-end mt-2 mb-2">
-                        <h5 class="card-title font-14">Male Apartments</h5>
+                     
+                     <div class="col-7 text-start mt-2 mb-2">
+                        <h5 class="card-title font-14">{{ __('pages.admin.apartment.male_apartments') }}</h5>
                         <h4 class="mb-0">{{ $maleApartmentCount }}</h4>
                      </div>
-                  </div>
-               </div>
-               <div class="card-footer">
-                  <div class="row align-items-center">
-                     <div class="col-6 text-start">
-                        <span class="font-13">Occupied</span>
-                     </div>
-                     <div class="col-6 text-end">
-                        <span class="font-13"><i class="feather icon-check-circle text-success"></i> {{ $maleOccupiedCount }}</span>
-                     </div>
-                  </div>
-                  <div class="row align-items-center">
-                     <div class="col-9 text-start">
-                        <span class="font-13">Partially Occupied</span>
-                     </div>
-                     <div class="col-3 text-end">
-                        <span class="font-13"><i class="feather icon-clock text-warning"></i> {{ $malePartiallyOccupiedCount }}</span>
+                     <div class="col-5 text-end">
+                        <span class="action-icon badge badge-success-inverse me-0"><i class="feather icon-user-check"></i></span>
                      </div>
                   </div>
                </div>
+               
             </div>
          </div>
          <!-- End col -->
@@ -98,33 +66,17 @@
             <div class="card m-b-30">
                <div class="card-body">
                   <div class="row align-items-center">
-                     <div class="col-5">
-                        <span class="action-icon badge badge-warning-inverse me-0"><i class="feather icon-user-x"></i></span>
-                     </div>
-                     <div class="col-7 text-end mt-2 mb-2">
-                        <h5 class="card-title font-14">Female Apartments</h5>
+                     
+                     <div class="col-7 text-start mt-2 mb-2">
+                        <h5 class="card-title font-14">{{ __('pages.admin.apartment.female_apartments') }}</h5>
                         <h4 class="mb-0">{{ $femaleApartmentCount }}</h4>
                      </div>
-                  </div>
-               </div>
-               <div class="card-footer">
-                  <div class="row align-items-center">
-                     <div class="col-6 text-start">
-                        <span class="font-13">Occupied</span>
-                     </div>
-                     <div class="col-6 text-end">
-                        <span class="font-13"><i class="feather icon-check-circle text-success"></i> {{ $femaleOccupiedCount }}</span>
-                     </div>
-                  </div>
-                  <div class="row align-items-center">
-                     <div class="col-9 text-start">
-                        <span class="font-13">Partially Occupied</span>
-                     </div>
-                     <div class="col-3 text-end">
-                        <span class="font-13"><i class="feather icon-clock text-warning"></i> {{ $femalePartiallyOccupiedCount }}</span>
+                     <div class="col-5 text-end">
+                        <span class="action-icon badge badge-warning-inverse me-0"><i class="feather icon-user-x"></i></span>
                      </div>
                   </div>
                </div>
+              
             </div>
          </div>
          <!-- End col -->
@@ -134,19 +86,20 @@
             <div class="card m-b-30">
                <div class="card-body">
                   <div class="row align-items-center">
-                     <div class="col-5">
-                        <span class="action-icon badge badge-secondary-inverse me-0"><i class="feather icon-wrench"></i></span>
-                     </div>
-                     <div class="col-7 text-end mt-2 mb-2">
-                        <h5 class="card-title font-14">Under Maintenance</h5>
+                    
+                     <div class="col-7 text-start mt-2 mb-2">
+                        <h5 class="card-title font-14">{{ __('pages.admin.apartment.under_maintenance') }}</h5>
                         <h4 class="mb-0">{{ $maintenanceCount }}</h4>
+                     </div>
+                     <div class="col-5 text-end">
+                        <span class="action-icon badge badge-secondary-inverse me-0"><i class="feather icon-wrench"></i></span>
                      </div>
                   </div>
                </div>
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">Males</span>
+                        <span class="font-13">{{ __('pages.admin.apartment.males') }}</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13"><i class="feather icon-clock text-warning"></i> {{ $maleUnderMaintenanceCount }}</span>
@@ -154,7 +107,7 @@
                   </div>
                   <div class="row align-items-center">
                      <div class="col-9 text-start">
-                        <span class="font-13">Females</span>
+                        <span class="font-13">{{ __('pages.admin.apartment.females') }}</span>
                      </div>
                      <div class="col-3 text-end">
                         <span class="font-13"><i class="feather icon-clock text-warning"></i> {{ $femaleUnderMaintenanceCount }}</span>
@@ -174,28 +127,17 @@
 <div class="row">
     <div class="col-lg-12">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
-            <h2 class="page-title text-primary mb-2 mb-md-0">Apartments</h2> <!-- Updated title -->
-            <div class="div">
+            <h2 class="page-title text-primary mb-2 mb-md-0">{{ __('pages.admin.apartment.apartments') }}</h2> <!-- Updated title -->
+            <div>
                 <button class="btn btn-outline-primary btn-sm toggle-btn" id="toggleButton" type="button" data-bs-toggle="collapse"
                     data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                     <i class="fa fa-search-plus"></i>
                 </button>
-                <div class="btn-group ms-2" role="group" aria-label="Download Options">
-               <button type="button" class="btn btn-outline-primary dropdown-toggle" id="downloadBtn"  data-bs-toggle="dropdown" aria-expanded="false">
-               <i class="fa fa-download"></i> Download
-               </button>
-               <ul class="dropdown-menu">
-                  <li>
-                     <a class="dropdown-item" href="#" id="exportExcel">
-                     <i class="fa fa-file-excel"></i> Apartment (Excel)
-                     </a>
-                  </li>
-               </ul>
-            </div>
             </div>
         </div>
     </div>
 </div>
+
 
 <div class="collapse" id="collapseExample">
     <div class="search-filter-container card card-body">
@@ -204,26 +146,27 @@
                 <div class="search-icon-container">
                     <i class="fa fa-search search-icon"></i>
                 </div>
-                <input type="search" class="form-control search-input" id="searchBox" placeholder="Search..." />
+                <input type="search" class="form-control search-input" id="searchBox" placeholder="{{ __('pages.admin.apartment.search_placeholder') }}" />
             </div>
             <div class="d-flex flex-column flex-md-row filters-container">
-                <select id="buildingFilter" class="form-select mb-2 mb-md-0">
-                    <option value="">Select Building</option>
-                    @foreach($buildingNumbers as $buildingNumber)
-                        <option value="Building {{ $buildingNumber }}">Building {{ $buildingNumber }}</option>
-                    @endforeach
-                </select>
+            <select id="buildingFilter" class="form-select mb-2 mb-md-0">
+                        <option value="">{{ __('pages.admin.rooms.select_building') }}</option>
+                        @foreach($buildingNumbers as $buildingNumber)
+                            <option value="{{ __('pages.admin.apartment.building') }} {{ $buildingNumber }}">
+                                {{ __('pages.admin.apartment.building') }} {{ $buildingNumber }}
+                            </option>
+                        @endforeach
+                    </select>
                 <select id="statusFilter" class="form-select mb-2 mb-md-0">
-                    <option value="">Status</option>
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                    <option value="Under maintenance">Under maintenance</option>
+                    <option value="">{{ __('pages.admin.apartment.status') }}</option>
+                    <option value="Active">{{ __('pages.admin.apartment.active') }}</option>
+                    <option value="Inactive">{{ __('pages.admin.apartment.inactive') }}</option>
+                    <option value="Under maintenance">{{ __('pages.admin.apartment.under_maintenance') }}</option>
                 </select>
             </div>
         </div>
     </div>
 </div>
-
 
 <!-- Start row -->
 <div class="row">
@@ -234,38 +177,32 @@
                     <table id="default-datatable" class="display table table-bordered">
                         <thead>
                             <tr>
-                                <th>Apartment Number</th> <!-- Updated heading -->
-                                <th> Building Number </th>
-                                <th>Gender</th>
-                                <th>Max Rooms</th> <!-- This might need to be renamed based on your context -->
-                                <th>Status</th>
-                                <th>Notes</th>
-                                <th>Actions</th>
+                                <th>{{ __('pages.admin.apartment.apartment_number') }}</th>
+                                <th>{{ __('pages.admin.apartment.building_number') }}</th>
+                                <th>{{ __('pages.admin.apartment.gender') }}</th>
+                                <th>{{ __('pages.admin.apartment.max_rooms') }}</th>
+                                <th>{{ __('pages.admin.apartment.status') }}</th>
+                                <th>{{ __('pages.admin.apartment.notes') }}</th>
+                                <th>{{ __('pages.admin.apartment.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($apartments as $apartment) <!-- Updated variable -->
+                            @foreach($apartments as $apartment)
                                 <tr>
-                                    <td>Apartment {{ $apartment->number }}</td> <!-- Updated variable -->
-                                    <td>Building {{ $apartment->Building->number }}</td> <!-- Updated variable -->
+                                    <td>{{ __('pages.admin.rooms.apartment') }} {{ $apartment->number }}</td>
+                                    <td>{{ __('pages.admin.apartment.building') }} {{ $apartment->Building->number }}</td>
                                     <td>{{ ucfirst($apartment->Building->gender) }}</td>
                                     <td>{{ $apartment->max_rooms }}</td>
-                                    
                                     <td>{{ ucfirst(str_replace('_', ' ', $apartment->status)) }}</td>
-                                    <td>{{ $apartment->note ?: 'No description available' }}</td>
+                                    <td>{{ $apartment->note ?: __('pages.admin.apartment.no_description') }}</td>
                                     <td>
-                                        <!-- Edit Note Button -->
-                                        <button type="button" class="btn btn-round btn-warning-rgba" id="edit-note-btn-{{ $apartment->id }}" title="Edit Note">
+                                        <button type="button" class="btn btn-round btn-warning-rgba" id="edit-note-btn-{{ $apartment->id }}" title="{{ __('pages.admin.apartment.edit_note') }}">
                                             <i class="feather icon-edit"></i>
                                         </button>
-                                        
-                                        <!-- Edit Status Button -->
-                                        <button type="button" class="btn btn-round btn-primary-rgba" id="edit-status-btn-{{ $apartment->id }}" title="Edit Status">
+                                        <button type="button" class="btn btn-round btn-primary-rgba" id="edit-status-btn-{{ $apartment->id }}" title="{{ __('pages.admin.apartment.edit_status') }}">
                                             <i class="feather icon-settings"></i>
                                         </button>
-                                        
-                                        <!-- Delete Apartment Button -->
-                                        <button type="button" class="btn btn-round btn-danger-rgba" id="delete-btn-{{ $apartment->id }}" title="Delete Apartment">
+                                        <button type="button" class="btn btn-round btn-danger-rgba" id="delete-btn-{{ $apartment->id }}" title="{{ __('pages.admin.apartment.delete_apartment') }}">
                                             <i class="feather icon-trash-2"></i>
                                         </button>
                                     </td>
@@ -279,32 +216,29 @@
     </div>
 </div>
 <!-- End row -->
+
 <!-- Edit Status Modal -->
 <div class="modal fade" id="editApartmentStatusModal" tabindex="-1" aria-labelledby="editApartmentStatusModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editApartmentStatusModalLabel">Edit Apartment Status</h5>
+                <h5 class="modal-title" id="editApartmentStatusModalLabel">{{ __('pages.admin.apartment.edit_apartment_status') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="editStatusForm">
-                <!-- Modal Content -->
                 <div class="modal-body">
-                    <!-- Apartment Status -->
                     <div class="mb-3">
-                        <label for="editApartmentStatus" class="form-label">Status</label>
+                        <label for="editApartmentStatus" class="form-label">{{ __('pages.admin.apartment.status') }}</label>
                         <select class="form-control border border-primary" id="editApartmentStatus" name="status" required>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                            <option value="under_maintenance">Under Maintenance</option>
+                            <option value="active">{{ __('pages.admin.apartment.active') }}</option>
+                            <option value="inactive">{{ __('pages.admin.apartment.inactive') }}</option>
+                            <option value="under_maintenance">{{ __('pages.admin.apartment.under_maintenance') }}</option>
                         </select>
                     </div>
                 </div>
-
-                <!-- Modal Footer -->
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" id="saveStatusBtn">Save Status</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('pages.admin.apartment.close') }}</button>
+                    <button type="submit" class="btn btn-primary" id="saveStatusBtn">{{ __('pages.admin.apartment.save_status') }}</button>
                 </div>
             </form>
         </div>
@@ -316,28 +250,25 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="editApartmentNoteModalLabel">Edit/Add Apartment Note</h5>
+                <h5 class="modal-title" id="editApartmentNoteModalLabel">{{ __('pages.admin.apartment.edit_add_apartment_note') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="editNoteForm">
-                <!-- Modal Content -->
                 <div class="modal-body">
-                    <!-- Apartment Note -->
                     <div class="mb-3">
-                        <label for="editApartmentNote" class="form-label">Note</label>
+                        <label for="editApartmentNote" class="form-label">{{ __('pages.admin.apartment.note') }}</label>
                         <textarea class="form-control border border-primary" id="editApartmentNote" name="note" rows="4" required></textarea>
                     </div>
                 </div>
-
-                <!-- Modal Footer -->
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" id="saveNoteBtn">Save Note</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('pages.admin.apartment.close') }}</button>
+                    <button type="submit" class="btn btn-primary" id="saveNoteBtn">{{ __('pages.admin.apartment.save_note') }}</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
 
 @endsection
 

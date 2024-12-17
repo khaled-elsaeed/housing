@@ -31,7 +31,6 @@ $(document).ready(function() {
             { data: 'faculty', name: 'faculty', searchable: true },
             { data: 'mobile', name: 'mobile', searchable: true },
             { data: 'registration_date', name: 'registration_date', searchable: false },
-            { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ]
     });
 

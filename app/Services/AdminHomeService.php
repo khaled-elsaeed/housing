@@ -79,7 +79,7 @@ class AdminHomeService
         $occupiedRooms = $rooms->filter(function ($room) {
             return $room->status === 'active' 
                 && $room->purpose === 'accommodation' 
-                && $room->reservations()->where('status', 'active')->count() > 0;
+                && $room->reservations()->where('status', 'confirmed')->count() > 0;
         })->count();
 
         return $totalRooms > 0 ? ($occupiedRooms / $totalRooms) * 100 : 0;
@@ -92,27 +92,33 @@ class AdminHomeService
         })->sortByDesc('created_at')->first();
     }
 
+   
+
     private function formatLastUpdated($lastUpdated)
     {
         if (!$lastUpdated) {
-            return 'Never';
+            return __('pages.admin.general.never');
         }
-
+    
         $lastUpdated = Carbon::parse($lastUpdated);
         $diffInMinutes = $lastUpdated->diffInMinutes(now());
-
+    
         if ($diffInMinutes < 60) {
-            return $diffInMinutes . ' minutes ago';
+            return __('pages.admin.general.minutes_ago', ['minutes' => $diffInMinutes]);
         }
-
+    
         $diffInHours = (int)$lastUpdated->diffInHours(now());
-
+    
         if ($diffInHours < 24) {
             $minutes = $diffInMinutes % 60;
-            return $diffInHours . ' hours' . ($minutes > 0 ? ' and ' . $minutes . ' minutes ago' : ' ago');
+            if ($minutes > 0) {
+                return __('pages.admin.general.hours_and_minutes_ago', ['hours' => $diffInHours, 'minutes' => $minutes]);
+            } else {
+                return __('pages.admin.general.hours_ago', ['hours' => $diffInHours]);
+            }
         }
-
+    
         $diffInDays = (int)$lastUpdated->diffInDays(now());
-        return $diffInDays . ' days ago';
+        return __('pages.admin.general.days_ago', ['days' => $diffInDays]);
     }
 }

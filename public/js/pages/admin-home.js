@@ -55,19 +55,19 @@ $(document).ready(function() {
   function generateBuildingItemHTML(building, occupancyPercentage) {
     return `
       <div class="building-slider-item">
-        <h4 class="my-0">Building ${building.name}</h4>
+        <h4 class="my-0">${window.translations.building} ${building.name}</h4>
         <div class="row align-items-center my-4 py-3">
           <div class="col-4 p-0">
             <h4>${building.occupied}</h4>
-            <p class="mb-0">Occupied</p>
+            <p class="mb-0">${window.translations.occupied}</p>
           </div>
           <div class="col-4 py-3 px-0 bg-primary-rgba rounded">
             <h4 class="text-primary">${building.total}</h4>
-            <p class="text-primary mb-0">Total Bedrooms</p>
+            <p class="text-primary mb-0">${window.translations.total_bedrooms}</p>
           </div>
           <div class="col-4 p-0">
             <h4>${building.empty}</h4>
-            <p class="mb-0">Empty</p>
+            <p class="mb-0">${window.translations.empty}</p>
           </div>
         </div>
         <div class="progress mb-2 mt-2" style="height: 5px;">
@@ -75,10 +75,10 @@ $(document).ready(function() {
         </div>
         <div class="row align-items-center">
           <div class="col-6 text-start">
-            <p class="font-13">${occupancyPercentage}% Occupied</p>
+            <p class="font-13">${occupancyPercentage}% ${window.translations.occupied}</p>
           </div>
           <div class="col-6 text-end">
-            <p class="font-13">${building.occupied}/${building.total} Bedrooms Occupied</p>
+            <p class="font-13">${building.occupied}/${building.total} ${window.translations.bedrooms_occupied}</p>
           </div>
         </div>
       </div>
@@ -87,6 +87,7 @@ $(document).ready(function() {
 
   // Initialize the Slick slider for the building items
   function initializeSlickSlider() {
+    var isRtl = $('html').attr('dir') === 'rtl';  
     $('.building-slider').slick({
       arrows: true,
       dots: false,
@@ -97,10 +98,10 @@ $(document).ready(function() {
       prevArrow: '<i class="feather icon-arrow-left"></i>',
       nextArrow: '<i class="feather icon-arrow-right"></i>',
       autoplay: true,                
-      autoplaySpeed: 3000,           
+      autoplaySpeed: 3000,
+      rtl: isRtl, 
     });
   }
 
-  // Call the fetchSummaryData function when the page loads
   fetchSummaryData();
 });

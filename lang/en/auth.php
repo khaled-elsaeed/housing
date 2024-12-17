@@ -4,6 +4,9 @@ return [
     'failed' => 'These credentials do not match our records.',
     'password' => 'The provided password is incorrect.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+    'too_many_login_attempts' => 'Too many login attempts. Please try again later.',
+
+
     'login' => [
         'page_title' => 'NMU Housing - Login',
         'welcome_back' => 'Welcome back',
@@ -20,5 +23,30 @@ return [
         'login_image_alt' => 'Login Image',
         'university_name' => 'New Mansoura University',
         'rights_reserved' => 'All Rights Reserved',
-    ]
+        'account_deleted' => 'Your account has been deleted.',
+    'account_inactive' => 'Your account is inactive.',
+    'account_not_verified' => 'Your account has not been verified.',
+    'profile_incomplete' => 'Your profile is incomplete.',
+    'user_not_found' => 'No user found with the provided identifier.',
+        'invalid_credentials' => 'Invalid credentials provided.',
+    ],
+
+    'register' => [
+        'page_title' => 'NMU Housing - Register',
+        'create_account' => 'Create Your Account',
+        'national_id_placeholder' => 'Enter your National ID',
+        'national_id_label' => 'National ID',
+        'email_placeholder' => 'name@example.com',
+        'email_label' => 'Email',
+        'password_placeholder' => 'Password',
+        'password_label' => 'Password',
+        'confirm_password_placeholder' => 'Confirm Password',
+        'confirm_password_label' => 'Confirm Password',
+        'register_button' => 'Register',
+        'already_have_account' => 'Already have an account?',
+        'login' => 'Log in',
+        'register_image_alt' => 'Register Image',
+        'success' => 'Account successfully created!',
+        'error' => 'An error occurred. Please try again.',
+    ],
 ];

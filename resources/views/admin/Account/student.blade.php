@@ -1,15 +1,22 @@
 @extends('layouts.admin')
-@section('title', 'Student Account Management')
+@section('title', __('pages.admin.account.accounts_management'))
 @section('links')
 <!-- DataTables CSS -->
 <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('plugins/datatables/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-
 <link href="{{ asset('css/custom-datatable.css') }}" rel="stylesheet" type="text/css" />
 <style>
     .loading {
         pointer-events: none; /* Disable button interactions */
+    }
+    .search-box {
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: flex-start;
+    }
+    .search-box input {
+        width: 300px;
     }
 </style>
 @endsection
@@ -30,7 +37,7 @@
                         <span class="action-icon badge badge-primary-inverse me-0"><i class="feather icon-wrench"></i></span>
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
-                        <h5 class="card-title font-14">Total Students</h5>
+                        <h5 class="card-title font-14">{{ __('pages.admin.account.total_students') }}</h5>
                         <h4 class="mb-0">{{ $totalStudentsCount }}</h4>
                      </div>
                   </div>
@@ -38,7 +45,7 @@
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">Male</span>
+                        <span class="font-13">{{ __('pages.admin.account.male') }}</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13">{{ $maleTotalCount }}</span>
@@ -46,7 +53,7 @@
                   </div>
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">Female</span>
+                        <span class="font-13">{{ __('pages.admin.account.female') }}</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13">{{ $femaleTotalCount }}</span>
@@ -65,7 +72,7 @@
 
 <!-- Student Account Table -->
 <div class="d-flex flex-column mb-3">
-    <h2 class="page-title text-primary mb-2">Student Accounts</h2>
+    <h2 class="page-title text-primary mb-2">{{ __('pages.admin.account.student_accounts') }}</h2>
 </div>
 
 <!-- Start row -->
@@ -74,48 +81,47 @@
    <div class="col-lg-12">
       <div class="card m-b-30 table-card">
          <div class="card-body table-container">
+            <!-- Search Box -->
+            <!-- Search Bar -->
+<div class="mb-3">
+    <label for="searchBox" class="form-label">Search</label>
+    <input type="text" id="searchBox" class="form-control" >
+</div>
+
             <div class="table-responsive">
                <table id="default-datatable" class="display table table-bordered">
                   <thead>
                      <tr>
-                        <th>No.</th>
-                        <th>Student Name</th>
-                        <th>National Id</th>
-                        <th>Email</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th>{{ __('pages.admin.account.no') }}</th>
+                        <th>{{ __('pages.admin.account.student_name') }}</th>
+                        <th>{{ __('pages.admin.account.national_id') }}</th>
+                        <th>{{ __('pages.admin.account.email') }}</th>
+                        <th>{{ __('pages.admin.account.status') }}</th>
+                        <th>{{ __('pages.admin.account.actions') }}</th>
                      </tr>
                   </thead>
                   <tbody>
                   @foreach($students as $student)
-                   
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $student->getUsernameEnAttribute() }}</td>
-                        <td>
-                           {{ $student->universityArchive->national_id }}
-                        </td>
-                        <td>{{ $student->email ?? 'No Email' }}</td>
+                        <td>{{ $student->universityArchive->national_id }}</td>
+                        <td>{{ $student->email ?? __('pages.admin.account.no_email') }}</td>
                         <td>
                             @if($student->status === 'active')
-                                <span class="badge bg-success">Active</span>
+                                <span class="badge bg-success">{{ __('pages.admin.account.active') }}</span>
                             @elseif($student->status === 'inactive')
-                                <span class="badge bg-danger">Inactive</span>
+                                <span class="badge bg-danger">{{ __('pages.admin.account.inactive') }}</span>
                             @endif
                         </td>
                         <td>
-                            <!-- Edit Button -->
-                            <a href="#" class="btn btn-round btn-warning-rgba" title="Edit Student">
-                                <i class="feather icon-edit"></i> 
-                            </a>
-
                             <!-- Reset Email Button -->
-                            <button type="button" class="btn btn-round btn-info-rgba ms-2" data-bs-toggle="modal" data-bs-target="#resetEmailModal" data-student-id="{{ $student->id }}" title="Reset Email">
+                            <button type="button" class="btn btn-round btn-info-rgba ms-2" data-bs-toggle="modal" data-bs-target="#resetEmailModal" data-student-id="{{ $student->id }}" title="{{ __('pages.admin.account.reset_email') }}">
                                 <i class="feather icon-mail"></i> 
                             </button>
 
                             <!-- Reset Password Button -->
-                            <button type="button" class="btn btn-round btn-danger-rgba ms-2" data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-student-id="{{ $student->id }}" title="Reset Password">
+                            <button type="button" class="btn btn-round btn-danger-rgba ms-2" data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-student-id="{{ $student->id }}" title="{{ __('pages.admin.account.reset_password') }}">
                                 <i class="feather icon-lock"></i> 
                             </button>
                         </td>
@@ -136,18 +142,18 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="resetEmailModalLabel">Reset Student's Email</h5>
+        <h5 class="modal-title" id="resetEmailModalLabel">{{ __('pages.admin.account.reset_email_modal_title') }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form action="#" method="POST">
+        <form action="{{ route('admin.account.student.editEmail') }}" method="POST">
           @csrf
           <input type="hidden" id="studentIdEmail" name="student_id" />
           <div class="mb-3">
-            <label for="newEmail" class="form-label">New Email Address</label>
+            <label for="newEmail" class="form-label">{{ __('pages.admin.account.new_email_address') }}</label>
             <input type="email" class="form-control" id="newEmail" name="new_email" required />
           </div>
-          <button type="submit" class="btn btn-primary">Reset Email</button>
+          <button type="submit" class="btn btn-primary">{{ __('pages.admin.account.reset_email') }}</button>
         </form>
       </div>
     </div>
@@ -159,22 +165,22 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="resetPasswordModalLabel">Reset Student's Password</h5>
+        <h5 class="modal-title" id="resetPasswordModalLabel">{{ __('pages.admin.account.reset_password_modal_title') }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form action="#" method="POST">
+        <form action="{{ route('admin.account.student.resetPassword') }}" method="POST">
           @csrf
           <input type="hidden" id="studentIdPassword" name="student_id" />
           <div class="mb-3">
-            <label for="newPassword" class="form-label">New Password</label>
+            <label for="newPassword" class="form-label">{{ __('pages.admin.account.new_password') }}</label>
             <input type="password" class="form-control" id="newPassword" name="new_password" required />
           </div>
           <div class="mb-3">
-            <label for="confirmPassword" class="form-label">Confirm Password</label>
+            <label for="confirmPassword" class="form-label">{{ __('pages.admin.account.confirm_password') }}</label>
             <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required />
           </div>
-          <button type="submit" class="btn btn-primary">Reset Password</button>
+          <button type="submit" class="btn btn-primary">{{ __('pages.admin.account.reset_password') }}</button>
         </form>
       </div>
     </div>
@@ -183,30 +189,39 @@
 
 @endsection
 
-
 @section('scripts')
 <!-- Datatable JS -->
 <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
 <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
 <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('js/custom/custom-table-datatable.js') }}"></script>
 
 <script>
-    // Update the student ID for the reset actions
+   // Initialize DataTable
+   const table = $('#default-datatable').DataTable({
+        "order": [[0, "asc"]],
+        responsive: true,
+    });
+
+    // Search functionality on keyup event
+    $('#searchBox').on('keyup', function() {
+        table.search(this.value).draw();
+    });
+
+    // Modal to reset email
     $('#resetEmailModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget); 
+        var button = $(event.relatedTarget);
         var studentId = button.data('student-id');
         var modal = $(this);
         modal.find('#studentIdEmail').val(studentId);
     });
 
+    // Modal to reset password
     $('#resetPasswordModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget); 
+        var button = $(event.relatedTarget);
         var studentId = button.data('student-id');
         var modal = $(this);
         modal.find('#studentIdPassword').val(studentId);
     });
 </script>
-
 @endsection

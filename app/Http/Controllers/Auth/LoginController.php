@@ -45,7 +45,7 @@ class LoginController extends Controller
 
         if (!$user) {
             RateLimiter::hit($rateLimiterKey);
-            return back()->withErrors(['credentials' => __('auth.user_not_found')]);
+            return back()->withErrors(['credentials' => __('auth.login.user_not_found')]);
         }
 
         if (Hash::check($credentials['password'], $user->password)) {
@@ -57,7 +57,7 @@ class LoginController extends Controller
                 return redirect()->route('admin.home');
             }
 
-            // if ($this->loginService->isResident($user)) {
+              // if ($this->loginService->isResident($user)) {
             //     $studentChecks = $this->loginService->handleStudentAfterLogin($user);
                
             //     if (is_array($studentChecks)) {
@@ -65,17 +65,18 @@ class LoginController extends Controller
             //     }
             //     return redirect()->route('student.home');
             // }
+
             if ($this->loginService->isResident($user)) {
                 if ($user->can_complete_late) {
                     return redirect()->route('student.home');
                 }
-                return back()->withErrors(['error' => 'Access is currently unavailable. Please try again later.']);
+                return back()->withErrors(['error' => __('auth.access_unavailable')]);
             }
 
             return redirect()->intended('home');
         }
 
         RateLimiter::hit($rateLimiterKey);
-        return back()->withErrors(['credentials' => __('auth.invalid_credentials')]);
+        return back()->withErrors(['credentials' => __('auth.login.invalid_credentials')]);
     }
 }

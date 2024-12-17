@@ -8,8 +8,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Exports\Units\ApartmentsExport;
 
-
-
 class ApartmentController extends Controller
 {
     /**
@@ -17,106 +15,101 @@ class ApartmentController extends Controller
      */
     public function index()
     {
-        try{
+        try {
             $apartments = Apartment::with('building')->get();
- $buildingNumbers = $apartments->pluck('building.number')->unique();        // Calculate necessary counts
-        $totalApartments = $apartments->count();
-        $occupiedCount = $apartments->where('occupancy_status', 'full_occupied')->count();
-        $emptyCount = $apartments->where('occupancy_status', 'empty')->count();
+            $buildingNumbers = $apartments->pluck('building.number')->unique();
+            $totalApartments = $apartments->count();
+           
 
-        $maleApartments = $apartments->filter(function ($apartment) {
-            return $apartment->building->gender === 'male';
-        });
-        $maleApartmentCount = $maleApartments->count();
-        $maleOccupiedCount = $maleApartments->where('occupancy_status', 'full_occupied')->count();
-        $malePartiallyOccupiedCount = $maleApartments->where('occupancy_status', 'partially_occupied')->count();
+            $maleApartments = $apartments->filter(function ($apartment) {
+                return $apartment->building->gender === 'male';
+            });
+            $maleApartmentCount = $maleApartments->count();
+          
 
-        $femaleApartments = $apartments->filter(function ($apartment) {
-            return $apartment->building->gender === 'female';
-        });
-        $femaleApartmentCount = $femaleApartments->count();
-        $femaleOccupiedCount = $femaleApartments->where('occupancy_status', 'full_occupied')->count();
-        $femalePartiallyOccupiedCount = $femaleApartments->where('occupancy_status', 'partially_occupied')->count();
+            $femaleApartments = $apartments->filter(function ($apartment) {
+                return $apartment->building->gender === 'female';
+            });
+            $femaleApartmentCount = $femaleApartments->count();
+           
 
-        $maintenanceCount = $apartments->where('status', 'under_maintenance')->count();
-        $maleUnderMaintenanceCount = $maleApartments->where('status', 'under_maintenance')->count();
-        $femaleUnderMaintenanceCount = $femaleApartments->where('status', 'under_maintenance')->count();
+            $maintenanceCount = $apartments->where('status', 'under_maintenance')->count();
+            $maleUnderMaintenanceCount = $maleApartments->where('status', 'under_maintenance')->count();
+            $femaleUnderMaintenanceCount = $femaleApartments->where('status', 'under_maintenance')->count();
 
-        return view('admin.unit.apartment', compact(
-            'apartments', 
-        'buildingNumbers', 
-            'totalApartments', 
-            'occupiedCount', 
-            'emptyCount',
-            'maleApartmentCount',
-            'maleOccupiedCount',
-            'malePartiallyOccupiedCount',
-            'femaleApartmentCount',
-            'femaleOccupiedCount',
-            'femalePartiallyOccupiedCount',
-            'maintenanceCount',
-            'maleUnderMaintenanceCount',
-            'femaleUnderMaintenanceCount'
-        ));
-    } catch (Exception $e) {
-        Log::error('Error retrieving apartment page data: ' . $e->getMessage(), [
-            'exception' => $e,
-            'stack' => $e->getTraceAsString(),
-        ]);
+            return view(
+                'admin.unit.apartment',
+                compact(
+                    'apartments',
+                    'buildingNumbers',
+                    'totalApartments',
+                   
+                    'maleApartmentCount',
+                    
+                    'femaleApartmentCount',
+                  
+                    'maintenanceCount',
+                    'maleUnderMaintenanceCount',
+                    'femaleUnderMaintenanceCount'
+                )
+            );
+        } catch (Exception $e) {
+            Log::error('Error retrieving apartment page data: ' . $e->getMessage(), [
+                'exception' => $e,
+                'stack' => $e->getTraceAsString(),
+            ]);
 
-        return response()->view('errors.505');
+            return response()->view('errors.505');
+        }
     }
-        
-    }
-
 
     public function destroy($id)
     {
         try {
             $apartment = Apartment::findOrFail($id);
             $apartment->delete();
-    
+
             return response()->json(['success' => true, 'message' => 'Apartment deleted successfully.']);
         } catch (\Exception $e) {
             Log::error('Error deleting apartment ' . $id . ': ' . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Error deleting apartment.'], 500);
         }
     }
-    
+
     public function updateStatus(Request $request)
     {
         $request->validate([
             'apartment_id' => 'required|exists:apartments,id',
-            'status' => 'required|in:active,inactive,under_maintenance'
+            'status' => 'required|in:active,inactive,under_maintenance',
         ]);
-    
+
         $apartment = Apartment::find($request->apartment_id);
         $apartment->status = $request->status;
         $apartment->save();
-    
+
         return response()->json([
             'success' => true,
-            'message' => 'Apartment status updated successfully.'
+            'message' => 'Apartment status updated successfully.',
         ]);
     }
-    
+
     public function updateNote(Request $request)
     {
         $request->validate([
             'apartment_id' => 'required|exists:apartments,id',
-            'note' => 'required|string'
+            'note' => 'required|string',
         ]);
-    
+
         $apartment = Apartment::find($request->apartment_id);
         $apartment->note = $request->note;
         $apartment->save();
-    
+
         return response()->json([
             'success' => true,
-            'message' => 'Apartment note updated successfully.'
+            'message' => 'Apartment note updated successfully.',
         ]);
     }
-    
+
     public function downloadApartmentsExcel()
     {
         try {
@@ -134,30 +127,30 @@ class ApartmentController extends Controller
     public function fetchEmptyApartments($buildingID)
     {
         // Fetch apartments for a specific building with empty rooms
-        $emptyApartments = Apartment::with(['rooms' => function($query) {
-            // Ensure rooms are not fully occupied
-            $query->where('full_occupied', '!=', 1)
-                ->where('status', 'active')
-                ->where('purpose', 'accommodation'); 
-        }])
-        ->where('building_id', $buildingID)  
-        ->select('id', 'number')  
-        ->get();
-    
-        
+        $emptyApartments = Apartment::with([
+            'rooms' => function ($query) {
+                // Ensure rooms are not fully occupied
+                $query
+                    ->where('full_occupied', '!=', 1)
+                    ->where('status', 'active')
+                    ->where('purpose', 'accommodation');
+            },
+        ])
+            ->where('building_id', $buildingID)
+            ->select('id', 'number')
+            ->get();
+
         $emptyApartments = $emptyApartments->map(function ($apartment) {
             return [
                 'id' => $apartment->id,
                 'number' => $apartment->number,
             ];
         });
-    
+
         // Return the response
         return response()->json([
             'success' => true,
             'apartments' => $emptyApartments,
         ]);
     }
-    
-    
 }

@@ -106,7 +106,7 @@ Route::middleware(Localization::class)
 
                 // Edit student email
                 Route::post('students/edit-email', [StudentAccountController::class, 'editEmail'])->name('student.editEmail');
-
+            
                 // Reset student password
                 Route::post('students/reset-password', [StudentAccountController::class, 'resetPassword'])->name('student.resetPassword');
             });
@@ -180,6 +180,8 @@ Route::middleware(Localization::class)
             // Resident Routes
             Route::prefix('residents')->name('residents.')->group(function () {
                 Route::get('/', [ResidentController::class, 'index'])->name('index');
+                Route::get('/create', [ResidentController::class, 'create'])->name('create');
+
                 Route::get('/data', [ResidentController::class, 'fetchResidents'])->name('fetch');
                 Route::get('/summary', [ResidentController::class, 'getSummary'])->name('get-summary');
                 Route::get('/export/excel', [ResidentController::class, 'downloadResidentsExcel'])->name('export-excel');
@@ -197,6 +199,8 @@ Route::middleware(Localization::class)
             Route::get('/maintenance', [AdminMaintenanceController::class, 'index'])->name('maintenance.index');
             Route::get('/maintenance/excel', [AdminMaintenanceController::class, 'downloadMaintenanceRequestsExcel'])->name('maintenance.excel');
             Route::put('maintenance/update-status/{id}', [AdminMaintenanceController::class, 'updateStatus'])->name('maintenance.updateStatus');
+            Route::get('/maintenance/issues/{id}', [AdminMaintenanceController::class, 'getIssues'])->name('maintenance.getIssues');
+
             Route::get('settings', [AdminSettingsController::class, 'index'])->name('setting');
             Route::post('settings/reservation-update', [AdminSettingsController::class, 'updateReservationSettings'])->name('setting.update-reservation');
         }); // End Admin Routes

@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Session;
 
 class Localization
 {
@@ -17,8 +17,8 @@ class Localization
      */
     public function handle(Request $request, Closure $next): Response
     {
-
-        App::setLocale(session('localization',config('app.local')));
+        // Safely set locale with fallback to default config locale
+        App::setLocale(session('localization', config('app.locale')));
 
         return $next($request);
     }

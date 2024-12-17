@@ -13,6 +13,9 @@ $(document).ready(function() {
         icon.classList.add("fa-search-plus");
     });
 
+    const isArabic = $("html").attr("dir") === "rtl";
+
+
     // Initialize DataTable
     const table = $('#default-datatable').DataTable({
         processing: true,
@@ -30,9 +33,23 @@ $(document).ready(function() {
             { data: 'location', name: 'location', searchable: true },
             { data: 'start_date', name: 'start_date', searchable: true },
             { data: 'end_date', name: 'end_date', searchable: true },
-            { data: 'status', name: 'status', searchable: true },
-            { data: 'actions', name: 'actions', orderable: false, searchable: false }
-        ]
+            { 
+                data: 'status', 
+                name: 'status', 
+                searchable: true, 
+                render: function (data) {
+                    // Normalize data to lowercase and fetch translation
+                    return window.translations.status[data] || data; 
+                },
+            }
+        ],language: isArabic
+        ? {
+              url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json",
+
+          }
+        : {},
+        
+        
     });
 
     $('#searchBox').on('keyup', function() {

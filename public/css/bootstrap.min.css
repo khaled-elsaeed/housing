@@ -7,7 +7,6 @@
  */
 :root,
 [data-bs-theme=light] {
-    --bs-blue: #8C2F39; /* Changed from blue to your new primary color */
     --bs-primary: #8C2F39; /* Change primary color */
     --bs-primary-rgb: 140, 47, 57; /* RGB equivalent of #8C2F39 */
     
@@ -2446,9 +2445,9 @@ progress {
 .form-control:focus {
     color: var(--bs-body-color);
     background-color: var(--bs-body-bg);
-    border-color: #86b7fe;
+    border-color: #8C2F39;
     outline: 0;
-    box-shadow: 0 0 0 .25rem rgba(140, 47, 57, .25)
+    box-shadow: 0
 }
 
 .form-control::-webkit-date-and-time-value {
@@ -9528,14 +9527,15 @@ fieldset:disabled .btn {
 }
 
 .text-primary {
-    --bs-text-opacity: 1;
-    color: rgba(var(--bs-primary-rgb), var(--bs-text-opacity)) !important
-}
+    color: #8C2F39 !important;
+  }
+  
 
 .text-secondary {
     --bs-text-opacity: 1;
-    color: rgba(var(--bs-secondary-rgb), var(--bs-text-opacity)) !important
+    color: #234E70 !important
 }
+
 
 .text-success {
     --bs-text-opacity: 1;

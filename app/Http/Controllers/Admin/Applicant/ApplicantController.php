@@ -9,7 +9,7 @@ use App\Exports\Applicants\ApplicantsExport;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Gate;
-
+use Illuminate\Support\Facades\App;
 
 class ApplicantController extends Controller
 {
@@ -25,7 +25,6 @@ class ApplicantController extends Controller
             if (Gate::denies('is-admin')) {
                 return response()->view('errors.403', [], 403);
             }
-
             return view('admin.applicant.index');
         } catch (Exception $e) {
             Log::error('Error retrieving applicant page data: ' . $e->getMessage(), [
@@ -45,6 +44,8 @@ class ApplicantController extends Controller
      */
     public function fetchApplicants(Request $request)
     {
+        $currentLang = App::getLocale(); // Get current locale
+
         try {
             $query = User::role('resident')
                 ->with(['student'])
@@ -54,10 +55,10 @@ class ApplicantController extends Controller
 
             if ($request->filled('customSearch')) {
                 $searchTerm = $request->get('customSearch');
-                $query->where(function ($query) use ($searchTerm) {
-                    $query->whereHas('student', function ($query) use ($searchTerm) {
+                $query->where(function ($query) use ($searchTerm, $currentLang) {
+                    $query->whereHas('student', function ($query) use ($searchTerm, $currentLang) {
                         $query
-                            ->where('name_en', 'like', "%$searchTerm%")
+                            ->where('name_' . ($currentLang == 'ar' ? 'ar' : 'en'), 'like', "%$searchTerm%")
                             ->orWhere('national_id', 'like', "%$searchTerm%")
                             ->orWhere('email', 'like', "%$searchTerm%")
                             ->orWhere('mobile', 'like', "%$searchTerm%");
@@ -71,6 +72,7 @@ class ApplicantController extends Controller
             }
 
             $totalRecords = $query->count();
+
             $filteredRecords = $query->count();
 
             $applicants = $query
@@ -82,11 +84,11 @@ class ApplicantController extends Controller
                 'draw' => $request->get('draw'),
                 'recordsTotal' => $totalRecords,
                 'recordsFiltered' => $filteredRecords,
-                'data' => $applicants->map(function ($applicant) {
+                'data' => $applicants->map(function ($applicant) use ($currentLang) {
                     return [
-                        'name' => $applicant->student->name_en ?? 'N/A',
+                        'name' => $applicant->student->{'name_' . ($currentLang == 'ar' ? 'ar' : 'en')} ?? 'N/A',
                         'national_id' => $applicant->student->national_id ?? 'N/A',
-                        'faculty' => $applicant->student->faculty->name_en ?? 'N/A',
+                        'faculty' => $applicant->student->faculty->{'name_' . ($currentLang == 'ar' ? 'ar' : 'en')} ?? 'N/A',
                         'email' => $applicant->email ?? 'N/A',
                         'mobile' => $applicant->student->mobile ?? 'N/A',
                         'registration_date' => $applicant->created_at->format('F j, Y, g:i A'),
@@ -189,7 +191,6 @@ class ApplicantController extends Controller
     public function fetchApplicantInfo($id)
     {
         try {
-            Log::error('we are in page now ya 7ag');
             $applicant = User::find($id);
 
             if (!$applicant) {
@@ -205,16 +206,16 @@ class ApplicantController extends Controller
                 'city' => $applicant->student->city->name_ar ?? 'Not available',
                 'street' => $applicant->student->street ?? 'Not available',
             ];
-            
+
             return response()->json([
                 'success' => true,
-                'data' => $details
+                'data' => $details,
             ]);
         } catch (\Exception $e) {
             Log::error('Error fetching applicant details', [
                 'exception' => $e->getMessage(),
                 'stack_trace' => $e->getTraceAsString(),
-                'applicant_id' => $id
+                'applicant_id' => $id,
             ]);
 
             return response()->json(['error' => 'Applicant not found or an error occurred', 'user' => $id], 404);

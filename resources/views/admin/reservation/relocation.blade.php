@@ -1,5 +1,7 @@
 @extends('layouts.admin')
-@section('title', 'Reservation Relocation')
+
+@section('title', __('pages.admin.reservation.relocation.title'))
+
 @section('links')
 <!-- DataTables CSS -->
 <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
@@ -58,8 +60,8 @@
    <div class="col-lg-12">
       <div class="card">
          <div class="card-header">
-            <h4 class="card-title">Resident Relocation</h4>
-            <p class="text-muted mb-0">Choose whether to relocate to an empty room or swap rooms with another resident.</p>
+            <h4 class="card-title">{{ __('pages.admin.reservation.relocation.title') }}</h4>
+            <p class="text-muted mb-0">{{ __('pages.admin.reservation.relocation.choose_action') }}</p>
          </div>
          <div class="card-body">
             <!-- Selection Cards -->
@@ -71,8 +73,7 @@
                      </div>
                      <img src="{{ asset('images/reservation/relocate_empty_room.svg') }}" alt="Relocate" class="card-img-top">
                   </div>
-                  <h5 class="card-title mt-3">Relocate to an Empty Room</h5>
-
+                  <h5 class="card-title mt-3">{{ __('pages.admin.reservation.relocation.relocate_empty_room') }}</h5>
                </div>
                <div class="col-md-5 mb-4 text-center">
                   <div class="card text-center border-primary option-card" id="swapCard" onclick="showForm('swap', this)">
@@ -81,8 +82,7 @@
                      </div>
                      <img src="{{ asset('images/reservation/swap_rooms.svg') }}" alt="Swap" class="card-img-top">
                   </div>
-                  <h5 class="card-title mt-3">Swap Rooms with Another Resident</h5>
-
+                  <h5 class="card-title mt-3">{{ __('pages.admin.reservation.relocation.swap_rooms') }}</h5>
                </div>
             </div>
 
@@ -97,10 +97,10 @@
                      <div class="col-md-6">
                         <div class="card border-primary">
                            <div class="card-header">
-                              <h5 class="card-title">Resident National ID</h5>
+                              <h5 class="card-title">{{ __('pages.admin.reservation.relocation.resident_nid') }}</h5>
                            </div>
                            <div class="card-body">
-                              <input type="text" class="form-control" name="resident_nid" id="resident_nid_1" placeholder="Enter National ID" required>
+                              <input type="text" class="form-control" name="resident_nid" id="resident_nid_1" placeholder="{{ __('pages.admin.reservation.relocation.resident_nid') }}" required>
                               <div id="residentDetails_1" class="mt-3">
                                  <!-- Fetched details will appear here for Resident 1 -->
                               </div>
@@ -109,39 +109,33 @@
                      </div>
                      <!-- Right Column for Room Selection (Building, Apartment, Room) -->
                      <div class="col-md-6">
-                        <!-- Room Selection Card for Building -->
                         <div class="card border-primary mb-4">
                            <div class="card-header">
-                              <h5 class="card-title">Select Building</h5>
+                              <h5 class="card-title">{{ __('pages.admin.reservation.relocation.select_building') }}</h5>
                            </div>
                            <div class="card-body">
                               <select class="form-control" id="building_select" required>
-                                 <option value="">Select Building</option>
-                                 <!-- Empty room options will be dynamically loaded -->
+                                 <option value="">{{ __('pages.admin.reservation.relocation.select_building') }}</option>
                               </select>
                            </div>
                         </div>
-                        <!-- Room Selection Card for Apartment -->
                         <div class="card border-primary mb-4">
                            <div class="card-header">
-                              <h5 class="card-title">Select Apartment</h5>
+                              <h5 class="card-title">{{ __('pages.admin.reservation.relocation.select_apartment') }}</h5>
                            </div>
                            <div class="card-body">
                               <select class="form-control" id="apartment_select" required>
-                                 <option value="">Select Apartment</option>
-                                 <!-- Empty room options will be dynamically loaded -->
+                                 <option value="">{{ __('pages.admin.reservation.relocation.select_apartment') }}</option>
                               </select>
                            </div>
                         </div>
-                        <!-- Room Selection Card for New Room -->
                         <div class="card border-primary mb-4">
                            <div class="card-header">
-                              <h5 class="card-title">Select New Room</h5>
+                              <h5 class="card-title">{{ __('pages.admin.reservation.relocation.select_new_room') }}</h5>
                            </div>
                            <div class="card-body">
                               <select class="form-control" name="new_room" id="room_select" required>
-                                 <option value="">Select an Empty Room</option>
-                                 <!-- Empty room options will be dynamically loaded -->
+                                 <option value="">{{ __('pages.admin.reservation.relocation.select_new_room') }}</option>
                               </select>
                            </div>
                         </div>
@@ -149,51 +143,41 @@
                   </div>
                   <!-- Submit Button -->
                   <div class="text-center mt-4">
-                     <button type="submit" class="btn btn-primary">Relocate Resident</button>
+                     <button type="submit" class="btn btn-primary">{{ __('pages.admin.reservation.relocation.relocate_button') }}</button>
                   </div>
                </form>
             </div>
-            <!-- Form for Swapping Rooms -->
+
+            <!-- Swap Residents Form -->
             <div id="swapForm" style="display:none;">
                <form action="#" method="POST">
                   @csrf
-                  <!-- Hidden input for reservation id (Resident 1) -->
                   <input type="hidden" name="reservation_id_1_swap" id="reservation_id_1_swap">
-                  <!-- Hidden input for reservation id (Resident 2) -->
                   <input type="hidden" name="reservation_id_2_swap" id="reservation_id_2_swap">
                   <div class="row">
-                     <!-- Resident 1 National ID Card -->
                      <div class="col-md-6">
                         <div class="card border-secondary">
                            <div class="card-header">
-                              <h5 class="card-title">First Resident National ID</h5>
+                              <h5 class="card-title">{{ __('pages.admin.reservation.relocation.resident_nid') }}</h5>
                            </div>
                            <div class="card-body">
-                              <input type="text" class="form-control" name="resident_nid" id="resident_nid_1_swap" placeholder="Enter National ID" required>
-                              <div id="resident1Details" class="mt-3">
-                                 <!-- Resident 1 details will be fetched dynamically -->
-                              </div>
+                              <input type="text" class="form-control" name="resident_nid" id="resident_nid_1_swap" placeholder="{{ __('pages.admin.reservation.relocation.resident_nid') }}" required>
                            </div>
                         </div>
                      </div>
-                     <!-- Resident 2 National ID Card -->
                      <div class="col-md-6">
                         <div class="card border-secondary">
                            <div class="card-header">
-                              <h5 class="card-title">Second Resident National ID</h5>
+                              <h5 class="card-title">{{ __('pages.admin.reservation.relocation.resident_nid') }}</h5>
                            </div>
                            <div class="card-body">
-                              <input type="text" class="form-control" name="resident2_nid" id="resident_nid_2_swap" placeholder="Enter National ID" required>
-                              <div id="resident2Details" class="mt-3">
-                                 <!-- Resident 2 details will be fetched dynamically -->
-                              </div>
+                              <input type="text" class="form-control" name="resident2_nid" id="resident_nid_2_swap" placeholder="{{ __('pages.admin.reservation.relocation.resident_nid') }}" required>
                            </div>
                         </div>
                      </div>
                   </div>
-                  <!-- Submit Button -->
                   <div class="text-center mt-4">
-                     <button type="submit" class="btn btn-primary">Swap Residents</button>
+                     <button type="submit" class="btn btn-primary">{{ __('pages.admin.reservation.relocation.swap_button') }}</button>
                   </div>
                </form>
             </div>
@@ -202,6 +186,7 @@
    </div>
 </div>
 @endsection
+
 @section('scripts')
 <script src="{{ asset('js/pages/relocation.js') }}"></script>
 

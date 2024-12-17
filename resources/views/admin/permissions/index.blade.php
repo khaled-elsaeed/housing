@@ -1,11 +1,10 @@
 @extends('layouts.admin')
-@section('title', 'Permission Requests')
+@section('title', __('pages.admin.permission.title'))
 @section('links')
 <!-- DataTables CSS -->
 <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('plugins/datatables/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-
 <link href="{{ asset('css/custom-datatable.css') }}" rel="stylesheet" type="text/css" />
 <style>
     .loading {
@@ -30,7 +29,7 @@
                         <span class="action-icon badge badge-primary-inverse me-0"><i class="feather icon-home"></i></span>
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
-                        <h5 class="card-title font-14">Total Requests</h5>
+                        <h5 class="card-title font-14">{{ __('pages.admin.permission.total_requests') }}</h5>
                         <h4 class="mb-0">{{ $totalPermissionRequests }}</h4>
                      </div>
                   </div>
@@ -38,7 +37,7 @@
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">Male</span>
+                        <span class="font-13">{{ __('pages.admin.permission.male') }}</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13"><i class="feather icon-check-circle text-success"></i> {{ $totalMalePermissionRequests }}</span>
@@ -46,7 +45,7 @@
                   </div>
                   <div class="row align-items-center">
                      <div class="col-9 text-start">
-                        <span class="font-13">Female</span>
+                        <span class="font-13">{{ __('pages.admin.permission.female') }}</span>
                      </div>
                      <div class="col-3 text-end">
                         <span class="font-13"><i class="feather icon-x-circle text-danger"></i> {{ $totalFemalePermissionRequests }}</span>
@@ -66,7 +65,7 @@
                         <span class="action-icon badge badge-warning-inverse me-0"><i class="feather icon-clock"></i></span>
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
-                        <h5 class="card-title font-14">Pending Requests</h5>
+                        <h5 class="card-title font-14">{{ __('pages.admin.permission.pending_requests') }}</h5>
                         <h4 class="mb-0">{{ $pendingPermissionRequestsCount }}</h4>
                      </div>
                   </div>
@@ -74,7 +73,7 @@
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">Male</span>
+                        <span class="font-13">{{ __('pages.admin.permission.male') }}</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13"><i class="feather icon-clock text-warning"></i> {{ $malePendingPermissionRequestsCount }}</span>
@@ -82,7 +81,7 @@
                   </div>
                   <div class="row align-items-center">
                      <div class="col-9 text-start">
-                        <span class="font-13">Female</span>
+                        <span class="font-13">{{ __('pages.admin.permission.female') }}</span>
                      </div>
                      <div class="col-3 text-end">
                         <span class="font-13"><i class="feather icon-clock text-warning"></i> {{ $femalePendingPermissionRequestsCount }}</span>
@@ -102,7 +101,7 @@
                         <span class="action-icon badge badge-success-inverse me-0"><i class="feather icon-check-circle"></i></span>
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
-                        <h5 class="card-title font-14">Approved Requests</h5>
+                        <h5 class="card-title font-14">{{ __('pages.admin.permission.approved_requests') }}</h5>
                         <h4 class="mb-0">{{ $approvedPermissionRequestsCount }}</h4>
                      </div>
                   </div>
@@ -110,7 +109,7 @@
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">Male</span>
+                        <span class="font-13">{{ __('pages.admin.permission.male') }}</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13"><i class="feather icon-check-circle text-success"></i> {{ $maleApprovedPermissionRequestsCount }}</span>
@@ -118,7 +117,7 @@
                   </div>
                   <div class="row align-items-center">
                      <div class="col-9 text-start">
-                        <span class="font-13">Female</span>
+                        <span class="font-13">{{ __('pages.admin.permission.female') }}</span>
                      </div>
                      <div class="col-3 text-end">
                         <span class="font-13"><i class="feather icon-check-circle text-success"></i> {{ $femaleApprovedPermissionRequestsCount }}</span>
@@ -138,7 +137,7 @@
                         <span class="action-icon badge badge-danger-inverse me-0"><i class="feather icon-x-circle"></i></span>
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
-                        <h5 class="card-title font-14">Rejected Requests</h5>
+                        <h5 class="card-title font-14">{{ __('pages.admin.permission.rejected_requests') }}</h5>
                         <h4 class="mb-0">{{ $rejectedPermissionRequestsCount }}</h4>
                      </div>
                   </div>
@@ -146,7 +145,7 @@
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">Male</span>
+                        <span class="font-13">{{ __('pages.admin.permission.male') }}</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13"><i class="feather icon-x-circle text-danger"></i> {{ $maleRejectedPermissionRequestsCount }}</span>
@@ -154,7 +153,7 @@
                   </div>
                   <div class="row align-items-center">
                      <div class="col-9 text-start">
-                        <span class="font-13">Female</span>
+                        <span class="font-13">{{ __('pages.admin.permission.female') }}</span>
                      </div>
                      <div class="col-3 text-end">
                         <span class="font-13"><i class="feather icon-x-circle text-danger"></i> {{ $femaleRejectedPermissionRequestsCount }}</span>
@@ -175,7 +174,7 @@
 
 <!-- Permission Requests Table -->
 <div class="d-flex flex-column mb-3">
-    <h2 class="page-title text-primary mb-2">Permission Requests</h2>
+    <h2 class="page-title text-primary mb-2">{{ __('pages.admin.permission.page_title') }}</h2>
 </div>
 
 <div class="d-flex justify-content-end align-items-center mb-3">
@@ -186,12 +185,12 @@
       </button>
       <div class="btn-group ms-2" role="group" aria-label="Download Options">
          <button type="button" class="btn btn-outline-primary dropdown-toggle" id="downloadBtn"  data-bs-toggle="dropdown" aria-expanded="false">
-         <i class="fa fa-download"></i> Download
+         <i class="fa fa-download"></i> {{ __('pages.admin.permission.download') }}
          </button>
          <ul class="dropdown-menu">
             <li>
                <a class="dropdown-item" href="#" id="exportExcel">
-               <i class="fa fa-file-excel"></i> Permissions (Excel)
+               <i class="fa fa-file-excel"></i> {{ __('pages.admin.permission.export_excel') }}
                </a>
             </li>
          </ul>
@@ -206,15 +205,15 @@
             <div class="search-icon-container">
                <i class="fa fa-search search-icon"></i>
             </div>
-            <input type="search" class="form-control search-input" id="searchBox" placeholder="Search..." />
+            <input type="search" class="form-control search-input" id="searchBox" placeholder="{{ __('pages.admin.permission.search_placeholder') }}" />
          </div>
          <!-- Filters on the Right -->
          <div class="d-flex flex-column flex-md-row filters-container">
             <select id="statusFilter" class="form-select mb-2 mb-md-0">
-            <option value="">Status</option>
-            <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
+            <option value="">{{ __('pages.admin.permission.filter_by_status') }}</option>
+            <option value="pending">{{ __('pages.admin.permission.pending') }}</option>
+            <option value="approved">{{ __('pages.admin.permission.approved') }}</option>
+            <option value="rejected">{{ __('pages.admin.permission.rejected') }}</option>
             </select>
          </div>
       </div>
@@ -231,12 +230,12 @@
                <table id="default-datatable" class="display table table-bordered">
                   <thead>
                      <tr>
-                        <th>No.</th>
-                        <th>Student Name</th>
-                        <th>Permission Type</th>
-                        <th>Reason</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th>{{ __('pages.admin.permission.no') }}</th>
+                        <th>{{ __('pages.admin.permission.student_name') }}</th>
+                        <th>{{ __('pages.admin.permission.permission_type') }}</th>
+                        <th>{{ __('pages.admin.permission.reason') }}</th>
+                        <th>{{ __('pages.admin.permission.status') }}</th>
+                        <th>{{ __('pages.admin.permission.actions') }}</th>
                      </tr>
                   </thead>
                   <tbody>
@@ -245,26 +244,26 @@
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $request->user->name }}</td>
                         <td>{{ $request->studentPermission->name }}</td>
-                        <td>{{ $request->reason ?? 'No Reason Provided' }}</td>
+                        <td>{{ $request->reason ?? __('pages.admin.permission.no_reason_provided') }}</td>
                         <td>
                             @if($request->status === 'pending')
-                                <span class="badge bg-warning text-dark">Pending</span>
+                                <span class="badge bg-warning text-dark">{{ __('pages.admin.permission.pending') }}</span>
                             @elseif($request->status === 'approved')
-                                <span class="badge bg-success">Approved</span>
+                                <span class="badge bg-success">{{ __('pages.admin.permission.approved') }}</span>
                             @elseif($request->status === 'rejected')
-                                <span class="badge bg-danger">Rejected</span>
+                                <span class="badge bg-danger">{{ __('pages.admin.permission.rejected') }}</span>
                             @endif
                         </td>
                         <td>
                             @if($request->status === 'pending')
                                 <!-- Accept Button -->
-                                <button type="button" class="btn btn-rounded btn-success-rgba" id="accept-status-btn-{{ $request->id }}" title="Approve">
-                                    <i class="feather icon-check-circle"></i> Approve
+                                <button type="button" class="btn btn-rounded btn-success-rgba" id="accept-status-btn-{{ $request->id }}" title="{{ __('pages.admin.permission.approve') }}">
+                                    <i class="feather icon-check-circle"></i> {{ __('pages.admin.permission.approve') }}
                                 </button>
 
                                 <!-- Reject Button -->
-                                <button type="button" class="btn btn-rounded btn-danger-rgba" id="reject-status-btn-{{ $request->id }}" title="Reject">
-                                    <i class="feather icon-x-square"></i> Reject
+                                <button type="button" class="btn btn-rounded btn-danger-rgba" id="reject-status-btn-{{ $request->id }}" title="{{ __('pages.admin.permission.reject') }}">
+                                    <i class="feather icon-x-square"></i> {{ __('pages.admin.permission.reject') }}
                                 </button>
                             @else
                                 <!-- View Button -->
@@ -272,7 +271,7 @@
                                         data-bs-toggle="modal" 
                                         data-bs-target="#viewRequestModal" 
                                         data-request-id="{{ $request->id }}">
-                                    <i class="feather icon-eye"></i> View
+                                    <i class="feather icon-eye"></i> {{ __('pages.admin.permission.view') }}
                                 </button>
                             @endif
                         </td>
@@ -292,8 +291,8 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="viewRequestModalLabel">Request Details</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h5 class="modal-title" id="viewRequestModalLabel">{{ __('pages.admin.permission.request_details') }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('pages.admin.permission.close') }}"></button>
       </div>
       <div class="modal-body">
         <!-- Dynamic content for request details -->
@@ -315,7 +314,7 @@
 <script>
 $(document).ready(function () {
     $('#default-datatable').DataTable();
-    // Your JavaScript for handling accept, reject, etc.
+    
 });
 </script>
 @endsection

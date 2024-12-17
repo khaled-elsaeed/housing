@@ -12,16 +12,14 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16x16.png') }}">
+    <link href="{{ asset('css/icons.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('css/flag-icon.min.css') }}" rel="stylesheet" type="text/css">
     @if(app()->isLocale('en'))
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
 @else
     <link href="{{ asset('css/bootstrap.rtl.min.css') }}" rel="stylesheet" type="text/css">
 @endif
 
-    
-
-    <link href="{{ asset('css/icons.css') }}" rel="stylesheet" type="text/css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/4.1.7/css/flag-icon.min.css" rel="stylesheet">
 
     <!-- Load SweetAlert2 -->
     <script src="{{ asset('plugins/sweet-alert2/sweetalert2.all.min.js') }}"></script>
@@ -37,7 +35,7 @@
             <i class="flag-icon flag-icon-us"></i> EN
         </span>
         <span class="language-option @if(app()->isLocale('ar')) active @endif" data-lang="ar">
-            <i class="flag-icon flag-icon-sa"></i> AR
+            <i class="flag-icon flag-icon-eg"></i> AR
         </span>
     </div>
 </div>
@@ -116,7 +114,7 @@
                     <button class="btn btn-primary btn-lg">{{ __('auth.login.login_button') }}</button>
                 </div>
             </form>
-            <p class="text-center">{{ __('auth.login.dont_have_account') }} <a href="{{ route('register') }}" class="text-primary">{{ __('auth.login.create_account') }}</a></p>
+            <p class="text-center text-secondary ">{{ __('auth.login.dont_have_account') }} <a href="{{ route('register') }}" class="text-primary">{{ __('auth.login.create_account') }}</a></p>
         </div>
     </div>
 </div>

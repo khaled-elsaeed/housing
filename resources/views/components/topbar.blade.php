@@ -18,6 +18,25 @@
             </div>
             <div class="infobar">
                 <ul class="list-inline mb-0">
+                <li class="list-inline-item">
+    <div class="language-switcher">
+        <div class="dropdown">
+            <a class="dropdown-toggle infobar-icon" href="#" role="button" id="languageSwitcher" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="flag-icon {{ app()->isLocale('ar') ? 'flag-icon-eg' : 'flag-icon-us' }}"></i> 
+                <!-- Dynamically show the current language icon -->
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="languageSwitcher">
+                <a class="dropdown-item {{ app()->isLocale('en') ? 'active' : '' }}" href="{{ route('localization', ['local' => 'en']) }}">
+                    <i class="flag-icon flag-icon-us"></i> English
+                </a>
+                <a class="dropdown-item {{ app()->isLocale('ar') ? 'active' : '' }}" href="{{ route('localization', ['local' => 'ar']) }}">
+                    <i class="flag-icon flag-icon-eg"></i> العربية
+                </a>
+            </div>
+        </div>
+    </div>
+</li>
+
                     <li class="list-inline-item">
                         <div class="notifybar">
                             <div class="dropdown">
