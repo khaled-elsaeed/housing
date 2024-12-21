@@ -18,24 +18,24 @@
             </div>
             <div class="infobar">
                 <ul class="list-inline mb-0">
-                <li class="list-inline-item">
-    <div class="language-switcher">
-        <div class="dropdown">
-            <a class="dropdown-toggle infobar-icon" href="#" role="button" id="languageSwitcher" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="flag-icon {{ app()->isLocale('ar') ? 'flag-icon-eg' : 'flag-icon-us' }}"></i> 
-                <!-- Dynamically show the current language icon -->
-            </a>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="languageSwitcher">
-                <a class="dropdown-item {{ app()->isLocale('en') ? 'active' : '' }}" href="{{ route('localization', ['local' => 'en']) }}">
-                    <i class="flag-icon flag-icon-us"></i> English
-                </a>
-                <a class="dropdown-item {{ app()->isLocale('ar') ? 'active' : '' }}" href="{{ route('localization', ['local' => 'ar']) }}">
-                    <i class="flag-icon flag-icon-eg"></i> العربية
-                </a>
-            </div>
-        </div>
-    </div>
-</li>
+                    <li class="list-inline-item">
+                        <div class="language-switcher">
+                            <div class="dropdown">
+                                <a class="dropdown-toggle infobar-icon" href="#" role="button" id="languageSwitcher" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="flag-icon {{ app()->isLocale('ar') ? 'flag-icon-eg' : 'flag-icon-us' }}"></i> 
+                                    <!-- Dynamically show the current language icon -->
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="languageSwitcher">
+                                    <a class="dropdown-item {{ app()->isLocale('en') ? 'active' : '' }}" href="{{ route('localization', ['local' => 'en']) }}">
+                                        <i class="flag-icon flag-icon-us"></i> English
+                                    </a>
+                                    <a class="dropdown-item {{ app()->isLocale('ar') ? 'active' : '' }}" href="{{ route('localization', ['local' => 'ar']) }}">
+                                        <i class="flag-icon flag-icon-eg"></i> العربية
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
 
                     <li class="list-inline-item">
                         <div class="notifybar">
@@ -48,14 +48,14 @@
                                     <div class="notification-dropdown-title">
                                         <h4>
                                             <i class="feather icon-bell"></i>
-                                            Notifications
+                                            @lang('pages.general.notifications')
                                         </h4>
                                     </div>
                                     <ul class="list-unstyled">
                                         @if(auth()->user()->notifications->isEmpty())
                                             <li class="d-flex p-2 mt-1 dropdown-item">
                                                 <div class="media-body">
-                                                    <p>No new notifications</p>
+                                                    <p>@lang('pages.general.no_new_notifications')</p>
                                                 </div>
                                             </li>
                                         @else
@@ -87,29 +87,25 @@
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profilelink">
                                     <div class="dropdown-item">
                                         <div class="profilename">
-                                        <h5>{{ auth()->user()->username_en }}</h5>
-
+                                            <h5>{{ auth()->user()->username_en }}</h5>
                                         </div>
                                     </div>
                                     <div class="userbox">
                                         <ul class="list-unstyled mb-0">
-                                        <li class="d-flex p-2 mt-1 dropdown-item">
-                                            @if (Auth::user()->hasRole('admin'))
-                                                <a href="{{ route('admin.profile') }}" class="profile-icon">
-                                                    <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="user">My Profile
-                                                </a>
-                                            @elseif (Auth::user()->hasRole('resident'))
-                                                <a href="{{ route('student.profile') }}" class="profile-icon">
-                                                    <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="user">My Profile
-                                                </a>
-                                            @endif
-                                        </li>
-
-
-                                         
+                                            <li class="d-flex p-2 mt-1 dropdown-item">
+                                                @if (Auth::user()->hasRole('admin'))
+                                                    <a href="{{ route('admin.profile') }}" class="profile-icon">
+                                                        <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="user">@lang('pages.general.my_profile')
+                                                    </a>
+                                                @elseif (Auth::user()->hasRole('resident'))
+                                                    <a href="{{ route('student.profile') }}" class="profile-icon">
+                                                        <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="user">@lang('pages.general.my_profile')
+                                                    </a>
+                                                @endif
+                                            </li>
                                             <li class="d-flex p-2 mt-1 dropdown-item">
                                                 <a href="javascript:void(0);" class="profile-icon" onclick="logout();">
-                                                    <img src="{{ asset('images/svg-icon/logout.svg') }}" class="img-fluid" alt="logout">Logout
+                                                    <img src="{{ asset('images/svg-icon/logout.svg') }}" class="img-fluid" alt="logout">@lang('pages.general.logout')
                                                 </a>
                                             </li>
                                         </ul>
@@ -129,7 +125,7 @@
 
 <script>
 function logout() {
-    if (confirm("Are you sure you want to logout?")) {
+    if (confirm("@lang('pages.general.are_you_sure_logout')")) {
         // Create a form dynamically
         var form = document.createElement('form');
         form.method = 'POST';
@@ -156,9 +152,5 @@ function logout() {
 // Handle back navigation
 window.onpopstate = function () {
     window.history.pushState(null, "", window.location.href);
-    // Optionally, redirect to the login page or display a message
-    // window.location.href = '{{ route('login') }}'; // Uncomment if you want to redirect
 };
-
-
 </script>

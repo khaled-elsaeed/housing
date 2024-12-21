@@ -1,7 +1,6 @@
 @extends('layouts.student')
 
-@section('title', 'Maintenance Request')
-
+@section('title', __('pages.student.maintenance.title'))
 @section('links')
 <style>
     /* Style for the card */
@@ -108,7 +107,6 @@
 
 </style>
 @endsection
-
 @section('content')
 <div class="container my-5">
     <div class="row justify-content-center">
@@ -125,9 +123,9 @@
                                 <div class="card-overlay">
                                     <i class="fa fa-check check-icon"></i>
                                 </div>
-                                <img src="{{ asset('images/maintenance/water-issues-icon.svg') }}" alt="Water & Sanitary" class="card-img-top p-3 issue-img">
+                                <img src="{{ asset('images/maintenance/water-issues-icon.svg') }}" alt="@lang('pages.student.maintenance.water_sanitary')" class="card-img-top p-3 issue-img">
                                 <div class="card-body">
-                                    <h5 class="card-title">Water & Sanitary</h5>
+                                    <h5 class="card-title">@lang('pages.student.maintenance.water_sanitary')</h5>
                                 </div>
                             </div>
                         </div>
@@ -137,9 +135,9 @@
                                 <div class="card-overlay">
                                     <i class="fa fa-check check-icon"></i>
                                 </div>
-                                <img src="{{ asset('images/maintenance/electrican-issues-icon.svg') }}" alt="Electrical" class="card-img-top p-3 issue-img">
+                                <img src="{{ asset('images/maintenance/electrican-issues-icon.svg') }}" alt="@lang('pages.student.maintenance.electrical')" class="card-img-top p-3 issue-img">
                                 <div class="card-body">
-                                    <h5 class="card-title">Electrical</h5>
+                                    <h5 class="card-title">@lang('pages.student.maintenance.electrical')</h5>
                                 </div>
                             </div>
                         </div>
@@ -149,9 +147,9 @@
                                 <div class="card-overlay">
                                     <i class="fa fa-check check-icon"></i>
                                 </div>
-                                <img src="{{ asset('images/maintenance/general-issues-icon.svg') }}" alt="General Housing" class="card-img-top p-3 issue-img">
+                                <img src="{{ asset('images/maintenance/general-issues-icon.svg') }}" alt="@lang('pages.student.maintenance.general_housing')" class="card-img-top p-3 issue-img">
                                 <div class="card-body">
-                                    <h5 class="card-title">General Housing</h5>
+                                    <h5 class="card-title">@lang('pages.student.maintenance.general_housing')</h5>
                                 </div>
                             </div>
                         </div>
@@ -161,82 +159,81 @@
                     <div id="issue_details" class="mb-3">
                         <!-- Water & Sanitary Issues -->
                         <div id="water_sanitary_issues" class="d-none">
-                            <h5><i class="fa fa-tint"></i> Water and Sanitary Issues</h5>
+                            <h5><i class="fa fa-tint"></i> @lang('pages.student.maintenance.water_sanitary_issues')</h5>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" name="water_issues[]" value="leakage" id="leakage">
-                                <label class="form-check-label" for="leakage">Water Leakage</label>
+                                <label class="form-check-label" for="leakage">@lang('pages.student.maintenance.water_leakage')</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" name="water_issues[]" value="sewage_problem" id="sewage_problem">
-                                <label class="form-check-label" for="sewage_problem">Sewage Problem</label>
+                                <label class="form-check-label" for="sewage_problem">@lang('pages.student.maintenance.sewage_problem')</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" name="water_issues[]" value="plumbing_problem" id="plumbing_problem">
-                                <label class="form-check-label" for="plumbing_problem">Plumbing Problem</label>
+                                <label class="form-check-label" for="plumbing_problem">@lang('pages.student.maintenance.plumbing_problem')</label>
                             </div>
                         </div>
 
                         <!-- Electrical Issues -->
                         <div id="electrical_issues" class="d-none">
-                            <h5><i class="fa fa-plug"></i> Electrical Issues</h5>
+                            <h5><i class="fa fa-plug"></i> @lang('pages.student.maintenance.electrical_issues')</h5>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" name="electrical_issues[]" value="bulb_replacement" id="bulb_replacement">
-                                <label class="form-check-label" for="bulb_replacement">Bulb Replacement</label>
+                                <label class="form-check-label" for="bulb_replacement">@lang('pages.student.maintenance.bulb_replacement')</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" name="electrical_issues[]" value="fan_issue" id="fan_issue">
-                                <label class="form-check-label" for="fan_issue">Fan Issue</label>
+                                <label class="form-check-label" for="fan_issue">@lang('pages.student.maintenance.fan_issue')</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" name="electrical_issues[]" value="water_heater_issue" id="water_heater_issue">
-                                <label class="form-check-label" for="water_heater_issue">Water Heater Issue</label>
+                                <label class="form-check-label" for="water_heater_issue">@lang('pages.student.maintenance.water_heater_issue')</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" name="electrical_issues[]" value="electricity_problem" id="electricity_problem">
-                                <label class="form-check-label" for="electricity_problem">Electricity Problem</label>
+                                <label class="form-check-label" for="electricity_problem">@lang('pages.student.maintenance.electricity_problem')</label>
                             </div>
                         </div>
 
                         <!-- General Housing Issues -->
                         <div id="housing_issues" class="d-none">
-                            <h5><i class="fa fa-couch"></i> General Housing Issues</h5>
+                            <h5><i class="fa fa-couch"></i> @lang('pages.student.maintenance.general_housing_issues')</h5>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" name="housing_issues[]" value="furniture_damage" id="furniture_damage">
-                                <label class="form-check-label" for="furniture_damage">Furniture Damage</label>
+                                <label class="form-check-label" for="furniture_damage">@lang('pages.student.maintenance.furniture_damage')</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" name="housing_issues[]" value="appliance_issue" id="appliance_issue">
-                                <label class="form-check-label" for="appliance_issue">Appliance Issue</label>
+                                <label class="form-check-label" for="appliance_issue">@lang('pages.student.maintenance.appliance_issue')</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" class="form-check-input" name="housing_issues[]" value="door_window_issue" id="door_window_issue">
-                                <label class="form-check-label" for="door_window_issue">Door/Window Problem</label>
+                                <label class="form-check-label" for="door_window_issue">@lang('pages.student.maintenance.door_window_issue')</label>
                             </div>
                         </div>
                     </div>
 
                     <!-- Additional Information Text Input -->
                     <div id="additionalInfoDiv" class="additional-info form-group">
-                        <label for="additional_info">Additional Information</label>
-                        <textarea class="form-control" id="additional_info" name="additional_info" rows="4" placeholder="Enter any additional details about the issue"></textarea>
+                        <label for="additional_info">@lang('pages.student.maintenance.additional_info')</label>
+                        <textarea class="form-control" id="additional_info" name="additional_info" rows="4" placeholder="@lang('pages.student.maintenance.enter_additional_details')"></textarea>
                     </div>
 
                     <div id="uploadZone" class="upload-zone">
-    <p class="upload-text">Drag & drop an image here, or <span class="upload-link">browse</span></p>
+    <p class="upload-text">@lang('pages.student.maintenance.upload_text')</p>
     <input type="file" id="image" name="image" accept="image/*" class="d-none">
 </div>
 <div id="imagePreview" class="mt-3 d-none">
     <div class="thumbnail-wrapper position-relative">
-        <img id="previewImage" alt="Uploaded Image" class="thumbnail border rounded">
+        <img id="previewImage" alt="@lang('pages.student.maintenance.uploaded_image')" class="thumbnail border rounded">
         <button id="removeImageBtn" type="button" class="btn btn-round btn-danger"><i class="feather icon-trash-2"></i></button>
         </div>
 </div>
 
-
                     <!-- Submit Button -->
                     <div class="text-center">
     <button type="submit" class="btn btn-primary btn-lg mt-3">
-        <i class="bi bi-send-fill"></i> Submit Request
+        <i class="bi bi-send-fill"></i> @lang('pages.student.maintenance.submit_request')
     </button>
 </div>
 
@@ -255,6 +252,3 @@
     };
 </script>
 @endsection
-
-
-

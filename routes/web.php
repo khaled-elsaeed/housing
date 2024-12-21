@@ -234,3 +234,9 @@ Route::middleware(Localization::class)
     
     
 });
+
+use App\Http\Controllers\StudentPaymentController;
+
+// Route to handle payment receipt upload
+Route::post('/student/payment/upload/{invoiceId}', [StudentPaymentController::class, 'uploadPayment'])
+    ->name('student.uploadPayment');
