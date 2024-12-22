@@ -72,29 +72,28 @@ public function universityArchive()
     return $this->hasOneThrough(
         UniversityArchive::class,
         UserNationalLink::class,
-        'user_id',                 // Foreign key on UserNationalLink table
-        'id',                      // Foreign key on UniversityArchives table
-        'id',                      // Local key on Users table
-        'university_archive_id'    // Local key on UserNationalLink table
+        'user_id',                 
+        'id',                      
+        'id',                      
+        'university_archive_id'    
     );
 }
 
 
    public function student()
     {
-        return $this->hasOne(Student::class); // Assuming one user has one student record
+        return $this->hasOne(Student::class); 
     }
 
     public function reservation()
     {
-        return $this->hasOne(Reservation::class); // Assuming one user has one student record
+        return $this->hasOne(Reservation::class); 
     }
 
     public function parent(){
         return $this->hasOne(Parents::class);
     }
 
-    // User Model
 
 public function sibling()
 {
@@ -159,7 +158,6 @@ public function emergencyContact()
         return !$this->isNewComerStudent($user);
     }
 
-    // Define an accessor for 'username_en' (concatenation of first_name_en and last_name_en)
     public function getUsernameEnAttribute()
     {
         return $this->first_name_en . ' ' . $this->last_name_en;
@@ -167,15 +165,12 @@ public function emergencyContact()
 
     public function getLocationDetails()
     {
-        // Access the related room for this reservation
         $room = $this->reservation->room;
     
-        // Retrieve the room number, apartment number, and building number
         $roomNumber = $room->number;
         $apartmentNumber = $room->apartment->number;
         $buildingNumber = $room->apartment->building->number;
     
-        // Return each location detail separately
         return [
             'building' => $buildingNumber,
             'apartment' => $apartmentNumber,
