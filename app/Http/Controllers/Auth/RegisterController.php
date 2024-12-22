@@ -10,14 +10,12 @@ use App\Models\UniversityArchive;
 use Illuminate\Support\Facades\Hash;
 use App\Notifications\AccountActivation;
 use Illuminate\Support\Str;
+use App\Models\Setting;
 use Carbon\Carbon;
 
 class RegisterController extends Controller
 {
-    public function __construct()
-    {
-        // You can inject services here if needed
-    }
+  
 
     public function showRegisterPage()
     {
@@ -26,6 +24,9 @@ class RegisterController extends Controller
 
     public function register(Request $request)
     {
+        if($this->registerIsopen() == false){
+            return back()->withErrors( __('auth.register.registration_closed'));
+        };
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|string|min:8',
@@ -36,19 +37,19 @@ class RegisterController extends Controller
 
         if (!UniversityArchive::isUniversityStudent($credentials['nationalId'])) {
             return back()
-                ->withErrors(['national_id' => __('auth.student_not_registered')])
+                ->withErrors(['national_id' => __('auth.register.student_not_registered')])
                 ->withInput();
         }
 
         if (UserNationalLink::where('national_id', $credentials['nationalId'])->exists()) {
             return back()
-                ->withErrors(['national_id' => __('auth.national_id_registered')])
+                ->withErrors(['national_id' => __('auth.register.national_id_registered')])
                 ->withInput();
         }
 
         if (User::where('email', $credentials['email'])->exists()) {
             return back()
-                ->withErrors(['email' => __('auth.email_registered')])
+                ->withErrors(['email' => __('auth.register.email_registered')])
                 ->withInput();
         }
 
@@ -74,9 +75,19 @@ class RegisterController extends Controller
 
         $user->notify(new AccountActivation($user));
 
-        session()->flash('success', __('auth.user_registered_successfully'));
+        session()->flash('success', __('auth.register.user_registered_successfully'));
         return redirect()
             ->route('login')
             ->withInput();
+    }
+
+    public function registerIsopen()
+    {
+        $isOpen = Setting::where('key', 'registration_open')->first();
+        if ($isOpen->value == 1) {
+            return true;
+        }else{
+            return false;
+        }
     }
 }

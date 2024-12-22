@@ -16,8 +16,10 @@
     <link href="{{ asset('css/bootstrap.rtl.min.css') }}" rel="stylesheet" type="text/css">
     @endif
 
-    <link href="{{ asset('css/icons.css') }}" rel="stylesheet" type="text/css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/4.1.7/css/flag-icon.min.css" rel="stylesheet">
+    <!-- Load SweetAlert2 -->
+
+    <script src="{{ asset('plugins/sweet-alert2/sweetalert2.all.min.js') }}"></script>
+    
     <link href="{{ asset('css/authenication.css') }}" rel="stylesheet" type="text/css">
 </head>
 
@@ -98,6 +100,16 @@
 </footer>
 
 <script src="{{ asset('js/bootstrap.bundle.js') }}"></script>
+<script>
+    // Language Switcher
+    document.querySelectorAll('.language-option').forEach(option => {
+        option.addEventListener('click', function () {
+            const selectedLang = this.getAttribute('data-lang');
+            const routeUrl = `{{ route('localization', ':lang') }}`.replace(':lang', selectedLang);
+            window.location.href = routeUrl;
+        });
+    });
+</script>
 </body>
 
 </html>

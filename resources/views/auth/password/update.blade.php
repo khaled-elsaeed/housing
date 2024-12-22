@@ -1,149 +1,139 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
 
 <head>
     <!-- Meta Information -->
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="New Mansoura University Housing offers comfortable, affordable, and secure accommodation for students. Conveniently located near the campus, our modern facilities provide a supportive environment for academic success.">
-    <meta name="keywords" content="New Mansoura University, university housing, student accommodation, New Mansoura, dorms, student apartments, affordable student housing, university residence, student life, student housing, NMU housing, New Mansoura student living, secure housing for students">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-
-    <title>NMU Housing - Set New Password</title>
-
+    <title>{{ __('auth.update_password.page_title') }}</title>
+    
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16x16.png') }}">
-
-    <!-- CSS Files -->
-    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('css/icons.css') }}" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="{{ asset('css/authenication.css') }}">
-    <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css">
-    <!-- End CSS Files -->
-           <!-- Load SweetAlert2 from CDN -->
-           <script src="{{ asset('plugins/sweet-alert2/sweetalert2.all.min.js') }}"></script>
+    <link href="{{ asset('css/flag-icon.min.css') }}" rel="stylesheet" type="text/css">
+    @if(app()->isLocale('en'))
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+    @else
+    <link href="{{ asset('css/bootstrap.rtl.min.css') }}" rel="stylesheet" type="text/css">
+    @endif
+
+       <!-- Load SweetAlert2 -->
+
+<script src="{{ asset('plugins/sweet-alert2/sweetalert2.all.min.js') }}"></script>
+
+<link href="{{ asset('css/authenication.css') }}" rel="stylesheet" type="text/css">
 </head>
 
-<body class="vertical-layout">
-    <!-- Start Containerbar -->
-    <div id="containerbar" class="containerbar authenticate-bg">
-        <!-- Start Container -->
-        <div class="container">
-            <div class="auth-box login-box">
-                <!-- Start Row -->
-                <div class="row no-gutters align-items-center justify-content-center flex-column-reverse">
-                    <!-- Start Form Column -->
-                    <div class="col-12 col-md-6">
-                        <!-- Start Auth Box -->
-                        <div class="auth-box-right">
-                            <div class="card text-start">
-                                <div class="card-body">
-                                    <!-- Logo at the top -->
-                                    <div class="auth-logo text-center">
-                                        <a href="index.html">
-                                            <img src="{{ asset('images/logo.png') }}" class="img-fluid" alt="logo">
-                                        </a>
-                                    </div>
-
-                                    <h4 class="text-primary mb-4">Set Your New Password 🔑</h4>
-
-                                   <!-- Password Reset Form -->
-<form method="POST" action="{{ route('password.update', $token) }}">
-    @csrf
-    @if (session('success'))
-                                 <script>
-                                    Swal.fire({
-                                        toast: true,
-                                        icon: 'success',
-                                        title: 'Success!',
-                                        text: '{{ session('success') }}',
-                                        position: 'top-start',  // Position the toast at the top-right
-                                        showConfirmButton: false,  // No confirmation button
-                                        timer: 8000,  // Auto-close after 3 seconds
-                                        timerProgressBar: true,  // Show progress bar
-                                    });
-                                 </script>
-                                 @endif
-                                 <!-- SweetAlert for Validation Errors -->
-                                 @if ($errors->any())
-                                 <script>
-                                    Swal.fire({
-                                        toast: true,
-                                        icon: 'error',
-                                        title: 'Error!',
-                                        text: '{{ $errors->first() }}',
-                                        position: 'top-start',  // Position the toast at the top-right
-                                        showConfirmButton: false,  // No confirmation button
-                                        timer: 3000,  // Auto-close after 3 seconds
-                                        timerProgressBar: true,  // Show progress bar
-                                    });
-                                 </script>
-                                 @endif
-    <!-- New Password Field -->
-    <div class="form-floating mb-3">
-        <input type="password" class="form-control text-secondary" id="floatingPassword" placeholder="New Password" name="password" required>
-        <label for="floatingPassword">New Password</label>
+<body>
+<div class="language-switcher-container">
+    <div class="language-switcher">
+        <span class="language-option @if(app()->isLocale('en')) active @endif" data-lang="en">
+            <i class="flag-icon flag-icon-us"></i> EN
+        </span>
+        <span class="language-option @if(app()->isLocale('ar')) active @endif" data-lang="ar">
+            <i class="flag-icon flag-icon-eg"></i> AR
+        </span>
     </div>
+</div>
 
-    <!-- Confirm Password Field -->
-    <div class="form-floating mb-3">
-        <input type="password" class="form-control text-secondary" id="floatingPasswordConfirm" placeholder="Confirm Password" name="password_confirmation" required>
-        <label for="floatingPasswordConfirm">Confirm Password</label>
-    </div>
+<!-- Update Password Form -->
+<div class="auth-box">
+    <div class="row g-0">
+        <!-- Left Side Image -->
+        <div class="col-md-6 d-none d-md-flex align-items-center justify-content-center">
+            <img src="{{ asset('images/authentication/update_password.svg') }}" class="img-fluid" alt="{{ __('auth.update_password.image_alt') }}">
+        </div>
 
-    <!-- Hidden Token Field -->
-    <input type="hidden" name="token" value="{{ $token }}">
-
-    <!-- Submit Button -->
-    <div class="d-grid mb-4">
-        <button class="btn btn-primary font-18" type="submit">Update Password</button>
-    </div>
-</form>
-
-
-                                    <!-- Back to login link -->
-                                    <p class="mb-0 mt-3">Remember your password? <a href="{{ route('login') }}">Login</a></p>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- End Auth Box -->
-                    </div>
-                    <!-- End Form Column -->
-
-                    <!-- Start Additional Column -->
-                    <div class="col-12 col-md-6 d-md-block d-none">
-                        <!-- Start Auth Box -->
-                        <div class="auth-box-right">
-                            <img src="{{ asset('images/authentication/login-hero.svg') }}" alt="Reset Password Image">
-                        </div>
-                        <!-- End Auth Box -->
-                    </div>
-                    <!-- End Additional Column -->
+        <!-- Update Password Form Section -->
+        <div class="col-md-6 p-4">
+            <div class="text-center">
+                <div class="auth-logo">
+                    <a href="/">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo">
+                    </a>
                 </div>
-                <!-- End Row -->
+                <h4 class="text-primary mb-4">{{ __('auth.update_password.title') }}</h4>
             </div>
+            <form method="POST" action="{{ route('password.update', $token) }}">
+                @csrf
+                <input type="hidden" name="token" value="{{ $token }}">
+
+                <!-- Success Message -->
+                @if (session('status'))
+                <script>
+                    Swal.fire({
+                        toast: true,
+                        icon: 'success',
+                        title: '{{ __('auth.update_password.success') }}',
+                        text: '{{ session('status') }}',
+                        position: 'top-start',
+                        showConfirmButton: false,
+                        timer: 8000,
+                        timerProgressBar: true,
+                    });
+                </script>
+                @endif
+
+                <!-- Validation Errors -->
+                @if ($errors->any())
+                <script>
+                    Swal.fire({
+                        toast: true,
+                        icon: 'error',
+                        title: '{{ __('auth.update_password.error') }}',
+                        text: '{{ $errors->first() }}',
+                        position: 'top-start',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                    });
+                </script>
+                @endif
+
+             
+                <!-- New Password Input -->
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control" id="password" name="password" placeholder="{{ __('auth.update_password.new_password_placeholder') }}" required>
+                    <label for="password">{{ __('auth.update_password.new_password_label') }}</label>
+                </div>
+
+                <!-- Confirm Password Input -->
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="{{ __('auth.update_password.confirm_password_placeholder') }}" required>
+                    <label for="password_confirmation">{{ __('auth.update_password.confirm_password_label') }}</label>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid mb-4">
+                    <button class="btn btn-primary btn-lg">{{ __('auth.update_password.submit_button') }}</button>
+                </div>
+            </form>
         </div>
-        <!-- End Container -->
     </div>
-    <!-- End Containerbar -->
+</div>
 
-    <!-- Footer Section -->
-    <footer class="text-center mt-2">
-        <div class="container">
-            <p class="text-muted">&copy;2024 New Mansoura University. All Rights Reserved.</p>
-        </div>
-    </footer>
+<!-- Footer -->
+<footer class="text-center">
+    <div class="container">
+        <p>&copy; 2024 {{ __('auth.update_password.university_name') }}. {{ __('auth.update_password.rights_reserved') }}</p>
+    </div>
+</footer>
 
-    <!-- Start JavaScript Files -->
-    <script src="{{ asset('js/jquery.min.js') }}"></script>
-    <script src="{{ asset('js/popper.min.js') }}"></script>
-    <script src="{{ asset('js/bootstrap.bundle.js') }}"></script>
-    <script src="{{ asset('js/modernizr.min.js') }}"></script>
-    <script src="{{ asset('js/detect.js') }}"></script>
-    <script src="{{ asset('js/jquery.slimscroll.js') }}"></script>
-    <!-- End JavaScript Files -->
-
+<!-- Scripts -->
+<script src="{{ asset('js/bootstrap.bundle.js') }}"></script>
+<script>
+    // Language Switcher
+    document.querySelectorAll('.language-option').forEach(option => {
+        option.addEventListener('click', function () {
+            const selectedLang = this.getAttribute('data-lang');
+            const routeUrl = `{{ route('localization', ':lang') }}`.replace(':lang', selectedLang);
+            window.location.href = routeUrl;
+        });
+    });
+</script>
 </body>
+
 </html>

@@ -22,6 +22,8 @@
 
 
     <!-- Load SweetAlert2 -->
+    <link href="{{ asset('plugins/sweet-alert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+
     <script src="{{ asset('plugins/sweet-alert2/sweetalert2.all.min.js') }}"></script>
     
     <link href="{{ asset('css/authenication.css') }}" rel="stylesheet" type="text/css">
