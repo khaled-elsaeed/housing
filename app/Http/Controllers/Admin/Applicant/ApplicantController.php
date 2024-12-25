@@ -44,14 +44,21 @@ class ApplicantController extends Controller
      */
     public function fetchApplicants(Request $request)
     {
-        $currentLang = App::getLocale(); // Get current locale
+        $currentLang = App::getLocale(); 
 
         try {
             $query = User::role('resident')
-                ->with(['student'])
-                ->leftJoin('students', 'students.user_id', '=', 'users.id')
-                ->select('users.*', 'students.application_status', 'students.gender', 'students.created_at')
-                ->orderBy('users.created_at', 'desc');
+            ->with(['student'])
+            ->leftJoin('students', 'students.user_id', '=', 'users.id') 
+            ->select(
+                'users.*',
+                'students.application_status',
+                'students.gender',
+                'students.created_at'
+            ) 
+            ->whereIn('students.application_status', ['pending', 'preliminary_accepted']) 
+            ->orderBy('users.created_at', 'desc');
+
 
             if ($request->filled('customSearch')) {
                 $searchTerm = $request->get('customSearch');
