@@ -405,52 +405,133 @@
             <h5 class="card-title mb-0">{{ __('pages.student.profile.payments_info') }}</h5>
         </div>
         <div class="card-body">
+            <!-- Payment Form for Both Terms -->
             @if($user->reservation && $user->reservation->invoice)
-                @php $invoice = $user->reservation->invoice; @endphp
+                @php 
+                    $firstTermInvoice = $user->reservation->invoice()->where('term', 'first_term')->first(); 
+                    $secondTermInvoice = $user->reservation->invoice()->where('term', 'second_term')->first(); 
+                @endphp
 
-                <!-- Invoice Details -->
+                <!-- First Term Invoice Information -->
+                @if($firstTermInvoice)
                 <div class="invoice-card border rounded p-3 mb-4 shadow-sm">
                     <div class="row align-items-center">
-                        <!-- Invoice Information -->
                         <div class="col-md-8">
-                        <h6 class="mb-1">
-    <span class="text-muted">{{ __('pages.student.profile.year') }}:</span> 
-    <span class="text-dark fw-bold">2024/2025</span>
-</h6>
-<p class="mb-1">
-    <span class="text-muted">{{ __('pages.student.profile.term') }}:</span> 
-    <span class="text-dark">{{ ucwords(str_replace('_', ' ', $invoice->reservation->term)) }}</span>
-</p>
-
+                            <h6 class="mb-1">
+                                <span class="text-muted">{{ __('pages.student.profile.year') }}:</span> 
+                                <span class="text-dark fw-bold">2024/2025</span>
+                            </h6>
+                            <p class="mb-1">
+                                <span class="text-muted">{{ __('pages.student.profile.term') }}:</span> 
+                                <span class="text-dark">{{ ucwords(str_replace('_', ' ', $firstTermInvoice->term)) }}</span>
+                            </p>
                             <p class="mb-1">
                                 <strong>{{ __('pages.student.profile.amount') }}:</strong> 
-                                <span class="text-success">${{ number_format($invoice->amount, 2) }}</span>
+                                <span class="text-success">${{ number_format($firstTermInvoice->amount, 2) }}</span>
                             </p>
                             <p class="mb-1">
                                 <strong>{{ __('pages.student.profile.status') }}:</strong> 
-                                <span class="badge {{ $invoice->status == 'paid' ? 'badge-success' : 'badge-warning' }} px-3 py-2">
-    {{ __('pages.student.profile.' . $invoice->status) }}
-</span>
-
+                                <span class="badge {{ $firstTermInvoice->status == 'paid' ? 'badge-success' : 'badge-warning' }} px-3 py-2">
+                                    {{ __('pages.student.profile.' . $firstTermInvoice->status) }}
+                                </span>
                             </p>
                         </div>
 
-                        <!-- Payment Actions -->
                         <div class="col-md-4 text-center">
-                            @if($invoice->status == 'unpaid')
-                            <form method="POST" action="{{ route('student.uploadPayment', $invoice->id) }}" enctype="multipart/form-data">
-                                @csrf
-                                <input type="file" name="payment_receipt" id="payment_receipt" class="form-control mb-2" required>
-                                <button type="submit" class="btn btn-primary btn-block">
-                                    {{ __('pages.student.profile.upload_payment') }}
-                                </button>
-                            </form>
+                            @if($firstTermInvoice->status == 'unpaid')
+                            <form id="paymentForm" method="POST" action="{{ route('student.uploadPayment') }}" enctype="multipart/form-data">
+    @csrf
+    <input type="file" name="payment_receipt" id="payment_receipt" class="form-control mb-2" required>
+    <input type="hidden" name="term" value="first_term">
+    <input type="hidden" name="invoice_id" value="{{ $firstTermInvoice->id }}">
+    <button type="submit" class="btn btn-primary btn-block">
+        {{ __('pages.student.profile.upload_payment') }}
+    </button>
+</form>
                             @endif
                         </div>
                     </div>
                 </div>
+                @endif
+
+                <!-- Second Term Invoice Information -->
+                @if($secondTermInvoice)
+                <div class="invoice-card border rounded p-3 mb-4 shadow-sm">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h6 class="mb-1">
+                                <span class="text-muted">{{ __('pages.student.profile.year') }}:</span> 
+                                <span class="text-dark fw-bold">2024/2025</span>
+                            </h6>
+                            <p class="mb-1">
+                                <span class="text-muted">{{ __('pages.student.profile.term') }}:</span> 
+                                <span class="text-dark">{{ __('pages.student.profile.second_term') }}</span>
+                            </p>
+                            <p class="mb-1">
+                                <strong>{{ __('pages.student.profile.amount') }}:</strong> 
+                                <span class="text-success">${{ number_format($secondTermInvoice->amount, 2) }}</span>
+                            </p>
+                            <p class="mb-1">
+                                <strong>{{ __('pages.student.profile.status') }}:</strong> 
+                                <span class="badge {{ $secondTermInvoice->status == 'paid' ? 'badge-success' : 'badge-warning' }} px-3 py-2">
+                                    {{ __('pages.student.profile.' . $secondTermInvoice->status) }}
+                                </span>
+                            </p>
+                        </div>
+
+                        <div class="col-md-4 text-center">
+                            @if($secondTermInvoice->status == 'unpaid')
+                            <form id="paymentForm" method="POST" action="{{ route('student.uploadPayment') }}" enctype="multipart/form-data">
+    @csrf
+    <input type="file" name="payment_receipt" id="payment_receipt" class="form-control mb-2" required>
+    <input type="hidden" name="term" value="second_term">
+    <input type="hidden" name="invoice_id" value="{{ $secondTermInvoice->id }}">
+    <button type="submit" class="btn btn-primary btn-block">
+        {{ __('pages.student.profile.upload_payment') }}
+    </button>
+</form>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @else
+                    <!-- Static Second Term Invoice (if not present) -->
+                    <div class="invoice-card border rounded p-3 mb-4 shadow-sm">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h6 class="mb-1">
+                                    <span class="text-muted">{{ __('pages.student.profile.year') }}:</span> 
+                                    <span class="text-dark fw-bold">2024/2025</span>
+                                </h6>
+                                <p class="mb-1">
+                                    <span class="text-muted">{{ __('pages.student.profile.term') }}:</span> 
+                                    <span class="text-dark">{{ __('pages.student.profile.second_term') }}</span>
+                                </p>
+                                <p class="mb-1">
+                                <strong>{{ __('pages.student.profile.amount') }}:</strong> 
+                                <span class="text-success">${{ number_format($firstTermInvoice->amount, 2) }}</span>
+                            </p>
+                                <p class="mb-1">
+                                    <strong>{{ __('pages.student.profile.status') }}:</strong> 
+                                    <span class="badge badge-warning px-3 py-2">
+                                        {{ __('pages.student.profile.unpaid') }}
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                            <form id="paymentForm" method="POST" action="{{ route('student.uploadPayment') }}" enctype="multipart/form-data">
+    @csrf
+    <input type="file" name="payment_receipt" id="payment_receipt" class="form-control mb-2" required>
+    <input type="hidden" name="term" value="second_term">
+    <button type="submit" class="btn btn-primary btn-block">
+        {{ __('pages.student.profile.upload_payment') }}
+    </button>
+</form>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             @else
-                <!-- No Invoices Message -->
                 <div class="alert alert-info text-center">
                     {{ __('pages.student.profile.no_invoices') }}
                 </div>
@@ -463,10 +544,15 @@
 
 
 
+
+
+
       </div>
    </div>
 </div>
 <!-- End col for profile content -->
+@endsection
+@section('scripts')
 <script>
    document.getElementById('toggle-password-btn').addEventListener('click', function() {
        const passwordSection = document.getElementById('password-section');
@@ -479,7 +565,9 @@
        }
    });
    
-   
+
+
+    
    
 </script>
 @endsection

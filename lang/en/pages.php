@@ -194,6 +194,33 @@ return [
                 'street' => 'Street',
                 'close' => 'Close',
             ],
+           'add-resident' => [
+                'title' => 'Add Resident',
+                'national_id' => 'National ID',
+                'name_en' => 'Name (English)',
+                'name_ar' => 'Name (Arabic)',
+                'birthdate' => 'Birthdate',
+                'mobile' => 'Mobile Number',
+                'gender' => 'Gender',
+                'gender_male' => 'Male',
+                'gender_female' => 'Female',
+                'governorate' => 'Governorate',
+                'city' => 'City',
+                'select_city' => 'Select City',
+                'street' => 'Street',
+                'faculty' => 'Faculty',
+                'program' => 'Program',
+                'select_program' => 'Select Program',
+                'building' => 'Building',
+                'select_building' => 'Select Building',
+                'apartment' => 'Apartment',
+                'select_apartment' => 'Select Apartment',
+                'room' => 'Room',
+                'select_room' => 'Select Room',
+                'save_resident' => 'Save Resident',
+                'no_available_rooms' =>  'No rooms available for this apartment!',
+            ],
+
         ],
         'buildings' => [
             'title' => 'Buildings',
@@ -417,6 +444,7 @@ return [
             'confirm_password' => 'Confirm Password',
             'no_email' => 'No Email',
         ],
+        
     ],
     'student' => [
         'home' => [
@@ -516,6 +544,10 @@ return [
             'term' => 'Term',
             'paid' => 'Paid',
             'unpaid' => 'Unpaid',
+            'second_term' => 'Second', // New term string
+            'pending_invoice' => 'Pending Invoice', // New pending invoice string
+            'upload_payment' => 'Upload Payment Receipt',
+            'no_invoices' => 'No invoices available for this student.',
         ],
         'maintenance' => [
             'title' => 'Maintenance Request',

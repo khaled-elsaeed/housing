@@ -215,7 +215,7 @@ $('#relocationForm form').on('submit', function(event) {
         success: function(response) {
             if (response.success) {
                 showSwalNotification('Relocation successful!');
-               
+                window.location.reload(true);
             } else {
                 showSwalNotification(response.message || 'Relocation failed. Please try again.', true);
             }
@@ -244,6 +244,8 @@ $('#swapForm form').on('submit', function(event) {
         },
         success: function() {
             showSwalNotification('Swap successful!');
+            window.location.reload(true);
+
         },
         error: function() {
             showSwalNotification('Error during swap!', true);

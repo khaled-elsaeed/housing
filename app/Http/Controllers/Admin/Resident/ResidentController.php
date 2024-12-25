@@ -9,7 +9,19 @@ use App\Models\Program;
 use App\Models\Faculty;
 use App\Models\City;
 use App\Models\Governorate;
+use App\Models\Reservation;
+use App\Models\UniversityArchive;
+use App\Models\UserNationalLink;
+use App\Models\Student;
+use App\Models\Building;
+
+
+
+
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+
 use Exception;
 use Illuminate\Support\Facades\App;
 
@@ -227,20 +239,220 @@ class ResidentController extends Controller
      * @return \Illuminate\View\View
      */
     public function create()
+{
+    try {
+        // Fetch the necessary data for the form
+        $governorates = Governorate::all();
+        $cities = City::all();
+        $faculties = Faculty::all();
+        $programs = Program::all();
+        
+        // Correcting the Building query and ensuring you retrieve buildings with empty rooms
+        $buildings = Building::whereHas('apartments.rooms', function($query) {
+            $query->where('full_occupied', '!=', 1); // Assuming 'full_occupied' indicates if a room is not fully occupied
+        })->get(); // Add get() to execute the query and retrieve the results
+
+        // Pass all necessary data to the view
+        return view('admin.residents.create', compact('governorates', 'cities', 'faculties', 'programs', 'buildings'));
+    } catch (Exception $e) {
+        // Log the error if something goes wrong
+        Log::error('Error retrieving resident create page data: ' . $e->getMessage(), [
+            'exception' => $e,
+            'stack' => $e->getTraceAsString(),
+        ]);
+
+        // Return an error page if an exception occurs
+        return response()->view('errors.505', [], 505);
+    }
+}
+
+
+    public function getStudentData(Request $request)
     {
-        try {
-            $governorates = Governorate::all();
-            $cities = City::all(); 
-            $faculties = Faculty::all(); 
-            $programs = Program::all(); 
+        $national_id = $request->input('national_id');
+        $user = DB::table('nmu_archive')->where('national_id', $national_id)->first();
     
-            return view('admin.residents.create', compact('governorates', 'cities', 'faculties', 'programs'));
-        } catch (Exception $e) {
-            Log::error('Error retrieving resident create page data: ' . $e->getMessage(), [
-                'exception' => $e,
-                'stack' => $e->getTraceAsString(),
-            ]);
-            return response()->view('errors.505', [], 505);
+        if ($user) {
+            return response()->json(['success' => true, 
+        'resident' => [
+                'name_en' => $user->name_en,
+                'name_ar' => $user->name_ar,
+                'academic_id' => $user->academic_id,
+                'academic_email' => $user->academic_email,
+            ],]);
+            
+        }
+    
+        return response()->json([
+            'success' => false,
+            'message' => 'Resident details not found.',
+        ]);
+    }
+
+    public function createResident(Request $request)
+    {
+        DB::beginTransaction(); 
+    
+        try {
+
+            $validateIsUniversityStudent = $this->isUniversityStudent($request->national_id);
+
+            $userNationalLinkExists = UserNationalLink::where('national_id', $request->national_id)->exists();
+
+            if ($userNationalLinkExists) {
+                DB::rollBack();
+                return response()->json(['error' => 'National ID is already linked to a user.'], 400);
+            }
+
+            if (!$validateIsUniversityStudent['success']) {
+                DB::rollBack(); 
+                return response()->json(['error' => $validateIsUniversityStudent['message']], 404);
+            }
+    
+            $names = $this->extractNamesPart($validateIsUniversityStudent['data']);
+    
+            $user = $this->createUser($validateIsUniversityStudent['data'], $names, $request);
+    
+            $universityArchive = $this->createUniversityArchive($validateIsUniversityStudent['data']);
+    
+            $this->createUserNationalLink($user->id, $validateIsUniversityStudent['data']->national_id, $universityArchive->id);
+    
+            $student = $this->createStudent($user->id, $validateIsUniversityStudent['data'], $request, $universityArchive->id);
+    
+            $reservation = $this->createReservation($user->id, $request->room_id);
+    
+            $this->createFeeInvoice($reservation->id);
+    
+            DB::commit();
+    
+            return response()->json(['success' => true, 'data' => $student], 201);
+    
+        } catch (\Exception $e) {
+            DB::rollBack();
+    
+            \Log::error('Error creating resident: ' . $e->getMessage());
+    
+            return response()->json(['error' => 'An error occurred while creating the resident.'], 500);
         }
     }
+    
+    private function isUniversityStudent($national_id)
+    {
+        $user = DB::table('nmu_archive')->where('national_id', $national_id)->first();
+    
+        if ($user) {
+            return ['success' => true, 'data' => $user];
+        }
+    
+        return ['success' => false, 'message' => 'Student not found'];
+    }
+    
+    private function extractNamesPart($name)
+    {
+        $name_en = explode(' ', $name->name_en);
+        $first_name_en = $name_en[0]; 
+        $last_name_en = end($name_en); 
+    
+        $name_ar = explode(' ', $name->name_ar);
+        $first_name_ar = $name_ar[0]; 
+        $last_name_ar = end($name_ar); 
+    
+        return [
+            'first_name_en' => $first_name_en,
+            'last_name_en' => $last_name_en,
+            'first_name_ar' => $first_name_ar,
+            'last_name_ar' => $last_name_ar,
+        ];
+    }
+    
+    private function createUser($studentData, $names, $request)
+    {
+        $user = User::create([
+            'email' => $studentData->academic_email,
+            'password' => Hash::make($studentData->national_id), 
+            'status' => 'active',
+            'is_verified' => 1,
+            'profile_completed' => 1,
+            'can_complete_late' => 0,
+            'gender' => $request->gender,
+            'first_name_ar' => $names['first_name_ar'],
+            'last_name_ar' => $names['last_name_ar'],
+            'first_name_en' => $names['first_name_en'],
+            'last_name_en' => $names['last_name_en'],
+        ]);
+        $user->assignRole('resident');
+        
+        return $user;
+    }
+    
+    
+    private function createUniversityArchive($studentData)
+    {
+        return UniversityArchive::create([
+            'academic_id' => $studentData->academic_id,
+            'national_id' => $studentData->national_id,
+            'name_en' => $studentData->name_en, 
+            'name_ar' => $studentData->name_ar,
+            'academic_email' => $studentData->academic_email,
+        ]);
+    }
+    
+    private function createUserNationalLink($userId, $nationalId, $universityArchiveId)
+    {
+        \Log::error('archive resident: ' . $universityArchiveId);
+
+        UserNationalLink::create([
+            'user_id' => $userId,
+            'national_id' => $nationalId,
+            'university_archive_id' => $universityArchiveId,
+        ]);
+    }
+    
+    private function createStudent($userId, $studentData, $request, $universityArchiveId)
+    {
+        return Student::create([
+            'user_id' => $userId,
+            'name_en' => $studentData->name_ar, // Assuming this is swapped, please check
+            'name_ar' => $studentData->name_en,
+            'national_id' => $studentData->national_id,
+            'academic_id' => $studentData->academic_id,
+            'mobile' => $request->mobile,
+            'birthdate' => $request->birthdate,
+            'gender' => $request->gender,
+            'governorate_id' => $request->governorate_id,
+            'city_id' => $request->city_id,
+            'street' => $request->street,
+            'faculty_id' => $request->faculty_id,
+            'program_id' => $request->program_id,
+            'university_archive_id' => $universityArchiveId,
+            'application_status' => 'final_accepted',
+        ]);
+    }
+    
+    private function createReservation($userId, $roomId)
+    {
+        return $reservation = Reservation::create([
+            'user_id' => $userId,
+            'room_id' => $roomId,
+            'year' => 2024,
+            'term' => 'first_term',
+            'status' => 'confirmed',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+    
+    private function createFeeInvoice($reservationId)
+    {
+        return DB::table('invoices')->insertGetId([
+            'reservation_id' => $reservationId,
+            'amount' => 15000,  
+            'status' => 'unpaid',  
+            'category' => 'fee',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+    
+    
 }

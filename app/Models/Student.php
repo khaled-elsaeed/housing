@@ -10,12 +10,21 @@ class Student extends Model
     use HasFactory;
 
     protected $fillable = [
-        'faculty_id',
-        'program_id',
+        'user_id',
+        'name_en',
+        'name_ar',
+        'national_id',
+        'academic_id',
+        'mobile',
+        'birthdate',
+        'gender',
         'governorate_id',
         'city_id',
         'street',
-        // Add other fillable fields as needed
+        'faculty_id',
+        'program_id',
+        'university_archive_id',
+        'application_status',
     ];
 
     // Define a relationship with the User model

@@ -187,6 +187,10 @@ Route::middleware(Localization::class)
                 Route::get('/export/excel', [ResidentController::class, 'downloadResidentsExcel'])->name('export-excel');
                 Route::get('/export/pdf', [ResidentController::class, 'downloadResidentsPDF'])->name('export.pdf');
                 Route::get('/details/{id}', [ResidentController::class, 'getResidentMoreDetails'])->name('more-details');
+                Route::post('/fetch-details', [ResidentController::class, 'getStudentData'])->name('fetch-details');
+                Route::post('/store', [ResidentController::class, 'createResident'])->name('store');
+
+
             });
 
             // Permission Request Routes
@@ -238,5 +242,4 @@ Route::middleware(Localization::class)
 use App\Http\Controllers\StudentPaymentController;
 
 // Route to handle payment receipt upload
-Route::post('/student/payment/upload/{invoiceId}', [StudentPaymentController::class, 'uploadPayment'])
-    ->name('student.uploadPayment');
+Route::post('/student/payment/upload/', [StudentPaymentController::class, 'uploadPayment'])->name('student.uploadPayment');

@@ -7,54 +7,86 @@ use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class StudentPaymentController extends Controller
 {
-    /**
-     * Upload the payment receipt for the student.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $invoiceId
-     * @return \Illuminate\Http\Response
-     */
-    public function uploadPayment(Request $request, $invoiceId)
+    public function uploadPayment(Request $request)
     {
-        // Validation for the uploaded receipt
+        // Validate the request
         $request->validate([
-            'payment_receipt' => 'required|image|mimes:jpg,jpeg,png,pdf|max:2048', 
+            'payment_receipt' => 'required|image|mimes:jpg,jpeg,png,pdf|max:2048',
+            'term' => 'required|string',
         ]);
-
-        // Find the invoice by ID
-        $invoice = Invoice::findOrFail($invoiceId);
-
-        // Check if the student owns this reservation/invoice
-        if ($invoice->reservation->user_id !== Auth::id()) {
-            return back()->with('error', 'You are not authorized to upload a payment for this invoice.');
+    
+        $term = $request->term;
+        DB::beginTransaction();
+    
+        try {
+            // Process for second_term
+            if ($term === 'second_term') {
+                $existingSecondTermInvoice = Invoice::where('reservation_id', auth()->user()->reservation_id)
+                                                     ->where('term', 'second_term')
+                                                     ->first();
+    
+                if (!$existingSecondTermInvoice) {
+                    // Create new second term invoice
+                    $secondTermInvoice = new Invoice();
+                    $secondTermInvoice->reservation_id = auth()->user()->reservation->id;
+                    $secondTermInvoice->amount = 15000;
+                    $secondTermInvoice->status = 'unpaid';
+                    $secondTermInvoice->term = 'second_term';
+                    $secondTermInvoice->save();
+    
+                    $invoice = $secondTermInvoice;
+                } else {
+                    // Use existing second term invoice
+                    $invoice = $existingSecondTermInvoice;
+                }
+            } else {
+                // Process for first_term
+                $invoiceId = $request->invoice_id;
+                $invoice = Invoice::findOrFail($invoiceId);
+    
+                // Check if the user is authorized to make payment
+                if ($invoice->reservation->user_id !== auth()->id()) {
+                    return back()->with('error', __('messages.unauthorized_upload'));
+                }
+    
+                // Check if the invoice is already paid
+                if ($invoice->status === 'paid') {
+                    return back()->with('error', __('messages.invoice_already_paid'));
+                }
+            }
+    
+            // Process file upload
+            $file = $request->file('payment_receipt');
+            $fileName = 'payment_' . time() . '.' . $file->getClientOriginalExtension();
+            $filePath = $file->storeAs('public/payments', $fileName);
+    
+            // Save payment record
+            $payment = new Payment();
+            $payment->reservation_id = $invoice->reservation_id;
+            $payment->amount = $invoice->amount;
+            $payment->receipt_image = 'payments/' . $fileName;
+            $payment->status = 'pending';
+            $payment->save();
+    
+            // Update invoice status
+            $invoice->status = 'paid';
+            $invoice->save();
+    
+            DB::commit();
+    
+            // Return success response
+            return back()->with('success', __('messages.payment_upload_success'));
+    
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', __('messages.payment_upload_error'));
         }
-
-        // Check if the invoice is unpaid
-        if ($invoice->status === 'paid') {
-            return back()->with('error', 'This invoice is already paid.');
-        }
-
-        // Store the uploaded receipt image in the 'public/payments' folder
-        $file = $request->file('payment_receipt');
-        $fileName = 'payment_' . time() . '.' . $file->getClientOriginalExtension();
-        $filePath = $file->storeAs('public/payments', $fileName);
-
-        // Create a new payment record
-        $payment = new Payment();
-        $payment->reservation_id = $invoice->reservation_id;
-        $payment->amount = $invoice->amount;
-        $payment->receipt_image = 'payments/' . $fileName; // Save the path in the database
-        $payment->status = 'pending';  // Payment is initially 'pending'
-        $payment->save();
-
-        // Optionally update the invoice status (e.g., mark as 'pending')
-        $invoice->status = 'paid';  // Update invoice status to pending after upload
-        $invoice->save();
-
-        // Return success message to the user
-        return back()->with('success', 'Payment receipt uploaded successfully. Your payment is under review.');
     }
+    
+
 }
+

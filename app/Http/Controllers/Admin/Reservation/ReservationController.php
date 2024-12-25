@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin\Reservation;
 
 use App\Models\Reservation;
 use App\Models\User;
+use App\Models\Room;
+
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Exception;
@@ -55,21 +57,21 @@ class ReservationController extends Controller
                 'recordsFiltered' => $filteredRecords,
                 'data' => $reservations->map(function ($reservation) use ($currentLang) {
                     $location = $reservation->room
-    ? $reservation->room->getLocation()
-    : [
-        'building' => 'N/A',
-        'apartment' => 'N/A',
-        'room' => 'N/A',
-    ];
+                    ? $reservation->room->getLocation()
+                    : [
+                        'building' => 'N/A',
+                        'apartment' => 'N/A',
+                        'room' => 'N/A',
+                    ];
 
-// Construct the location string
-$locationString = __(
-    'pages.admin.apartment.building'
-) . ' ' . $location['building'] . ' - ' . __(
-    'pages.admin.rooms.apartment'
-) . ' ' .$location['apartment'] . ' - ' . __(
-    'pages.admin.rooms.room'
-) . ' ' . $location['room'];
+                    // Construct the location string
+                    $locationString = __(
+                        'pages.admin.apartment.building'
+                    ) . ' ' . $location['building'] . ' - ' . __(
+                        'pages.admin.rooms.apartment'
+                    ) . ' ' .$location['apartment'] . ' - ' . __(
+                        'pages.admin.rooms.room'
+                    ) . ' ' . $location['room'];
 
 
                     return [

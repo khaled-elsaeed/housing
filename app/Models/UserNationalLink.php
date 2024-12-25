@@ -13,7 +13,7 @@ class UserNationalLink extends Model
 
     protected $fillable = [
         'user_id',
-        'university_Archive_id',
+        'university_archive_id',
         'national_id',
     ];
 

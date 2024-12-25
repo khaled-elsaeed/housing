@@ -195,6 +195,32 @@ return [
                 'street' => 'الشارع',
                 'close' => 'إغلاق',
             ],
+            'add-resident' => [
+                'title' => 'إضافة ساكن',
+                'national_id' => 'الرقم الوطني',
+                'name_en' => 'الاسم (إنجليزي)',
+                'name_ar' => 'الاسم (عربي)',
+                'birthdate' => 'تاريخ الميلاد',
+                'mobile' => 'رقم الهاتف المحمول',
+                'gender' => 'الجنس',
+                'gender_male' => 'ذكر',
+                'gender_female' => 'أنثى',
+                'governorate' => 'المحافظة',
+                'city' => 'المدينة',
+                'select_city' => 'اختر المدينة',
+                'street' => 'الشارع',
+                'faculty' => 'الكلية',
+                'program' => 'البرنامج',
+                'select_program' => 'اختر البرنامج',
+                'building' => 'المبنى',
+                'select_building' => 'اختر المبنى',
+                'apartment' => 'الشقة',
+                'select_apartment' => 'اختر الشقة',
+                'room' => 'الغرفة',
+                'select_room' => 'اختر الغرفة',
+                'save_resident' => 'حفظ الساكن',
+                'no_available_rooms' => 'لا يوجد غرف فارغة'
+            ],
         ],
         'buildings' => [
             'title' => 'المباني',
@@ -520,6 +546,10 @@ return [
             'term' => 'الفصل الدراسي',
             'paid' => 'مدفوع',
             'unpaid' => 'غير مدفوع',
+            'second_term' => 'الثاني', // Arabic translation for "Second Term"
+            'pending_invoice' => 'فاتورة معلقة', // Arabic translation for "Pending Invoice"
+            'upload_payment' => 'تحميل إيصال الدفع',
+            'no_invoices' => 'لا توجد فواتير متاحة لهذا الطالب.',
 
             ],
             'maintenance' => [
@@ -546,5 +576,6 @@ return [
             'uploaded_image' => 'الصورة المرفقة',
             'submit_request' => 'إرسال الطلب',
         ]
-    ]
+            ],
+            
 ];

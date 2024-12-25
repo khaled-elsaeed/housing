@@ -15,6 +15,7 @@ class UniversityArchive extends Model
     protected $fillable = [
         'name_en',
         'name_ar',
+        'academic_id',
         'national_id',
         'mobile',
         'birthdate',
