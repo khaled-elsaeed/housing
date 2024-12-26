@@ -27,13 +27,23 @@ class StudentProfileController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
-        $governorates = Governorate::all();
-        $programs = Program::all();
-        $countries = Country::all();
-        $faculties = Faculty::all();
-        return view('student.profile', compact('user', 'governorates', 'programs', 'countries', 'faculties'));
+        try {
+            $user = Auth::user();
+            $governorates = Governorate::all();
+            $programs = Program::all();
+            $countries = Country::all();
+            $faculties = Faculty::all();
+
+            return view('student.profile', compact('user', 'governorates', 'programs', 'countries', 'faculties'));
+        } catch (\Exception $e) {
+            \Log::error('Error fetching data for student profile: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->view('errors.generic', [], 500);
+        }
     }
+
 
     /**
      * Update the student's basic profile information.
