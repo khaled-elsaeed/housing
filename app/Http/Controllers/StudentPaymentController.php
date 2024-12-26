@@ -44,27 +44,30 @@ class StudentPaymentController extends Controller
                     $invoice = $existingSecondTermInvoice;
                 }
             } else {
-                // Process for first_term
                 $invoiceId = $request->invoice_id;
                 $invoice = Invoice::findOrFail($invoiceId);
     
-                // Check if the user is authorized to make payment
                 if ($invoice->reservation->user_id !== auth()->id()) {
                     return back()->with('error', __('messages.unauthorized_upload'));
                 }
     
-                // Check if the invoice is already paid
                 if ($invoice->status === 'paid') {
                     return back()->with('error', __('messages.invoice_already_paid'));
                 }
             }
     
-            // Process file upload
             $file = $request->file('payment_receipt');
             $fileName = 'payment_' . time() . '.' . $file->getClientOriginalExtension();
-            $filePath = $file->storeAs('public/payments', $fileName);
+            
+            $directory = 'public/payments';
+            
+            if (!Storage::exists($directory)) {
+                Storage::makeDirectory($directory);
+            }
+            
+            $filePath = $file->storeAs($directory, $fileName);
+            
     
-            // Save payment record
             $payment = new Payment();
             $payment->reservation_id = $invoice->reservation_id;
             $payment->amount = $invoice->amount;
@@ -72,13 +75,11 @@ class StudentPaymentController extends Controller
             $payment->status = 'pending';
             $payment->save();
     
-            // Update invoice status
             $invoice->status = 'paid';
             $invoice->save();
     
             DB::commit();
     
-            // Return success response
             return back()->with('success', __('messages.payment_upload_success'));
     
         } catch (\Exception $e) {
