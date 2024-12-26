@@ -13,6 +13,6 @@ class Invoice extends Model
      
      public function reservation()
     {
-        return $this->belongsTo(reservation::class); // Assuming one user has one student record
+        return $this->belongsTo(Reservation::class); 
     }
 }
