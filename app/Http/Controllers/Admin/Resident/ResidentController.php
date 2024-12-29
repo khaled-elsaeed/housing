@@ -14,9 +14,7 @@ use App\Models\UniversityArchive;
 use App\Models\UserNationalLink;
 use App\Models\Student;
 use App\Models\Building;
-
-
-
+use App\Models\Room;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -325,7 +323,7 @@ class ResidentController extends Controller
     
             DB::commit();
     
-            return response()->json(['success' => true, 'data' => $student], 201);
+            return response()->json(['success' => true], 201);
     
         } catch (\Exception $e) {
             DB::rollBack();
@@ -349,21 +347,25 @@ class ResidentController extends Controller
     
     private function extractNamesPart($name)
     {
-        $name_en = explode(' ', $name->name_en);
-        $first_name_en = $name_en[0]; 
-        $last_name_en = end($name_en); 
+        $name_en = array_filter(explode(' ', trim($name->name_en))); 
+        $name_ar = array_filter(explode(' ', trim($name->name_ar))); 
     
-        $name_ar = explode(' ', $name->name_ar);
-        $first_name_ar = $name_ar[0]; 
-        $last_name_ar = end($name_ar); 
+        $first_name_en = $name_en[0] ?? ''; 
+        $last_name_en = count($name_en) > 1 ? end($name_en) : ''; 
     
-        return [
+        $first_name_ar = $name_ar[0] ?? ''; 
+        $last_name_ar = count($name_ar) > 1 ? end($name_ar) : ''; 
+    
+        $names = [
             'first_name_en' => $first_name_en,
             'last_name_en' => $last_name_en,
             'first_name_ar' => $first_name_ar,
             'last_name_ar' => $last_name_ar,
         ];
+        
+        return $names;
     }
+    
     
     private function createUser($studentData, $names, $request)
     {
@@ -374,7 +376,7 @@ class ResidentController extends Controller
             'is_verified' => 1,
             'profile_completed' => 1,
             'can_complete_late' => 0,
-            'gender' => $request->gender,
+            'gender' => $this->parseNationalID($studentData->national_id)['gender'],
             'first_name_ar' => $names['first_name_ar'],
             'last_name_ar' => $names['last_name_ar'],
             'first_name_en' => $names['first_name_en'],
@@ -417,8 +419,8 @@ class ResidentController extends Controller
             'national_id' => $studentData->national_id,
             'academic_id' => $studentData->academic_id,
             'mobile' => $request->mobile,
-            'birthdate' => $request->birthdate,
-            'gender' => $request->gender,
+            'birthdate' => $this->parseNationalID($studentData->national_id)['birthDate'],
+            'gender' => $this->parseNationalID($studentData->national_id)['gender'],
             'governorate_id' => $request->governorate_id,
             'city_id' => $request->city_id,
             'street' => $request->street,
@@ -428,10 +430,50 @@ class ResidentController extends Controller
             'application_status' => 'final_accepted',
         ]);
     }
+
+    private function parseNationalID($nationalID) {
+
+        if (strlen($nationalID) !== 14) {
+            return ["error" => "Invalid National ID length. It must be 14 digits."];
+        }
+    
+        $centuryCode = intval(substr($nationalID, 0, 1)); 
+        $birthDatePart = substr($nationalID, 1, 6); 
+        $serialNumber = intval(substr($nationalID, 9, 4)); 
+    
+        $century = ($centuryCode === 2) ? 1900 : 2000;
+    
+        $year = $century + intval(substr($birthDatePart, 0, 2));
+        $month = intval(substr($birthDatePart, 2, 2));
+        $day = intval(substr($birthDatePart, 4, 2));
+    
+        if (!checkdate($month, $day, $year)) {
+            return ["error" => "Invalid birth date in the National ID."];
+        }
+    
+        $birthDate = sprintf("%04d-%02d-%02d", $year, $month, $day); 
+    
+        $gender = ($serialNumber % 2 === 0) ? "Female" : "Male";
+    
+        return [
+            "birthDate" => $birthDate,
+            "gender" => $gender
+        ];
+    }
     
     private function createReservation($userId, $roomId)
     {
-        return $reservation = Reservation::create([
+        $room = Room::find($roomId);
+    
+        if (!$room) {
+            throw new \Exception('Room not found.');
+        }
+    
+        if ($room->current_occupancy >= $room->max_occupancy) {
+            throw new \Exception('Room is fully occupied.');
+        }
+    
+        $reservation = Reservation::create([
             'user_id' => $userId,
             'room_id' => $roomId,
             'year' => 2024,
@@ -440,7 +482,15 @@ class ResidentController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+    
+        $room->increment('current_occupancy');
+        if($room->current_occupancy == $room->max_occupancy) {
+            $room->update(['full_occupied' => 1]);
+        }
+            return $reservation;
     }
+    
+
     
     private function createFeeInvoice($reservationId)
     {

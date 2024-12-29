@@ -43,14 +43,7 @@
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="birthdate">{{ __('pages.admin.resident.add-resident.birthdate') }}</label>
-                                <input type="date" class="form-control border-secondary" id="birthdate" name="birthdate" required>
-                            </div>
-                        </div>
-                    </div>
+                   
 
                     <div class="row">
                         <div class="col-md-6">
@@ -59,15 +52,7 @@
                                 <input type="text" class="form-control border-secondary" id="mobile" name="mobile" required>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="gender">{{ __('pages.admin.resident.add-resident.gender') }}</label>
-                                <select class="form-control border-secondary" id="gender" name="gender" required>
-                                    <option value="male">{{ __('pages.admin.resident.add-resident.gender_male') }}</option>
-                                    <option value="female">{{ __('pages.admin.resident.add-resident.gender_female') }}</option>
-                                </select>
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
 

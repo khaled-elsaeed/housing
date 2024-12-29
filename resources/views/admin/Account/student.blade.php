@@ -34,7 +34,7 @@
                <div class="card-body">
                   <div class="row align-items-center">
                      <div class="col-5">
-                        <span class="action-icon badge badge-primary-inverse me-0"><i class="feather icon-wrench"></i></span>
+                        <span class="action-icon badge badge-primary-inverse me-0"><i class="feather icon-user"></i></span>
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
                         <h5 class="card-title font-14">{{ __('pages.admin.account.total_students') }}</h5>
@@ -70,9 +70,22 @@
 </div>
 <!-- End row -->
 
-<!-- Student Account Table -->
-<div class="d-flex flex-column mb-3">
-    <h2 class="page-title text-primary mb-2">{{ __('pages.admin.account.student_accounts') }}</h2>
+
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
+            <!-- Title on the Left -->
+            <h2 class="page-title text-primary mb-2 mb-md-0">{{ __('pages.admin.account.student_accounts') }}</h2>
+            <!-- Toggle Button on the Right -->
+            <div class="div">
+                <button class="btn btn-outline-primary btn-sm toggle-btn" id="toggleButton" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                    <i class="fa fa-search-plus"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Start row -->
@@ -82,11 +95,7 @@
       <div class="card m-b-30 table-card">
          <div class="card-body table-container">
             <!-- Search Box -->
-            <!-- Search Bar -->
-<div class="mb-3">
-    <label for="searchBox" class="form-label">Search</label>
-    <input type="text" id="searchBox" class="form-control" >
-</div>
+
 
             <div class="table-responsive">
                <table id="default-datatable" class="display table table-bordered">

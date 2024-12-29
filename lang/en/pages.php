@@ -466,6 +466,7 @@ return [
             'my_profile' => 'My Profile',
         ],
         'profile' => [
+            'my_account' => 'My Account',
         'profile' => 'Profile',
         'address' => 'Address',
         'academic_info' => 'Academic Info',

@@ -5,9 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\Payment;
 use Illuminate\Http\Request;
-use App\Models\Reservation;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class StudentPaymentController extends Controller
@@ -18,88 +16,100 @@ class StudentPaymentController extends Controller
             'payment_receipt' => 'required|image|mimes:jpg,jpeg,png,pdf|max:2048',
             'term' => 'required|string',
         ]);
-    
-        $term = $request->term;
+
         DB::beginTransaction();
-    
+
         try {
-            // Ensure the user has a reservation
             $user = auth()->user();
-            if (!$user->reservation) {
-                return back()->with('error', __('messages.no_reservation_found'));
+            $invoice = $this->getInvoiceForTerm($request->term, $user, $request);
+
+            if (!$invoice) {
+                return back()->with('error', __('messages.invoice_not_found'));
             }
 
-            // Process for second_term
-            if ($term === 'second_term') {
-                $existingSecondTermInvoice = Invoice::where('reservation_id', auth()->user()->reservation_id)
-                                                     ->where('term', 'second_term')
-                                                     ->first();
-    
-                if (!$existingSecondTermInvoice) {
-                    $secondTermInvoice = new Invoice();
-                    $secondTermInvoice->reservation_id = $user->reservation->id;
-                    $secondTermInvoice->amount = 15000;
-                    $secondTermInvoice->status = 'unpaid';
-                    $secondTermInvoice->term = 'second_term';
-                    $secondTermInvoice->save();
-    
-                    $invoice = $secondTermInvoice;
-                } else {
-                    // Use existing second term invoice
-                    $invoice = $existingSecondTermInvoice;
-                }
-            } else {
-                // Ensure invoice_id is present in the request
-                if (!$request->has('invoice_id')) {
-                    return back()->with('error', __('messages.invoice_id_missing'));
-                }
-
-                $invoiceId = $request->invoice_id;
-                $invoice = Invoice::findOrFail($invoiceId);
-    
-                // Check if the invoice belongs to the authenticated user
-                if ($invoice->reservation->user_id !== $user->id) {
-                    return back()->with('error', __('messages.unauthorized_upload'));
-                }
-    
-                // Check if the invoice is already paid
-                if ($invoice->status === 'paid') {
-                    return back()->with('error', __('messages.invoice_already_paid'));
-                }
-            }
-    
             $file = $request->file('payment_receipt');
-            $fileName = 'payment_' . time() . '.' . $file->getClientOriginalExtension();
-            
-            $directory = 'public/payments';
-            
-            if (!Storage::exists($directory)) {
-                Storage::makeDirectory($directory);
-            }
-            
-            $filePath = $file->storeAs($directory, $fileName);
-            
-    
-            $payment = new Payment();
-            $payment->reservation_id = $invoice->reservation_id;
-            $payment->amount = $invoice->amount;
-            $payment->receipt_image = 'payments/' . $fileName;
-            $payment->status = 'pending';
-            $payment->save();
-    
-            $invoice->status = 'paid';
-            $invoice->save();
-    
+            $filePath = $this->storePaymentReceipt($file);
+
+            $this->createPaymentRecord($invoice, $filePath);
+            $this->markInvoiceAsPaid($invoice);
+
             DB::commit();
-    
             return back()->with('success', __('messages.payment_upload_success'));
-    
+
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', __('messages.payment_upload_error'));
         }
     }
-    
 
+    private function getInvoiceForTerm($term, $user, $request)
+    {
+        if ($term === 'second_term') {
+            return $this->getSecondTermInvoice($user);
+        } else {
+            return $this->getExistingInvoice($user, $request);
+        }
+    }
+
+    private function getSecondTermInvoice($user)
+    {
+        $existingInvoice = Invoice::where('reservation_id', $user->reservation_id)
+                                  ->where('term', 'second_term')
+                                  ->first();
+
+        if (!$existingInvoice) {
+            $invoice = new Invoice();
+            $invoice->reservation_id = $user->reservation->id;
+            $invoice->amount = 15000;
+            $invoice->status = 'unpaid';
+            $invoice->term = 'second_term';
+            $invoice->save();
+            return $invoice;
+        }
+
+        return $existingInvoice;
+    }
+
+    private function getExistingInvoice($user, $request)
+    {
+        if (!$request->has('invoice_id')) {
+            return null;
+        }
+
+        $invoice = Invoice::findOrFail($request->invoice_id);
+
+        if ($invoice->reservation->user_id !== $user->id || $invoice->status === 'paid') {
+            return null;
+        }
+
+        return $invoice;
+    }
+
+    private function storePaymentReceipt($file)
+    {
+        $fileName = 'payment_' . time() . '.' . $file->getClientOriginalExtension();
+        $directory = 'payments';
+
+        if (!Storage::disk('public')->exists($directory)) {
+            Storage::disk('public')->makeDirectory($directory);
+        }
+
+        return $file->storeAs($directory, $fileName, 'public');
+    }
+
+    private function createPaymentRecord($invoice, $filePath)
+    {
+        $payment = new Payment();
+        $payment->reservation_id = $invoice->reservation_id;
+        $payment->amount = $invoice->amount;
+        $payment->receipt_image = $filePath;
+        $payment->status = 'pending';
+        $payment->save();
+    }
+
+    private function markInvoiceAsPaid($invoice)
+    {
+        $invoice->status = 'paid';
+        $invoice->save();
+    }
 }
-

@@ -19,7 +19,7 @@
    <div class="col-lg-5 col-xl-3">
       <div class="card m-b-30">
          <div class="card-header">
-            <h5 class="card-title mb-0">My Account</h5>
+            <h5 class="card-title mb-0">{{ __('pages.student.profile.my_account') }}</h5>
          </div>
          <div class="card-body">
             <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
@@ -144,11 +144,11 @@
                         @method('PUT')
                         <div class="col-md-6">
                             <label for="first_name">{{ __('pages.student.profile.first_name') }}</label>
-                            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ $user->first_name_en }}">
+                            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ app()->getLocale() == 'en' ? $user->first_name_en : $user->first_name_ar }}">
                         </div>
                         <div class="col-md-6">
                             <label for="last_name">{{ __('pages.student.profile.last_name') }}</label>
-                            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ $user->last_name_en }}">
+                            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ app()->getLocale() == 'en' ? $user->last_name_en : $user->last_name_ar }}">
                         </div>
                         <div class="col-md-6">
                             <label for="email">{{ __('pages.student.profile.email') }}</label>
@@ -193,14 +193,14 @@
                         @if(!empty($user->student->governorate) && !empty($user->student->governorate->name_en))
                         <div class="mb-3">
                             <label for="governorate">{{ __('pages.student.profile.governorate') }}</label>
-                            <input type="text" class="form-control" id="governorate" name="governorate" value="{{ $user->student->governorate->name_en }}" disabled>
+                            <input type="text" class="form-control" id="governorate" name="governorate" value="{{ app()->getLocale() == 'en' ? $user->student->governorate->name_en : $user->student->governorate->name_ar }}" disabled>
                         </div>
                         @endif
                         <!-- City Field -->
                         @if(!empty($user->student->city) && !empty($user->student->city->name_en))
                         <div class="mb-3">
                             <label for="city">{{ __('pages.student.profile.city') }}</label>
-                            <input type="text" class="form-control" id="city" name="city" value="{{ $user->student->city->name_en }}" disabled>
+                            <input type="text" class="form-control" id="city" name="city" value="{{ app()->getLocale() == 'en' ? $user->student->city->name_en : $user->student->city->name_ar }}" disabled>
                         </div>
                         @endif
                         <!-- Street Field -->
@@ -216,35 +216,38 @@
         </div>
         <!-- Academic Info Tab Content -->
         <div class="tab-pane fade" id="v-pills-academic-info" role="tabpanel" aria-labelledby="v-pills-academic-info-tab">
-            <div class="card m-b-30">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">{{ __('pages.student.profile.academic_info') }}</h5>
-                </div>
-                <div class="card-body">
-                    <p class="text-muted">{{ __('pages.student.profile.manage_academic_details') }}</p>
-                    <form class="row g-3" method="POST" action="{{ route('student.updateAcademicInfo') }}">
-                        @csrf
-                        @method('PUT')
-                        <!-- Faculty Field -->
-                        @if(!empty(optional($user->student)->faculty))
-                        <div class="col-md-6">
-                            <label for="faculty">{{ __('pages.student.profile.faculty') }}</label>
-                            <input type="text" class="form-control" id="faculty" name="faculty" value="{{ optional($user->student)->faculty->name_en }}" disabled>
-                            <input type="hidden" name="faculty_id" value="{{ optional($user->student)->faculty_id }}">
-                        </div>
-                        @endif
-                        <!-- Program Field -->
-                        @if(!empty(optional($user->student)->program))
-                        <div class="col-md-6">
-                            <label for="program">{{ __('pages.student.profile.program') }}</label>
-                            <input type="text" class="form-control" id="program" name="program" value="{{ optional($user->student)->program->name_en }}" disabled>
-                            <input type="hidden" name="program_id" value="{{ optional($user->student)->program_id }}">
-                        </div>
-                        @endif
-                    </form>
-                </div>
+        <div class="card m-b-30">
+            <div class="card-header">
+                <h5 class="card-title mb-0">{{ __('pages.student.profile.academic_info') }}</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">{{ __('pages.student.profile.manage_academic_details') }}</p>
+                <form class="row g-3" method="POST" action="{{ route('student.updateAcademicInfo') }}">
+                    @csrf
+                    @method('PUT')
+                    <!-- Faculty Field -->
+                    @if(!empty(optional($user->student)->faculty))
+                    <div class="col-md-6">
+                        <label for="faculty">{{ __('pages.student.profile.faculty') }}</label>
+                        <input type="text" class="form-control" id="faculty" name="faculty" 
+                            value="{{ app()->getLocale() == 'en' ? optional($user->student)->faculty->name_en : optional($user->student)->faculty->name_ar }}" disabled>
+                        <input type="hidden" name="faculty_id" value="{{ optional($user->student)->faculty_id }}">
+                    </div>
+                    @endif
+                    <!-- Program Field -->
+                    @if(!empty(optional($user->student)->program))
+                    <div class="col-md-6">
+                        <label for="program">{{ __('pages.student.profile.program') }}</label>
+                        <input type="text" class="form-control" id="program" name="program" 
+                            value="{{ app()->getLocale() == 'en' ? optional($user->student)->program->name_en : optional($user->student)->program->name_ar }}" disabled>
+                        <input type="hidden" name="program_id" value="{{ optional($user->student)->program_id }}">
+                    </div>
+                    @endif
+                </form>
             </div>
         </div>
+    </div>
+
         <!-- Parent Info -->
         <div class="tab-pane fade" id="v-pills-parent-info" role="tabpanel" aria-labelledby="v-pills-parent-info-tab">
             <div class="card m-b-30">

@@ -468,6 +468,7 @@ return [
     'my_profile' => 'ملفي الشخصي',
         ],
         'profile' => [
+            'my_account' => 'حسابي',
             'profile' => 'الملف الشخصي',
             'address' => 'العنوان',
             'academic_info' => 'المعلومات الأكاديمية',
