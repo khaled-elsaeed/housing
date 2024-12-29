@@ -58,7 +58,6 @@
                         <img src="{{ asset('images/logo.png') }}" alt="Logo">
                     </a>
                 </div>
-                <h4 class="text-primary mb-4">{{ __('auth.login.welcome_back') }} 👋</h4>
             </div>
             <form method="POST" action="{{ route('login') }}">
                 @csrf
