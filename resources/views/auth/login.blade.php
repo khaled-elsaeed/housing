@@ -52,8 +52,8 @@
 
         <!-- Login Form Section -->
         <div class="col-md-6 p-4">
-            <div class="text-center">
-                <div class="auth-logo">
+        <div class="text-center mb-3 mb-lg-5">
+        <div class="auth-logo">
                     <a href="/">
                         <img src="{{ asset('images/logo.png') }}" alt="Logo">
                     </a>
