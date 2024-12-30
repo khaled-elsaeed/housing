@@ -503,45 +503,42 @@
                                     <span class="text-muted">{{ __('pages.student.profile.year') }}:</span> 
                                     <span class="text-dark fw-bold">2024/2025</span>
                                 </h6>
+
                                 <p class="mb-1">
                                     <span class="text-muted">{{ __('pages.student.profile.term') }}:</span> 
                                     <span class="text-dark">{{ __('pages.student.profile.second_term') }}</span>
                                 </p>
                                 <p class="mb-1">
-    <span class="text-muted">{{ __('pages.student.profile.term') }}:</span> 
-    <span class="text-dark">{{ __('pages.student.profile.second_term') }}</span>
-</p>
-<p class="mb-1">
-    <strong>{{ __('pages.student.profile.amount') }}:</strong> 
-    <span class="text-success">
-        @if(isset($firstTermInvoice) && $firstTermInvoice->amount)
-            ${{ number_format($firstTermInvoice->amount, 2) }}
-        @else
-            {{ __('pages.student.profile.no_amount') }}
-        @endif
-    </span>
-</p>
-<p class="mb-1">
-    <strong>{{ __('pages.student.profile.status') }}:</strong> 
-    <span class="badge badge-warning px-3 py-2">
-        {{ __('pages.student.profile.unpaid') }}
-    </span>
-</p>
-</div>
-<div class="col-md-4 text-center">
-    <form id="paymentForm" method="POST" action="{{ route('student.uploadPayment') }}" enctype="multipart/form-data">
-        @csrf
-        <input type="file" name="payment_receipt" id="payment_receipt" class="form-control mb-2" required>
-        <input type="hidden" name="term" value="second_term">
-        <button type="submit" class="btn btn-primary btn-block">
-            {{ __('pages.student.profile.upload_payment') }}
-        </button>
-    </form>
-</div>
-</div>
-</div>
-@endif
-@else
+                                    <strong>{{ __('pages.student.profile.amount') }}:</strong> 
+                                    <span class="text-success">
+                                        @if(isset($firstTermInvoice) && $firstTermInvoice->amount)
+                                            ${{ number_format($firstTermInvoice->amount, 2) }}
+                                        @else
+                                            {{ __('pages.student.profile.no_amount') }}
+                                        @endif
+                                    </span>
+                                </p>
+                                <p class="mb-1">
+                                    <strong>{{ __('pages.student.profile.status') }}:</strong> 
+                                    <span class="badge badge-warning px-3 py-2">
+                                        {{ __('pages.student.profile.unpaid') }}
+                                    </span>
+                                </p>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <form id="paymentForm" method="POST" action="{{ route('student.uploadPayment') }}" enctype="multipart/form-data">
+                                        @csrf
+                                        <input type="file" name="payment_receipt" id="payment_receipt" class="form-control mb-2" required>
+                                        <input type="hidden" name="term" value="second_term">
+                                        <button type="submit" class="btn btn-primary btn-block">
+                                            {{ __('pages.student.profile.upload_payment') }}
+                                        </button>
+                                    </form>
+                                </div>
+                                </div>
+                                </div>
+                                @endif
+                                @else
                 <div class="alert alert-info text-center">
                     {{ __('pages.student.profile.no_invoices') }}
                 </div>
