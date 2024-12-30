@@ -63,20 +63,34 @@
             <form method="POST" action="{{ route('login') }}">
                 @csrf
                 <!-- Success Message -->
+                @if (session('success'))
+                <script>
+                    Swal.fire({
+                        toast: true,
+                        icon: 'success',
+                        title: '{{ __('auth.login.success') }}',
+                        text: '{{ session('success') }}',
+                        position: '{{ app()->getLocale() == 'ar' ? 'top-end' : 'top-start' }}',
+                        showConfirmButton: false,
+                        timer: 7000,
+                        timerProgressBar: true,
+                    });
+                </script>
+                @endif
                 @if ($errors->any())
-    <script>
-        Swal.fire({
-            toast: true,
-            icon: 'error',
-            title: '{{ __('auth.register.error') }}',
-            text: '{{ $errors->first() }}',
-            position: '{{ app()->getLocale() == 'ar' ? 'top-end' : 'top-start' }}',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-        });
-    </script>
-@endif
+                <script>
+                    Swal.fire({
+                        toast: true,
+                        icon: 'error',
+                        title: '{{ __('auth.login.error') }}',
+                        text: '{{ $errors->first() }}',
+                        position: '{{ app()->getLocale() == 'ar' ? 'top-end' : 'top-start' }}',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                    });
+                </script>
+                @endif
 
 
                 <!-- Email Input -->
