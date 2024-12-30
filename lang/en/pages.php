@@ -446,6 +446,7 @@ return [
             'new_password' => 'New Password',
             'confirm_password' => 'Confirm Password',
             'no_email' => 'No Email',
+            'search' => 'Search...',
         ],
         
     ],

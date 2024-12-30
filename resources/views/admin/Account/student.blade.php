@@ -73,20 +73,36 @@
 
 
 
+
+
 <div class="row">
-    <div class="col-lg-12">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
-            <!-- Title on the Left -->
-            <h2 class="page-title text-primary mb-2 mb-md-0">{{ __('pages.admin.account.student_accounts') }}</h2>
-            <!-- Toggle Button on the Right -->
-            <div class="div">
-                <button class="btn btn-outline-primary btn-sm toggle-btn" id="toggleButton" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-                    <i class="fa fa-search-plus"></i>
-                </button>
-            </div>
+   <div class="col-lg-12">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
+         <!-- Title on the Left -->
+         <h2 class="page-title text-primary mb-2 mb-md-0">{{ __('pages.admin.account.student_accounts') }}</h2>
+         <div>
+            <button class="btn btn-outline-primary btn-sm toggle-btn" id="toggleButton" type="button" data-bs-toggle="collapse"
+               data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+               <i class="fa fa-search-plus"></i>
+            </button>
+           
+         </div>
+      </div>
+   </div>
+</div>
+<!-- Search Filter -->
+<div class="collapse" id="collapseExample">
+   <div class="search-filter-container card card-body">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+        <!-- Search Box with Icon on the Left -->
+        <div class="search-container d-flex align-items-center mb-3 mb-md-0">
+           <div class="search-icon-container">
+              <i class="fa fa-search search-icon"></i>
+           </div>
+           <input type="search" class="form-control search-input" id="searchBox" placeholder="{{ __('pages.admin.account.search...') }}" />
         </div>
-    </div>
+      </div>
+   </div>
 </div>
 
 <!-- Start row -->
