@@ -387,10 +387,7 @@
                         </select>
                     </div>
                 </div>
-                <!-- Submit Button -->
-                <button type="submit" class="btn btn-primary mt-3">
-                <i class="feather icon-save me-2"></i>{{ __('pages.student.profile.save_emergency_info') }}
-                </button>
+             
             </form>
             @else
             <!-- If no emergency contact info exists -->
