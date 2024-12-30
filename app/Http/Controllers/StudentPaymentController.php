@@ -89,6 +89,7 @@ class StudentPaymentController extends Controller
             return back()->with('success', __('messages.payment_upload_success'));
     
         } catch (\Exception $e) {
+            \Log::error($e->getMessage());
             DB::rollBack();
             return back()->with('error', __('messages.payment_upload_error'));
         }
