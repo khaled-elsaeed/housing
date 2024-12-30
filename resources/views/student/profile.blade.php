@@ -485,14 +485,14 @@
                         <div class="col-md-4 text-center">
                             @if($secondTermInvoice->status == 'unpaid')
                             <form id="paymentForm" method="POST" action="{{ route('student.uploadPayment') }}" enctype="multipart/form-data">
-    @csrf
-    <input type="file" name="payment_receipt" id="payment_receipt" class="form-control mb-2" required>
-    <input type="hidden" name="term" value="second_term">
-    <input type="hidden" name="invoice_id" value="{{ $secondTermInvoice->id }}">
-    <button type="submit" class="btn btn-primary btn-block">
-        {{ __('pages.student.profile.upload_payment') }}
-    </button>
-</form>
+                                @csrf
+                                <input type="file" name="payment_receipt" id="payment_receipt" class="form-control mb-2" required>
+                                <input type="hidden" name="term" value="second_term">
+                                <input type="hidden" name="invoice_id" value="{{ $secondTermInvoice->id }}">
+                                <button type="submit" class="btn btn-primary btn-block">
+                                    {{ __('pages.student.profile.upload_payment') }}
+                                </button>
+                            </form>
                             @endif
                         </div>
                     </div>
