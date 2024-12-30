@@ -34,7 +34,6 @@ class StudentPaymentController extends Controller
 
         $filePath = $this->storePaymentReceipt($file);
 
-        // If file is not uploaded correctly, return an error
         if (!$filePath) {
             return back()->with('error', __('messages.payment_upload_error'));
         }
@@ -46,6 +45,8 @@ class StudentPaymentController extends Controller
         return back()->with('success', __('messages.payment_upload_success'));
 
     } catch (\Exception $e) {
+        \Log::error('Error storing payment receipt:', ['error' => $e->getMessage()]);
+
         DB::rollBack();
         return back()->with('error', __('messages.payment_upload_error'));
     }
