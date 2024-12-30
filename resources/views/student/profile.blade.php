@@ -4,16 +4,26 @@
 <!-- Start row -->
 <div class="row">
    <div class="row">
-      @if(session('success'))
-      <div class="alert alert-success">
-         {{ session('success') }}
-      </div>
-      @endif
-      @if(session('error'))
-      <div class="alert alert-danger">
-         {{ session('error') }}
-      </div>
-      @endif
+   @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+@if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
    </div>
    <!-- Start col for sidebar -->
    <div class="col-lg-5 col-xl-3">
