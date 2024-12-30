@@ -15,7 +15,7 @@ class StudentPaymentController extends Controller
     public function uploadPayment(Request $request)
     {
         $request->validate([
-            'payment_receipt' => 'required|image|mimes:jpg,jpeg,png,pdf|max:2048',
+            'payment_receipt' => 'required|image|mimes:jpg,jpeg,png|max:2048',
             'term' => 'required|string',
         ]);
     
