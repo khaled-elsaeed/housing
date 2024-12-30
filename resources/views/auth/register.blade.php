@@ -19,7 +19,7 @@
     <!-- Load SweetAlert2 -->
 
     <script src="{{ asset('plugins/sweet-alert2/sweetalert2.all.min.js') }}"></script>
-    
+
     <link href="{{ asset('css/authenication.css') }}" rel="stylesheet" type="text/css">
 </head>
 
@@ -45,19 +45,21 @@
                 @csrf
                 <!-- Validation Errors -->
                 @if ($errors->any())
-                <script>
-                    Swal.fire({
-                        toast: true,
-                        icon: 'error',
-                        title: '{{ __('auth.register.error') }}',
-                        text: '{{ $errors->first() }}',
-                        position: 'top-start',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                    });
-                </script>
-                @endif
+    <script>
+        Swal.fire({
+            toast: true,
+            icon: 'error',
+            title: '{{ __('auth.register.error') }}',
+            text: '{{ $errors->first() }}',
+            position: '{{ app()->getLocale() == 'ar' ? 'top-end' : 'top-start' }}',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+        });
+    </script>
+@endif
+
+
 
                 <!-- National ID -->
                 <div class="form-floating mb-3">
@@ -93,9 +95,10 @@
     </div>
 </div>
 
+<!-- Footer -->
 <footer class="text-center">
     <div class="container">
-        <p>&copy; 2024 {{ __('auth.register.university_name') }}. {{ __('auth.register.rights_reserved') }}</p>
+        <p>&copy; 2024 {{ __('auth.login.university_name') }}. {{ __('auth.login.rights_reserved') }}</p>
     </div>
 </footer>
 

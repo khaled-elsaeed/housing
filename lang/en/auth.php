@@ -74,6 +74,7 @@ return [
         'success' => 'Your password has been reset successfully!',
         'error' => 'An error occurred while resetting your password. Please try again.',
         'image_alt' => 'Reset Password Image',
+        'return_to_login' => 'Return to',
     ],
     'update_password' => [
         'page_title' => 'Update Password',

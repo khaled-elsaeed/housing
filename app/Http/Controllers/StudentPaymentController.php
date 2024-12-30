@@ -11,36 +11,46 @@ use Illuminate\Support\Facades\DB;
 class StudentPaymentController extends Controller
 {
     public function uploadPayment(Request $request)
-    {
-        $request->validate([
-            'payment_receipt' => 'required|image|mimes:jpg,jpeg,png,pdf|max:2048',
-            'term' => 'required|string',
-        ]);
+{
+    $request->validate([
+        'payment_receipt' => 'required|image|mimes:jpg,jpeg,png,pdf|max:2048',
+        'term' => 'required|string',
+    ]);
 
-        DB::beginTransaction();
+    DB::beginTransaction();
 
-        try {
-            $user = auth()->user();
-            $invoice = $this->getInvoiceForTerm($request->term, $user, $request);
+    try {
+        $user = auth()->user();
+        $invoice = $this->getInvoiceForTerm($request->term, $user, $request);
 
-            if (!$invoice) {
-                return back()->with('error', __('messages.invoice_not_found'));
-            }
+        if (!$invoice) {
+            return back()->with('error', __('messages.invoice_not_found'));
+        }
 
-            $file = $request->file('payment_receipt');
-            $filePath = $this->storePaymentReceipt($file);
+        $file = $request->file('payment_receipt');
+        if (!$file) {
+            return back()->with('error', __('messages.payment_receipt_missing'));
+        }
 
-            $this->createPaymentRecord($invoice, $filePath);
-            $this->markInvoiceAsPaid($invoice);
+        $filePath = $this->storePaymentReceipt($file);
 
-            DB::commit();
-            return back()->with('success', __('messages.payment_upload_success'));
-
-        } catch (\Exception $e) {
-            DB::rollBack();
+        // If file is not uploaded correctly, return an error
+        if (!$filePath) {
             return back()->with('error', __('messages.payment_upload_error'));
         }
+
+        $this->createPaymentRecord($invoice, $filePath);
+        $this->markInvoiceAsPaid($invoice);
+
+        DB::commit();
+        return back()->with('success', __('messages.payment_upload_success'));
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return back()->with('error', __('messages.payment_upload_error'));
     }
+}
+
 
     private function getInvoiceForTerm($term, $user, $request)
     {
@@ -86,7 +96,8 @@ class StudentPaymentController extends Controller
     }
 
     private function storePaymentReceipt($file)
-    {
+{
+    try {
         $fileName = 'payment_' . time() . '.' . $file->getClientOriginalExtension();
         $directory = 'payments';
 
@@ -94,8 +105,14 @@ class StudentPaymentController extends Controller
             Storage::disk('public')->makeDirectory($directory);
         }
 
-        return $file->storeAs($directory, $fileName, 'public');
+        $filePath = $file->storeAs($directory, $fileName, 'public');
+        return $filePath;
+    } catch (\Exception $e) {
+        \Log::error('Error storing payment receipt:', ['error' => $e->getMessage()]);
+        return null; 
     }
+}
+
 
     private function createPaymentRecord($invoice, $filePath)
     {

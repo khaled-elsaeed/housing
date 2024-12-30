@@ -61,37 +61,20 @@
                 @csrf
                 <input type="hidden" name="token" value="{{ $token }}">
 
-                <!-- Success Message -->
-                @if (session('status'))
-                <script>
-                    Swal.fire({
-                        toast: true,
-                        icon: 'success',
-                        title: '{{ __('auth.update_password.success') }}',
-                        text: '{{ session('status') }}',
-                        position: 'top-start',
-                        showConfirmButton: false,
-                        timer: 8000,
-                        timerProgressBar: true,
-                    });
-                </script>
-                @endif
-
-                <!-- Validation Errors -->
                 @if ($errors->any())
-                <script>
-                    Swal.fire({
-                        toast: true,
-                        icon: 'error',
-                        title: '{{ __('auth.update_password.error') }}',
-                        text: '{{ $errors->first() }}',
-                        position: 'top-start',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                    });
-                </script>
-                @endif
+    <script>
+        Swal.fire({
+            toast: true,
+            icon: 'error',
+            title: '{{ __('auth.register.error') }}',
+            text: '{{ $errors->first() }}',
+            position: '{{ app()->getLocale() == 'ar' ? 'top-end' : 'top-start' }}',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+        });
+    </script>
+@endif
 
              
                 <!-- New Password Input -->
@@ -118,7 +101,7 @@
 <!-- Footer -->
 <footer class="text-center">
     <div class="container">
-        <p>&copy; 2024 {{ __('auth.update_password.university_name') }}. {{ __('auth.update_password.rights_reserved') }}</p>
+        <p>&copy; 2024 {{ __('auth.login.university_name') }}. {{ __('auth.login.rights_reserved') }}</p>
     </div>
 </footer>
 

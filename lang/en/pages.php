@@ -5,8 +5,11 @@ return [
         'notifications' => 'Notifications',
         'no_new_notifications' => 'No new notifications',
         'my_profile' => 'My Profile',
-        'logout' => 'Logout',
-        'are_you_sure_logout' => 'Are you sure you want to logout?',
+        'are_you_sure_logout' => 'هل أنت متأكد أنك تريد تسجيل الخروج؟',
+    'logout_confirmation_text' => 'ستحتاج إلى تسجيل الدخول مرة أخرى للوصول إلى حسابك.',
+    'yes_logout' => 'نعم، تسجيل الخروج',
+    'cancel' => 'إلغاء',
+    'logout' => 'تسجيل الخروج',
     ],
     "admin" => [
         "general" => [

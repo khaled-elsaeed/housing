@@ -125,32 +125,36 @@
 
 <script>
 function logout() {
-    if (confirm("@lang('pages.general.are_you_sure_logout')")) {
-        // Create a form dynamically
-        var form = document.createElement('form');
-        form.method = 'POST';
-        form.action = "{{ route('logout') }}"; // Set the logout route
+    swal({
+        title: '@lang("pages.general.are_you_sure_logout")',
+        text: '@lang("pages.general.logout_confirmation_text")',
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: '@lang("pages.general.yes_logout")',
+        cancelButtonText: '@lang("pages.general.cancel")'
+    }).then((result) => {
+            // Create and submit the logout form
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = "{{ route('logout') }}";
 
-        // Create a hidden input for CSRF token
-        var csrfInput = document.createElement('input');
-        csrfInput.type = 'hidden';
-        csrfInput.name = '_token'; // CSRF token field name
-        csrfInput.value = '{{ csrf_token() }}'; // CSRF token value
+            var csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = '{{ csrf_token() }}';
 
-        // Append CSRF input to the form
-        form.appendChild(csrfInput);
-
-        // Append the form to the body and submit it
-        document.body.appendChild(form);
-        form.submit();
-
-        // Prevent back navigation by manipulating history
-        window.history.pushState(null, "", window.location.href);
-    }
+            form.appendChild(csrfInput);
+            document.body.appendChild(form);
+            form.submit();
+        
+    });
 }
 
-// Handle back navigation
+// Prevent navigating back after logout
 window.onpopstate = function () {
     window.history.pushState(null, "", window.location.href);
 };
 </script>
+

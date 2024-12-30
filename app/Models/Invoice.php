@@ -10,6 +10,14 @@ class Invoice extends Model
     use HasFactory;
 
      protected $table = 'invoices';
+
+     protected $fillable = [
+        'reservation_id', 
+        'amount', 
+        'due_date', 
+        'status', 
+        'category'
+    ];
      
      public function reservation()
     {

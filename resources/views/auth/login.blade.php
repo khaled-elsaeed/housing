@@ -16,6 +16,7 @@
     <link href="{{ asset('css/flag-icon.min.css') }}" rel="stylesheet" type="text/css">
     @if(app()->isLocale('en'))
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+    
 @else
     <link href="{{ asset('css/bootstrap.rtl.min.css') }}" rel="stylesheet" type="text/css">
 @endif
@@ -62,36 +63,21 @@
             <form method="POST" action="{{ route('login') }}">
                 @csrf
                 <!-- Success Message -->
-                @if (session('success'))
-                <script>
-                    Swal.fire({
-                        toast: true,
-                        icon: 'success',
-                        title: '{{ __('auth.login.success') }}',
-                        text: '{{ session('success') }}',
-                        position: 'top-start',
-                        showConfirmButton: false,
-                        timer: 8000,
-                        timerProgressBar: true,
-                    });
-                </script>
-                @endif
-
-                <!-- Validation Errors -->
                 @if ($errors->any())
-                <script>
-                    Swal.fire({
-                        toast: true,
-                        icon: 'error',
-                        title: '{{ __('auth.login.error') }}',
-                        text: '{{ $errors->first() }}',
-                        position: 'top-start',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                    });
-                </script>
-                @endif
+    <script>
+        Swal.fire({
+            toast: true,
+            icon: 'error',
+            title: '{{ __('auth.register.error') }}',
+            text: '{{ $errors->first() }}',
+            position: '{{ app()->getLocale() == 'ar' ? 'top-end' : 'top-start' }}',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+        });
+    </script>
+@endif
+
 
                 <!-- Email Input -->
                 <div class="form-floating mb-3">

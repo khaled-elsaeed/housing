@@ -59,38 +59,21 @@
             </div>
             <form method="POST" action="{{ route('password.email') }}">
                 @csrf
-
-                <!-- Success Message -->
-                @if (session('status'))
-                <script>
-                    Swal.fire({
-                        toast: true,
-                        icon: 'success',
-                        title: '{{ __('auth.reset_password.success') }}',
-                        text: '{{ session('status') }}',
-                        position: 'top-start',
-                        showConfirmButton: false,
-                        timer: 8000,
-                        timerProgressBar: true,
-                    });
-                </script>
-                @endif
-
-                <!-- Validation Errors -->
                 @if ($errors->any())
-                <script>
-                    Swal.fire({
-                        toast: true,
-                        icon: 'error',
-                        title: '{{ __('auth.reset_password.error') }}',
-                        text: '{{ $errors->first() }}',
-                        position: 'top-start',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                    });
-                </script>
-                @endif
+    <script>
+        Swal.fire({
+            toast: true,
+            icon: 'error',
+            title: '{{ __('auth.register.error') }}',
+            text: '{{ $errors->first() }}',
+            position: '{{ app()->getLocale() == 'ar' ? 'top-end' : 'top-start' }}',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+        });
+    </script>
+@endif
+
 
                 <!-- Email Input -->
                 <div class="form-floating mb-3">
@@ -98,12 +81,16 @@
                     <label for="email">{{ __('auth.reset_password.email_label') }}</label>
                 </div>
 
-             
+                <p class="text-start text-secondary ">{{ __('auth.reset_password.return_to_login') }} <a href="{{ route('login') }}" class="text-primary">{{ __('auth.register.login') }}</a></p>
+
 
                 <!-- Submit Button -->
                 <div class="d-grid mb-4">
                     <button class="btn btn-primary btn-lg">{{ __('auth.reset_password.submit_button') }}</button>
                 </div>
+
+             
+                
             </form>
         </div>
     </div>
@@ -112,7 +99,7 @@
 <!-- Footer -->
 <footer class="text-center">
     <div class="container">
-        <p>&copy; 2024 {{ __('auth.reset_password.university_name') }}. {{ __('auth.reset_password.rights_reserved') }}</p>
+        <p>&copy; 2024 {{ __('auth.login.university_name') }}. {{ __('auth.login.rights_reserved') }}</p>
     </div>
 </footer>
 

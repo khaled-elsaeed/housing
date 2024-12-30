@@ -1,113 +1,120 @@
-    body {
-        background-color: #f8f9fa;
-        font-family: 'Roboto', sans-serif;
-    }
+@import url("https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap"); 
+@import url("https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@100..900&display=swap"); 
 
-    .language-switcher-container {
-        position: fixed;
-        top: 15px;
-        right: 15px;
-        z-index: 999;
-    }
-    
-    html[dir="rtl"] .language-switcher-container {
-        left: 15px;
-        right: auto;
-    }
-    
-    html[dir="ltr"] .language-switcher-container {
-        right: 15px;
-        left: auto;
-    }
 
+html[lang="ar"] body {
+font-family: "Noto Kufi Arabic", sans-serif;
+}
+
+html[lang="en"] body {
+    font-family: "Raleway", sans-serif;
+}
+
+.language-switcher-container {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 999;
+}
+
+html[dir="rtl"] .language-switcher-container {
+    left: 15px;
+    right: auto;
+}
+
+html[dir="ltr"] .language-switcher-container {
+    right: 15px;
+    left: auto;
+}
+
+.language-switcher {
+    display: flex;
+    gap: 8px;
+    background-color: #ffffff;
+    border-radius: 30px;
+    padding: 6px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.language-option {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #234E70;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.language-option i {
+    font-size: 16px;
+}
+
+.language-option.active {
+    background-color: #8C2F39;
+    color: #ffffff;
+}
+
+@media (max-width: 576px) {
     .language-switcher {
-        display: flex;
-        gap: 8px;
-        background-color: #ffffff;
-        border-radius: 30px;
-        padding: 6px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        gap: 4px;
+        padding: 4px;
     }
 
     .language-option {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        padding: 5px 10px;
-        font-size: 14px;
-        font-weight: 500;
-        color: #234E70;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: all 0.3s ease-in-out;
+        font-size: 12px;
+        padding: 4px 8px;
     }
 
     .language-option i {
-        font-size: 16px;
-    }
-
-    .language-option.active {
-        background-color: #8C2F39;
-        color: #ffffff;
-    }
-
-    @media (max-width: 576px) {
-        .language-switcher {
-            gap: 4px;
-            padding: 4px;
-        }
-
-        .language-option {
-            font-size: 12px;
-            padding: 4px 8px;
-        }
-
-        .language-option i {
-            font-size: 14px;
-        }
-    }
-
-    .auth-box {
-        max-width: 75%;
-        margin: 2rem auto;
-        background: #fff;
-        border-radius: 15px;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        margin-top: 60px;
-    }
-
-    .auth-logo img {
-        width: 120px;
-        margin-bottom: 20px;
-    }
-
-    footer {
-        color: #6c757d;
         font-size: 14px;
     }
+}
 
-    /* RTL Specific Styles */
-    body[dir="rtl"] {
-        direction: rtl;
-        text-align: right;
-    }
+.auth-box {
+    max-width: 75%;
+    margin: 2rem auto;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    margin-top: 60px;
+}
 
-    body[dir="rtl"] .auth-box {
-        margin-right: 10%;
-        margin-left: 0;
-    }
+.auth-logo img {
+    width: 120px;
+    margin-bottom: 20px;
+}
 
-    body[dir="rtl"] .auth-logo img {
-        margin-left: 0;
-        margin-right: auto;
-    }
+footer {
+    color: #6c757d;
+    font-size: 14px;
+}
 
-    body[dir="rtl"] .text-end {
-        text-align: left;
-    }
-    /* Placeholder Text Alignment for RTL */
-  body[dir="rtl"] .form-floating>label {
-     text-align: right !important;
-  }
+/* RTL Specific Styles */
+body[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+}
+
+body[dir="rtl"] .auth-box {
+    margin-right: 10%;
+    margin-left: 0;
+}
+
+body[dir="rtl"] .auth-logo img {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+body[dir="rtl"] .text-end {
+    text-align: left;
+}
+/* Placeholder Text Alignment for RTL */
+body[dir="rtl"] .form-floating>label {
+    text-align: right !important;
+}
 
 
