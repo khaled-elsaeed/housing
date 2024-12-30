@@ -131,7 +131,7 @@
 @endsection
 
 @section('scripts')
-<script src="{{ asset('js/pages/student-permission.js') }}"></script>
+<script src="{{ asset('js/pages/student-permission.js') }}?v={{ config('app.version') }}"></script>
 <script>
     Window.routes = {
         permissionStore: "{{ route('student.permission.store') }}",

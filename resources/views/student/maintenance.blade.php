@@ -245,7 +245,7 @@
 @endsection
 
 @section('scripts')
-<script src="{{ asset('js/pages/student-maintenance.js') }}"></script>
+<script src="{{ asset('js/pages/student-maintenance.js') }}?v={{ config('app.version') }}"></script>
 <script>
     window.routes = {
         maintenanceStore: "{{ route('student.maintenance.store') }}", // Corrected with ":" instead of "="

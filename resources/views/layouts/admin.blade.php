@@ -13,22 +13,22 @@
       <title>NMU Housing - @yield('title', 'Default Title')</title>
 
       <!-- Icons -->
-      <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
-      <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32x32.png') }}">
-      <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16x16.png') }}">
+      <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}?v={{ config('app.version', time()) }}">
+      <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32x32.png') }}?v={{ config('app.version', time()) }}">
+      <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16x16.png') }}?v={{ config('app.version', time()) }}">
 
       <!-- Global CSS -->
       @if(app()->isLocale('en'))
-    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset('css/style.css') }}" rel="stylesheet" type="text/css">
-@else
-    <link href="{{ asset('css/bootstrap.rtl.min.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset('css/style.rtl.css') }}" rel="stylesheet" type="text/css">
-@endif
+         <link href="{{ asset('css/bootstrap.min.css') }}?v={{ config('app.version', time()) }}" rel="stylesheet" type="text/css">
+         <link href="{{ asset('css/style.css') }}?v={{ config('app.version', time()) }}" rel="stylesheet" type="text/css">
+      @else
+         <link href="{{ asset('css/bootstrap.rtl.min.css') }}?v={{ config('app.version', time()) }}" rel="stylesheet" type="text/css">
+         <link href="{{ asset('css/style.rtl.css') }}?v={{ config('app.version', time()) }}" rel="stylesheet" type="text/css">
+      @endif
 
-     <link href="{{ asset('css/icons.css') }}" rel="stylesheet" type="text/css">
-      <link href="{{ asset('css/flag-icon.min.css') }}" rel="stylesheet" type="text/css">
-      <link href="{{ asset('plugins/sweet-alert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+      <link href="{{ asset('css/icons.css') }}?v={{ config('app.version', time()) }}" rel="stylesheet" type="text/css">
+      <link href="{{ asset('css/flag-icon.min.css') }}?v={{ config('app.version', time()) }}" rel="stylesheet" type="text/css">
+      <link href="{{ asset('plugins/sweet-alert2/sweetalert2.min.css') }}?v={{ config('app.version', time()) }}" rel="stylesheet" type="text/css">
 
       <!-- Page-Specific CSS -->
       @yield('links')
@@ -68,24 +68,19 @@
       <!-- End Containerbar -->
 
       <!-- Global JS -->
-      <script src="{{ asset('js/jquery.min.js') }}"></script>
-      <script src="{{ asset('js/popper.min.js') }}"></script>
-      <script src="{{ asset('js/bootstrap.bundle.js') }}"></script>
-      <script src="{{ asset('js/modernizr.min.js') }}"></script>
-      <script src="{{ asset('js/detect.js') }}"></script>
-      <script src="{{ asset('js/jquery.slimscroll.js') }}"></script>
-      <script src="{{ asset('js/vertical-menu.js') }}"></script>
-      <script src="{{ asset('plugins/sweet-alert2/sweetalert2.min.js') }}"></script>
+      <script src="{{ asset('js/jquery.min.js') }}?v={{ config('app.version', time()) }}"></script>
+      <script src="{{ asset('js/popper.min.js') }}?v={{ config('app.version', time()) }}"></script>
+      <script src="{{ asset('js/bootstrap.bundle.js') }}?v={{ config('app.version', time()) }}"></script>
+      <script src="{{ asset('js/modernizr.min.js') }}?v={{ config('app.version', time()) }}"></script>
+      <script src="{{ asset('js/detect.js') }}?v={{ config('app.version', time()) }}"></script>
+      <script src="{{ asset('js/jquery.slimscroll.js') }}?v={{ config('app.version', time()) }}"></script>
+      <script src="{{ asset('js/vertical-menu.js') }}?v={{ config('app.version', time()) }}"></script>
+      <script src="{{ asset('plugins/sweet-alert2/sweetalert2.min.js') }}?v={{ config('app.version', time()) }}"></script>
       <script>
-  
       </script>
-    <!-- Page-Specific JS -->
-    @yield('scripts')
+      <!-- Page-Specific JS -->
+      @yield('scripts')
       <!-- Core JS -->
-      <script src="{{ asset('js/core.js') }}"></script>
-      
-
-      
-
+      <script src="{{ asset('js/core.js') }}?v={{ config('app.version', time()) }}"></script>
    </body>
 </html>

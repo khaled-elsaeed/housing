@@ -123,6 +123,21 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Application Version
+    |--------------------------------------------------------------------------
+    |
+    | This value is the current version of your application. You can use it
+    | for asset versioning or display it in your application. Update this
+    | version whenever you make changes that require a new asset version.
+    |
+    */
+
+    'version' => '1.0.1',
+    
+    // 'version' => env('APP_VERSION', '1.0.0'), 
+
     
 
 ];

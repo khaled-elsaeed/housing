@@ -215,12 +215,13 @@
 
 @section('scripts')
 <!-- Datatable JS -->
-<script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables/dataTables.buttons.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables/buttons.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
-<script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}?v={{ config('app.version') }}"></script>
+<script src="{{ asset('plugins/datatables/dataTables.bootstrap4.min.js') }}?v={{ config('app.version') }}"></script>
+<script src="{{ asset('plugins/datatables/dataTables.buttons.min.js') }}?v={{ config('app.version') }}"></script>
+<script src="{{ asset('plugins/datatables/buttons.bootstrap4.min.js') }}?v={{ config('app.version') }}"></script>
+<script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}?v={{ config('app.version') }}"></script>
+<script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}?v={{ config('app.version') }}"></script>
+
 <script src="{{ asset('js/pages/residents.js') }}"></script>
 <script>
    window.routes = {
