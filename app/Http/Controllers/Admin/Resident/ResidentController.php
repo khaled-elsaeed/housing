@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Hash;
 
 use Exception;
 use Illuminate\Support\Facades\App;
+use App\Mail\NewUserWelcomeEmail;
+use Illuminate\Support\Facades\Mail;
 
 
 class ResidentController extends Controller
@@ -322,7 +324,7 @@ class ResidentController extends Controller
             $this->createFeeInvoice($reservation->id);
     
             DB::commit();
-    
+            Mail::to($validateIsUniversityStudent['data']->academic_email)->send(new NewUserWelcomeEmail($validateIsUniversityStudent['data']->academic_email, $validateIsUniversityStudent['data']->national_id));
             return response()->json(['success' => true], 201);
     
         } catch (\Exception $e) {

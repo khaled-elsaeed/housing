@@ -26,6 +26,7 @@ class User extends Authenticatable
         'activation_token',
         'activation_expires_at',
         'profile_completed',
+        'status',
     ];
 
     protected $hidden = [

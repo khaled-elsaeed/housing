@@ -9,7 +9,7 @@
 
 <style>
     .loading {
-        pointer-events: none; /* Disable button interactions */
+        pointer-events: none; 
     }
     .search-box {
         margin-bottom: 20px;
@@ -131,8 +131,8 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $student->getUsernameEnAttribute() }}</td>
-                        <td>{{ $student->universityArchive->national_id }}</td>
-                        <td>{{ $student->email ?? __('pages.admin.account.no_email') }}</td>
+                        <td>{{ $student->student->national_id }}</td>
+                        <td>{{ $student->email}}</td>
                         <td>
                             @if($student->status === 'active')
                                 <span class="badge bg-success">{{ __('pages.admin.account.active') }}</span>
