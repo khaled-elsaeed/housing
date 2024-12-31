@@ -9,6 +9,8 @@ use App\Models\Reservation;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
 
 class StudentPaymentController extends Controller
 {
@@ -23,6 +25,7 @@ class StudentPaymentController extends Controller
         DB::beginTransaction();
     
         try {
+
             $user = auth()->user();
             if (!$user->reservation) {
                 return back()->with('error', __('messages.no_reservation_found'));
@@ -89,7 +92,7 @@ class StudentPaymentController extends Controller
             return back()->with('success', __('messages.payment_upload_success'));
     
         } catch (\Exception $e) {
-            \Log::error($e->getMessage());
+            Log::error('Error uploading payment receipt', ['error' => $e->getMessage()]);
             DB::rollBack();
             return back()->with('error', __('messages.payment_upload_error'));
         }
