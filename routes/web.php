@@ -224,11 +224,10 @@ Route::middleware(Localization::class)
     Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
     Route::get('/get-cities/{governorateId}', [StudentProfileController::class, 'getCitiesByGovernorate'])->name('get-cities');
     Route::get('/get-programs/{facultyId}', [StudentProfileController::class, 'getProgramsForFaculty'])->name('get-programs');
-    // Admin Profile Routes
     Route::get('/profile', [StudentProfileController::class, 'index'])->name('student.profile');
     Route::put('/profile/update', [StudentProfileController::class, 'update'])->name('student.profile.update');
     Route::post('profile/update-picture', [StudentProfileController::class, 'updateProfilePicture'])->name('student.profile.update-picture');
-    Route::delete('profile/delete-picture', [StudentProfileController::class, 'deleteProfilePicture'])->name('student.profile.delete-picture');
+    Route::DELETE('profile/delete-picture', [StudentProfileController::class, 'deleteProfilePicture'])->name('student.profile.delete-picture');
     Route::put('/student/address', [StudentProfileController::class, 'updateAddress'])->name('student.updateAddress');
     Route::put('/student/academic-info', [StudentProfileController::class, 'updateAcademicInfo'])->name('student.updateAcademicInfo');
     Route::put('/student/update-parent-info', [StudentProfileController::class, 'updateParentInfo'])->name('student.updateParentInfo');

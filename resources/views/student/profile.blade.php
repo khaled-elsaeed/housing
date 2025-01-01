@@ -94,98 +94,105 @@
                     <h5 class="card-title mb-0">{{ __('pages.student.profile.my_profile') }}</h5>
                 </div>
                 <div class="card-body">
-                    <div class="profilebox pt-4 text-center">
-                        <!-- Profile Image -->
-                        <img src="{{ $user->profile_picture ? asset('storage/profile_pictures/' . $user->profile_picture) : asset('images/users/boy.svg') }}" 
-                            class="img-fluid mb-3 rounded-circle" style="width: 150px; height: 150px; object-fit: cover;" alt="user">
-                        <!-- Profile Picture Actions -->
-                        <ul class="list-inline">
-                            <!-- Edit Profile Picture Button (Open file input dialog) -->
-                            <li class="list-inline-item">
-                                <a href="#" class="btn btn-success-rgba font-18" data-bs-toggle="modal" data-bs-target="#profilePicModal">
-                                <i class="feather icon-edit"></i> {{ __('pages.student.profile.change_picture') }}
-                                </a>
-                            </li>
-                            <!-- Delete Profile Picture Button -->
-                            @if($user->profile_picture)
-                            <li class="list-inline-item">
-                                <form action="#" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger-rgba font-18">
-                                    <i class="feather icon-trash"></i> {{ __('pages.student.profile.delete_picture') }}
-                                    </button>
-                                </form>
-                            </li>
-                            @endif
-                        </ul>
-                    </div>
-                </div>
+    <div class="profilebox pt-4 text-center">
+        <!-- Profile Image -->
+        <img src="{{ $user->profile_picture ? asset($user->profile_picture) : asset('images/users/boy.svg') }}" 
+     class="img-fluid mb-3 rounded-circle" style="width: 150px; height: 150px; object-fit: cover;" alt="user">
+
+
+        <!-- Profile Picture Actions -->
+        <ul class="list-inline">
+            <!-- Edit Profile Picture Button (Open file input dialog) -->
+            <li class="list-inline-item">
+                <a href="#" class="btn btn-success-rgba font-18" data-bs-toggle="modal" data-bs-target="#profilePicModal">
+                <i class="feather icon-edit"></i> {{ __('pages.student.profile.change_picture') }}
+                </a>
+            </li>
+
+            <!-- Delete Profile Picture Button -->
+            @if($user->profile_picture)
+            <li class="list-inline-item">
+                <!-- Delete Profile Picture Form -->
+                <form action="{{ route('student.profile.delete-picture') }}" method="POST" style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger-rgba font-18" onclick="return confirm('Are you sure you want to delete your profile picture?');">
+                    <i class="feather icon-trash"></i> {{ __('pages.student.profile.delete_picture') }}
+                    </button>
+                </form>
+            </li>
+            @endif
+        </ul>
+    </div>
+</div>
+
                 <!-- Modal for Changing Profile Picture -->
-                <div class="modal fade" id="profilePicModal" tabindex="-1" aria-labelledby="profilePicModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="profilePicModalLabel">{{ __('pages.student.profile.change_profile_picture') }}</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form action="#" method="POST" enctype="multipart/form-data">
-                                    @csrf
-                                    <div class="mb-3">
-                                        <label for="profile_picture" class="form-label">{{ __('pages.student.profile.select_new_picture') }}</label>
-                                        <input type="file" class="form-control" id="profile_picture" name="profile_picture" accept="image/*" required>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">{{ __('pages.student.profile.upload_new_picture') }}</button>
-                                </form>
-                            </div>
-                        </div>
+<div class="modal fade" id="profilePicModal" tabindex="-1" aria-labelledby="profilePicModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="profilePicModalLabel">{{ __('pages.student.profile.change_profile_picture') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('student.profile.update-picture') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="profile_picture" class="form-label">{{ __('pages.student.profile.select_new_picture') }}</label>
+                        <input type="file" class="form-control" id="profile_picture" name="profile_picture" accept="image/*" required>
                     </div>
-                </div>
+                    <button type="submit" class="btn btn-primary">{{ __('pages.student.profile.upload_new_picture') }}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
             </div>
             <!-- Edit Profile Information -->
-            <div class="card m-b-30">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">{{ __('pages.student.profile.edit_profile_information') }}</h5>
+<div class="card m-b-30">
+    <div class="card-header">
+        <h5 class="card-title mb-0">{{ __('pages.student.profile.edit_profile_information') }}</h5>
+    </div>
+    <div class="card-body">
+        <form class="row g-3" method="POST" action="{{ route('student.profile.update') }}">
+            @csrf
+            @method('PUT')
+            <div class="col-md-6">
+                <label for="first_name">{{ __('pages.student.profile.first_name') }}</label>
+                <input type="text" class="form-control" id="first_name" name="first_name" value="{{ old('first_name', $user->first_name_en) }}" required>
+            </div>
+            <div class="col-md-6">
+                <label for="last_name">{{ __('pages.student.profile.last_name') }}</label>
+                <input type="text" class="form-control" id="last_name" name="last_name" value="{{ old('last_name', $user->last_name_en) }}" required>
+            </div>
+            <div class="col-md-6">
+                <label for="email">{{ __('pages.student.profile.email') }}</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ old('email', $user->email) }}" required>
+            </div>
+            <!-- Password Fields -->
+            <div class="col-md-12">
+                <button type="button" class="btn btn-secondary mb-3" id="toggle-password-btn">
+                {{ __('pages.student.profile.change_password') }}
+                </button>
+            </div>
+            <div id="password-section" style="display: none;">
+                <div class="col-md-6">
+                    <label for="password">{{ __('pages.student.profile.password') }}</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="{{ __('pages.student.profile.enter_new_password') }}">
                 </div>
-                <div class="card-body">
-                    <form class="row g-3" method="POST" action="#">
-                        @csrf
-                        @method('PUT')
-                        <div class="col-md-6">
-                            <label for="first_name">{{ __('pages.student.profile.first_name') }}</label>
-                            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ app()->getLocale() == 'en' ? $user->first_name_en : $user->first_name_ar }}">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="last_name">{{ __('pages.student.profile.last_name') }}</label>
-                            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ app()->getLocale() == 'en' ? $user->last_name_en : $user->last_name_ar }}">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="email">{{ __('pages.student.profile.email') }}</label>
-                            <input type="email" class="form-control" id="email" name="email" value="{{ $user->email }}">
-                        </div>
-                        <!-- Password Fields -->
-                        <div class="col-md-12">
-                            <button type="button" class="btn btn-secondary mb-3" id="toggle-password-btn">
-                            {{ __('pages.student.profile.change_password') }}
-                            </button>
-                        </div>
-                        <div id="password-section" style="display: none;">
-                            <div class="col-md-6">
-                                <label for="password">{{ __('pages.student.profile.password') }}</label>
-                                <input type="password" class="form-control" id="password" name="password" placeholder="{{ __('pages.student.profile.enter_new_password') }}">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="password_confirmation">{{ __('pages.student.profile.confirm_password') }}</label>
-                                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="{{ __('pages.student.profile.confirm_new_password') }}">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary font-16">
-                        <i class="feather icon-save me-2"></i>{{ __('pages.student.profile.update') }}
-                        </button>
-                    </form>
+                <div class="col-md-6">
+                    <label for="password_confirmation">{{ __('pages.student.profile.confirm_password') }}</label>
+                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="{{ __('pages.student.profile.confirm_new_password') }}">
                 </div>
             </div>
+            <button type="submit" class="btn btn-primary font-16">
+                <i class="feather icon-save me-2"></i>{{ __('pages.student.profile.update') }}
+            </button>
+        </form>
+    </div>
+</div>
+
         </div>
         <!-- End My Profile Tab -->
         

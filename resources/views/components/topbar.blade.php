@@ -81,7 +81,7 @@
                         <div class="profilebar">
                             <div class="dropdown">
                                 <a class="dropdown-toggle" href="#" role="button" id="profilelink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <img src="{{ auth()->user()->profile_picture ? asset('storage/profile_pictures/' . auth()->user()->profile_picture) : asset('images/users/boy.svg') }}" class="img-fluid" alt="profile">
+                                    <img src="{{ auth()->user()->profile_picture ? asset(auth()->user()->profile_picture) : asset('images/users/boy.svg') }}" class="img-fluid" alt="profile">
                                     <span class="feather icon-chevron-down live-icon"></span>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profilelink">

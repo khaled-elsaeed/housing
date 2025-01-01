@@ -1,14 +1,15 @@
 <?php
+
 return [
     'general' => [
         'notifications' => 'الإشعارات',
         'no_new_notifications' => 'لا توجد إشعارات جديدة',
         'my_profile' => 'ملفي الشخصي',
         'are_you_sure_logout' => 'هل أنت متأكد أنك تريد تسجيل الخروج؟',
-    'logout_confirmation_text' => 'ستحتاج إلى تسجيل الدخول مرة أخرى للوصول إلى حسابك.',
-    'yes_logout' => 'نعم، تسجيل الخروج',
-    'cancel' => 'إلغاء',
-    'logout' => 'تسجيل الخروج',
+        'logout_confirmation_text' => 'ستحتاج إلى تسجيل الدخول مرة أخرى للوصول إلى حسابك.',
+        'yes_logout' => 'نعم، تسجيل الخروج',
+        'cancel' => 'إلغاء',
+        'logout' => 'تسجيل الخروج',
     ],
     "admin" => [
         "general" => [
@@ -222,7 +223,7 @@ return [
                 'room' => 'الغرفة',
                 'select_room' => 'اختر الغرفة',
                 'save_resident' => 'حفظ الساكن',
-                'no_available_rooms' => 'لا يوجد غرف فارغة'
+                'no_available_rooms' => 'لا يوجد غرف فارغة',
             ],
         ],
         'buildings' => [
@@ -465,10 +466,10 @@ return [
             'create_new_reservation' => 'إنشاء حجز جديد',
         ],
         'sidebar' => [
-          'home' => 'الرئيسية',
-    'maintenance' => 'الصيانة',
-    'permissions' => 'الصلاحيات',
-    'my_profile' => 'ملفي الشخصي',
+            'home' => 'الرئيسية',
+            'maintenance' => 'الصيانة',
+            'permissions' => 'الصلاحيات',
+            'my_profile' => 'ملفي الشخصي',
         ],
         'profile' => [
             'my_account' => 'حسابي',
@@ -550,13 +551,24 @@ return [
             'term' => 'الفصل الدراسي',
             'paid' => 'مدفوع',
             'unpaid' => 'غير مدفوع',
-            'second_term' => 'الثاني', // Arabic translation for "Second Term"
-            'pending_invoice' => 'فاتورة معلقة', // Arabic translation for "Pending Invoice"
+            'second_term' => 'الثاني', 
+            'pending_invoice' => 'فاتورة معلقة',
             'upload_payment' => 'تحميل إيصال الدفع',
             'no_invoices' => 'لا توجد فواتير متاحة لهذا الطالب.',
-
-            ],
-            'maintenance' => [
+            'update_success' => 'تم تحديث الملف الشخصي بنجاح.',
+            'update_error' => 'حدث خطأ أثناء تحديث ملفك الشخصي. الرجاء المحاولة لاحقاً.',
+            'profile_picture_update_success' => 'تم تحديث صورة الملف الشخصي بنجاح!',
+            'profile_picture_update_error' => 'حدث خطأ أثناء تحديث صورة الملف الشخصي. الرجاء المحاولة لاحقاً.',
+            'profile_picture_delete_success' => 'تم حذف صورة الملف الشخصي بنجاح!',
+            'profile_picture_delete_error' => 'حدث خطأ أثناء حذف صورة الملف الشخصي. الرجاء المحاولة لاحقاً.',
+            'no_profile_picture' => 'لا توجد صورة للملف الشخصي لحذفها.',
+            'no_reservation_found' => 'لا توجد حجز في حسابك.',
+            'unauthorized_upload' => 'أنت غير مسموح لتحميل الدفع لهذه الفاتورة.',
+            'invoice_already_paid' => 'تم دفع هذه الفاتورة بالفعل.',
+            'payment_upload_success' => 'تم تحميل إيصال الدفع بنجاح. الدفع تحت المراجعة.',
+            'payment_upload_error' => 'حدث خطأ أثناء معالجة الدفع. الرجاء المحاولة مرة أخرى.',
+        ],
+        'maintenance' => [
             'title' => 'طلب صيانة',
             'water_sanitary' => 'المياه والصرف الصحي',
             'electrical' => 'الكهرباء',
@@ -579,7 +591,6 @@ return [
             'upload_text' => 'اسحب وأفلت الصورة هنا، أو <span class="upload-link">تصفح</span>',
             'uploaded_image' => 'الصورة المرفقة',
             'submit_request' => 'إرسال الطلب',
-        ]
-            ],
-            
+        ],
+    ],
 ];
