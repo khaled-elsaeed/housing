@@ -65,7 +65,7 @@ class StudentPaymentController extends Controller
             }
 
             $file = $request->file('payment_receipt');
-            $fileName = 'payment_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $fileName = 'payment_' . time() . '.' . $file->getClientOriginalExtension();
 
             $directory = 'public/payments';
 
