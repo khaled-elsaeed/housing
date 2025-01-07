@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin\Account;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class StudentAccountController extends Controller
@@ -25,7 +24,7 @@ class StudentAccountController extends Controller
             return view('admin.account.student', compact('students', 'totalStudentsCount', 'maleTotalCount', 'femaleTotalCount'));
         } catch (\Exception $e) {
             Log::error('Error loading student page: ' . $e->getMessage());
-            return response()->view('errors.505');
+            return response()->view('errors.500');
         }
     }
 
@@ -44,13 +43,13 @@ class StudentAccountController extends Controller
             $student->email = $request->new_email;
             $student->save();
 
-            return redirect()->route('admin.account.student.index')->with('success', 'Email updated successfully!');
+            return redirect()->route('admin.account.student.index')->with('success', trans('messages.email_updated_successfully'));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             Log::error('Student not found for email update: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Student not found.');
+            return redirect()->back()->with('error', trans('messages.student_not_found'));
         } catch (\Exception $e) {
             Log::error('Error updating email: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Unable to update email. Please try again later.');
+            return redirect()->back()->with('error', trans('messages.unable_to_update_email'));
         }
     }
 
@@ -69,13 +68,13 @@ class StudentAccountController extends Controller
             $student->password = bcrypt($request->new_password);
             $student->save();
 
-            return redirect()->route('admin.account.student.index')->with('success', 'Password reset successfully!');
+            return redirect()->route('admin.account.student.index')->with('success', trans('messages.password_reset_successfully'));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             Log::error('Student not found for password reset: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Student not found.');
+            return redirect()->back()->with('error', trans('messages.student_not_found'));
         } catch (\Exception $e) {
             Log::error('Error resetting password: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Unable to reset password. Please try again later.');
+            return redirect()->back()->with('error', trans('messages.unable_to_reset_password'));
         }
     }
 }

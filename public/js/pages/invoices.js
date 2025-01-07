@@ -1,4 +1,75 @@
 $(document).ready(function () {
+    // Define translation dictionaries for English and Arabic
+    const translations = {
+        en: {
+            invoice_status: {
+                paid: "Paid",
+                unpaid: "Unpaid",
+                pending: "Pending"
+            },
+            payment_status: {
+                success: "Success",
+                failed: "Failed",
+                pending: "Pending"
+            },
+            studentDetails: "Student Details",
+            name: "Name",
+            faculty: "Faculty",
+            building: "Building",
+            apartment: "Apartment",
+            room: "Room",
+            uploadedPictures: "Uploaded Pictures",
+            view: "View",
+            download: "Download",
+            accept: "Accept",
+            reject: "Reject",
+            noDetails: "No details or pictures available for this applicant.",
+            loadingFailed: "Failed to load details."
+        },
+        ar: {
+            invoice_status: {
+                paid: "مدفوع",
+                unpaid: "غير مدفوع",
+                pending: "قيد الانتظار"
+            },
+            payment_status: {
+                success: "ناجح",
+                failed: "فشل",
+                pending: "قيد الانتظار"
+            },
+            studentDetails: "تفاصيل الطالب",
+            name: "الاسم",
+            faculty: "الكلية",
+            building: "المبنى",
+            apartment: "الشقة",
+            room: "الغرفة",
+            uploadedPictures: "الصور المرفوعة",
+            view: "عرض",
+            download: "تحميل",
+            accept: "قبول",
+            reject: "رفض",
+            noDetails: "لا توجد تفاصيل أو صور لهذا الطالب.",
+            loadingFailed: "فشل في تحميل التفاصيل."
+        }
+    };
+
+    // Get the current language from the HTML lang attribute
+    const lang = $("html").attr("lang") || "en";  // Default to "en" if lang is not defined
+
+    function getTranslation(key) {        
+        const [category, status] = key.split("."); 
+    
+        // Check if category and status exist in the translations object for the current language
+        if (translations[lang] && translations[lang][category] && translations[lang][category][status]) {
+            return translations[lang][category][status];  // Return the correct translation
+        }
+    
+        console.warn("Translation not found for key:", key);
+        return key;  // Return the original key if no translation is found
+    }
+    
+    
+
     // Toggle button and icon for collapse functionality
     const toggleButton = document.getElementById("toggleButton");
     if (toggleButton) {
@@ -82,8 +153,9 @@ $(document).ready(function () {
             $(downloadBtn).next(".dropdown-menu").removeClass("show");
         });
 
-    const isArabic = $("html").attr("dir") === "rtl";
+    
 
+    // Example of replacing translations in table
     const table = $("#default-datatable").DataTable({
         processing: true,
         serverSide: true,
@@ -106,25 +178,27 @@ $(document).ready(function () {
                 name: "invoice_status",
                 searchable: true,
                 render: function (data) {
-                    var normalizedData = data.toLowerCase();
-                    return window.translations.invoice_status[normalizedData] || data;
+                    const translation = getTranslation("invoice_status." + data.toLowerCase());
+                    console.log("Translation for invoice status:", translation); // Log the translation
+                    return translation || data;
                 },
+                
+                
             },
             {
                 data: "payment_status",
                 name: "payment_status",
                 searchable: true,
                 render: function (data) {
-                    return window.translations.payment_status[data] || data; // Translate payment status
+                    return getTranslation("payment_status." + data) || data;
                 },
             },
             { data: "actions", name: "actions", orderable: false, searchable: false },
         ],
-        language: isArabic
+        language: lang === "ar"
             ? {
-                  url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json",
-
-              }
+                url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json",
+            }
             : {},
     });
 
@@ -170,49 +244,33 @@ $(document).ready(function () {
 
     fetchStats();
 
+    // Modify modal and other UI components similarly
     function showPayments(paymentId) {
         const modalBody = $("#applicantDetailsModal .modal-body");
-        const isRTL = $("html").attr("dir") === "rtl";
-        const labels = isRTL
-            ? {
-                  studentDetails: "تفاصيل الطالب",
-                  name: "الاسم",
-                  faculty: "الكلية",
-                  building: "المبنى",
-                  apartment: "الشقة",
-                  room: "الغرفة",
-                  uploadedPictures: "الصور المرفوعة",
-                  view: "عرض",
-                  download: "تحميل",
-                  accept: "قبول",
-                  reject: "رفض",
-                  noDetails: "لا توجد تفاصيل أو صور لهذا الطالب.",
-                  loadingFailed: "فشل في تحميل التفاصيل.",
-              }
-            : {
-                  studentDetails: "Student Details",
-                  name: "Name",
-                  faculty: "Faculty",
-                  building: "Building",
-                  apartment: "Apartment",
-                  room: "Room",
-                  uploadedPictures: "Uploaded Pictures",
-                  view: "View",
-                  download: "Download",
-                  accept: "Accept",
-                  reject: "Reject",
-                  noDetails: "No details or pictures available for this applicant.",
-                  loadingFailed: "Failed to load details.",
-              };
-    
-        const textAlignClass = isRTL ? "text-end" : "text-start";
-        const justifyClass = isRTL ? "justify-content-end" : "justify-content-start";
-    
+        const labels = {
+            studentDetails: getTranslation("studentDetails"),
+            name: getTranslation("name"),
+            faculty: getTranslation("faculty"),
+            building: getTranslation("building"),
+            apartment: getTranslation("apartment"),
+            room: getTranslation("room"),
+            uploadedPictures: getTranslation("uploadedPictures"),
+            view: getTranslation("view"),
+            download: getTranslation("download"),
+            accept: getTranslation("accept"),
+            reject: getTranslation("reject"),
+            noDetails: getTranslation("noDetails"),
+            loadingFailed: getTranslation("loadingFailed"),
+        };
+
+        const textAlignClass = lang === "ar" ? "text-end" : "text-start";
+        const justifyClass = lang === "ar" ? "justify-content-end" : "justify-content-start";
+
         // Show loading spinner
         modalBody.html(
             `<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>`
         );
-    
+
         // Fetch payment details
         $.ajax({
             url: window.routes.fetchInvoicePayment.replace(":id", paymentId),
@@ -222,10 +280,10 @@ $(document).ready(function () {
                     modalBody.html(`<p class="text-center text-muted">${labels.noDetails}</p>`);
                     return;
                 }
-    
+
                 const studentDetails = data.studentDetails || {};
                 const payments = data.payments;
-    
+
                 // Generate student details card
                 const studentDetailsHtml = `
                     <div class="card shadow-sm border-secondary mb-4">
@@ -246,7 +304,7 @@ $(document).ready(function () {
                         </div>
                     </div>
                 `;
-    
+
                 // Generate payment images card
                 const paymentImagesHtml = `
                     <div class="card shadow-sm border-primary">
@@ -272,7 +330,7 @@ $(document).ready(function () {
                         </div>
                     </div>
                 `;
-    
+
                 // Generate accept/reject buttons
                 const statusButtonsHtml = `
                     <div class="d-flex justify-content-center mt-4">
@@ -280,7 +338,7 @@ $(document).ready(function () {
                         <button id="reject-btn" class="btn btn-danger" data-payment-id="${paymentId}" data-status="rejected">${labels.reject}</button>
                     </div>
                 `;
-    
+
                 // Combine all sections into the modal body
                 modalBody.html(`
                     <div class="container-fluid">
@@ -300,7 +358,7 @@ $(document).ready(function () {
                 modalBody.html(`<p class="text-center text-danger">${labels.loadingFailed}</p>`);
             },
         });
-    
+
         // Show the modal
         $("#applicantDetailsModal").modal("show");
     }

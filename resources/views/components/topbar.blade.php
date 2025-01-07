@@ -22,15 +22,14 @@
                         <div class="language-switcher">
                             <div class="dropdown">
                                 <a class="dropdown-toggle infobar-icon" href="#" role="button" id="languageSwitcher" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="flag-icon {{ app()->isLocale('ar') ? 'flag-icon-eg' : 'flag-icon-us' }}"></i> 
-                                    <!-- Dynamically show the current language icon -->
+                                    <i class="flag-icon flag-icon-us"></i>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="languageSwitcher">
-                                    <a class="dropdown-item {{ app()->isLocale('en') ? 'active' : '' }}" href="{{ route('localization', ['local' => 'en']) }}">
-                                        <i class="flag-icon flag-icon-us"></i> English
+                                    <a class="dropdown-item active" href="{{ route('localization', ['local' => 'en']) }}">
+                                        <i class="flag-icon flag-icon-us"></i> @lang('English')
                                     </a>
-                                    <a class="dropdown-item {{ app()->isLocale('ar') ? 'active' : '' }}" href="{{ route('localization', ['local' => 'ar']) }}">
-                                        <i class="flag-icon flag-icon-eg"></i> العربية
+                                    <a class="dropdown-item" href="{{ route('localization', ['local' => 'ar']) }}">
+                                        <i class="flag-icon flag-icon-eg"></i> @lang('العربية')
                                     </a>
                                 </div>
                             </div>
@@ -40,22 +39,21 @@
                     <li class="list-inline-item">
                         <div class="notifybar">
                             <div class="dropdown">
-                                <a class="dropdown-toggle infobar-icon" href="#" role="button" id="notoficationlink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <a class="dropdown-toggle infobar-icon" href="#" role="button" id="notificationlink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <img src="{{ asset('images/svg-icon/notifications.svg') }}" class="img-fluid" alt="notifications">
                                     <span class="live-icon"></span>
                                 </a>
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="notoficationlink">
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="notificationlink">
                                     <div class="notification-dropdown-title">
                                         <h4>
-                                            <i class="feather icon-bell"></i>
-                                            @lang('pages.general.notifications')
+                                            <i class="feather icon-bell"></i> @lang('Notifications')
                                         </h4>
                                     </div>
                                     <ul class="list-unstyled">
                                         @if(auth()->user()->notifications->isEmpty())
                                             <li class="d-flex p-2 mt-1 dropdown-item">
                                                 <div class="media-body">
-                                                    <p>@lang('pages.general.no_new_notifications')</p>
+                                                    <p>@lang('No new notifications')</p>
                                                 </div>
                                             </li>
                                         @else
@@ -95,17 +93,17 @@
                                             <li class="d-flex p-2 mt-1 dropdown-item">
                                                 @if (Auth::user()->hasRole('admin'))
                                                     <a href="{{ route('admin.profile') }}" class="profile-icon">
-                                                        <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="user">@lang('pages.general.my_profile')
+                                                        <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="user"> @lang('My Profile')
                                                     </a>
                                                 @elseif (Auth::user()->hasRole('resident'))
                                                     <a href="{{ route('student.profile') }}" class="profile-icon">
-                                                        <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="user">@lang('pages.general.my_profile')
+                                                        <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="user"> @lang('My Profile')
                                                     </a>
                                                 @endif
                                             </li>
                                             <li class="d-flex p-2 mt-1 dropdown-item">
                                                 <a href="javascript:void(0);" class="profile-icon" onclick="logout();">
-                                                    <img src="{{ asset('images/svg-icon/logout.svg') }}" class="img-fluid" alt="logout">@lang('pages.general.logout')
+                                                    <img src="{{ asset('images/svg-icon/logout.svg') }}" class="img-fluid" alt="logout"> @lang('Logout')
                                                 </a>
                                             </li>
                                         </ul>
@@ -126,29 +124,28 @@
 <script>
 function logout() {
     swal({
-        title: '@lang("pages.general.are_you_sure_logout")',
-        text: '@lang("pages.general.logout_confirmation_text")',
-        type: 'warning',
+        title: "@lang('Are you sure you want to logout?')",
+        text: "@lang('You will be logged out of your account.')",
+        type: "warning",
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: '@lang("pages.general.yes_logout")',
-        cancelButtonText: '@lang("pages.general.cancel")'
+        confirmButtonText: "@lang('Yes, logout')",
+        cancelButtonText: "@lang('Cancel')"
     }).then((result) => {
-            // Create and submit the logout form
-            var form = document.createElement('form');
-            form.method = 'POST';
-            form.action = "{{ route('logout') }}";
+        // Create and submit the logout form
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{{ route('logout') }}";
 
-            var csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = '_token';
-            csrfInput.value = '{{ csrf_token() }}';
+        var csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = '{{ csrf_token() }}';
 
-            form.appendChild(csrfInput);
-            document.body.appendChild(form);
-            form.submit();
-        
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);
+        form.submit();
     });
 }
 
@@ -157,4 +154,3 @@ window.onpopstate = function () {
     window.history.pushState(null, "", window.location.href);
 };
 </script>
-

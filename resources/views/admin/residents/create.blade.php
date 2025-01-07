@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', __('pages.admin.resident.add-resident.title'))
+@section('title', __('Add Resident'))
 
 @section('links')
 <!-- Include necessary CSS files -->
@@ -11,7 +11,7 @@
 <div class="container-fluid">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">{{ __('pages.admin.resident.add-resident.title') }}</h3>
+            <h3 class="card-title">{{ __('Add Resident') }}</h3>
         </div>
         <div class="card-body">
             <form method="POST" action="#" enctype="multipart/form-data">
@@ -21,7 +21,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="national_id">{{ __('pages.admin.resident.add-resident.national_id') }}</label>
+                            <label for="national_id">{{ __('National ID') }}</label>
                             <input type="text" class="form-control border-secondary" id="national_id" name="national_id" required>
                         </div>
                     </div>
@@ -31,28 +31,25 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="name_en">{{ __('pages.admin.resident.add-resident.name_en') }}</label>
+                                <label for="name_en">{{ __('English Name') }}</label>
                                 <input type="text" class="form-control border-secondary" id="name_en" name="name_en" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="name_ar">{{ __('pages.admin.resident.add-resident.name_ar') }}</label>
+                                <label for="name_ar">{{ __('Arabic Name') }}</label>
                                 <input type="text" class="form-control border-secondary" id="name_ar" name="name_ar" required>
                             </div>
                         </div>
                     </div>
 
-                   
-
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="mobile">{{ __('pages.admin.resident.add-resident.mobile') }}</label>
+                                <label for="mobile">{{ __('Mobile Number') }}</label>
                                 <input type="text" class="form-control border-secondary" id="mobile" name="mobile" required>
                             </div>
                         </div>
-                        
                     </div>
                 </div>
 
@@ -60,11 +57,11 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="governorate_id">{{ __('pages.admin.resident.add-resident.governorate') }}</label>
+                            <label for="governorate_id">{{ __('Governorate') }}</label>
                             <select class="form-control border-secondary" id="governorate_id" name="governorate_id">
                                 @foreach ($governorates as $governorate)
                                 <option value="{{ $governorate->id }}">
-                                    {{ App::getLocale() === 'ar' ? $governorate->name_ar : $governorate->name_en }}
+                                    {{ $governorate->name_en }}
                                 </option>
                                 @endforeach
                             </select>
@@ -72,9 +69,9 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="city_id">{{ __('pages.admin.resident.add-resident.city') }}</label>
+                            <label for="city_id">{{ __('City') }}</label>
                             <select class="form-control border-secondary" id="city_id" name="city_id" disabled>
-                                <option value="">{{ __('pages.admin.resident.add-resident.select_city') }}</option>
+                                <option value="">{{ __('Select City') }}</option>
                             </select>
                         </div>
                     </div>
@@ -83,7 +80,7 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label for="street">{{ __('pages.admin.resident.add-resident.street') }}</label>
+                            <label for="street">{{ __('Street') }}</label>
                             <input type="text" class="form-control border-secondary" id="street" name="street">
                         </div>
                     </div>
@@ -93,11 +90,11 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="faculty_id">{{ __('pages.admin.resident.add-resident.faculty') }}</label>
+                            <label for="faculty_id">{{ __('Faculty') }}</label>
                             <select class="form-control border-secondary" id="faculty_id" name="faculty_id">
                                 @foreach ($faculties as $faculty)
                                 <option value="{{ $faculty->id }}">
-                                    {{ App::getLocale() === 'ar' ? $faculty->name_ar : $faculty->name_en }}
+                                    {{ $faculty->name_en }}
                                 </option>
                                 @endforeach
                             </select>
@@ -105,9 +102,9 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="program_id">{{ __('pages.admin.resident.add-resident.program') }}</label>
+                            <label for="program_id">{{ __('Program') }}</label>
                             <select class="form-control border-secondary" id="program_id" name="program_id" disabled>
-                                <option value="">{{ __('pages.admin.resident.add-resident.select_program') }}</option>
+                                <option value="">{{ __('Select Program') }}</option>
                             </select>
                         </div>
                     </div>
@@ -116,9 +113,9 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="building_id">{{ __('pages.admin.resident.add-resident.building') }}</label>
+                            <label for="building_id">{{ __('Building') }}</label>
                             <select class="form-control border-secondary" id="building_id" name="building_id" required>
-                                <option value="">{{ __('pages.admin.resident.add-resident.select_building') }}</option>
+                                <option value="">{{ __('Select Building') }}</option>
                                 @foreach ($buildings as $building)
                                 <option value="{{ $building->id }}">{{ $building->number }}</option>
                                 @endforeach
@@ -128,9 +125,9 @@
 
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="apartment_select">{{ __('pages.admin.resident.add-resident.apartment') }}</label>
+                            <label for="apartment_select">{{ __('Apartment') }}</label>
                             <select class="form-control border-secondary" id="apartment_select" name="apartment_id" disabled>
-                                <option value="">{{ __('pages.admin.resident.add-resident.select_apartment') }}</option>
+                                <option value="">{{ __('Select Apartment') }}</option>
                             </select>
                         </div>
                     </div>
@@ -139,9 +136,9 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="room_id">{{ __('pages.admin.resident.add-resident.room') }}</label>
+                            <label for="room_id">{{ __('Room') }}</label>
                             <select class="form-control border-secondary" id="room_id" name="room_id" disabled>
-                                <option value="">{{ __('pages.admin.resident.add-resident.select_room') }}</option>
+                                <option value="">{{ __('Select Room') }}</option>
                             </select>
                         </div>
                     </div>
@@ -149,7 +146,7 @@
 
                 <div class="row mt-4">
                     <div class="col-md-12 text-center">
-                        <button type="submit" class="btn btn-primary">{{ __('pages.admin.resident.add-resident.save_resident') }}</button>
+                        <button type="submit" class="btn btn-primary">{{ __('Save Resident') }}</button>
                     </div>
                 </div>
             </form>
@@ -170,8 +167,6 @@
         fetchResidents: "{{ route('admin.residents.fetch') }}",
         getSummary: "{{ route('admin.residents.get-summary') }}"
     };
-
- 
 
     const form = $('form');
     const studentInfoSection = $('#student-info');
@@ -205,12 +200,12 @@
                         // Show the student info section
                         studentInfoSection.removeClass('d-none');
                     } else {
-                        swal('Error', response.message || "No details found for this National ID.", 'error');
+                        swal('Error', response.message || "{{ __('No details found for this National ID.') }}", 'error');
                     }
                 },
                 error: function (xhr, status, error) {
                     console.error("Error fetching resident details:", error);
-                    swal('Error', "An error occurred while fetching resident details.", 'error');
+                    swal('Error', "{{ __('An error occurred while fetching resident details.') }}", 'error');
                 },
             });
         } else {
@@ -237,17 +232,17 @@
             contentType: false, // Important for FormData
             success: function (response) {
                 if (response.success) {
-                    swal('Success', response.message || "Resident added successfully!", 'success');
+                    swal('Success', response.message || "{{ __('Resident added successfully!') }}", 'success');
                     // Optionally redirect or reset the form
                     form[0].reset();
                     studentInfoSection.addClass('d-none'); // Hide student info section
                 } else {
-                    swal('Error', response.message || "Failed to add resident.", 'error');
+                    swal('Error', response.message || "{{ __('Failed to add resident.') }}", 'error');
                 }
             },
             error: function (xhr, status, error) {
                 console.error("Error submitting form:", error);
-                swal('Error', "An error occurred while submitting the form.", 'error');
+                swal('Error', "{{ __('An error occurred while submitting the form.') }}", 'error');
             },
         });
     });
@@ -284,11 +279,11 @@
             if (response.success && response.apartments.length > 0) {
                 populateApartmentSelect(response.apartments);
             } else {
-                swal('Error', 'No apartments available for this building!', 'error');
+                swal('Error', "{{ __('No apartments available for this building!') }}", 'error');
             }
         } catch (error) {
             console.error('Error fetching apartments:', error);
-            swal('Error', 'Error fetching apartments!', 'error');
+            swal('Error', "{{ __('Error fetching apartments!') }}", 'error');
         }
     }
 
@@ -303,12 +298,12 @@
             } else {
                 const roomSelect = $('#room_id');
                 roomSelect.empty();
-                roomSelect.append('<option value="">{{ __('pages.admin.resident.add-resident.no_available_rooms') }}</option>');
-                swal('Error', 'No available rooms!', 'error');
+                roomSelect.append('<option value="">{{ __("No available rooms") }}</option>');
+                swal('Error', "{{ __('No available rooms!') }}", 'error');
             }
         } catch (error) {
             console.error('Error fetching rooms:', error);
-            swal('Error', 'Error fetching rooms!', 'error');
+            swal('Error', "{{ __('Error fetching rooms!') }}", 'error');
         }
     }
 
@@ -316,7 +311,7 @@
     function populateApartmentSelect(apartments) {
         const apartmentSelect = $('#apartment_select');
         apartmentSelect.empty();
-        apartmentSelect.append('<option value="">{{ __('pages.admin.resident.add-resident.select_apartment') }}</option>');
+        apartmentSelect.append('<option value="">{{ __("Select Apartment") }}</option>');
         apartments.forEach(apartment => {
             apartmentSelect.append(`<option value="${apartment.id}">${apartment.number}</option>`);
         });
@@ -326,7 +321,7 @@
     function populateRoomSelect(rooms) {
         const roomSelect = $('#room_id');
         roomSelect.empty();
-        roomSelect.append('<option value="">{{ __('pages.admin.resident.add-resident.select_room') }}</option>');
+        roomSelect.append('<option value="">{{ __("Select Room") }}</option>');
         rooms.forEach(room => {
             roomSelect.append(`<option value="${room.id}">${room.number}</option>`);
         });

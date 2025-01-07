@@ -16,28 +16,22 @@
             <li>
                 <a href="{{ route('student.home') }}">
                     <img src="{{ asset('images/svg-icon/dashboard.svg') }}" class="img-fluid" alt="dashboard">
-                    <span>{{ __('pages.student.sidebar.home') }}</span>
+                    <span>@lang('Home')</span>
                 </a>
             </li>
 
             <li>
                 <a href="{{ route('student.maintenance.form') }}">
-                    <img src="{{ asset('images/svg-icon/components.svg') }}" class="img-fluid" alt="questionnaires">
-                    <span>{{ __('pages.student.sidebar.maintenance') }}</span>
+                    <img src="{{ asset('images/svg-icon/components.svg') }}" class="img-fluid" alt="maintenance">
+                    <span>@lang('Maintenance')</span>
                 </a>
             </li>
 
-            <!-- <li>
-                <a href="{{ route('student.permission.form') }}">
-                    <img src="{{ asset('images/svg-icon/tables.svg') }}" class="img-fluid" alt="results">
-                    <span>{{ __('pages.student.sidebar.permissions') }}</span>
-                </a>
-            </li> -->
 
             <li>
                 <a href="{{ route('student.profile') }}">
                     <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="profile">
-                    <span>{{ __('pages.student.sidebar.my_profile') }}</span>
+                    <span>@lang('My Profile')</span>
                 </a>
             </li>
         </ul>

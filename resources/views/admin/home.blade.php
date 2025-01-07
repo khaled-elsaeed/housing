@@ -1,6 +1,6 @@
-@extends('layouts.admin')
+@extends('layouts.admin') 
 
-@section('title', __('pages.admin.home.welcome_message'))
+@section('title', __('Welcome Message'))
 
 @section('links')
 <!-- Page-specific CSS -->
@@ -22,10 +22,10 @@
             <div class="card-body">
                <div class="row align-items-center">
                   <div class="col-7 text-start  mt-2 mb-2">
-                     <h5 class="card-title font-14">{{ __('pages.admin.home.total_students') }}</h5>
+                     <h5 class="card-title font-14">@lang('Total Students')</h5>
                      <h4 class="mb-0" id="totalStudentsCount">
                         <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                           <span class="visually-hidden">{{ __('pages.admin.home.loading') }}</span>
+                           <span class="visually-hidden">@lang('Loading...')</span>
                         </div>
                      </h4>
                   </div>
@@ -34,8 +34,6 @@
                      <i class="fa fa-users" aria-hidden="true" style="color: white;"></i>
                   </span>
                   </div>
-
-
                </div>
             </div>
             <div class="card-footer">
@@ -43,7 +41,7 @@
                   <div class="col-8">
                      <div class="font-13" id="lastUpdateStudents">
                         <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                           <span class="visually-hidden">{{ __('pages.admin.home.loading') }}</span>
+                           <span class="visually-hidden">@lang('Loading...')</span>
                         </div>
                      </div>
                   </div>
@@ -62,10 +60,10 @@
             <div class="card-body">
                <div class="row align-items-center">
                   <div class="col-7 text-start  mt-2 mb-2">
-                     <h5 class="card-title font-14">{{ __('pages.admin.general.males') }}</h5>
+                     <h5 class="card-title font-14">@lang('Males')</h5>
                      <h4 class="mb-0" id="totalMaleStudentsCount">
                         <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                           <span class="visually-hidden">{{ __('pages.admin.home.loading') }}</span>
+                           <span class="visually-hidden">@lang('Loading...')</span>
                         </div>
                      </h4>
                   </div>
@@ -81,7 +79,7 @@
                   <div class="col-8">
                      <div class="font-13" id="lastUpdateMaleStudents">
                         <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                           <span class="visually-hidden">{{ __('pages.admin.home.loading') }}</span>
+                           <span class="visually-hidden">@lang('Loading...')</span>
                         </div>
                      </div>
                   </div>
@@ -100,10 +98,10 @@
             <div class="card-body">
                <div class="row align-items-center">
                   <div class="col-7 text-start  mt-2 mb-2">
-                     <h5 class="card-title font-14">{{ __('pages.admin.general.females') }}</h5>
+                     <h5 class="card-title font-14">@lang('Females')</h5>
                      <h4 class="mb-0" id="totalFemaleStudentsCount">
                         <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                           <span class="visually-hidden">{{ __('pages.admin.home.loading') }}</span>
+                           <span class="visually-hidden">@lang('Loading...')</span>
                         </div>
                      </h4>
                   </div>
@@ -119,7 +117,7 @@
                   <div class="col-8">
                      <div class="font-13" id="lastUpdateFemaleStudents">
                         <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                           <span class="visually-hidden">{{ __('pages.admin.home.loading') }}</span>
+                           <span class="visually-hidden">@lang('Loading...')</span>
                         </div>
                      </div>
                   </div>
@@ -138,10 +136,10 @@
             <div class="card-body">
                <div class="row align-items-center">
                   <div class="col-7 text-start  mt-2 mb-2">
-                     <h5 class="card-title font-14">{{ __('pages.admin.home.occupancy_rate') }}</h5>
+                     <h5 class="card-title font-14">@lang('Occupancy Rate')</h5>
                      <h4 class="mb-0" id="occupancyRate">
                         <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                           <span class="visually-hidden">{{ __('pages.admin.home.loading') }}</span>
+                           <span class="visually-hidden">@lang('Loading...')</span>
                         </div>
                      </h4>
                   </div>
@@ -157,7 +155,7 @@
                   <div class="col-8">
                      <div class="font-13" id="lastUpdateOccupancyRate">
                         <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                           <span class="visually-hidden">{{ __('pages.admin.home.loading') }}</span>
+                           <span class="visually-hidden">@lang('Loading...')</span>
                         </div>
                      </div>
                   </div>
@@ -173,14 +171,12 @@
    </div>
    <!-- End row -->
 
-
-
       <!-- Buildings Section -->
       <div class="row {{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
    <div class="col-lg-12 col-xl-9">
       <div class="card m-b-30">
          <div class="card-header">
-            <h5 class="card-title mb-0">{{ __('pages.admin.home.buildings') }}</h5>
+            <h5 class="card-title mb-0">@lang('Buildings')</h5>
          </div>
          <div class="card-body text-center z-0">
             <div class="building-slider" id="buildingSlider">
@@ -200,13 +196,6 @@
 <script src="{{ asset('plugins/slick/slick.min.js') }}"></script>
 <script src="{{ asset('js/pages/admin-home.js') }}"></script>
 <script>
-  window.translations = {
-    building: @json(__('pages.admin.home.slick.building')),
-    occupied: @json(__('pages.admin.home.slick.occupied')),
-    total_bedrooms: @json(__('pages.admin.home.slick.total_bedrooms')),
-    empty: @json(__('pages.admin.home.slick.empty')),
-    bedrooms_occupied: @json(__('pages.admin.home.slick.bedrooms_occupied'))
-  };
 
   window.routes = {
     fetchStats: @json(route('admin.home.stats')),

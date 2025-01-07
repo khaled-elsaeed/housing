@@ -59,7 +59,6 @@ class ApplicantController extends Controller
             ->whereIn('students.application_status', ['pending', 'preliminary_accepted']) 
             ->orderBy('users.created_at', 'desc');
 
-
             if ($request->filled('customSearch')) {
                 $searchTerm = $request->get('customSearch');
                 $query->where(function ($query) use ($searchTerm, $currentLang) {
@@ -99,13 +98,13 @@ class ApplicantController extends Controller
                         'email' => $applicant->email ?? 'N/A',
                         'mobile' => $applicant->student->mobile ?? 'N/A',
                         'registration_date' => $applicant->created_at->format('F j, Y, g:i A'),
-                        'actions' => '<button type="button" class="btn btn-round btn-info-rgba" data-applicant-id="' . $applicant->id . '" id="details-btn" title="More Details"><i class="feather icon-info"></i></button>',
+                        'actions' => '<button type="button" class="btn btn-round btn-info-rgba" data-applicant-id="' . $applicant->id . '" id="details-btn" title="' . __('messages.more_details') . '"><i class="feather icon-info"></i></button>',
                     ];
                 }),
             ]);
         } catch (Exception $e) {
             Log::error('Error fetching applicants data: ' . $e->getMessage(), ['exception' => $e]);
-            return response()->json(['error' => 'Failed to fetch applicants data.'], 500);
+            return response()->json(['error' => trans('messages.failed_to_fetch_applicants')], 500);
         }
     }
 
@@ -121,7 +120,7 @@ class ApplicantController extends Controller
             if (Gate::denies('is-admin')) {
                 return response()->json(
                     [
-                        'error' => 'Unauthorized access to statistics data.',
+                        'error' => trans('messages.unauthorized_access'),
                     ],
                     403
                 );
@@ -140,32 +139,6 @@ class ApplicantController extends Controller
             $totalPreliminaryAcceptedCount = $applicants->where('application_status', 'preliminary_accepted')->count();
             $totalFinalAcceptedCount = $applicants->where('application_status', 'final_accepted')->count();
 
-            $malePreliminaryAcceptedCount = $applicants
-                ->where('gender', 'male')
-                ->where('application_status', 'preliminary_accepted')
-                ->count();
-            $malePendingCount = $applicants
-                ->where('gender', 'male')
-                ->where('application_status', 'pending')
-                ->count();
-            $maleFinalAcceptedCount = $applicants
-                ->where('gender', 'male')
-                ->where('application_status', 'final_accepted')
-                ->count();
-
-            $femalePreliminaryAcceptedCount = $applicants
-                ->where('gender', 'female')
-                ->where('application_status', 'preliminary_accepted')
-                ->count();
-            $femalePendingCount = $applicants
-                ->where('gender', 'female')
-                ->where('application_status', 'pending')
-                ->count();
-            $femaleFinalAcceptedCount = $applicants
-                ->where('gender', 'female')
-                ->where('application_status', 'final_accepted')
-                ->count();
-
             return response()->json([
                 'totalApplicants' => $totalApplicants,
                 'totalMaleCount' => $totalMaleCount,
@@ -173,19 +146,12 @@ class ApplicantController extends Controller
                 'totalPendingCount' => $totalPendingCount,
                 'totalPreliminaryAcceptedCount' => $totalPreliminaryAcceptedCount,
                 'totalFinalAcceptedCount' => $totalFinalAcceptedCount,
-                'malePreliminaryAcceptedCount' => $malePreliminaryAcceptedCount,
-                'malePendingCount' => $malePendingCount,
-                'maleFinalAcceptedCount' => $maleFinalAcceptedCount,
-                'femalePreliminaryAcceptedCount' => $femalePreliminaryAcceptedCount,
-                'femalePendingCount' => $femalePendingCount,
-                'femaleFinalAcceptedCount' => $femaleFinalAcceptedCount,
             ]);
         } catch (Exception $e) {
             Log::error('Error fetching summary data: ' . $e->getMessage(), [
-                'exception' => $e,
-                'stack' => $e->getTraceAsString(),
+                'exception' => $e->getTraceAsString(),
             ]);
-            return response()->json(['error' => 'Failed to fetch summary data.'], 500);
+            return response()->json(['error' => trans('messages.failed_to_fetch_summary_data')], 500);
         }
     }
 
@@ -201,17 +167,17 @@ class ApplicantController extends Controller
             $applicant = User::find($id);
 
             if (!$applicant) {
-                return response()->json(['error' => 'Applicant not found', 'user' => $id], 404);
+                return response()->json(['error' => trans('messages.applicant_not_found'), 'user' => $id], 404);
             }
 
             $details = [
-                'faculty' => $applicant->student->faculty->name_en ?? 'Not available',
-                'program' => $applicant->student->program->name_en ?? 'Not available',
-                'score' => $applicant->student->universityArchive->score ?? 'Not available',
-                'percent' => $applicant->student->universityArchive->percent ?? 'Not available',
-                'governorate' => $applicant->student->governorate->name_ar ?? 'Not available',
-                'city' => $applicant->student->city->name_ar ?? 'Not available',
-                'street' => $applicant->student->street ?? 'Not available',
+                'faculty' => $applicant->student->faculty->name_en ?? trans('messages.not_available'),
+                'program' => $applicant->student->program->name_en ?? trans('messages.not_available'),
+                'score' => $applicant->student->universityArchive->score ?? trans('messages.not_available'),
+                'percent' => $applicant->student->universityArchive->percent ?? trans('messages.not_available'),
+                'governorate' => $applicant->student->governorate->name_ar ?? trans('messages.not_available'),
+                'city' => $applicant->student->city->name_ar ?? trans('messages.not_available'),
+                'street' => $applicant->student->street ?? trans('messages.not_available'),
             ];
 
             return response()->json([
@@ -225,7 +191,7 @@ class ApplicantController extends Controller
                 'applicant_id' => $id,
             ]);
 
-            return response()->json(['error' => 'Applicant not found or an error occurred', 'user' => $id], 404);
+            return response()->json(['error' => trans('messages.failed_to_fetch_applicant_details'), 'user' => $id], 404);
         }
     }
 
@@ -245,7 +211,7 @@ class ApplicantController extends Controller
                 'exception' => $e->getMessage(),
                 'stack_trace' => $e->getTraceAsString(),
             ]);
-            return response()->json(['error' => 'Failed to export applicants to Excel'], 500);
+            return response()->json(['error' => trans('messages.failed_to_export_to_excel')], 500);
         }
     }
 
@@ -266,7 +232,7 @@ class ApplicantController extends Controller
                 'exception' => $e->getMessage(),
                 'stack_trace' => $e->getTraceAsString(),
             ]);
-            return response()->json(['error' => 'Failed to export applicants to PDF'], 500);
+            return response()->json(['error' => trans('messages.failed_to_export_to_pdf')], 500);
         }
     }
 }

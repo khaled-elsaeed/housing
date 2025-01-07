@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'System Settings - NMU Housing System')
+@section('title', __('System Settings - NMU Housing System'))
 
 @section('content')
 <!-- Start row -->
@@ -9,7 +9,7 @@
     <div class="col-lg-12">
         <div class="card shadow-sm border-light rounded">
             <div class="card-header bg-primary text-white">
-                <h5 class="card-title mb-0">System Settings</h5>
+                <h5 class="card-title mb-0">@lang('System Settings')</h5>
             </div>
             <div class="card-body">
                 <!-- Horizontal Tabs -->
@@ -17,13 +17,13 @@
                     <!-- Reservation Settings Tab -->
                     <li class="nav-item" role="presentation">
                         <a class="nav-link active" id="reservation-settings-tab" data-bs-toggle="pill" href="#reservation-settings" role="tab" aria-controls="reservation-settings" aria-selected="true">
-                            <i class="feather icon-calendar me-2"></i> Reservation Settings
+                            <i class="feather icon-calendar me-2"></i> @lang('Reservation Settings')
                         </a>
                     </li>
                     <!-- Other Settings Tab -->
                     <li class="nav-item" role="presentation">
                         <a class="nav-link" id="other-settings-tab" data-bs-toggle="pill" href="#other-settings" role="tab" aria-controls="other-settings" aria-selected="false">
-                            <i class="feather icon-settings me-2"></i> Other Settings
+                            <i class="feather icon-settings me-2"></i> @lang('Other Settings')
                         </a>
                     </li>
                 </ul>
@@ -33,7 +33,7 @@
                     <div class="tab-pane fade show active" id="reservation-settings" role="tabpanel" aria-labelledby="reservation-settings-tab">
                         <div class="card shadow-sm border-secondary rounded">
                             <div class="card-header bg-secondary">
-                                <h5 class="card-title mb-0 text-white">Reservation Settings</h5>
+                                <h5 class="card-title mb-0 text-white">@lang('Reservation Settings')</h5>
                             </div>
                             <div class="card-body">
                                 <!-- Form to update reservation settings -->
@@ -41,36 +41,36 @@
                                     @csrf
                                     <div class="row g-3">
                                         <div class="col-md-6">
-                                            <label for="reservation_start_datetime" class="form-label">Reservation Start Date & Time</label>
+                                            <label for="reservation_start_datetime" class="form-label">@lang('Reservation Start Date & Time')</label>
                                             <input type="datetime-local" class="form-control border-primary" id="reservation_start_datetime" name="reservation_start_datetime" 
                                                    value="{{ old('reservation_start_datetime', $settings['reservation_start_datetime'] ?? '') }}" required>
                                         </div>
 
                                         <div class="col-md-6">
-                                            <label for="reservation_end_datetime" class="form-label">Reservation End Date & Time</label>
+                                            <label for="reservation_end_datetime" class="form-label">@lang('Reservation End Date & Time')</label>
                                             <input type="datetime-local" class="form-control border-primary" id="reservation_end_datetime" name="reservation_end_datetime" 
                                                    value="{{ old('reservation_end_datetime', $settings['reservation_end_datetime'] ?? '') }}" required>
                                         </div>
 
                                         <div class="col-md-12">
-                                            <label for="reservation_status" class="form-label">Reservation Status</label>
+                                            <label for="reservation_status" class="form-label">@lang('Reservation Status')</label>
                                             <select class="form-select border-primary" id="reservation_status" name="reservation_status" required onchange="toggleEligibleField()">
-                                                <option value="open" {{ old('reservation_status', $settings['reservation_status'] ?? '') == 'open' ? 'selected' : '' }}>Open</option>
-                                                <option value="closed" {{ old('reservation_status', $settings['reservation_status'] ?? '') == 'closed' ? 'selected' : '' }}>Closed</option>
+                                                <option value="open" {{ old('reservation_status', $settings['reservation_status'] ?? '') == 'open' ? 'selected' : '' }}>@lang('Open')</option>
+                                                <option value="closed" {{ old('reservation_status', $settings['reservation_status'] ?? '') == 'closed' ? 'selected' : '' }}>@lang('Closed')</option>
                                             </select>
                                         </div>
 
                                         <div class="col-md-12" id="eligible_students_field" style="display: {{ old('reservation_status', $settings['reservation_status'] ?? '') == 'open' ? 'block' : 'none' }};">
-                                            <label for="eligible_students" class="form-label">Eligible Students</label>
+                                            <label for="eligible_students" class="form-label">@lang('Eligible Students')</label>
                                             <select class="form-select border-primary" id="eligible_students" name="eligible_students" required>
-                                                <option value="new" {{ old('eligible_students', $settings['eligible_students'] ?? '') == 'new' ? 'selected' : '' }}>New Students</option>
-                                                <option value="old" {{ old('eligible_students', $settings['eligible_students'] ?? '') == 'old' ? 'selected' : '' }}>old Students</option>
-                                                <option value="all" {{ old('eligible_students', $settings['eligible_students'] ?? '') == 'all' ? 'selected' : '' }}>All Students</option>
+                                                <option value="new" {{ old('eligible_students', $settings['eligible_students'] ?? '') == 'new' ? 'selected' : '' }}>@lang('New Students')</option>
+                                                <option value="old" {{ old('eligible_students', $settings['eligible_students'] ?? '') == 'old' ? 'selected' : '' }}>@lang('Old Students')</option>
+                                                <option value="all" {{ old('eligible_students', $settings['eligible_students'] ?? '') == 'all' ? 'selected' : '' }}>@lang('All Students')</option>
                                             </select>
                                         </div>
 
                                         <div class="col-md-12">
-                                            <button type="submit" class="btn btn-primary mt-3">Save Reservation Settings</button>
+                                            <button type="submit" class="btn btn-primary mt-3">@lang('Save Reservation Settings')</button>
                                         </div>
                                     </div>
                                 </form>
@@ -84,7 +84,7 @@
                         <!-- Content for Other Settings -->
                         <div class="card shadow-sm border-light rounded">
                             <div class="card-header bg-light">
-                                <h5 class="card-title mb-0">Other Settings</h5>
+                                <h5 class="card-title mb-0">@lang('Other Settings')</h5>
                             </div>
                             <div class="card-body">
                                 <!-- Add form or content for Other Settings here -->

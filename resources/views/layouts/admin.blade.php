@@ -3,14 +3,14 @@
    <head>
       <meta charset="UTF-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="description" content="New Mansoura University Housing offers comfortable, affordable, and secure accommodation for students. Conveniently located near the campus, our modern facilities provide a supportive environment for academic success.">
-      <meta name="keywords" content="New Mansoura University, university housing, student accommodation, New Mansoura, dorms, student apartments, affordable student housing, university residence, student life, student housing, NMU housing, New Mansoura student living, secure housing for students">
+      <meta name="description" content="@lang('New Mansoura University Housing offers comfortable, affordable, and secure accommodation for students. Conveniently located near the campus, our modern facilities provide a supportive environment for academic success.')">
+      <meta name="keywords" content="@lang('New Mansoura University, university housing, student accommodation, New Mansoura, dorms, student apartments, affordable student housing, university residence, student life, student housing, NMU housing, New Mansoura student living, secure housing for students')">
       <meta name="author" content="Themesbox">
       <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
       <meta name="csrf-token" content="{{ csrf_token() }}">
       
       <!-- Dynamic Page Title -->
-      <title>NMU Housing - @yield('title', 'Default Title')</title>
+      <title>@lang('NMU Housing') - @yield('title', __('Default Title'))</title>
 
       <!-- Icons -->
       <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}?v={{ config('app.version', time()) }}">

@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', __('pages.admin.applicants.Applicants'))
+@section('title', __('Applicants'))
 
 @section('links')
 <!-- DataTables CSS -->
@@ -29,10 +29,10 @@
                <div class="card-body">
                   <div class="row align-items-center">
                      <div class="col-7 text-start mt-2 mb-2">
-                        <h5 class="card-title font-14">{{ __('pages.admin.applicants.Applicants') }}</h5>
+                        <h5 class="card-title font-14">@lang('Applicants')</h5>
                         <h4 class="mb-0" id="totalApplicantsCount">
                             <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                                <span class="visually-hidden">{{ __('pages.admin.applicants.Loading...') }}</span>
+                                <span class="visually-hidden">@lang('Loading...')</span>
                             </div>
                         </h4>
                      </div>
@@ -46,24 +46,24 @@
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{ __('pages.admin.applicants.Male') }}</span>
+                        <span class="font-13">@lang('Male')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13" id="maleCount">
                             <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                                <span class="visually-hidden">{{ __('pages.admin.applicants.Loading...') }}</span>
+                                <span class="visually-hidden">@lang('Loading...')</span>
                             </div>
                         </span>
                      </div>
                   </div>
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{ __('pages.admin.applicants.Female') }}</span>
+                        <span class="font-13">@lang('Female')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13" id="femaleCount">
                             <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                                <span class="visually-hidden">{{ __('pages.admin.applicants.Loading...') }}</span>
+                                <span class="visually-hidden">@lang('Loading...')</span>
                             </div>
                         </span>
                      </div>
@@ -79,40 +79,41 @@
                <div class="card-body">
                   <div class="row align-items-center">
                      <div class="col-7 text-start mt-2 mb-2">
-                        <h5 class="card-title font-14">{{ __('pages.admin.applicants.Pending') }}</h5>
+                        <h5 class="card-title font-14">@lang('Pending')</h5>
                         <h4 class="mb-0" id="totalPendingCount">
                             <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                                <span class="visually-hidden">{{ __('pages.admin.applicants.Loading...') }}</span>
+                                <span class="visually-hidden">@lang('Loading...')</span>
                             </div>
                         </h4>
                      </div>
                      <div class="col-5 text-end">
                      <span class="action-icon badge badge-primary rounded-circle p-1 d-inline-flex align-items-center justify-content-center">
                      <i class="fa fa-clock-o" aria-hidden="true" style="color: white;"></i>
-                  </span>                     </div>
+                  </span>                     
+               </div>
                   </div>
                </div>
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{ __('pages.admin.applicants.Male') }}</span>
+                        <span class="font-13">@lang('Male')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13" id="malePendingCount">
                             <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                                <span class="visually-hidden">{{ __('pages.admin.applicants.Loading...') }}</span>
+                                <span class="visually-hidden">@lang('Loading...')</span>
                             </div>
                         </span>
                      </div>
                   </div>
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{ __('pages.admin.applicants.Female') }}</span>
+                        <span class="font-13">@lang('Female')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13" id="femalePendingCount">
                             <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                                <span class="visually-hidden">{{ __('pages.admin.applicants.Loading...') }}</span>
+                                <span class="visually-hidden">@lang('Loading...')</span>
                             </div>
                         </span>
                      </div>
@@ -128,40 +129,41 @@
                <div class="card-body">
                   <div class="row align-items-center">
                      <div class="col-7 text-start mt-2 mb-2">
-                        <h5 class="card-title font-14">{{ __('pages.admin.applicants.Preliminary Accepted') }}</h5>
+                        <h5 class="card-title font-14">@lang('Preliminary Accepted')</h5>
                         <h4 class="mb-0" id="totalPreliminaryAcceptedCount">
                             <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                                <span class="visually-hidden">{{ __('pages.admin.applicants.Loading...') }}</span>
+                                <span class="visually-hidden">@lang('Loading...')</span>
                             </div>
                         </h4>
                      </div>
                      <div class="col-5 text-end">
                      <span class="action-icon badge badge-primary rounded-circle p-1 d-inline-flex align-items-center justify-content-center">
                      <i class="fa fa-check-circle" aria-hidden="true" style="color: white;"></i>
-                  </span>                     </div>
+                  </span>                     
+               </div>
                   </div>
                </div>
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{ __('pages.admin.applicants.Male') }}</span>
+                        <span class="font-13">@lang('Male')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13" id="malePreliminaryAcceptedCount">
                             <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                                <span class="visually-hidden">{{ __('pages.admin.applicants.Loading...') }}</span>
+                                <span class="visually-hidden">@lang('Loading...')</span>
                             </div>
                         </span>
                      </div>
                   </div>
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{ __('pages.admin.applicants.Female') }}</span>
+                        <span class="font-13">@lang('Female')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13" id="femalePreliminaryAcceptedCount">
                             <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                                <span class="visually-hidden">{{ __('pages.admin.applicants.Loading...') }}</span>
+                                <span class="visually-hidden">@lang('Loading...')</span>
                             </div>
                         </span>
                      </div>
@@ -177,40 +179,41 @@
                <div class="card-body">
                   <div class="row align-items-center">
                      <div class="col-7 text-start mt-2 mb-2">
-                        <h5 class="card-title font-14">{{ __('pages.admin.applicants.Final Accepted') }}</h5>
+                        <h5 class="card-title font-14">@lang('Final Accepted')</h5>
                         <h4 class="mb-0" id="totalFinalAcceptedCount">
                             <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                                <span class="visually-hidden">{{ __('pages.admin.applicants.Loading...') }}</span>
+                                <span class="visually-hidden">@lang('Loading...')</span>
                             </div>
                         </h4>
                      </div>
                      <div class="col-5 text-end">
                      <span class="action-icon badge badge-primary rounded-circle p-1 d-inline-flex align-items-center justify-content-center">
                      <i class="fa fa-check-square" aria-hidden="true" style="color: white;"></i>
-                  </span>                     </div>
+                  </span>                     
+               </div>
                   </div>
                </div>
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{ __('pages.admin.applicants.Male') }}</span>
+                        <span class="font-13">@lang('Male')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13" id="maleFinalAcceptedCount">
                             <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                                <span class="visually-hidden">{{ __('pages.admin.applicants.Loading...') }}</span>
+                                <span class="visually-hidden">@lang('Loading...')</span>
                             </div>
                         </span>
                      </div>
                   </div>
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{ __('pages.admin.applicants.Female') }}</span>
+                        <span class="font-13">@lang('Female')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13" id="femaleFinalAcceptedCount">
                             <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                                <span class="visually-hidden">{{ __('pages.admin.applicants.Loading...') }}</span>
+                                <span class="visually-hidden">@lang('Loading...')</span>
                             </div>
                         </span>
                      </div>
@@ -230,7 +233,7 @@
    <div class="col-lg-12">
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
          <!-- Title on the Left -->
-         <h2 class="page-title text-primary mb-2 mb-md-0">{{ __('pages.admin.applicants.Applicants') }}</h2>
+         <h2 class="page-title text-primary mb-2 mb-md-0">@lang('Applicants')</h2>
          <!-- Toggle Button on the Right -->
          <!-- <div>
             <button class="btn btn-outline-primary btn-sm toggle-btn" id="toggleButton" type="button" data-bs-toggle="collapse"
@@ -239,12 +242,12 @@
             </button>
             <div class="btn-group ms-2" role="group" aria-label="Download Options">
                <button type="button" class="btn btn-outline-primary dropdown-toggle" id="downloadBtn" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class="fa fa-download"></i> {{ __('pages.admin.applicants.Download') }}
+                  <i class="fa fa-download"></i> @lang('Download')
                </button>
                <ul class="dropdown-menu">
                   <li>
                      <a class="dropdown-item" href="#" id="exportExcel">
-                     <i class="fa fa-file-excel"></i> {{ __('pages.admin.applicants.Applicants (Excel)') }}
+                     <i class="fa fa-file-excel"></i> @lang('Applicants') (Excel)
                      </a>
                   </li>
                </ul>
@@ -253,6 +256,7 @@
       </div>
    </div>
 </div>
+
 <!-- Search Filter -->
 <div class="collapse" id="collapseExample">
    <div class="search-filter-container card card-body">
@@ -262,11 +266,12 @@
            <div class="search-icon-container">
               <i class="fa fa-search search-icon"></i>
            </div>
-           <input type="search" class="form-control search-input" id="searchBox" placeholder="{{ __('pages.admin.applicants.Search...') }}" />
+           <input type="search" class="form-control search-input" id="searchBox" placeholder="@lang('Search...')" />
         </div>
       </div>
    </div>
 </div>
+
 
 <div class="row">
     <!-- Start col -->
@@ -277,13 +282,13 @@
                     <table id="default-datatable" class="display table table-bordered">
                         <thead>
                             <tr>
-                                <th>{{ __('pages.admin.applicants.Name') }}</th>
-                                <th>{{ __('pages.admin.applicants.National ID') }}</th>
-                                <th>{{ __('pages.admin.applicants.Faculty') }}</th>
-                                <th>{{ __('pages.admin.applicants.Email') }}</th> <!-- Add Email column here -->
-                                <th>{{ __('pages.admin.applicants.Mobile') }}</th>
-                                <th>{{ __('pages.admin.applicants.Registration Date') }}</th>
-                                <th>{{ __('pages.admin.applicants.Actions') }}</th>
+                                <th>@lang('Name')</th>
+                                <th>@lang('National ID')</th>
+                                <th>@lang('Faculty')</th>
+                                <th>@lang('Email')</th> <!-- Add Email column here -->
+                                <th>@lang('Mobile')</th>
+                                <th>@lang('Registration Date')</th>
+                                <th>@lang('Actions')</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -302,45 +307,47 @@
    <div class="modal-dialog" role="document">
       <div class="modal-content">
          <div class="modal-header">
-            <h5 class="modal-title" id="applicantDetailsModalLabel">{{ __('pages.admin.applicants.Applicant Details') }}</h5>
+            <h5 class="modal-title" id="applicantDetailsModalLabel">@lang('Applicant Details')</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
          <div class="modal-body">
             <div class="form-group">
-               <label for="faculty">{{ __('pages.admin.applicants.Faculty') }}</label>
+               <label for="faculty">@lang('Faculty')</label>
                <input type="text" class="form-control" id="faculty" readonly>
             </div>
             <div class="form-group">
-               <label for="program">{{ __('pages.admin.applicants.Program') }}</label>
+               <label for="program">@lang('Program')</label>
                <input type="text" class="form-control" id="program" readonly>
             </div>
             <div class="form-group">
-               <label for="score">{{ __('pages.admin.applicants.Score') }}</label>
+               <label for="score">@lang('Score')</label>
                <input type="text" class="form-control" id="score" readonly>
             </div>
             <div class="form-group">
-               <label for="percent">{{ __('pages.admin.applicants.Percent') }}</label>
+               <label for="percent">@lang('Percent')</label>
                <input type="text" class="form-control" id="percent" readonly>
             </div>
             <div class="form-group">
-               <label for="governorate">{{ __('pages.admin.applicants.Governorate') }}</label>
+               <label for="governorate">@lang('Governorate')</label>
                <input type="text" class="form-control" id="governorate" readonly>
             </div>
             <div class="form-group">
-               <label for="city">{{ __('pages.admin.applicants.City') }}</label>
+               <label for="city">@lang('City')</label>
                <input type="text" class="form-control" id="city" readonly>
             </div>
             <div class="form-group">
-               <label for="street">{{ __('pages.admin.applicants.Street') }}</label>
+               <label for="street">@lang('Street')</label>
                <input type="text" class="form-control" id="street" readonly>
             </div>
          </div>
          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('pages.admin.applicants.Close') }}</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@lang('Close')</button>
          </div>
       </div>
    </div>
 </div>
+
+
 
 @endsection
 

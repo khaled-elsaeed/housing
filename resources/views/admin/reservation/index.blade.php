@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', __('pages.admin.reservation.title'))
+@section('title', __('Reservations'))
 
 @section('links')
 <!-- DataTables CSS -->
@@ -26,10 +26,10 @@
             <div class="row align-items-center">
               
                <div class="col-7 text-start mt-2 mb-2">
-                  <h5 class="card-title font-14">{{ __('pages.admin.reservation.total_reservations') }}</h5>
+                  <h5 class="card-title font-14">@lang('Total Reservations')</h5>
                   <h4 class="mb-0" id="totalReservationsCount">
                      <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                        <span class="visually-hidden">{{ __('pages.admin.reservation.loading') }}</span>
+                        <span class="visually-hidden">@lang('Loading...')</span>
                      </div>
                   </h4>
                </div>
@@ -41,24 +41,24 @@
          <div class="card-footer">
             <div class="row align-items-center">
                <div class="col-6 text-start">
-                  <span class="font-13">{{ __('pages.admin.reservation.male') }}</span>
+                  <span class="font-13">@lang('Male')</span>
                </div>
                <div class="col-6 text-end">
                   <span class="font-13" id="maleReservationsCount">
                      <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                        <span class="visually-hidden">{{ __('pages.admin.reservation.loading') }}</span>
+                        <span class="visually-hidden">@lang('Loading...')</span>
                      </div>
                   </span>
                </div>
             </div>
             <div class="row align-items-center">
                <div class="col-6 text-start">
-                  <span class="font-13">{{ __('pages.admin.reservation.female') }}</span>
+                  <span class="font-13">@lang('Female')</span>
                </div>
                <div class="col-6 text-end">
                   <span class="font-13" id="femaleReservationsCount">
                      <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                        <span class="visually-hidden">{{ __('pages.admin.reservation.loading') }}</span>
+                        <span class="visually-hidden">@lang('Loading...')</span>
                      </div>
                   </span>
                </div>
@@ -75,10 +75,10 @@
             <div class="row align-items-center">
               
                <div class="col-7 text-start mt-2 mb-2">
-                  <h5 class="card-title font-14">{{ __('pages.admin.reservation.pending_reservations') }}</h5>
+                  <h5 class="card-title font-14">@lang('Pending Reservations')</h5>
                   <h4 class="mb-0" id="totalPendingReservationsCount">
                      <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                        <span class="visually-hidden">{{ __('pages.admin.reservation.loading') }}</span>
+                        <span class="visually-hidden">@lang('Loading...')</span>
                      </div>
                   </h4>
                </div>
@@ -90,24 +90,24 @@
          <div class="card-footer">
             <div class="row align-items-center">
                <div class="col-6 text-start">
-                  <span class="font-13">{{ __('pages.admin.reservation.male') }}</span>
+                  <span class="font-13">@lang('Male')</span>
                </div>
                <div class="col-6 text-end">
                   <span class="font-13" id="malePendingReservationsCount">
                      <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                        <span class="visually-hidden">{{ __('pages.admin.reservation.loading') }}</span>
+                        <span class="visually-hidden">@lang('Loading...')</span>
                      </div>
                   </span>
                </div>
             </div>
             <div class="row align-items-center">
                <div class="col-6 text-start">
-                  <span class="font-13">{{ __('pages.admin.reservation.female') }}</span>
+                  <span class="font-13">@lang('Female')</span>
                </div>
                <div class="col-6 text-end">
                   <span class="font-13" id="femalePendingReservationsCount">
                      <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                        <span class="visually-hidden">{{ __('pages.admin.reservation.loading') }}</span>
+                        <span class="visually-hidden">@lang('Loading...')</span>
                      </div>
                   </span>
                </div>
@@ -124,10 +124,10 @@
             <div class="row align-items-center">
                
                <div class="col-7 text-start mt-2 mb-2">
-                  <h5 class="card-title font-14">{{ __('pages.admin.reservation.confirmed_reservations') }}</h5>
+                  <h5 class="card-title font-14">@lang('Confirmed Reservations')</h5>
                   <h4 class="mb-0" id="totalConfirmedReservationsCount">
                      <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                        <span class="visually-hidden">{{ __('pages.admin.reservation.loading') }}</span>
+                        <span class="visually-hidden">@lang('Loading...')</span>
                      </div>
                   </h4>
                </div>
@@ -139,24 +139,24 @@
          <div class="card-footer">
             <div class="row align-items-center">
                <div class="col-6 text-start">
-                  <span class="font-13">{{ __('pages.admin.reservation.male') }}</span>
+                  <span class="font-13">@lang('Male')</span>
                </div>
                <div class="col-6 text-end">
                   <span class="font-13" id="maleConfirmedReservationsCount">
                      <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                        <span class="visually-hidden">{{ __('pages.admin.reservation.loading') }}</span>
+                        <span class="visually-hidden">@lang('Loading...')</span>
                      </div>
                   </span>
                </div>
             </div>
             <div class="row align-items-center">
                <div class="col-6 text-start">
-                  <span class="font-13">{{ __('pages.admin.reservation.female') }}</span>
+                  <span class="font-13">@lang('Female')</span>
                </div>
                <div class="col-6 text-end">
                   <span class="font-13" id="femaleConfirmedReservationsCount">
                      <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                        <span class="visually-hidden">{{ __('pages.admin.reservation.loading') }}</span>
+                        <span class="visually-hidden">@lang('Loading...')</span>
                      </div>
                   </span>
                </div>
@@ -173,10 +173,10 @@
             <div class="row align-items-center">
                
                <div class="col-7 text-start mt-2 mb-2">
-                  <h5 class="card-title font-14">{{ __('pages.admin.reservation.cancelled_reservations') }}</h5>
+                  <h5 class="card-title font-14">@lang('Cancelled Reservations')</h5>
                   <h4 class="mb-0" id="totalCancelledReservationsCount">
                      <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                        <span class="visually-hidden">{{ __('pages.admin.reservation.loading') }}</span>
+                        <span class="visually-hidden">@lang('Loading...')</span>
                      </div>
                   </h4>
                </div>
@@ -188,24 +188,24 @@
          <div class="card-footer">
             <div class="row align-items-center">
                <div class="col-6 text-start">
-                  <span class="font-13">{{ __('pages.admin.reservation.male') }}</span>
+                  <span class="font-13">@lang('Male')</span>
                </div>
                <div class="col-6 text-end">
                   <span class="font-13" id="maleCancelledReservationsCount">
                      <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                        <span class="visually-hidden">{{ __('pages.admin.reservation.loading') }}</span>
+                        <span class="visually-hidden">@lang('Loading...')</span>
                      </div>
                   </span>
                </div>
             </div>
             <div class="row align-items-center">
                <div class="col-6 text-start">
-                  <span class="font-13">{{ __('pages.admin.reservation.female') }}</span>
+                  <span class="font-13">@lang('Female')</span>
                </div>
                <div class="col-6 text-end">
                   <span class="font-13" id="femaleCancelledReservationsCount">
                      <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                        <span class="visually-hidden">{{ __('pages.admin.reservation.loading') }}</span>
+                        <span class="visually-hidden">@lang('Loading...')</span>
                      </div>
                   </span>
                </div>
@@ -221,24 +221,12 @@
 <div class="row">
    <div class="col-lg-12">
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
-         <h2 class="page-title text-primary mb-2 mb-md-0">{{ __('pages.admin.reservation.title') }}</h2>
+         <h2 class="page-title text-primary mb-2 mb-md-0">@lang('Reservations')</h2>
          <div>
             <button class="btn btn-outline-primary btn-sm toggle-btn" id="toggleButton" type="button" data-bs-toggle="collapse"
                data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
             <i class="fa fa-search-plus"></i>
             </button>
-            <!-- <div class="btn-group ms-2" role="group" aria-label="Download Options">
-               <button type="button" class="btn btn-outline-primary dropdown-toggle" id="downloadBtn"  data-bs-toggle="dropdown" aria-expanded="false">
-               <i class="fa fa-download"></i> {{ __('pages.admin.reservation.download') }}
-               </button>
-               <ul class="dropdown-menu">
-                  <li>
-                     <a class="dropdown-item" href="#" id="exportExcel">
-                     <i class="fa fa-file-excel"></i> {{ __('pages.admin.reservation.excel') }}
-                     </a>
-                  </li>
-               </ul>
-            </div> -->
          </div>
       </div>
    </div>
@@ -252,7 +240,7 @@
             <div class="search-icon-container">
                <i class="fa fa-search search-icon"></i>
             </div>
-            <input type="search" class="form-control search-input" id="searchBox" placeholder="{{ __('pages.admin.reservation.search_placeholder') }}" />
+            <input type="search" class="form-control search-input" id="searchBox" placeholder="@lang('Search by reservation details')" />
          </div>
       </div>
    </div>
@@ -267,12 +255,12 @@
                <table id="default-datatable" class="display table table-bordered">
                   <thead>
                      <tr>
-                        <th>{{ __('pages.admin.reservation.reservation_id') }}</th>
-                        <th>{{ __('pages.admin.reservation.name') }}</th>
-                        <th>{{ __('pages.admin.reservation.location') }}</th>
-                        <th>{{ __('pages.admin.reservation.start_date') }}</th>
-                        <th>{{ __('pages.admin.reservation.end_date') }}</th>
-                        <th>{{ __('pages.admin.reservation.status') }}</th>
+                        <th>@lang('Reservation ID')</th>
+                        <th>@lang('Name')</th>
+                        <th>@lang('Location')</th>
+                        <th>@lang('Start Date')</th>
+                        <th>@lang('End Date')</th>
+                        <th>@lang('Status')</th>
                      </tr>
                   </thead>
                   <tbody>
@@ -284,7 +272,6 @@
       </div>
    </div>
 </div>
-
 
 @endsection
 
@@ -305,18 +292,6 @@
         fetchReservations: "{{ route('admin.reservation.fetch') }}",
         getSummary: "{{ route('admin.reservation.get-summary') }}",
     };
-
-    // Ensure all status keys are included for translations
-    window.translations = {
-    status: {
-        pending: @json(__('pages.admin.reservation.statuses.pending')),
-        confirmed: @json(__('pages.admin.reservation.statuses.confirmed')),
-        completed: @json(__('pages.admin.reservation.statuses.completed')),
-        cancelled: @json(__('pages.admin.reservation.statuses.cancelled')),
-        expired: @json(__('pages.admin.reservation.statuses.expired')),
-    }
-};
-
 </script>
 
 @endsection

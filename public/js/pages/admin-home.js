@@ -2,6 +2,30 @@
 
 $(document).ready(function() {
 
+  // Define translations for English and Arabic
+  const translations = {
+    en: {
+      building: "Building",
+      occupied: "Occupied",
+      total_bedrooms: "Total Bedrooms",
+      empty: "Empty",
+      bedrooms_occupied: "Bedrooms Occupied"
+    },
+    ar: {
+      building: "مبنى",
+      occupied: "مشغول",
+      total_bedrooms: "إجمالي الغرف",
+      empty: "فارغ",
+      bedrooms_occupied: "الغرف المشغولة"
+    }
+  };
+
+  // Get the current language from the HTML lang attribute
+  const currentLang = $('html').attr('lang') || 'en';  // Default to 'en' if lang is not set
+
+  // Select the translation object based on the current language
+  const translation = translations[currentLang];
+
   // Fetch and display the summary data
   function fetchSummaryData() {
     $.ajax({
@@ -55,19 +79,19 @@ $(document).ready(function() {
   function generateBuildingItemHTML(building, occupancyPercentage) {
     return `
       <div class="building-slider-item">
-        <h4 class="my-0">${window.translations.building} ${building.name}</h4>
+        <h4 class="my-0">${translation.building} ${building.name}</h4>
         <div class="row align-items-center my-4 py-3">
           <div class="col-4 p-0">
             <h4>${building.occupied}</h4>
-            <p class="mb-0">${window.translations.occupied}</p>
+            <p class="mb-0">${translation.occupied}</p>
           </div>
           <div class="col-4 py-3 px-0 bg-primary-rgba rounded">
             <h4 class="text-primary">${building.total}</h4>
-            <p class="text-primary mb-0">${window.translations.total_bedrooms}</p>
+            <p class="text-primary mb-0">${translation.total_bedrooms}</p>
           </div>
           <div class="col-4 p-0">
             <h4>${building.empty}</h4>
-            <p class="mb-0">${window.translations.empty}</p>
+            <p class="mb-0">${translation.empty}</p>
           </div>
         </div>
         <div class="progress mb-2 mt-2" style="height: 5px;">
@@ -75,10 +99,10 @@ $(document).ready(function() {
         </div>
         <div class="row align-items-center">
           <div class="col-6 text-start">
-            <p class="font-13">${occupancyPercentage}% ${window.translations.occupied}</p>
+            <p class="font-13">${occupancyPercentage}% ${translation.occupied}</p>
           </div>
           <div class="col-6 text-end">
-            <p class="font-13">${building.occupied}/${building.total} ${window.translations.bedrooms_occupied}</p>
+            <p class="font-13">${building.occupied}/${building.total} ${translation.bedrooms_occupied}</p>
           </div>
         </div>
       </div>

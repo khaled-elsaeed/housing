@@ -13,10 +13,52 @@ $(document).ready(function() {
         icon.classList.add("fa-search-plus");
     });
 
-    const isArabic = $("html").attr("dir") === "rtl";
+    // Get the current language from the html lang attribute
+    const lang = $("html").attr("lang") || "en";  // Default to "en" if lang is not defined
+    
+    // Translation dictionary (for English and Arabic)
+    const translations = {
+        en: {
+            status: {
+                pending: "Pending",
+                confirmed: "Confirmed",
+                cancelled: "Cancelled"
+            },
+            search: "Search",
+            showMore: "Show More",
+            download: "Download",
+            exporting: "Exporting..."
+        },
+        ar: {
+            status: {
+                pending: "قيد الانتظار",
+                confirmed: "مؤكد",
+                cancelled: "ملغى"
+            },
+            search: "بحث",
+            showMore: "عرض المزيد",
+            download: "تحميل",
+            exporting: "جاري التصدير..."
+        }
+    };
 
+    function getTranslation(key) {
+        console.log("Looking up translation for key:", key);  // Log the key to check its format
+        
+        const [category, status] = key.split(".");  // Split the key into category (invoice_status) and status (paid)
+    
+        // Check if category and status exist in the translations object for the current language
+        if (translations[lang] && translations[lang][category] && translations[lang][category][status]) {
+            return translations[lang][category][status];  // Return the correct translation
+        }
+    
+        // If the translation is not found, log a warning and return the key
+        console.warn("Translation not found for key:", key);
+        return key;  // Return the original key if no translation is found
+    }
+    
 
-    // Initialize DataTable
+    // Initialize DataTable with dynamic language support
     const table = $('#default-datatable').DataTable({
         processing: true,
         serverSide: true,
@@ -38,24 +80,24 @@ $(document).ready(function() {
                 name: 'status', 
                 searchable: true, 
                 render: function (data) {
-                    // Normalize data to lowercase and fetch translation
-                    return window.translations.status[data] || data; 
+                    // Use translation based on language
+                    return getTranslation('status.' + data) || data;
                 },
             }
-        ],language: isArabic
+        ],
+        language: lang === "ar"
         ? {
-              url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json",
-
-          }
+            url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json",
+        }
         : {},
-        
-        
     });
 
+    // Language-specific functionality (search box, etc.)
     $('#searchBox').on('keyup', function() {
         table.ajax.reload();
     });
 
+    // Function to fetch and display summary data
     function fetchSummaryData() {
         $.ajax({
             url: window.routes.getSummary,
@@ -81,6 +123,7 @@ $(document).ready(function() {
         });
     }
 
+    // Fetch and display summary data on page load
     fetchSummaryData();
 
     // Button loading state handling
@@ -97,7 +140,7 @@ $(document).ready(function() {
                     .addClass('loading')
                     .prop('disabled', true);
             } else {
-                button.html('<i class="fa fa-spinner fa-spin"></i> Downloading...')
+                button.html('<i class="fa fa-spinner fa-spin"></i> ' + getTranslation("exporting"))
                     .addClass('loading')
                     .prop('disabled', true);
             }

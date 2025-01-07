@@ -192,7 +192,6 @@ class InvoiceController extends Controller
                 $student = $invoice->reservation->user->student ?? null;
                 $faculty = $student->faculty ?? null;
 
-                $invoiceStatus = $invoice->status === 'paid' ? 'Paid' : 'Unpaid';
                 $buttonStatus = $invoice->status === 'paid' ? '' : 'disabled';
 
                 return [
@@ -201,7 +200,7 @@ class InvoiceController extends Controller
                     'national_id' => $student ? $student->national_id : 'N/A',
                     'faculty' => $faculty ? $faculty->{'name_' . ($currentLang == 'ar' ? 'ar' : 'en')} : 'N/A',
                     'mobile' => $student ? $student->mobile : 'N/A',
-                    'invoice_status' => $invoiceStatus,
+                    'invoice_status' => $invoice->status,
                     'payment_status' => $payment ? $payment->status : 'No Payment',
                     'actions' =>
                         '<button type="button" class="btn btn-round btn-info-rgba" data-payment-id="' .

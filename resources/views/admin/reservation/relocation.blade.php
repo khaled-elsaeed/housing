@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', __('pages.admin.reservation.relocation.title'))
+@section('title', __('Relocation'))
 
 @section('links')
 <!-- DataTables CSS -->
@@ -60,8 +60,8 @@
    <div class="col-lg-12">
       <div class="card">
          <div class="card-header">
-            <h4 class="card-title">{{ __('pages.admin.reservation.relocation.title') }}</h4>
-            <p class="text-muted mb-0">{{ __('pages.admin.reservation.relocation.choose_action') }}</p>
+            <h4 class="card-title">@lang('Relocation')</h4>
+            <p class="text-muted mb-0">@lang('Choose the action you would like to perform:')</p>
          </div>
          <div class="card-body">
             <!-- Selection Cards -->
@@ -71,18 +71,18 @@
                      <div class="card-overlay">
                         <i class="fa fa-check check-icon"></i>
                      </div>
-                     <img src="{{ asset('images/reservation/relocate_empty_room.svg') }}" alt="Relocate" class="card-img-top">
+                     <img src="{{ asset('images/reservation/relocate_empty_room.svg') }}" alt="@lang('Relocate')" class="card-img-top">
                   </div>
-                  <h5 class="card-title mt-3">{{ __('pages.admin.reservation.relocation.relocate_empty_room') }}</h5>
+                  <h5 class="card-title mt-3">@lang('Relocate Empty Room')</h5>
                </div>
                <div class="col-md-5 mb-4 text-center">
                   <div class="card text-center border-primary option-card" id="swapCard" onclick="showForm('swap', this)">
                      <div class="card-overlay">
                         <i class="fa fa-check check-icon"></i>
                      </div>
-                     <img src="{{ asset('images/reservation/swap_rooms.svg') }}" alt="Swap" class="card-img-top">
+                     <img src="{{ asset('images/reservation/swap_rooms.svg') }}" alt="@lang('Swap')" class="card-img-top">
                   </div>
-                  <h5 class="card-title mt-3">{{ __('pages.admin.reservation.relocation.swap_rooms') }}</h5>
+                  <h5 class="card-title mt-3">@lang('Swap Rooms')</h5>
                </div>
             </div>
 
@@ -97,10 +97,10 @@
                      <div class="col-md-6">
                         <div class="card border-primary">
                            <div class="card-header">
-                              <h5 class="card-title">{{ __('pages.admin.reservation.relocation.resident_nid') }}</h5>
+                              <h5 class="card-title">@lang('Resident National ID')</h5>
                            </div>
                            <div class="card-body">
-                              <input type="text" class="form-control" name="resident_nid" id="resident_nid_1" placeholder="{{ __('pages.admin.reservation.relocation.resident_nid') }}" required>
+                              <input type="text" class="form-control" name="resident_nid" id="resident_nid_1" placeholder="@lang('Resident National ID')" required>
                               <div id="residentDetails_1" class="mt-3">
                                  <!-- Fetched details will appear here for Resident 1 -->
                               </div>
@@ -111,31 +111,31 @@
                      <div class="col-md-6">
                         <div class="card border-primary mb-4">
                            <div class="card-header">
-                              <h5 class="card-title">{{ __('pages.admin.reservation.relocation.select_building') }}</h5>
+                              <h5 class="card-title">@lang('Select Building')</h5>
                            </div>
                            <div class="card-body">
                               <select class="form-control" id="building_select" required>
-                                 <option value="">{{ __('pages.admin.reservation.relocation.select_building') }}</option>
+                                 <option value="">@lang('Select Building')</option>
                               </select>
                            </div>
                         </div>
                         <div class="card border-primary mb-4">
                            <div class="card-header">
-                              <h5 class="card-title">{{ __('pages.admin.reservation.relocation.select_apartment') }}</h5>
+                              <h5 class="card-title">@lang('Select Apartment')</h5>
                            </div>
                            <div class="card-body">
                               <select class="form-control" id="apartment_select" required>
-                                 <option value="">{{ __('pages.admin.reservation.relocation.select_apartment') }}</option>
+                                 <option value="">@lang('Select Apartment')</option>
                               </select>
                            </div>
                         </div>
                         <div class="card border-primary mb-4">
                            <div class="card-header">
-                              <h5 class="card-title">{{ __('pages.admin.reservation.relocation.select_new_room') }}</h5>
+                              <h5 class="card-title">@lang('Select New Room')</h5>
                            </div>
                            <div class="card-body">
                               <select class="form-control" name="new_room" id="room_select" required>
-                                 <option value="">{{ __('pages.admin.reservation.relocation.select_new_room') }}</option>
+                                 <option value="">@lang('Select New Room')</option>
                               </select>
                            </div>
                         </div>
@@ -143,7 +143,7 @@
                   </div>
                   <!-- Submit Button -->
                   <div class="text-center mt-4">
-                     <button type="submit" class="btn btn-primary">{{ __('pages.admin.reservation.relocation.relocate_button') }}</button>
+                     <button type="submit" class="btn btn-primary">@lang('Relocate')</button>
                   </div>
                </form>
             </div>
@@ -158,26 +158,26 @@
                      <div class="col-md-6">
                         <div class="card border-secondary">
                            <div class="card-header">
-                              <h5 class="card-title">{{ __('pages.admin.reservation.relocation.resident_nid') }}</h5>
+                              <h5 class="card-title">@lang('Resident National ID')</h5>
                            </div>
                            <div class="card-body">
-                              <input type="text" class="form-control" name="resident_nid" id="resident_nid_1_swap" placeholder="{{ __('pages.admin.reservation.relocation.resident_nid') }}" required>
+                              <input type="text" class="form-control" name="resident_nid" id="resident_nid_1_swap" placeholder="@lang('Resident National ID')" required>
                            </div>
                         </div>
                      </div>
                      <div class="col-md-6">
                         <div class="card border-secondary">
                            <div class="card-header">
-                              <h5 class="card-title">{{ __('pages.admin.reservation.relocation.resident_nid') }}</h5>
+                              <h5 class="card-title">@lang('Resident National ID')</h5>
                            </div>
                            <div class="card-body">
-                              <input type="text" class="form-control" name="resident2_nid" id="resident_nid_2_swap" placeholder="{{ __('pages.admin.reservation.relocation.resident_nid') }}" required>
+                              <input type="text" class="form-control" name="resident2_nid" id="resident_nid_2_swap" placeholder="@lang('Resident National ID')" required>
                            </div>
                         </div>
                      </div>
                   </div>
                   <div class="text-center mt-4">
-                     <button type="submit" class="btn btn-primary">{{ __('pages.admin.reservation.relocation.swap_button') }}</button>
+                     <button type="submit" class="btn btn-primary">@lang('Swap Rooms')</button>
                   </div>
                </form>
             </div>

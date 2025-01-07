@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', __('pages.admin.maintenance.title'))
+@section('title', __('Maintenance'))
 
 @section('links')
 <!-- DataTables CSS -->
@@ -8,7 +8,6 @@
 <link href="{{ asset('plugins/datatables/buttons.bootstrap4.min.css') }}?v={{ config('app.version') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}?v={{ config('app.version') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('css/custom-datatable.css') }}?v={{ config('app.version') }}" rel="stylesheet" type="text/css" />
-
 
 <style>
     .loading {
@@ -32,7 +31,7 @@
                   <div class="row align-items-center">
                     
                      <div class="col-7 text-start mt-2 mb-2">
-                        <h5 class="card-title font-14">{{ __('pages.admin.maintenance.total_requests') }}</h5>
+                        <h5 class="card-title font-14">@lang('Total Requests')</h5>
                         <h4 class="mb-0">{{ $totalMaintenanceRequests }}</h4>
                      </div>
                      <div class="col-5 text-end">
@@ -43,7 +42,7 @@
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{ __('pages.admin.maintenance.male') }}</span>
+                        <span class="font-13">@lang('Male')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13">{{ $maleTotalCount }}</span>
@@ -51,7 +50,7 @@
                   </div>
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{ __('pages.admin.maintenance.female') }}</span>
+                        <span class="font-13">@lang('Female')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13">{{ $femaleTotalCount }}</span>
@@ -68,8 +67,9 @@
                <div class="card-body">
                   <div class="row align-items-center">
                      
+
                      <div class="col-7 text-start mt-2 mb-2">
-                        <h5 class="card-title font-14">{{ __('pages.admin.maintenance.pending_requests') }}</h5>
+                        <h5 class="card-title font-14">@lang('Pending Requests')</h5>
                         <h4 class="mb-0">{{ $pendingMaintenanceRequestsCount }}</h4>
                      </div>
                      <div class="col-5 text-end">
@@ -80,7 +80,7 @@
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{ __('pages.admin.maintenance.male') }}</span>
+                        <span class="font-13">@lang('Male')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13">{{ $malePendingCount }}</span>
@@ -88,7 +88,7 @@
                   </div>
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{ __('pages.admin.maintenance.female') }}</span>
+                        <span class="font-13">@lang('Female')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13">{{ $femalePendingCount }}</span>
@@ -106,7 +106,7 @@
                   <div class="row align-items-center">
                     
                      <div class="col-7 text-start mt-2 mb-2">
-                        <h5 class="card-title font-14">{{ __('pages.admin.maintenance.completed_requests') }}</h5>
+                        <h5 class="card-title font-14">@lang('Completed Requests')</h5>
                         <h4 class="mb-0">{{ $completedMaintenanceRequestsCount }}</h4>
                      </div> 
                      <div class="col-5 text-end">
@@ -117,7 +117,7 @@
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{ __('pages.admin.maintenance.male') }}</span>
+                        <span class="font-13">@lang('Male')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13">{{ $maleCompletedCount }}</span>
@@ -125,7 +125,7 @@
                   </div>
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{ __('pages.admin.maintenance.female') }}</span>
+                        <span class="font-13">@lang('Female')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13">{{ $femaleCompletedCount }}</span>
@@ -142,8 +142,9 @@
                <div class="card-body">
                   <div class="row align-items-center">
                      
+
                      <div class="col-7 text-start mt-2 mb-2">
-                        <h5 class="card-title font-14">{{ __('pages.admin.maintenance.rejected_requests') }}</h5>
+                        <h5 class="card-title font-14">@lang('Rejected Requests')</h5>
                         <h4 class="mb-0">{{ $rejectedMaintenanceRequestsCount }}</h4>
                      </div>
                      <div class="col-5 text-end">
@@ -154,7 +155,7 @@
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{ __('pages.admin.maintenance.male') }}</span>
+                        <span class="font-13">@lang('Male')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13">{{ $maleRejectedCount }}</span>
@@ -162,7 +163,7 @@
                   </div>
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{ __('pages.admin.maintenance.female') }}</span>
+                        <span class="font-13">@lang('Female')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13">{{ $femaleRejectedCount }}</span>
@@ -182,26 +183,8 @@
 
 <!-- Table Section -->
 <div class="d-flex flex-column mb-3">
-    <h2 class="page-title text-primary mb-2">{{ __('pages.admin.maintenance.page_title') }}</h2>
+    <h2 class="page-title text-primary mb-2">@lang('Maintenance Requests')</h2>
 </div>
-
-<!-- <div class="d-flex justify-content-end align-items-center mb-3">
-    <button class="btn btn-outline-primary btn-sm ms-2 toggle-btn" id="toggleButton" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-      <i class="fa fa-search-plus"></i> {{ __('pages.admin.maintenance.toggle_filter') }}
-    </button>
-    <div class="btn-group ms-2" role="group" aria-label="Download Options">
-         <button type="button" class="btn btn-outline-primary dropdown-toggle" id="downloadBtn" data-bs-toggle="dropdown" aria-expanded="false">
-         <i class="fa fa-download"></i> {{ __('pages.admin.maintenance.download') }}
-         </button>
-         <ul class="dropdown-menu">
-            <li>
-               <a class="dropdown-item" href="#" id="exportExcel">
-               <i class="fa fa-file-excel"></i> {{ __('pages.admin.maintenance.export_excel') }}
-               </a>
-            </li>
-         </ul>
-    </div>
-</div> -->
 
 <div class="collapse" id="collapseExample">
    <div class="search-filter-container card card-body">
@@ -210,14 +193,14 @@
             <div class="search-icon-container">
                <i class="fa fa-search search-icon"></i>
             </div>
-            <input type="search" class="form-control search-input" id="searchBox" placeholder="{{ __('pages.admin.maintenance.search_placeholder') }}" />
+            <input type="search" class="form-control search-input" id="searchBox" placeholder="@lang('Search for Requests')" />
          </div>
          <div class="d-flex flex-column flex-md-row filters-container">
             <select id="statusFilter" class="form-select mb-2 mb-md-0">
-                <option value="">{{ __('pages.admin.maintenance.filter_by_status') }}</option>
-                <option value="pending">{{ __('pages.admin.maintenance.pending') }}</option>
-                <option value="completed">{{ __('pages.admin.maintenance.completed') }}</option>
-                <option value="rejected">{{ __('pages.admin.maintenance.rejected') }}</option>
+                <option value="">@lang('Filter by Status')</option>
+                <option value="pending">@lang('Pending')</option>
+                <option value="completed">@lang('Completed')</option>
+                <option value="rejected">@lang('Rejected')</option>
             </select>
          </div>
       </div>
@@ -231,12 +214,12 @@
                <table id="default-datatable" class="display table table-bordered">
                   <thead>
                      <tr>
-                        <th>{{ __('pages.admin.maintenance.no') }}</th>
-                        <th>{{ __('pages.admin.maintenance.student_name') }}</th>
-                        <th>{{ __('pages.admin.maintenance.location') }}</th>
-                        <th>{{ __('pages.admin.maintenance.description') }}</th>
-                        <th>{{ __('pages.admin.maintenance.status') }}</th>
-                        <th>{{ __('pages.admin.maintenance.actions') }}</th>
+                        <th>@lang('No.')</th>
+                        <th>@lang('Student Name')</th>
+                        <th>@lang('Location')</th>
+                        <th>@lang('Description')</th>
+                        <th>@lang('Status')</th>
+                        <th>@lang('Actions')</th>
                      </tr>
                   </thead>
                   <tbody>
@@ -249,50 +232,44 @@
                               ? $request->user->getLocationDetails() 
                               : ['building' => 'N/A', 'apartment' => 'N/A', 'room' => 'N/A'];
 
-                              $locationString = __(
-                              'pages.admin.maintenance.building', ['building' => $location['building']]
-                              ) . ' - ' . __(
-                              'pages.admin.maintenance.apartment', ['apartment' => $location['apartment']]
-                              ) . ' - ' . __(
-                              'pages.admin.maintenance.room', ['room' => $location['room']]
-                              );
+                              $locationString = 'Building: ' . $location['building'] . ' - Apartment: ' . $location['apartment'] . ' - Room: ' . $location['room'];
                            ?>
                            <td>{{$locationString}}</td>
-                           <td>{{ $request->description ?? __('pages.admin.maintenance.no_description') }}</td>
+                           <td>{{ $request->description ?? __('No Description') }}</td>
                            <td>
     @if($request->status === 'pending')
-        <span class="badge bg-warning text-dark">{{ __('pages.admin.maintenance.status_pending') }}</span>
+        <span class="badge bg-warning text-dark">@lang('Pending')</span>
     @elseif($request->status === 'in_progress')
-        <span class="badge bg-success">{{ __('pages.admin.maintenance.status_accepted') }}</span><br>
-        <small>{{ __('pages.admin.maintenance.accepted_at', ['date' => $request->updated_at->format('d M Y, h:i A')]) }}</small>
+        <span class="badge bg-success">@lang('Accepted')</span><br>
+        <small>@lang('Accepted at') {{ $request->updated_at->format('d M Y, h:i A') }}</small>
     @elseif($request->status === 'rejected')
-        <span class="badge bg-danger">{{ __('pages.admin.maintenance.status_rejected') }}</span><br>
-        <small>{{ __('pages.admin.maintenance.rejected_at', ['date' => $request->updated_at->format('d M Y, h:i A')]) }}</small>
+        <span class="badge bg-danger">@lang('Rejected')</span><br>
+        <small>@lang('Rejected at') {{ $request->updated_at->format('d M Y, h:i A') }}</small>
     @elseif($request->status === 'completed')
-        <span class="badge bg-primary">{{ __('pages.admin.maintenance.status_completed') }}</span><br>
-        <small>{{ __('pages.admin.maintenance.completed_at', ['date' => $request->updated_at->format('d M Y, h:i A')]) }}</small>
+        <span class="badge bg-primary">@lang('Completed')</span><br>
+        <small>@lang('Completed at') {{ $request->updated_at->format('d M Y, h:i A') }}</small>
     @endif
 </td>
 
 <td>
     @if($request->status === 'pending')
         <!-- Accept and Reject Buttons -->
-        <button type="button" class="btn btn-rounded btn-success-rgba" id="in-progress-status-btn-{{ $request->id }}" title="{{ __('pages.admin.maintenance.accept_request') }}">
-            <i class="feather icon-check-circle"></i> {{ __('pages.admin.maintenance.accept') }}
+        <button type="button" class="btn btn-rounded btn-success-rgba" id="in-progress-status-btn-{{ $request->id }}" title="@lang('Accept Request')">
+            <i class="feather icon-check-circle"></i> @lang('Accept')
         </button>
-        <button type="button" class="btn btn-rounded btn-danger-rgba" id="reject-status-btn-{{ $request->id }}" title="{{ __('pages.admin.maintenance.reject_request') }}">
-            <i class="feather icon-x-square"></i> {{ __('pages.admin.maintenance.reject') }}
+        <button type="button" class="btn btn-rounded btn-danger-rgba" id="reject-status-btn-{{ $request->id }}" title="@lang('Reject Request')">
+            <i class="feather icon-x-square"></i> @lang('Reject')
         </button>
     @elseif($request->status === 'in_progress')
         <!-- Complete Button -->
-        <button type="button" class="btn btn-rounded btn-info-rgba" id="complete-status-btn-{{ $request->id }}" title="{{ __('pages.admin.maintenance.complete_request') }}" onclick="completeRequest({{ $request->id }})">
-            <i class="feather icon-check-circle"></i> {{ __('pages.admin.maintenance.complete') }}
+        <button type="button" class="btn btn-rounded btn-info-rgba" id="complete-status-btn-{{ $request->id }}" title="@lang('Complete Request')" onclick="completeRequest({{ $request->id }})">
+            <i class="feather icon-check-circle"></i> @lang('Complete')
         </button>
     @endif
 
     <!-- View Button -->
     <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewRequestModal" data-request-id="{{ $request->id }}">
-        <i class="feather icon-eye"></i> {{ __('pages.admin.maintenance.view') }}
+        <i class="feather icon-eye"></i> @lang('View')
     </button>
 </td>
 
@@ -312,21 +289,21 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="viewRequestModalLabel">{{ __('pages.admin.maintenance.issues') }}</h5>
+                <h5 class="modal-title" id="viewRequestModalLabel">@lang('Maintenance Issues')</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <h5>{{ __('pages.admin.maintenance.issues') }}</h5>
+                <h5>@lang('Issues')</h5>
                 <ul id="issueList" class="list-group">
                     <!-- Issues will be dynamically added here -->
                 </ul>
                 <hr>
-                <h5>{{ __('pages.admin.maintenance.additional_info') }}</h5>
+                <h5>@lang('Additional Info')</h5>
                 <p id="additionalInfo"></p>
                 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@lang('Close')</button>
             </div>
         </div>
     </div>
@@ -347,9 +324,5 @@
         updateStatus: "{{ route('admin.maintenance.updateStatus', ':id') }}",
         getIssues: "{{ route('admin.maintenance.getIssues', ':id') }}",
     };
-    window.translation = {
-        issues: @json(__('pages.admin.maintenance.issues'))
-    };
 </script>
 @endsection
-

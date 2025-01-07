@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'My Profile')
+@section('title', @lang('My Profile'))
 
 @section('content')
 <!-- Start row -->
@@ -9,20 +9,20 @@
     <div class="col-lg-5 col-xl-3">
         <div class="card m-b-30">
             <div class="card-header">
-                <h5 class="card-title mb-0">My Account</h5>
+                <h5 class="card-title mb-0">@lang('My Account')</h5>
             </div>
             <div class="card-body">
                 <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                     <!-- Profile Tab -->
                     <a class="nav-link mb-2 active" id="v-pills-profile-tab" data-bs-toggle="pill"
                        href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="true">
-                        <i class="feather icon-user me-2"></i>My Profile
+                        <i class="feather icon-user me-2"></i>@lang('My Profile')
                     </a>
                     <!-- Notifications Tab -->
                     <a class="nav-link mb-2" id="v-pills-notifications-tab" data-bs-toggle="pill"
                        href="#v-pills-notifications" role="tab" aria-controls="v-pills-notifications"
                        aria-selected="false">
-                        <i class="feather icon-bell me-2"></i>Notifications
+                        <i class="feather icon-bell me-2"></i>@lang('Notifications')
                     </a>
                 </div>
             </div>
@@ -39,84 +39,83 @@
                  aria-labelledby="v-pills-profile-tab">
                 <div class="card m-b-30">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">My Profile</h5>
+                        <h5 class="card-title mb-0">@lang('My Profile')</h5>
                     </div>
                     <div class="card-body">
-    <div class="profilebox pt-4 text-center">
-        <!-- Profile Image -->
-        <img src="{{ $user->profile_picture ? asset('storage/profile_pictures/' . $user->profile_picture) : asset('images/users/boy.svg') }}" 
-             class="img-fluid mb-3 rounded-circle" style="width: 150px; height: 150px; object-fit: cover;" alt="user">
+                        <div class="profilebox pt-4 text-center">
+                            <!-- Profile Image -->
+                            <img src="{{ $user->profile_picture ? asset('storage/profile_pictures/' . $user->profile_picture) : asset('images/users/boy.svg') }}" 
+                                 class="img-fluid mb-3 rounded-circle" style="width: 150px; height: 150px; object-fit: cover;" alt="user">
 
-        <!-- Profile Picture Actions -->
-        <ul class="list-inline">
-            <!-- Edit Profile Picture Button (Open file input dialog) -->
-            <li class="list-inline-item">
-                <a href="#" class="btn btn-success-rgba font-18" data-bs-toggle="modal" data-bs-target="#profilePicModal">
-                    <i class="feather icon-edit"></i> Change Picture
-                </a>
-            </li>
-            
-            <!-- Delete Profile Picture Button -->
-            @if($user->profile_picture)
-                <li class="list-inline-item">
-                    <form action="{{ route('admin.profile.delete-picture') }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger-rgba font-18">
-                            <i class="feather icon-trash"></i> Delete Picture
-                        </button>
-                    </form>
-                </li>
-            @endif
-        </ul>
-    </div>
-</div>
-
-<!-- Modal for Changing Profile Picture -->
-<div class="modal fade" id="profilePicModal" tabindex="-1" aria-labelledby="profilePicModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="profilePicModalLabel">Change Profile Picture</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="{{ route('admin.profile.update-picture') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="mb-3">
-                        <label for="profile_picture" class="form-label">Select New Profile Picture</label>
-                        <input type="file" class="form-control" id="profile_picture" name="profile_picture" accept="image/*" required>
+                            <!-- Profile Picture Actions -->
+                            <ul class="list-inline">
+                                <!-- Edit Profile Picture Button (Open file input dialog) -->
+                                <li class="list-inline-item">
+                                    <a href="#" class="btn btn-success-rgba font-18" data-bs-toggle="modal" data-bs-target="#profilePicModal">
+                                        <i class="feather icon-edit"></i> @lang('Change Picture')
+                                    </a>
+                                </li>
+                                
+                                <!-- Delete Profile Picture Button -->
+                                @if($user->profile_picture)
+                                    <li class="list-inline-item">
+                                        <form action="{{ route('admin.profile.delete-picture') }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger-rgba font-18">
+                                                <i class="feather icon-trash"></i> @lang('Delete Picture')
+                                            </button>
+                                        </form>
+                                    </li>
+                                @endif
+                            </ul>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Upload New Picture</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
+                    <!-- Modal for Changing Profile Picture -->
+                    <div class="modal fade" id="profilePicModal" tabindex="-1" aria-labelledby="profilePicModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="profilePicModalLabel">@lang('Change Profile Picture')</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{{ route('admin.profile.update-picture') }}" method="POST" enctype="multipart/form-data">
+                                        @csrf
+                                        <div class="mb-3">
+                                            <label for="profile_picture" class="form-label">@lang('Select New Profile Picture')</label>
+                                            <input type="file" class="form-control" id="profile_picture" name="profile_picture" accept="image/*" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">@lang('Upload New Picture')</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Edit Profile Information -->
                 <div class="card m-b-30">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Edit Profile Information</h5>
+                        <h5 class="card-title mb-0">@lang('Edit Profile Information')</h5>
                     </div>
                     <div class="card-body">
                         <form class="row g-3" method="POST" action="{{ route('admin.profile.update') }}">
                             @csrf
                             @method('PUT')
                             <div class="col-md-6">
-                                <label for="first_name">First Name</label>
+                                <label for="first_name">@lang('First Name')</label>
                                 <input type="text" class="form-control" id="first_name" name="first_name"
                                        value="{{ $user->first_name_en }}">
                             </div>
                             <div class="col-md-6">
-                                <label for="last_name">Last Name</label>
+                                <label for="last_name">@lang('Last Name')</label>
                                 <input type="text" class="form-control" id="last_name" name="last_name"
                                        value="{{ $user->last_name_en }}">
                             </div>
                             <div class="col-md-6">
-                                <label for="email">Email</label>
+                                <label for="email">@lang('Email')</label>
                                 <input type="email" class="form-control" id="email" name="email"
                                        value="{{ $user->email }}">
                             </div>
@@ -124,24 +123,24 @@
                             <!-- Password Fields -->
                             <div class="col-md-12">
                                 <button type="button" class="btn btn-secondary mb-3" id="toggle-password-btn">
-                                    Change Password
+                                    @lang('Change Password')
                                 </button>
                             </div>
                             <div id="password-section" style="display: none;">
                                 <div class="col-md-6">
-                                    <label for="password">Password</label>
+                                    <label for="password">@lang('Password')</label>
                                     <input type="password" class="form-control" id="password" name="password"
-                                           placeholder="Enter new password">
+                                           placeholder="@lang('Enter new password')">
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="password_confirmation">Confirm Password</label>
+                                    <label for="password_confirmation">@lang('Confirm Password')</label>
                                     <input type="password" class="form-control" id="password_confirmation"
-                                           name="password_confirmation" placeholder="Confirm new password">
+                                           name="password_confirmation" placeholder="@lang('Confirm new password')">
                                 </div>
                             </div>
 
                             <button type="submit" class="btn btn-primary font-16">
-                                <i class="feather icon-save me-2"></i>Update
+                                <i class="feather icon-save me-2"></i>@lang('Update')
                             </button>
                         </form>
                     </div>
@@ -154,7 +153,7 @@
                  aria-labelledby="v-pills-notifications-tab">
                 <div class="card m-b-30">
                     <div class="card-header">
-                        <h5 class="card-title mb-0">Notifications</h5>
+                        <h5 class="card-title mb-0">@lang('Notifications')</h5>
                     </div>
                     <div class="card-body">
                         <div class="ecom-notification-box">
@@ -175,7 +174,7 @@
                                         </div>
                                     </li>
                                 @empty
-                                    <li class="p-2">No notifications available.</li>
+                                    <li class="p-2">@lang('No notifications available.')</li>
                                 @endforelse
                             </ul>
                         </div>
@@ -183,11 +182,9 @@
                 </div>
             </div>
             <!-- End My Notifications Tab -->
-
         </div>
     </div>
     <!-- End col for profile content -->
-
 </div>
 <!-- End row -->
 

@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('title',  __('pages.admin.applicants.invoices.applicants_payments'))
+@section('title', __('Applicants Payments'))
 @section('links')
 <!-- DataTables CSS -->
 <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
@@ -30,11 +30,11 @@
                   <div class="row align-items-center">
                      
                      <div class="col-7 text-start mt-2 mb-2">
-                        <h5 class="card-title font-14">{{  __('pages.admin.applicants.invoices.total_invoices') }}</h5>
+                        <h5 class="card-title font-14">@lang('Total Invoices')</h5>
                         <h4 class="mb-0" id="totalInvoice">
                            <!-- Loading Spinner -->
                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                              <span class="visually-hidden">{{  __('pages.admin.applicants.invoices.loading') }}</span>
+                              <span class="visually-hidden">@lang('Loading...')</span>
                            </div>
                         </h4>
                      </div>
@@ -46,24 +46,24 @@
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{  __('pages.admin.applicants.invoices.males') }}</span>
+                        <span class="font-13">@lang('Males')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13" id="totalMaleInvoice">
                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                              <span class="visually-hidden">{{  __('pages.admin.applicants.invoices.loading') }}</span>
+                              <span class="visually-hidden">@lang('Loading...')</span>
                            </div>
                         </span>
                      </div>
                   </div>
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{  __('pages.admin.applicants.invoices.females') }}</span>
+                        <span class="font-13">@lang('Females')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13" id="totalFemaleInvoice">
                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                              <span class="visually-hidden">{{  __('pages.admin.applicants.invoices.loading') }}</span>
+                              <span class="visually-hidden">@lang('Loading...')</span>
                            </div>
                         </span>
                      </div>
@@ -80,10 +80,10 @@
                   <div class="row align-items-center">
 
                      <div class="col-7 text-start mt-2 mb-2">
-                        <h5 class="card-title font-14">{{  __('pages.admin.applicants.invoices.paid_invoices') }}</h5>
+                        <h5 class="card-title font-14">@lang('Paid Invoices')</h5>
                         <h4 class="mb-0" id="totalPaidInvoice">
                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                              <span class="visually-hidden">{{  __('pages.admin.applicants.invoices.loading') }}</span>
+                              <span class="visually-hidden">@lang('Loading...')</span>
                            </div>
                         </h4>
                      </div>
@@ -95,24 +95,24 @@
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{  __('pages.admin.applicants.invoices.males') }}</span>
+                        <span class="font-13">@lang('Males')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13" id="totalPaidMaleInvoice">
                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                              <span class="visually-hidden">{{  __('pages.admin.applicants.invoices.loading') }}</span>
+                              <span class="visually-hidden">@lang('Loading...')</span>
                            </div>
                         </span>
                      </div>
                   </div>
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{  __('pages.admin.applicants.invoices.females') }}</span>
+                        <span class="font-13">@lang('Females')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13" id="totalPaidFemaleInvoice">
                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                              <span class="visually-hidden">{{  __('pages.admin.applicants.invoices.loading') }}</span>
+                              <span class="visually-hidden">@lang('Loading...')</span>
                            </div>
                         </span>
                      </div>
@@ -129,10 +129,10 @@
                   <div class="row align-items-center">
 
                      <div class="col-7 text-start mt-2 mb-2">
-                        <h5 class="card-title font-14">{{  __('pages.admin.applicants.invoices.unpaid_invoices') }}</h5>
+                        <h5 class="card-title font-14">@lang('Unpaid Invoices')</h5>
                         <h4 class="mb-0" id="totalUnpaidInvoice">
                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                              <span class="visually-hidden">{{  __('pages.admin.applicants.invoices.loading') }}</span>
+                              <span class="visually-hidden">@lang('Loading...')</span>
                            </div>
                         </h4>
                      </div>
@@ -144,24 +144,24 @@
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{  __('pages.admin.applicants.invoices.males') }}</span>
+                        <span class="font-13">@lang('Males')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13" id="totalUnpaidMaleInvoice">
                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                              <span class="visually-hidden">{{  __('pages.admin.applicants.invoices.loading') }}</span>
+                              <span class="visually-hidden">@lang('Loading...')</span>
                            </div>
                         </span>
                      </div>
                   </div>
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{  __('pages.admin.applicants.invoices.females') }}</span>
+                        <span class="font-13">@lang('Females')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13" id="totalUnpaidFemaleInvoice">
                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                              <span class="visually-hidden">{{  __('pages.admin.applicants.invoices.loading') }}</span>
+                              <span class="visually-hidden">@lang('Loading...')</span>
                            </div>
                         </span>
                      </div>
@@ -178,10 +178,10 @@
                   <div class="row align-items-center">
 
                      <div class="col-7 text-start mt-2 mb-2">
-                        <h5 class="card-title font-14">{{  __('pages.admin.applicants.invoices.accepted_payments') }}</h5>
+                        <h5 class="card-title font-14">@lang('Accepted Payments')</h5>
                         <h4 class="mb-0" id="totalAcceptedPayments">
                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                              <span class="visually-hidden">{{  __('pages.admin.applicants.invoices.loading') }}</span>
+                              <span class="visually-hidden">@lang('Loading...')</span>
                            </div>
                         </h4>
                      </div>
@@ -193,24 +193,24 @@
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{  __('pages.admin.applicants.invoices.males') }}</span>
+                        <span class="font-13">@lang('Males')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13" id="totalAcceptedMalePayments">
                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                              <span class="visually-hidden">{{  __('pages.admin.applicants.invoices.loading') }}</span>
+                              <span class="visually-hidden">@lang('Loading...')</span>
                            </div>
                         </span>
                      </div>
                   </div>
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">{{  __('pages.admin.applicants.invoices.females') }}</span>
+                        <span class="font-13">@lang('Females')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13" id="totalAcceptedFemalePayments">
                            <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                              <span class="visually-hidden">{{  __('pages.admin.applicants.invoices.loading') }}</span>
+                              <span class="visually-hidden">@lang('Loading...')</span>
                            </div>
                         </span>
                      </div>
@@ -230,25 +230,13 @@
    <div class="col-lg-12">
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
          <!-- Title on the Left -->
-         <h2 class="page-title text-primary mb-2 mb-md-0">{{  __('pages.admin.applicants.invoices.applicants_payments') }}</h2>
+         <h2 class="page-title text-primary mb-2 mb-md-0">@lang('Applicants Payments')</h2>
          <!-- Toggle Button on the Right -->
          <div>
             <button class="btn btn-outline-primary btn-sm toggle-btn" id="toggleButton" type="button" data-bs-toggle="collapse"
                data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                <i class="fa fa-search-plus"></i>
             </button>
-            <!-- <div class="btn-group ms-2" role="group" aria-label="{{  __('pages.admin.applicants.invoices.Download Options') }}">
-               <button type="button" class="btn btn-outline-primary dropdown-toggle" id="downloadBtn"  data-bs-toggle="dropdown" aria-expanded="false">
-               <i class="fa fa-download"></i> {{  __('pages.admin.applicants.invoices.Download') }}
-               </button>
-               <ul class="dropdown-menu">
-                  <li>
-                     <a class="dropdown-item" href="#" id="exportExcel">
-                     <i class="fa fa-file-excel"></i> {{  __('pages.admin.applicants.invoices.Applicants (Excel)') }}
-                     </a>
-                  </li>
-               </ul>
-            </div> -->
          </div>
       </div>
    </div>
@@ -266,9 +254,9 @@
 
          <div class="d-flex flex-column flex-md-row filters-container">
             <select id="genderFilter" class="form-select mb-2 mb-md-0">
-               <option value="">{{  __('pages.admin.applicants.invoices.Select Gender') }}</option>
-               <option value="male">{{  __('pages.admin.applicants.invoices.Male') }}</option>
-               <option value="female">{{  __('pages.admin.applicants.invoices.Female') }}</option>
+               <option value="">@lang('Select Gender')</option>
+               <option value="male">@lang('Male')</option>
+               <option value="female">@lang('Female')</option>
             </select>
          </div>
       </div>
@@ -285,13 +273,13 @@
                <table id="default-datatable" class="display table table-bordered">
                   <thead>
                      <tr>
-                        <th>{{  __('pages.admin.applicants.invoices.Name') }}</th>
-                        <th>{{  __('pages.admin.applicants.invoices.National ID') }}</th>
-                        <th>{{  __('pages.admin.applicants.invoices.Faculty') }}</th>
-                        <th>{{  __('pages.admin.applicants.invoices.Mobile') }}</th>
-                        <th>{{  __('pages.admin.applicants.invoices.Invoice Status') }}</th> <!-- New column for Invoice Status -->
-                        <th>{{  __('pages.admin.applicants.invoices.Payment Status') }}</th> <!-- New column for Invoice Status -->
-                        <th>{{  __('pages.admin.applicants.invoices.Actions') }}</th> <!-- Actions column -->
+                        <th>@lang('Name')</th>
+                        <th>@lang('National ID')</th>
+                        <th>@lang('Faculty')</th>
+                        <th>@lang('Mobile')</th>
+                        <th>@lang('Invoice Status')</th>
+                        <th>@lang('Payment Status')</th>
+                        <th>@lang('Actions')</th>
                      </tr>
                   </thead>
                   <tbody>
@@ -311,7 +299,7 @@
    <div class="modal-dialog modal-xl modal-dialog-centered" role="payment">
       <div class="modal-content">
          <div class="modal-header">
-            <h5 class="modal-title" id="applicantDetailsModalLabel">{{  __('pages.admin.applicants.invoices.applicant_payments') }}</h5>
+            <h5 class="modal-title" id="applicantDetailsModalLabel">@lang('Applicant Payments')</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
          <div class="modal-body">
@@ -320,13 +308,14 @@
             </div>
          </div>
          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{  __('pages.admin.applicants.invoices.close') }}</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@lang('Close')</button>
          </div>
       </div>
    </div>
 </div>
 
 @endsection
+
 
 @section('scripts')
 <!-- Datatable JS -->
@@ -347,20 +336,7 @@ window.routes = {
     fetchStats: "{{ route('admin.invoices.stats') }}",  
     updateInvoiceStatus : "{{ route('admin.invoices.payment.update', ':paymentId')}}"
 };
-window.translations = {
-        invoice_status: {
-            paid: @json(__('pages.admin.applicants.invoices.invoice_status.paid')),
-            unpaid: @json(__('pages.admin.applicants.invoices.invoice_status.unpaid')),
-            pending: @json(__('pages.admin.applicants.invoices.invoice_status.pending')),
-        },
-        payment_status: {
-            pending: @json(__('pages.admin.applicants.invoices.payment_status.pending')),
-            paid: @json(__('pages.admin.applicants.invoices.payment_status.paid')),
-            unpaid: @json(__('pages.admin.applicants.invoices.payment_status.unpaid')),
-            no_payment: @json(__('pages.admin.applicants.invoices.payment_status.no_payment')),
-        }
-        
-};
+
 
 </script>
 @endsection
