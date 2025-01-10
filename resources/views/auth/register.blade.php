@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="UTF-8">
@@ -10,8 +10,11 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16x16.png') }}">
+    @if(app()->isLocale('en'))
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
-
+    @else
+    <link href="{{ asset('css/bootstrap.rtl.min.css') }}" rel="stylesheet" type="text/css">
+    @endif
     <!-- Load SweetAlert2 -->
     <script src="{{ asset('plugins/sweet-alert2/sweetalert2.all.min.js') }}"></script>
 
@@ -19,6 +22,17 @@
 </head>
 
 <body>
+    
+<div class="language-switcher-container">
+    <div class="language-switcher">
+        <span class="language-option @if(app()->isLocale('en')) active @endif" data-lang="en">
+            <i class="flag-icon flag-icon-us"></i> EN
+        </span>
+        <span class="language-option @if(app()->isLocale('ar')) active @endif" data-lang="ar">
+            <i class="flag-icon flag-icon-eg"></i> AR
+        </span>
+    </div>
+</div>
 <div class="auth-box">
     <div class="row g-0">
         <!-- Left Side Image -->
