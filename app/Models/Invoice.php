@@ -23,4 +23,26 @@ class Invoice extends Model
     {
         return $this->belongsTo(Reservation::class); 
     }
+
+    /**
+     * Get the details for the invoice.
+     */
+    public function details()
+    {
+        return $this->hasMany(InvoiceDetail::class);
+    } 
+
+    /**
+     * Get the payments for the invoice.
+     */
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function totalAmount()
+{
+    return $this->details->sum('amount');
+}
+
 }

@@ -16,6 +16,7 @@
                     </li>
                 </ul>
             </div>
+            
             <div class="infobar">
                 <ul class="list-inline mb-0">
                     <li class="list-inline-item">

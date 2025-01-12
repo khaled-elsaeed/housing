@@ -241,4 +241,14 @@ Route::middleware(Localization::class)
 use App\Http\Controllers\StudentPaymentController;
 
 // Route to handle payment receipt upload
-Route::post('/student/payment/upload/', [StudentPaymentController::class, 'uploadPayment'])->name('student.uploadPayment');
+Route::post('/student/payment/upload/', [StudentPaymentController::class, 'payInvoice'])->name('student.invoice.pay');
+Route::post('/student/invoice/detail/', [StudentPaymentController::class, 'getInvoiceDetails'])->name('student.payment.info');
+
+use App\Http\Controllers\UploadController;
+
+Route::post('upload', UploadController::class)->name('upload');
+
+
+use App\Http\Controllers\CompleteProfileController;
+
+Route::get('test', [CompleteProfileController::class, 'index'])->name('test');

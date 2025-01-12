@@ -38,7 +38,7 @@
                         <span class="action-icon badge badge-primary-inverse me-0"><i class="feather icon-user"></i></span>
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
-                        <h5 class="card-title font-14">@lang('Total Students')</h5>
+                        <h5 class="card-title font-14">__('Total Students')</h5>
                         <h4 class="mb-0">{{ $totalStudentsCount }}</h4>
                      </div>
                   </div>
@@ -46,7 +46,7 @@
                <div class="card-footer">
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">@lang('Male')</span>
+                        <span class="font-13">__('Male')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13">{{ $maleTotalCount }}</span>
@@ -54,7 +54,7 @@
                   </div>
                   <div class="row align-items-center">
                      <div class="col-6 text-start">
-                        <span class="font-13">@lang('Female')</span>
+                        <span class="font-13">__('Female')</span>
                      </div>
                      <div class="col-6 text-end">
                         <span class="font-13">{{ $femaleTotalCount }}</span>
@@ -75,7 +75,7 @@
    <div class="col-lg-12">
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
          <!-- Title on the Left -->
-         <h2 class="page-title text-primary mb-2 mb-md-0">@lang('Student Accounts')</h2>
+         <h2 class="page-title text-primary mb-2 mb-md-0">__('Student Accounts')</h2>
          <div>
             <button class="btn btn-outline-primary btn-sm toggle-btn" id="toggleButton" type="button" data-bs-toggle="collapse"
                data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
@@ -95,7 +95,7 @@
            <div class="search-icon-container">
               <i class="fa fa-search search-icon"></i>
            </div>
-           <input type="search" class="form-control search-input" id="searchBox" placeholder="@lang('Search...')" />
+           <input type="search" class="form-control search-input" id="searchBox" placeholder="__('Search...')" />
         </div>
       </div>
    </div>
@@ -113,12 +113,12 @@
                <table id="default-datatable" class="display table table-bordered">
                   <thead>
                      <tr>
-                        <th>@lang('No')</th>
-                        <th>@lang('Student Name')</th>
-                        <th>@lang('National ID')</th>
-                        <th>@lang('Email')</th>
-                        <th>@lang('Status')</th>
-                        <th>@lang('Actions')</th>
+                        <th>__('No')</th>
+                        <th>__('Student Name')</th>
+                        <th>__('National ID')</th>
+                        <th>__('Email')</th>
+                        <th>__('Status')</th>
+                        <th>__('Actions')</th>
                      </tr>
                   </thead>
                   <tbody>
@@ -130,19 +130,19 @@
                         <td>{{ $student->email }}</td>
                         <td>
                             @if($student->status === 'active')
-                                <span class="badge bg-success">@lang('Active')</span>
+                                <span class="badge bg-success">__('Active')</span>
                             @elseif($student->status === 'inactive')
-                                <span class="badge bg-danger">@lang('Inactive')</span>
+                                <span class="badge bg-danger">__('Inactive')</span>
                             @endif
                         </td>
                         <td>
                             <!-- Reset Email Button -->
-                            <button type="button" class="btn btn-round btn-info-rgba ms-2" data-bs-toggle="modal" data-bs-target="#resetEmailModal" data-student-id="{{ $student->id }}" title="@lang('Reset Email')">
+                            <button type="button" class="btn btn-round btn-info-rgba ms-2" data-bs-toggle="modal" data-bs-target="#resetEmailModal" data-student-id="{{ $student->id }}" title="__('Reset Email')">
                                 <i class="feather icon-mail"></i> 
                             </button>
 
                             <!-- Reset Password Button -->
-                            <button type="button" class="btn btn-round btn-danger-rgba ms-2" data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-student-id="{{ $student->id }}" title="@lang('Reset Password')">
+                            <button type="button" class="btn btn-round btn-danger-rgba ms-2" data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-student-id="{{ $student->id }}" title="__('Reset Password')">
                                 <i class="feather icon-lock"></i> 
                             </button>
                         </td>
@@ -163,7 +163,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="resetEmailModalLabel">@lang('Reset Email')</h5>
+        <h5 class="modal-title" id="resetEmailModalLabel">__('Reset Email')</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -171,10 +171,10 @@
           @csrf
           <input type="hidden" id="studentIdEmail" name="student_id" />
           <div class="mb-3">
-            <label for="newEmail" class="form-label">@lang('New Email Address')</label>
+            <label for="newEmail" class="form-label">__('New Email Address')</label>
             <input type="email" class="form-control" id="newEmail" name="new_email" required />
           </div>
-          <button type="submit" class="btn btn-primary">@lang('Reset Email')</button>
+          <button type="submit" class="btn btn-primary">__('Reset Email')</button>
         </form>
       </div>
     </div>
@@ -186,7 +186,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="resetPasswordModalLabel">@lang('Reset Password')</h5>
+        <h5 class="modal-title" id="resetPasswordModalLabel">__('Reset Password')</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -194,14 +194,14 @@
           @csrf
           <input type="hidden" id="studentIdPassword" name="student_id" />
           <div class="mb-3">
-            <label for="newPassword" class="form-label">@lang('New Password')</label>
+            <label for="newPassword" class="form-label">__('New Password')</label>
             <input type="password" class="form-control" id="newPassword" name="new_password" required />
           </div>
           <div class="mb-3">
-            <label for="confirmPassword" class="form-label">@lang('Confirm Password')</label>
+            <label for="confirmPassword" class="form-label">__('Confirm Password')</label>
             <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required />
           </div>
-          <button type="submit" class="btn btn-primary">@lang('Reset Password')</button>
+          <button type="submit" class="btn btn-primary">__('Reset Password')</button>
         </form>
       </div>
     </div>

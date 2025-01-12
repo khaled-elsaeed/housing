@@ -3,99 +3,98 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invoice;
-use App\Models\Payment;
+use App\Contracts\UploadServiceContract;
 use Illuminate\Http\Request;
-use App\Models\Reservation;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-
 class StudentPaymentController extends Controller
 {
-    public function uploadPayment(Request $request)
+    public function __construct(private UploadServiceContract $uploadService) {}
+
+    /**
+     * Handle invoice payment.
+     */
+    public function payInvoice(Request $request)
     {
-        $request->validate([
-            'payment_receipt' => 'required|image|mimes:jpg,jpeg,png|max:5120',
-            'term' => 'required|string',
+        $validated = $request->validate([
+            'invoice_id' => 'required|exists:invoices,id',
+            'payment_method' => 'required|string|in:bank_transfer,instapay',
         ]);
 
-        $term = $request->term;
+        $invoice = Invoice::findOrFail($validated['invoice_id']);
+
+        // Check ownership and invoice status
+        if ($invoice->reservation->user_id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        if ($invoice->status === 'paid') {
+            return response()->json(['message' => 'Invoice already paid'], 400);
+        }
+
         DB::beginTransaction();
 
         try {
-            $user = auth()->user();
-            if (!$user->reservation) {
-                return back()->with('error', __('messages.no_reservation_found'));
-            }
+            // Upload receipt image
+            $paymentImage = $this->uploadService->upload(
+                $request->file('invoiceReceipt'),
+                'payments'
+            );
 
-            if ($term === 'second_term') {
-                $existingSecondTermInvoice = Invoice::where('reservation_id', auth()->user()->reservation_id)
-                                                     ->where('term', 'second_term')
-                                                     ->first();
-
-                if (!$existingSecondTermInvoice) {
-                    $secondTermInvoice = new Invoice();
-                    $secondTermInvoice->reservation_id = $user->reservation->id;
-                    $secondTermInvoice->amount = 15000;
-                    $secondTermInvoice->status = 'unpaid';
-                    $secondTermInvoice->term = 'second_term';
-                    $secondTermInvoice->save();
-
-                    $invoice = $secondTermInvoice;
-                } else {
-                    $invoice = $existingSecondTermInvoice;
-                }
-            } else {
-                if (!$request->has('invoice_id')) {
-                    return back()->with('error', __('messages.invoice_id_missing'));
-                }
-
-                $invoiceId = $request->invoice_id;
-                $invoice = Invoice::findOrFail($invoiceId);
-
-                if ($invoice->reservation->user_id !== $user->id) {
-                    return back()->with('error', __('messages.unauthorized_upload'));
-                }
-
-                if ($invoice->status === 'paid') {
-                    return back()->with('error', __('messages.invoice_already_paid'));
-                }
-            }
-
-            $file = $request->file('payment_receipt');
-            $fileName = 'payment_' . time() . '.' . $file->getClientOriginalExtension();
-
-            $directory = 'public/payments';
-
-            if (!Storage::exists($directory)) {
-                Storage::makeDirectory($directory);
-            }
-
-            $filePath = $file->storeAs($directory, $fileName);
+            // Update payment details
+            $invoice->update([
+                'receipt_image' => $paymentImage->id,
+                'status' => 'paid',
+                'payment_method' => $validated['payment_method'],
+            ]);
 
 
-            $payment = new Payment();
-            $payment->reservation_id = $invoice->reservation_id;
-            $payment->amount = $invoice->amount;
-            $payment->receipt_image = 'payments/' . $fileName;
-            $payment->status = 'pending';
-            $payment->save();
-
-            $invoice->status = 'paid';
-            $invoice->save();
 
             DB::commit();
 
-            return back()->with('success', __('payment_upload_success'));
-
+            return response()->json(['message' => 'Invoice paid successfully'], 200);
         } catch (\Exception $e) {
-            Log::error($e->getMessage());
             DB::rollBack();
-            return back()->with('error', __('payment_upload_error'));
+            Log::error('Invoice payment failed', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Failed to pay invoice'], 500);
         }
     }
 
+    /**
+     * Get invoice details.
+     */
+    public function getInvoiceDetails(Request $request)
+    {
+        $invoiceId = $request->input('invoice_id');
 
+        $invoice = Invoice::with(['details', 'reservation.user'])
+            ->find($invoiceId);
+
+        if (!$invoice) {
+            return response()->json(['message' => 'Invoice not found'], 404);
+        }
+
+        $user = $invoice->reservation->user;
+
+        $paymentDetails = $invoice->details->map(fn($detail) => [
+            'category' => $detail->category,
+            'amount' => $detail->amount,
+        ]);
+
+        $totalAmount = $paymentDetails->sum('amount');
+
+        $response = [
+            'reservation' => [
+                'id' => $invoice->reservation->id,
+                'customerName' => $user->first_name . ' ' . $user->last_name,
+                'location' => $invoice->reservation->room->getLocation(),
+                'term' => $invoice->reservation->term,
+            ],
+            'paymentDetails' => $paymentDetails,
+            'totalAmount' => $totalAmount,
+        ];
+
+        return response()->json($response);
+    }
 }
