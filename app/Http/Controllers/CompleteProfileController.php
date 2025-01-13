@@ -8,7 +8,7 @@ use App\Models\Faculty;
 use App\Models\Governorate;
 use App\Models\City;
 use App\Models\Program;
-
+use App\Models\Country;
 class CompleteProfileController extends Controller
 {
     /**
@@ -23,7 +23,8 @@ class CompleteProfileController extends Controller
         $governorates = Governorate::all();
         $cities = City::all();
         $programs = Program::all();
+        $countries = Country::all();
 
-        return view('student.complete-profile', compact('user', 'faculties', 'governorates', 'cities','programs'));
+        return view('student.complete-profile', compact('user', 'faculties', 'governorates', 'cities','programs','countries'));
     }
 }

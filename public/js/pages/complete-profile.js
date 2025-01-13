@@ -1,58 +1,41 @@
 $(document).ready(function() {
     let currentStep = 1;
-    const totalSteps = 3;
+    let totalSteps = $('.form-step').length;
     const validatedSteps = new Set();
 
     // Validation rules remain the same
     const validationRules = {
-        // firstName: {
-        //     required: true,
-        //     minLength: 2,
-        //     pattern: /^[A-Za-z\s]+$/,
-        //     message: 'Please enter a valid first name (minimum 2 characters, letters only)'
-        // },
-        // lastName: {
-        //     required: true,
-        //     minLength: 2,
-        //     pattern: /^[A-Za-z\s]+$/,
-        //     message: 'Please enter a valid last name (minimum 2 characters, letters only)'
-        // },
-        // birthDate: {
-        //     required: true,
-        //     message: 'Please select your date of birth'
-        // },
-        // email: {
-        //     required: true,
-        //     pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-        //     message: 'Please enter a valid email address'
-        // },
-        // phone: {
-        //     required: true,
-        //     pattern: /^\+?[\d\s-]{10,}$/,
-        //     message: 'Please enter a valid phone number (minimum 10 digits)'
-        // },
-        // address: {
-        //     required: true,
-        //     minLength: 10,
-        //     message: 'Please enter your complete address (minimum 10 characters)'
-        // },
-        // username: {
-        //     required: true,
-        //     minLength: 4,
-        //     pattern: /^[A-Za-z0-9_]+$/,
-        //     message: 'Username must be at least 4 characters (letters, numbers, and underscore only)'
-        // },
-        // password: {
-        //     required: true,
-        //     minLength: 8,
-        //     pattern: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
-        //     message: 'Password must be at least 8 characters with at least one letter, one number, and one special character'
-        // },
-        // confirmPassword: {
-        //     required: true,
-        //     match: 'password',
-        //     message: 'Passwords do not match'
-        // }
+        firstName: {
+            required: true,
+            minLength: 2,
+            pattern: /^[A-Za-z\s]+$/,
+            message: 'Please enter a valid first name (minimum 2 characters, letters only)'
+        },
+        lastName: {
+            required: true,
+            minLength: 2,
+            pattern: /^[A-Za-z\s]+$/,
+            message: 'Please enter a valid last name (minimum 2 characters, letters only)'
+        },
+        birthDate: {
+            required: true,
+            message: 'Please select your date of birth'
+        },
+        email: {
+            required: true,
+            pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+            message: 'Please enter a valid email address'
+        },
+        phone: {
+            required: true,
+            pattern: /^\+?[\d\s-]{10,}$/,
+            message: 'Please enter a valid phone number (minimum 10 digits)'
+        },
+        address: {
+            required: true,
+            minLength: 10,
+            message: 'Please enter your complete address (minimum 10 characters)'
+        }
     };
 
     // Enhanced validation feedback
@@ -164,6 +147,7 @@ $(document).ready(function() {
     $('#nextBtn').click(function() {
         if (validateStep(currentStep)) {
             if (currentStep < totalSteps) {
+                handleEmergencyContactStep('forward');
                 currentStep++;
                 $('.nav-tabs .nav-link').removeClass('active');
                 $('.form-step').removeClass('active show');
@@ -177,20 +161,39 @@ $(document).ready(function() {
         } else {
             // Shake effect on invalid fields
             $('.is-invalid').each(function() {
-                $(this).closest('.mb-3').addClass('shake');
+                $(this).closest('.mb-2').addClass('shake');
 
                 // Remove the shake class after animation ends to allow re-triggering
                 setTimeout(() => {
-                    $(this).closest('.mb-3').removeClass('shake');
+                    $(this).closest('.mb-2').removeClass('shake');
                 }, 500); // Matches the animation duration
             });
 
         }
     });
 
+    function handleEmergencyContactStep(navDirection) {
+        const isParentAbroad = document.getElementById('isParentAbroad').value;
+
+        if(currentStep == 5 && navDirection =='forward'){
+            if(isParentAbroad !== 'yes'){
+                currentStep ++;
+             }
+        }
+
+        if(currentStep == 7 && navDirection =='backword'){
+            if(isParentAbroad !== 'yes'){
+                currentStep --;
+             }
+        }
+        
+        
+    }
+
     // Enhanced previous button handler
     $('#prevBtn').click(function() {
         if (currentStep > 1) {
+            handleEmergencyContactStep('backword');
             currentStep--;
             $('.nav-tabs .nav-link').removeClass('active');
             $('.form-step').removeClass('active show');
@@ -291,4 +294,41 @@ $(document).ready(function() {
     // Initialize navigation
     updateNavigation();
 
+    function toggleAbroadFields() {
+        const isParentAbroad = document.getElementById('isParentAbroad').value;
+        const abroadCountryDiv = document.getElementById('abroadCountryDiv');
+        const livingWithParentDiv = document.getElementById('livingWithParentDiv');
+        const parentGovernorateCityDiv = document.getElementById('parentGovernorateCityDiv');
+        const emergencyContactStep = document.getElementById('step6');
+        const emergencyContactStepTab = document.getElementById('step6-tab');
+
+
+        
+        if (isParentAbroad === 'yes') {
+            abroadCountryDiv.classList.remove('d-none');
+            emergencyContactStep.classList.remove('d-none')
+            emergencyContactStepTab.classList.remove('d-none')
+            livingWithParentDiv.classList.add('d-none');
+            parentGovernorateCityDiv.classList.add('d-none');
+
+        } else if (isParentAbroad === 'no') {
+            abroadCountryDiv.classList.add('d-none');
+            livingWithParentDiv.classList.remove('d-none');
+            parentGovernorateCityDiv.classList.add('d-none');
+            emergencyContactStep.classList.add('d-none');
+            emergencyContactStepTab.classList.add('d-none');
+        } else {
+            abroadCountryDiv.classList.add('d-none');
+            livingWithParentDiv.classList.add('d-none');
+            parentGovernorateCityDiv.classList.add('d-none');
+            emergencyContactStep.classList.add('d-none');
+            emergencyContactStepTab.classList.add('d-none');
+        }
+    }
+    
+   
+
+    const isParentAbroad = document.getElementById('isParentAbroad');
+    
+    isParentAbroad.addEventListener('change', toggleAbroadFields);
 });
