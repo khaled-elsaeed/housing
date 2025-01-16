@@ -6,11 +6,11 @@
 @section('content')
 <div class="container py-2 py-sm-2 py-md-3">
    <div class="row justify-content-center mt-5">
-      <div class="col-lg-10 col-md-8 col-sm-6">
+      <div class="col-lg-10 col-md-10 col-sm-6">
          <div class="form-card p-4">
             <div class="row g-4">
                <!-- Vertical Nav Tabs -->
-               <div class="col-md-3">
+               <div class="col-3 col-md-5">
                   <div class="nav flex-column nav-tabs nav-pills nav-justified gap-1" role="tablist">
                      <!-- Personal Info Tab -->
                      <a class="nav-link active" id="step1-tab" data-bs-toggle="tab" href="#step1" role="tab" data-step="1">
@@ -50,7 +50,7 @@
                   </div>
                </div>
                <!-- Form Content -->
-               <div class="col-md-9">
+               <div class="col-9 col-md-6">
                   <form id="multiStepForm" novalidate>
                      <div class="tab-content">
                         <!-- Step 1 - personal info -->
@@ -208,9 +208,11 @@
                                  <label for="parentRelationship" class="form-label">{{ __('Relationship') }}</label>
                                  <select name="parentRelationship" id="parentRelationship" class="form-control" required>
                                     <option value="">{{ __('Select Relationship') }}</option>
-                                    <option value="father">{{ __('Father') }}</option>
-                                    <option value="mother">{{ __('Mother') }}</option>
-                                    <option value="other">{{ __('Other') }}</option>
+                                    <option value="grandfather">{{ __('Grandfather') }}</option>
+                                       <option value="grandmother">{{ __('Grandmother') }}</option>
+                                       <option value="uncle">{{ __('Uncle') }}</option>
+                                       <option value="aunt">{{ __('Aunt') }}</option>
+                                       <option value="cousin">{{ __('Cousin') }}</option>
                                  </select>
                               </div>
                               <!-- Name -->
@@ -258,7 +260,7 @@
                               <!-- Living with Parent if Not Abroad -->
                               <div class="col-md-6 d-none" id="livingWithParentDiv">
                                  <label for="livingWithParent" class="form-label">{{ __('Do You Live With Them?') }}</label>
-                                 <select name="livingWithParent" id="livingWithParent" class="form-control" onchange="toggleLivingWithThem()">
+                                 <select name="livingWithParent" id="livingWithParent" class="form-control">
                                     <option value="">{{ __('Select Option') }}</option>
                                     <option value="yes">{{ __('Yes') }}</option>
                                     <option value="no">{{ __('No') }}</option>
@@ -499,12 +501,11 @@
                    }
                });
            } else {
-               programSelect.setAttribute('disabled', 'true'); // Disable the program dropdown if no faculty is selected
+               programSelect.setAttribute('disabled', 'true');
            }
        });
-   
-       function toggleLivingWithThem() {
-        const livingWithParent = document.getElementById('livingWithParent').value;
+       document.getElementById('livingWithParent').addEventListener('change', function() {
+         const livingWithParent = document.getElementById('livingWithParent').value;
         const parentGovernorateCityDiv = document.getElementById('parentGovernorateCityDiv');
         
         if (livingWithParent === 'no') {
@@ -512,7 +513,8 @@
         } else {
             parentGovernorateCityDiv.classList.add('d-none');
         }
-    }
+       });
+       
    });
 </script>
 @endsection
