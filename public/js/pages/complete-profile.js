@@ -96,6 +96,7 @@ $(document).ready(function() {
             validatedSteps.add(step);
             $(`#step${step}-tab`)
                 .removeClass('disabled')
+                .removeClass('active')
                 .addClass('completed')
                 .find('.step-status')
                 .html('<i class="fa fa-check"></i>');
@@ -115,23 +116,48 @@ $(document).ready(function() {
         return isValid;
     }
 
-    // Enhanced navigation update
     function updateNavigation() {
+       
+        if(currentStep > 1){
+            $('#navBtnsContainer').removeClass('justify-content-end');
+            $('#navBtnsContainer').addClass('justify-content-between');
+        }else{
+            $('#navBtnsContainer').addClass('justify-content-end');
+            $('#navBtnsContainer').removeClass('justify-content-between');
+        }
+
         $('#prevBtn').toggle(currentStep > 1);
         $('#nextBtn').toggle(currentStep < totalSteps);
         $('#submitBtn').toggle(currentStep === totalSteps);
-
-        // Update tab states
+    
+        // Update tab states 
         $('.nav-tabs .nav-link').each(function() {
-            const stepNum = $(this).data('step');
+            const stepNum = parseInt($(this).data('step'));
+
+            $(this).removeClass('active');  
+            
+
             if (stepNum < currentStep) {
-                $(this).addClass('completed').removeClass('disabled');
+                // Keep the completed state if step was previously validated
+                if (validatedSteps.has(stepNum)) {
+                    $(this).addClass('completed');
+                }
             } else if (stepNum === currentStep) {
-                $(this).addClass('active').removeClass('disabled');
+                $(this).addClass('active');
+                // Keep completed state if current step was validated
+                if (validatedSteps.has(stepNum)) {
+                    $(this).addClass('completed');
+                }
             } else {
-                $(this).removeClass('active completed');
+                // For future steps, keep completed state if validated
+                if (validatedSteps.has(stepNum)) {
+                    $(this).addClass('completed');
+                }
+                // Only disable if previous step isn't validated
                 if (!validatedSteps.has(stepNum - 1)) {
                     $(this).addClass('disabled');
+                } else {
+                    $(this).removeClass('disabled');
                 }
             }
         });
@@ -173,27 +199,25 @@ $(document).ready(function() {
     });
 
     function handleEmergencyContactStep(navDirection) {
-        const isParentAbroad = document.getElementById('isParentAbroad').value;
+        const isParentAbroad = $('#isParentAbroad').val();
 
-        if(currentStep == 5 && navDirection =='forward'){
-            if(isParentAbroad !== 'yes'){
-                currentStep ++;
-             }
+        if (currentStep === 5 && navDirection === 'forward') {
+            if (isParentAbroad !== 'yes') {
+                currentStep++;
+            }
         }
 
-        if(currentStep == 7 && navDirection =='backword'){
-            if(isParentAbroad !== 'yes'){
-                currentStep --;
-             }
+        if (currentStep === 8 && navDirection === 'backward') { 
+            if (isParentAbroad !== 'yes') {
+                currentStep--;
+            }
         }
-        
-        
     }
 
     // Enhanced previous button handler
     $('#prevBtn').click(function() {
         if (currentStep > 1) {
-            handleEmergencyContactStep('backword');
+            handleEmergencyContactStep('backward');
             currentStep--;
             $('.nav-tabs .nav-link').removeClass('active');
             $('.form-step').removeClass('active show');
@@ -208,27 +232,41 @@ $(document).ready(function() {
         e.preventDefault();
         const clickedStep = parseInt($(this).data('step'));
 
-        // Only allow clicking if the tab is not disabled
+        // Allow clicking if:
+        // 1. Tab is not disabled
+        // 2. Going to a previous step
+        // 3. Going to next step only if current step is validated
+
         if (!$(this).hasClass('disabled')) {
-            if (clickedStep < currentStep || (clickedStep === currentStep + 1 && validatedSteps.has(currentStep))) {
+            if (clickedStep < currentStep || validateStep(currentStep)) {
                 currentStep = clickedStep;
                 $('.nav-tabs .nav-link').removeClass('active');
                 $('.form-step').removeClass('active show');
-                $(this).addClass('active').tab('show');
+                $(this).addClass('active');
                 $(`#step${currentStep}`).addClass('active show');
+                handleEmergencyContactStep('forward');
                 updateNavigation();
+                console.log('Current step:', currentStep);
+                console.log('emergencyContack: forward');
+
             }
-        } else {
-            // Add shake effect to indicate tab is locked
-            $(this).effect('shake', {
-                times: 2,
-                distance: 5
-            }, 500);
+            if(clickedStep > currentStep || validateStep(currentStep)){
+                currentStep = clickedStep;
+                $('.nav-tabs .nav-link').removeClass('active');
+                $('.form-step').removeClass('active show');
+                $(this).addClass('active');
+                $(`#step${currentStep}`).addClass('active show');
+                handleEmergencyContactStep('backward');
+                updateNavigation();
+                console.log('Current step:', currentStep);
+                console.log('emergencyContack: backward');
+            }
         }
     });
 
     // Enhanced form submission handler
-    $('#multiStepForm').on('submit', function(e) {
+    $('#submitBtn').on('click', function(e) {
+        console.log('form is submit');
         e.preventDefault();
 
         if (formValidated()) {
@@ -258,7 +296,7 @@ $(document).ready(function() {
                 });
             }, 1500);
         } else {
-            // Show error message for invalid form
+            
             swal({
                 type: 'error',
                 title: 'Oops...',

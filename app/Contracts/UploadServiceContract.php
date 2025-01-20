@@ -2,7 +2,7 @@
 
 namespace App\Contracts;
 
-use App\DataObjects\File;
+use App\DTOs\File;
 use Illuminate\Http\UploadedFile;
 
 interface UploadServiceContract

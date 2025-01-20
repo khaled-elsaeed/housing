@@ -38,6 +38,7 @@ use App\Http\Controllers\Student\StudentPermissionController;
 use App\Http\Controllers\Student\StudentProfileController;
 use App\Http\Controllers\LocalizationController;
 
+use App\Http\Controllers\CompleteProfileController;
 
 use App\Http\Controllers\DataTableController;
 use App\Http\Controllers\Admin\Account\StudentAccountController;
@@ -234,7 +235,8 @@ Route::middleware(Localization::class)
     Route::POST('/student/sibling-info', [StudentProfileController::class, 'updateOrCreateSiblingInfo'])->name('student.updateOrCreateSiblingInfo');
     Route::POST('/student/emergency-info', [StudentProfileController::class, 'updateOrCreateEmergencyInfo'])->name('student.updateOrCreateEmergencyInfo');
 
-    
+
+Route::get('complete-profile', [CompleteProfileController::class, 'index'])->name('profile.complete');
     
 });
 
@@ -249,6 +251,3 @@ use App\Http\Controllers\UploadController;
 Route::post('upload', UploadController::class)->name('upload');
 
 
-use App\Http\Controllers\CompleteProfileController;
-
-Route::get('test', [CompleteProfileController::class, 'index'])->name('test');

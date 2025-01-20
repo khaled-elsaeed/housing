@@ -9,8 +9,17 @@ use App\Models\Governorate;
 use App\Models\City;
 use App\Models\Program;
 use App\Models\Country;
+use App\Services\CompleteProfileService;
+
 class CompleteProfileController extends Controller
 {
+
+    protected $completeProfileService;
+
+    public function __construct(completeProfileService $completeProfileService)
+    {
+        $this->completeProfileService = $completeProfileService;
+    }
     /**
      * Show the Complete Profile form.
      *
@@ -19,12 +28,25 @@ class CompleteProfileController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $faculties = Faculty::all();
-        $governorates = Governorate::all();
-        $cities = City::all();
-        $programs = Program::all();
-        $countries = Country::all();
+        $profileData = $this->completeProfileService->getUserProfileData($user);
+        $formData = $this->getFormData();
+        
 
-        return view('student.complete-profile', compact('user', 'faculties', 'governorates', 'cities','programs','countries'));
+        return view('student.complete-profile', compact('profileData', 'formData'));
     }
+
+    private function getFormData()
+    {
+        $formData = [
+            'faculties' => Faculty::all(),
+            'governorates' => Governorate::all(),
+            'cities' => City::all(),
+            'programs' => Program::all(),
+            'countries' => Country::all(),
+        ];
+    
+        return $formData;
+    }
+    
+
 }
