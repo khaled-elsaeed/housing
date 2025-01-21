@@ -10,7 +10,9 @@ use App\Models\Faculty;
 use App\Models\Program;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Exception;
+use Carbon\Carbon;
 
 class CompleteProfileService
 {
@@ -128,7 +130,7 @@ class CompleteProfileService
             'parentInformation' => [
                 'parentRelationship' => $archiveData->parentRelationship,
                 'parentName' => $archiveData->parent_name,
-                'parentPhone' => $archiveData->parent_mobile,
+                'parentMobile' => $archiveData->parent_mobile,
                 'parentEmail' => $archiveData->parent_email,
                 'isParentAbroad' => $archiveData->parent_is_abroad,
                 'abroadCountry' => $archiveData->parent_abroad_country,
@@ -393,5 +395,103 @@ class CompleteProfileService
         ];
     }
 
-   
+
+    public function storeProfileData(User $user, array $data)
+    {
+        try {
+            DB::beginTransaction();
+    
+            // Check if student record exists
+            $existingStudent = $user->student()->first();
+    
+            // Prepare student data
+            $studentData = [
+                'name_en' => $data['nameEn'] ?? null,
+                'name_ar' => $data['nameAr'] ?? null,
+                'national_id' => $data['nationalId'] ?? null,
+                'academic_id' => $data['academicId'] ?? null,
+                'mobile' => $data['mobile'] ?? null,
+                'birthdate' => $data['birthdate'] ?? null,
+                'gender' => $data['gender'] ?? null,
+                'governorate_id' => $data['governorate'] ?? null,
+                'city_id' => $data['city'] ?? null,
+                'street' => $data['street'] ?? null,
+                'faculty_id' => $data['faculty'] ?? null,
+                'program_id' => $data['program'] ?? null,
+                'university_archive_id' => $user->universityArchive->id,
+            ];
+    
+            // Set application_status to 'pending' only for new students
+            if (!$existingStudent) {
+                $studentData['application_status'] = 'pending'; // Use a constant
+            }
+    
+            // Update or create student record
+            $user->student()->updateOrCreate(
+                ['user_id' => $user->id],
+                $studentData
+            );
+    
+            // Store parent information
+            $parentData = [
+                'relation' => $data['parentRelationship'] ?? null,
+                'name' => $data['parentName'] ?? null,
+                'mobile' => $data['parentMobile'] ?? null,
+                'email' => $data['parentEmail'] ?? null,
+                'is_abroad' => $data['isParentAbroad'] === 'yes',
+                'abroad_country_id' => $data['isParentAbroad'] === 'yes' ? ($data['abroadCountry'] ?? null) : null,
+                'lives_with_student' => $data['isParentAbroad'] === 'no' ? ($data['livingWithParent'] === 'yes') : null,
+                'governorate_id' => $data['isParentAbroad'] === 'no' ? ($data['parentGovernorate'] ?? null) : null,
+                'city_id' => $data['isParentAbroad'] === 'no' ? ($data['parentCity'] ?? null) : null,
+            ];
+            $user->parent()->updateOrCreate(['user_id' => $user->id], $parentData);
+    
+            // Store emergency contact information if parent is abroad
+            if ($data['isParentAbroad'] === 'yes') {
+                $emergencyContactData = [
+                    'relation' => $data['emergencyContactRelationship'] ?? null,
+                    'name' => $data['emergencyContactName'] ?? null,
+                    'phone' => $data['emergencyContactPhone'] ?? null,
+                ];
+                $user->emergencyContact()->updateOrCreate(['user_id' => $user->id], $emergencyContactData);
+            }
+    
+            // Store sibling information if applicable
+            if (!empty($data['hasSiblingInDorm']) && $data['hasSiblingInDorm'] === 'yes') {
+                $siblingData = [
+                    'relationship' => $data['siblingRelationship'] ?? null,
+                    'name' => $data['siblingName'] ?? null,
+                    'national_id' => $data['siblingNationalId'] ?? null,
+                    'faculty_id' => $data['siblingFaculty'] ?? null,
+                ];
+                $user->sibling()->updateOrCreate(['user_id' => $user->id], $siblingData);
+            }
+    
+            // Mark profile as completed
+            $user->update([
+                'profile_completed' => true,
+                'profile_completed_at' => Carbon::now(),
+            ]);
+    
+            DB::commit();
+    
+            return ['success' => true];
+        } catch (\Exception $e) {
+            DB::rollBack();
+    
+            \Log::error('Profile data storage failed', [
+                'user_id' => $user->id,
+                'data' => $data,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+    
+            return [
+                'success' => false,
+                'message' => __('Failed to store profile data. Please try again or contact support.'),
+            ];
+        }
+    }
+    
+
 }

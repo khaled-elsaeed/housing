@@ -207,7 +207,7 @@ $(document).ready(function() {
             }
         }
 
-        if (currentStep === 8 && navDirection === 'backward') { 
+        if (currentStep === 7 && navDirection === 'backward') { 
             if (isParentAbroad !== 'yes') {
                 currentStep--;
             }
@@ -265,38 +265,59 @@ $(document).ready(function() {
     });
 
     // Enhanced form submission handler
-    $('#submitBtn').on('click', function(e) {
-        console.log('form is submit');
+    $('#submitBtn').on('click', function (e) {
         e.preventDefault();
-
+    
         if (formValidated()) {
             // Show loading state
             $('#submitBtn').prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-2"></i>Submitting...');
-
+    
+            const form = $('#multiStepForm');
             const formData = {};
-            $(this).serializeArray().forEach(item => {
+    
+            // Serialize form data into an object
+            $(form).serializeArray().forEach(item => {
                 formData[item.name] = item.value;
             });
-
-            // Simulate API call
-            setTimeout(() => {
-                console.log('Form submitted:', formData);
-
-                // Show success message
-                swal({
-                    type: 'success',
-                    title: 'Success!',
-                    text: 'Your registration has been completed successfully.',
-                    confirmButtonColor: '#198754'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Redirect or reset form as needed
-                        window.location.reload();
-                    }
-                });
-            }, 1500);
+    
+            $.ajax({
+                method: 'POST',
+                url: form.attr('action'), // Use attr() to get the 'action' attribute
+                data: formData,
+                success: function (response) {
+                    // Handle success
+                    console.log('Success:', response);
+    
+                    swal({
+                        type: 'success',
+                        title: 'Success!',
+                        text: 'Your registration has been completed successfully.',
+                        confirmButtonColor: '#198754'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Redirect or reset form
+                            window.location.reload();
+                        }
+                    });
+                },
+                error: function (error) {
+                    // Handle error
+                    console.error('Error:', error);
+    
+                    swal({
+                        type: 'error',
+                        title: 'Submission Failed',
+                        text: 'There was an issue submitting your form. Please try again.',
+                        confirmButtonColor: '#dc3545'
+                    });
+                },
+                complete: function () {
+                    // Re-enable the button regardless of success or failure
+                    $('#submitBtn').prop('disabled', false).html('Submit');
+                }
+            });
         } else {
-            
+            // Show validation error
             swal({
                 type: 'error',
                 title: 'Oops...',
@@ -305,7 +326,7 @@ $(document).ready(function() {
             });
         }
     });
-
+    
     // Enhanced complete form validation
     function formValidated() {
         let isValid = true;

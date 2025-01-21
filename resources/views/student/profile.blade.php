@@ -74,7 +74,7 @@
                </a>
                @endif
                <!-- Payments Info Tab -->
-               @if($user->reservation && $user->reservation->invoice)
+               @if($user->reservations)
                <a class="nav-link mb-2" id="v-pills-payments-info-tab" data-bs-toggle="pill"
                   href="#v-pills-payments-info" role="tab" aria-controls="v-pills-payments-info" aria-selected="false">
                <i class="feather icon-credit-card me-2"></i>@lang('Payments Info')
@@ -461,6 +461,7 @@
 </div>
 <!-- End Payments Info Tab -->
 
+
 <!-- Modal for Add New Invoice -->
 <div class="modal fade" id="addInvoiceModal" tabindex="-1" aria-labelledby="addInvoiceModalLabel" >
     <div class="modal-dialog">
@@ -473,14 +474,16 @@
                 <form id="addInvoiceForm">
                     <!-- Invoice Term -->
                     <div class="mb-3">
-                        <label for="invoiceTerm" class="form-label">@lang('Invoice Term')</label>
-                        <input type="text" class="form-control" id="invoiceTerm" name="term" required>
-                    </div>
-                    <!-- Total Amount -->
-                    <div class="mb-3">
-                        <label for="invoiceAmount" class="form-label">@lang('Amount')</label>
-                        <input type="number" class="form-control" id="invoiceAmount" name="amount" required>
-                    </div>
+    <label for="invoiceTerm" class="form-label">@lang('Invoice Term')</label>
+    <select class="form-control" id="invoiceTerm" name="term" disabled>
+        <option value="first">First Term</option>
+        <option value="second" selected>Second Term</option>
+    </select>
+    <!-- Hidden input to include the value in form submission -->
+    <input type="hidden" name="term" value="second_term">
+</div>
+
+                  
                     <div class="mb-3">
                         <label for="paymentMethod" class="form-label">@lang('Select Payment Method')</label>
                         <select class="form-select" id="addInvoicePaymentMethod" name="payment_method" required>
@@ -556,7 +559,7 @@
                         <select class="form-select" id="uploadPaymentMethod" name="payment_method" required>
                             <option value="" disabled selected>@lang('Select Payment Method')</option>
                             <option value="instapay">@lang('Instapay')</option>
-                            <option value="bank_statement">@lang('Bank Statement')</option>
+                            <option value="bank_transfer">@lang('Bank Statement')</option>
                         </select>
                     </div>
                     <!-- File Upload -->
@@ -708,21 +711,37 @@ $(document).ready(function() {
     // Add New Invoice Form
     $('#addInvoiceForm').submit(function(e) {
         e.preventDefault();
-        const file = $('#addInvoiceReceipt')[0].files[0];
+        const file = $('#addInvoiceInvoiceReceipt')[0].files[0];
 
-        if (!validateImageFile(file, '#addInvoiceReceipt')) {
+        if (!validateImageFile(file, '#addInvoiceInvoiceReceipt')) {
             return;
         }
 
         const formData = new FormData(this);
 
-        swal({
-            type: 'success',
-            title: "@lang('Success')",
-            text: "@lang('New invoice has been added successfully!')"
-        }).then((result) => {
-            $('#addInvoiceModal').modal('hide');
-            $(this)[0].reset();
+        $.ajax({
+            type: 'POST',
+            url: "{{ route('student.payment.add') }}",
+            data: formData,
+            contentType: false,
+            cache: false,
+            processData: false,
+            headers: { 
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                swal({
+                    type: 'success',
+                    title: "@lang('Success')",
+                    text: "@lang('Payment file has been uploaded successfully!')"
+                }).then((result) => {
+                    $('#addInvoiceModal').modal('hide');
+                    $('#addInvoiceForm')[0].reset();
+                });
+            },
+            error: function(xhr, status, error) { 
+                console.log(xhr.responseText);
+            }
         });
     });
 
@@ -731,7 +750,6 @@ $(document).ready(function() {
         e.preventDefault();
         const file = $('#uploadInvoiceReceipt')[0].files[0];
         const invoiceId = $('#fileUploadModal').data('invoice-id');
-
 
         if (!validateImageFile(file, '#uploadInvoiceReceipt')) {
             return;
@@ -757,16 +775,13 @@ $(document).ready(function() {
                     text: "@lang('Payment file has been uploaded successfully!')"
                 }).then((result) => {
                     $('#fileUploadModal').modal('hide');
-                    $(this)[0].reset();
+                    $('#fileUploadForm')[0].reset();
                 });
             },
             error: function(xhr, status, error) { 
                 console.log(xhr.responseText);
             }
         });
-
-
-
     });
 
     // Form validation
@@ -779,7 +794,6 @@ $(document).ready(function() {
                 title: "@lang('Validation Error')",
                 text: "@lang('Please fill in all required fields correctly.')",
                 confirmButtonText: "@lang('OK')"
-
             });
         }
         $(this).addClass('was-validated');

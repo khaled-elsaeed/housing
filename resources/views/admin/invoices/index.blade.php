@@ -278,7 +278,8 @@
                         <th>@lang('Faculty')</th>
                         <th>@lang('Mobile')</th>
                         <th>@lang('Invoice Status')</th>
-                        <th>@lang('Payment Status')</th>
+                        <th>@lang('Admin Approval')</th>
+                        <th>@lang('Approval Actions')</th>
                         <th>@lang('Actions')</th>
                      </tr>
                   </thead>
@@ -293,6 +294,7 @@
    <!-- End col -->
 </div>
 <!-- End row -->
+
 
 <!-- Applicant Details Modal -->
 <div class="modal fade" id="applicantDetailsModal" tabindex="-1" role="dialog" aria-labelledby="applicantDetailsModalLabel" aria-hidden="true">
@@ -331,7 +333,7 @@
 
 window.routes = {
     exportExcel: "{{ route('admin.invoices.export-excel') }}",  
-    fetchInvoicePayment: "{{ route('admin.invoices.show', ':id') }}",  
+    fetchInvoiceDetails: "{{ route('admin.invoices.show', ':id') }}",  
     fetchInvoices: "{{ route('admin.invoices.fetch') }}",  
     fetchStats: "{{ route('admin.invoices.stats') }}",  
     updateInvoiceStatus : "{{ route('admin.invoices.payment.update', ':paymentId')}}"

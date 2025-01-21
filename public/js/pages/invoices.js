@@ -155,52 +155,48 @@ $(document).ready(function () {
 
     
 
-    // Example of replacing translations in table
-    const table = $("#default-datatable").DataTable({
-        processing: true,
-        serverSide: true,
-        responsive: true,
-        ordering: false,
-        ajax: {
-            url: window.routes.fetchInvoices, // URL to your Laravel route
-            data: function (d) {
-                d.customSearch = $("#searchBox").val();
-                d.gender = $("#genderFilter").val();
-            },
-        },
-        columns: [
-            { data: "name", name: "student.name_en" },
-            { data: "national_id", name: "student.national_id" },
-            { data: "faculty", name: "student.faculty.name_en" },
-            { data: "mobile", name: "student.mobile" },
-            {
-                data: "invoice_status",
-                name: "invoice_status",
-                searchable: true,
-                render: function (data) {
-                    const translation = getTranslation("invoice_status." + data.toLowerCase());
-                    console.log("Translation for invoice status:", translation); // Log the translation
-                    return translation || data;
-                },
-                
-                
-            },
-            {
-                data: "payment_status",
-                name: "payment_status",
-                searchable: true,
-                render: function (data) {
-                    return getTranslation("payment_status." + data) || data;
+        const table = $("#default-datatable").DataTable({
+            processing: true,
+            serverSide: true,
+            responsive: true,
+            ordering: false,
+            ajax: {
+                url: window.routes.fetchInvoices, // URL to your Laravel route
+                data: function (d) {
+                    d.customSearch = $("#searchBox").val();
+                    d.gender = $("#genderFilter").val();
                 },
             },
-            { data: "actions", name: "actions", orderable: false, searchable: false },
-        ],
-        language: lang === "ar"
-            ? {
-                url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json",
-            }
-            : {},
-    });
+            columns: [
+                { data: "name", name: "student.name_en" },
+                { data: "national_id", name: "student.national_id" },
+                { data: "faculty", name: "student.faculty.name_en" },
+                { data: "mobile", name: "student.mobile" },
+                {
+                    data: "invoice_status",
+                    name: "invoice_status",
+                    searchable: true,
+                    render: function (data) {
+                        const translation = getTranslation("invoice_status." + data.toLowerCase());
+                        return translation || data;
+                    }
+                },{data: "admin_approval",name:"admin_approval"},
+                {
+                    data: "payment_status",
+                    name: "payment_status",
+                    searchable: true,
+                    render: function (data) {
+                        return getTranslation("payment_status." + data) || data;
+                    },
+                },
+                { data: "actions", name: "actions", orderable: false, searchable: false },
+            ],
+            language: lang === "ar"
+                ? {
+                    url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json",
+                }
+                : {},
+        });
 
     $("#searchBox").on("keyup", function () {
         table.ajax.reload();
@@ -245,7 +241,7 @@ $(document).ready(function () {
     fetchStats();
 
     // Modify modal and other UI components similarly
-    function showPayments(paymentId) {
+    function showInvoiceDetails(invoiceId) {
         const modalBody = $("#applicantDetailsModal .modal-body");
         const labels = {
             studentDetails: getTranslation("studentDetails"),
@@ -262,28 +258,29 @@ $(document).ready(function () {
             noDetails: getTranslation("noDetails"),
             loadingFailed: getTranslation("loadingFailed"),
         };
-
+    
         const textAlignClass = lang === "ar" ? "text-end" : "text-start";
         const justifyClass = lang === "ar" ? "justify-content-end" : "justify-content-start";
-
+    
         // Show loading spinner
         modalBody.html(
             `<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>`
         );
-
+    
         // Fetch payment details
         $.ajax({
-            url: window.routes.fetchInvoicePayment.replace(":id", paymentId),
+            url: window.routes.fetchInvoiceDetails.replace(":id", invoiceId),
             method: "GET",
             success: function (data) {
-                if (!data.payments || data.payments.length === 0) {
+                if (!data.invoiceDetails || data.invoiceDetails.length === 0) {
                     modalBody.html(`<p class="text-center text-muted">${labels.noDetails}</p>`);
                     return;
                 }
-
+    
                 const studentDetails = data.studentDetails || {};
-                const payments = data.payments;
-
+                const invoiceDetails = data.invoiceDetails;
+                const media = data.media || [];
+    
                 // Generate student details card
                 const studentDetailsHtml = `
                     <div class="card shadow-sm border-secondary mb-4">
@@ -304,46 +301,75 @@ $(document).ready(function () {
                         </div>
                     </div>
                 `;
-
-                // Generate payment images card
-                const paymentImagesHtml = `
-                    <div class="card shadow-sm border-primary">
+    
+                // Generate invoice details card
+                const invoiceDetailsHtml = `
+                    <div class="card shadow-sm border-primary mb-4">
                         <div class="card-body">
-                            <h4 class="card-title text-primary ${textAlignClass}">${labels.uploadedPictures}</h4>
-                            <div class="row g-3">
-                                ${payments
+                            <h4 class="card-title text-primary ${textAlignClass}">${labels.invoiceDetails}</h4>
+                            <ul class="list-group">
+                                ${invoiceDetails
                                     .map(
-                                        (doc) => `
-                                    <div class="col-12 col-md-6">
-                                        <div class="image-container">
-                                            <img src="${doc.payment_url}" alt="Payment" class="img-fluid border rounded shadow-sm w-100" style="height: 200px; object-fit: cover;" onclick="window.open('${doc.payment_url}', '_blank')" />
-                                        </div>
-                                        <div class="d-flex ${justifyClass} mt-2">
-                                            <a href="${doc.payment_url}" target="_blank" class="btn btn-outline-primary me-2">${labels.view}</a>
-                                            <a href="${doc.payment_url}" download class="btn btn-outline-success">${labels.download}</a>
-                                        </div>
-                                    </div>
-                                `
+                                        (detail) => `
+                                        <li class="list-group-item d-flex justify-content-between">
+                                            <span><strong>${detail.category}:</strong> ${detail.description || "N/A"}</span>
+                                            <span class="text-primary">${detail.amount}</span>
+                                        </li>
+                                    `
                                     )
                                     .join("")}
-                            </div>
+                            </ul>
                         </div>
                     </div>
                 `;
-
-                // Generate accept/reject buttons
+    
+                // Generate payment images card
+                let paymentImagesHtml = '';
+                if (media.length > 0) {
+                    paymentImagesHtml = `
+                        <div class="card shadow-sm border-primary">
+                            <div class="card-body">
+                                <h4 class="card-title text-primary ${textAlignClass}">${labels.uploadedPictures}</h4>
+                                <div class="row g-3">
+                                    ${media
+                                        .map(
+                                            (doc) => `
+                                        <div class="col-12 col-md-6">
+                                            <div class="image-container">
+                                                <img src="${doc.payment_url}" alt="Payment" class="img-fluid border rounded shadow-sm w-100" style="height: 200px; object-fit: cover;" onclick="window.open('${doc.payment_url}', '_blank')" />
+                                            </div>
+                                            <div class="d-flex ${justifyClass} mt-2">
+                                                <a href="${doc.payment_url}" target="_blank" class="btn btn-outline-primary me-2">${labels.view}</a>
+                                                <a href="${doc.payment_url}" download class="btn btn-outline-success">${labels.download}</a>
+                                            </div>
+                                        </div>
+                                    `
+                                        )
+                                        .join("")}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    paymentImagesHtml = `<p class="text-center text-muted">${labels.noDetails}</p>`;
+                }
+    
+                // Generate accept/reject buttons (assuming you will add logic for the invoice status)
                 const statusButtonsHtml = `
                     <div class="d-flex justify-content-center mt-4">
-                        <button id="accept-btn" class="btn btn-success me-3" data-payment-id="${paymentId}" data-status="accepted">${labels.accept}</button>
-                        <button id="reject-btn" class="btn btn-danger" data-payment-id="${paymentId}" data-status="rejected">${labels.reject}</button>
+                        <button id="accept-btn" class="btn btn-success me-3" data-invoice-id="${data.invoice_id}" data-status="accepted">${labels.accept}</button>
+                        <button id="reject-btn" class="btn btn-danger" data-invoice-id="${data.invoice_id}" data-status="rejected">${labels.reject}</button>
                     </div>
                 `;
-
+    
                 // Combine all sections into the modal body
                 modalBody.html(`
                     <div class="container-fluid">
                         <div class="row">
                             <div class="col-12">${studentDetailsHtml}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">${invoiceDetailsHtml}</div>
                         </div>
                         <div class="row">
                             <div class="col-12">${paymentImagesHtml}</div>
@@ -358,10 +384,11 @@ $(document).ready(function () {
                 modalBody.html(`<p class="text-center text-danger">${labels.loadingFailed}</p>`);
             },
         });
-
+    
         // Show the modal
         $("#applicantDetailsModal").modal("show");
     }
+    
     
 
     function updatePaymentStatus(paymentId, status) {
@@ -409,7 +436,7 @@ $(document).ready(function () {
     });
 
     $(document).on("click", "#details-btn", function () {
-        const paymentId = $(this).data("payment-id");
-        showPayments(paymentId);
+        const paymentId = $(this).data("invoice-id");
+        showInvoiceDetails(paymentId);
     });
 });

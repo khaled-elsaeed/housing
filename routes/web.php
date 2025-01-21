@@ -236,15 +236,18 @@ Route::middleware(Localization::class)
     Route::POST('/student/emergency-info', [StudentProfileController::class, 'updateOrCreateEmergencyInfo'])->name('student.updateOrCreateEmergencyInfo');
 
 
-Route::get('complete-profile', [CompleteProfileController::class, 'index'])->name('profile.complete');
+    Route::get('complete-profile', [CompleteProfileController::class, 'index'])->name('profile.complete');
+    Route::post('complete-profile/store', [CompleteProfileController::class, 'store'])->name('profile.store');
+
     
 });
 
 use App\Http\Controllers\StudentPaymentController;
 
 // Route to handle payment receipt upload
-Route::post('/student/payment/upload/', [StudentPaymentController::class, 'payInvoice'])->name('student.invoice.pay');
-Route::post('/student/invoice/detail/', [StudentPaymentController::class, 'getInvoiceDetails'])->name('student.payment.info');
+Route::post('/student/payment/upload', [StudentPaymentController::class, 'payInvoice'])->name('student.invoice.pay');
+Route::post('/student/invoice/detail', [StudentPaymentController::class, 'getInvoiceDetails'])->name('student.payment.info');
+Route::post('/student/invoice/add', [StudentPaymentController::class, 'addInvoice'])->name('student.payment.add');
 
 use App\Http\Controllers\UploadController;
 

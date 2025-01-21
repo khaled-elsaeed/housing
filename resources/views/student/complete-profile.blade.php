@@ -2,6 +2,7 @@
 @section('title', __('Complete Profile'))
 @section('links')
 <link rel="stylesheet" href="{{ asset('css/complete-profile.css') }}">
+
 @endsection
 @section('content')
 <div class="container py-2 py-sm-2 py-md-3">
@@ -51,7 +52,8 @@
                </div>
                <!-- Form Content -->
                <div class="col-12 col-md-7 d-flex flex-column justify-content-between">
-                  <form id="multiStepForm" novalidate>
+                  <form id="multiStepForm" action="{{route('profile.store')}}" novalidate>
+                     @csrf
                      <div class="tab-content">
                         <!-- Step 1 - personal info -->
                         <div class="form-step tab-pane fade show active" id="step1">
@@ -59,19 +61,19 @@
                            <!-- Full Name Arabic -->
                            <div class="mb-2">
                               <label for="nameAr" class="form-label">{{ __('Full Name Arabic') }}</label>
-                              <input type="text" class="form-control" id="nameAr" name="nameAr" value="{{ old('nameAr', $profileData['personalInformation']['nameAr'] ?? '') }}" required>
+                              <input type="text" class="form-control" id="nameAr" name="nameAr" value="{{ old('nameAr', $profileData['personalInformation']['nameAr'] ?? '') }}" readonly>
                               <div class="error-message"></div>
                            </div>
                            <!-- Full Name English -->
                            <div class="mb-2">
                               <label for="nameEn" class="form-label">{{ __('Full Name English') }}</label>
-                              <input type="text" class="form-control" id="nameEn" name="nameEn" value="{{ old('nameEn', $profileData['personalInformation']['nameEn'] ?? '') }}" required>
+                              <input type="text" class="form-control" id="nameEn" name="nameEn" value="{{ old('nameEn', $profileData['personalInformation']['nameEn'] ?? '') }}" readonly>
                               <div class="error-message"></div>
                            </div>
                            <!-- National ID -->
                            <div class="mb-2">
                               <label for="nationalId" class="form-label">{{ __('National ID') }}</label>
-                              <input type="text" class="form-control" id="nationalId" name="nationalId" value="{{ old('nationalId', $profileData['personalInformation']['nationalId'] ?? '') }}" required>
+                              <input type="text" class="form-control" id="nationalId" name="nationalId" value="{{ old('nationalId', $profileData['personalInformation']['nationalId'] ?? '') }}" readonly>
                               <div class="error-message"></div>
                            </div>
                            <!-- National ID and Gender in the same row -->
@@ -79,13 +81,13 @@
                               <!-- Birth Date -->
                               <div class="col-md-6 mb-2">
                                  <label for="birthDate" class="form-label">{{ __('Birth Date') }}</label>
-                                 <input type="date" class="form-control" id="birthDate" name="birthDate" value="{{ old('birthDate', $profileData['personalInformation']['birthDate'] ?? '') }}" required>
+                                 <input type="date" class="form-control" id="birthDate" name="birthDate" value="{{ old('birthDate', $profileData['personalInformation']['birthDate'] ?? '') }}" readonly>
                                  <div class="error-message"></div>
                               </div>
                               <!-- Gender -->
                               <div class="col-md-6 mb-2">
                                  <label for="gender" class="form-label">{{ __('Gender') }}</label>
-                                 <select class="form-control" id="gender" name="gender" required>
+                                 <select class="form-control" id="gender" name="gender">
                                     <option value="">{{ __('Select Gender') }}</option>
                                     <option value="male" {{ old('gender', $profileData['personalInformation']['gender'] ?? '') == 'male' ? 'selected' : '' }}>{{ __('Male') }}</option>
                                     <option value="female" {{ old('gender', $profileData['personalInformation']['gender'] ?? '') == 'female' ? 'selected' : '' }}>{{ __('Female') }}</option>
@@ -204,13 +206,13 @@
                            <!-- University ID -->
                            <div class="mb-2">
                               <label for="universityId" class="form-label">{{ __('University ID') }}</label>
-                              <input type="text" class="form-control" id="universityId" name="universityId" value="{{ old('universityId', $profileData['academicInformation']['universityId'] ?? '') }}">
+                              <input type="text" class="form-control" id="universityId" name="universityId" value="{{ old('universityId', $profileData['academicInformation']['universityId'] ?? '') }}" readonly>
                               <div class="error-message"></div>
                            </div>
                            <!-- University Email -->
                            <div class="mb-2">
                               <label for="universityEmail" class="form-label">{{ __('University Email') }}</label>
-                              <input type="email" class="form-control" id="universityEmail" name="universityEmail" value="{{ old('universityEmail', $profileData['academicInformation']['universityEmail'] ?? '') }}">
+                              <input type="email" class="form-control" id="universityEmail" name="universityEmail" value="{{ old('universityEmail', $profileData['academicInformation']['universityEmail'] ?? '') }}" readonly>
                               <div class="error-message"></div>
                            </div>
                            <!-- GPA/Score -->
@@ -247,9 +249,9 @@
                            </div>
                            <!-- Phone Number -->
                            <div class="mb-2">
-                              <label for="parentPhone" class="form-label">{{ __('Phone Number') }}</label>
-                              <input type="tel" class="form-control" id="parentPhone" name="parentPhone" 
-                                 value="{{ old('parentPhone', $profileData['parentInformation']['parentMobile'] ?? '') }}" required>
+                              <label for="parentMobile" class="form-label">{{ __('Phone Number') }}</label>
+                              <input type="tel" class="form-control" id="parentMobile" name="parentMobile" 
+                                 value="{{ old('parentMobile', $profileData['parentInformation']['parentMobile'] ?? '') }}" required>
                            </div>
                            <!-- Email -->
                            <div class="mb-2">
@@ -323,7 +325,7 @@
                               <select name="hasSiblingInDorm" id="hasSiblingInDorm" class="form-control" required onchange="toggleSiblingFields()">
                                  <option value="">{{ __('Select Option') }}</option>
                                  <option value="yes">{{ __('Yes') }}</option>
-                                 <option value="no">{{ __('No') }}</option>
+                                 <option value="no" selected>{{ __('No') }}</option>
                               </select>
                            </div>
                            <!-- Sibling Information - This will be shown if the user has a sibling in the dorm -->
@@ -416,8 +418,8 @@
                                  {{ __('By proceeding, you agree to the following Terms and Conditions') }}:
                               </p>
                               <div class="form-check">
-                                 <input class="form-check-input" type="checkbox" value="" id="termsCheckbox" name="termsCheckbox" required>
-                                 <label class="form-check-label" for="termsCheckbox">
+                              <input class="form-check-input" type="checkbox" value="accepted" id="termsCheckbox" name="termsCheckbox" required>
+                              <label class="form-check-label" for="termsCheckbox">
                                  {{ __('I agree to the') }} 
                                  <a href="#" target="_blank">{{ __('Terms and Conditions') }}</a> 
                                  {{ __('and') }} 
@@ -519,7 +521,7 @@
                programsList.forEach(function(option) {
                    if (option.getAttribute('data-faculty-id') == facultyId) {
                        var programOption = document.createElement('option');
-                       programOption.value = option.value;
+                       programOption.value = option.dataset.programId;
                        programOption.text = option.value;
                        programSelect.appendChild(programOption);
                    }

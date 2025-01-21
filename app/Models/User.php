@@ -87,11 +87,12 @@ public function universityArchive()
         return $this->hasOne(Student::class); 
     }
 
-    public function reservation()
-    {
-        return $this->hasOne(Reservation::class); 
-    }
 
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
+    }
+    
     public function parent(){
         return $this->hasOne(Parents::class);
     }
@@ -167,7 +168,7 @@ public function emergencyContact()
 
     public function getLocationDetails()
     {
-        $room = $this->reservation->room;
+        $room = $this->reservations->room;
     
         $roomNumber = $room->number;
         $apartmentNumber = $room->apartment->number;

@@ -33,13 +33,11 @@ class Reservation extends Model
         return $this->belongsTo(Room::class);
     }
 
-    public function invoice()
+    public function invoices()
     {
-        return $this->hasOne(Invoice::class);
+        return $this->hasMany(Invoice::class);
     }
+    
 
-    public function payment()
-    {
-        return $this->hasOne(Payment::class);
-    }
+
 }

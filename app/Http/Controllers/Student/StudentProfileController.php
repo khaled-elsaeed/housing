@@ -34,8 +34,9 @@ class StudentProfileController extends Controller
             $programs = Program::all();
             $countries = Country::all();
             $faculties = Faculty::all();
-            $invoices = Invoice::where('reservation_id', $user->reservation->id)->get();
-
+            $invoices = $user->reservations->flatMap(function($reservation) {
+                return $reservation->invoices;
+            });
             return view('student.profile', compact('user', 'governorates', 'programs', 'countries', 'faculties','invoices'));
         } catch (\Exception $e) {
             Log::error('Error fetching data for student profile: ' . $e->getMessage(), [
