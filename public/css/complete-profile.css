@@ -1,0 +1,169 @@
+ 
+/* Modern Card Styling */
+.form-card {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+/* Enhanced Nav Tabs Styling */
+.nav-pills {
+    border: none;
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 1rem;
+}
+.nav-pills .nav-link {
+    border: none;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 10px;
+   
+}
+.nav-pills .nav-link.completed {
+    color: #198754;
+    background: rgba(25, 135, 84, 0.1);
+}
+
+
+
+.nav-pills .nav-link.completed.active {
+    background: #198754;
+    color: white;
+}
+
+.nav-pills .nav-link i {
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+/* Step Status Indicator */
+.step-status {
+    position: absolute;
+    right: 1rem;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+.nav-link.completed .step-status {
+    background: #198754;
+    color: white;
+}
+/* Form Controls Styling */
+.form-control {
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    border: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+.form-control:focus {
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+}
+/* Error Message Styling */
+.error-message {
+    color: #dc3545;
+    font-size: 80%;
+    margin-top: 0.25rem;
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+.error-message.show {
+    display: block;
+}
+/* Button Styling */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+.btn-primary {
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.2);
+}
+.btn-success {
+    box-shadow: 0 4px 15px rgba(25, 135, 84, 0.2);
+}
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nav-pills {
+        flex-direction: row !important;
+        overflow-x: auto;
+        white-space: nowrap;
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+   }
+    .nav-pills .nav-link {
+        margin-right: 0.5rem;
+        margin-bottom: 0;
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+   }
+    .step-status {
+        position: static;
+        margin-left: 0.5rem;
+   }
+    .form-card {
+        margin: 1rem;
+   }
+}
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+   }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+   }
+}
+.form-step {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+.form-step.active {
+    display: block;
+}
+.topbar {
+    left: 0 !important;
+}
+.rightbar {
+    margin-left: 0px;
+}
+.togglebar .menubar {
+    display: none !important;
+}
+.footerbar {
+    left: 0px !important;
+}
+.contentbar {
+    margin-top: 60px !important;
+    padding: 0 !important;
+    margin-bottom: 40px !important;
+}
+.menubar{
+    display: none !important;
+}
+@keyframes shake {
+    0% {
+        transform: translateX(0);
+   }
+    25% {
+        transform: translateX(-5px);
+   }
+    50% {
+        transform: translateX(5px);
+   }
+    75% {
+        transform: translateX(-5px);
+   }
+    100% {
+        transform: translateX(0);
+   }
+}
+.shake {
+    animation: shake 0.5s ease-in-out 2;
+}

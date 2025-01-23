@@ -57,16 +57,19 @@ class LoginController extends Controller
                 return redirect()->route('admin.home');
             }
 
-              if ($this->loginService->isResident($user)) {
-                $studentChecks = $this->loginService->handleStudentAfterLogin($user);
-               
-                if (is_array($studentChecks)) {
-                    return back()->withErrors($studentChecks);
+            if ($this->loginService->isResident($user)) {
+                $result = $this->loginService->handleStudentAfterLogin($user);
+                
+                if ($result['status'] === 'error') {
+                    return back()->withErrors($result['checks']);
                 }
+                
+                if(!$user->profile_completed){
+                    return redirect()->route('profile.complete');
+                }
+                
                 return redirect()->route('student.home');
             }
-
-           
 
             return redirect()->intended('home');
         }

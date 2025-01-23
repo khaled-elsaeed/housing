@@ -498,9 +498,8 @@ class ResidentController extends Controller
     {
         return DB::table('invoices')->insertGetId([
             'reservation_id' => $reservationId,
-            'amount' => 15000,  
+            'term' => 'first_term',
             'status' => 'unpaid',  
-            'category' => 'fee',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

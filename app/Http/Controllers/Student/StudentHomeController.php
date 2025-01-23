@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Student;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Log; // Ensure Log is imported
+use Illuminate\Support\Facades\Log; 
+
 
 class StudentHomeController extends Controller
 {
@@ -16,7 +17,7 @@ class StudentHomeController extends Controller
         try {
             $user = auth()->user();
 
-            $Reservation = $user->reservation()
+            $Reservation = $user->reservations()
                 ->where('status', 'confirmed') 
                 ->latest()
                 ->first();

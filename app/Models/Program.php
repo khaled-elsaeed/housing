@@ -13,4 +13,8 @@ class Program extends Model
     {
         return $this->belongsToMany(Student::class); // Many-to-Many relationship via the reservations table
     }
+
+    public function faculty(){
+        return $this->belongsTo(Faculty::class);
+    }
 }

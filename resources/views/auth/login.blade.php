@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
 
 <head>
     <!-- Meta Information -->
@@ -14,8 +14,11 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16x16.png') }}">
     <link href="{{ asset('css/icons.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('css/flag-icon.min.css') }}" rel="stylesheet" type="text/css">
+    @if(app()->isLocale('en'))
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
-
+    @else
+    <link href="{{ asset('css/bootstrap.rtl.min.css') }}" rel="stylesheet" type="text/css">
+    @endif
     <!-- Load SweetAlert2 -->
     <link href="{{ asset('plugins/sweet-alert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
     <script src="{{ asset('plugins/sweet-alert2/sweetalert2.all.min.js') }}"></script>
@@ -24,6 +27,18 @@
 </head>
 
 <body>
+
+<div class="language-switcher-container">
+    <div class="language-switcher">
+        <span class="language-option @if(app()->isLocale('en')) active @endif" data-lang="en">
+            <i class="flag-icon flag-icon-us"></i> EN
+        </span>
+        <span class="language-option @if(app()->isLocale('ar')) active @endif" data-lang="ar">
+            <i class="flag-icon flag-icon-eg"></i> AR
+        </span>
+    </div>
+</div>
+
 <!-- Login Form -->
 <div class="auth-box">
     <div class="row g-0">

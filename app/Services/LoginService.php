@@ -38,34 +38,30 @@ class LoginService
         return $user->hasRole('resident');
     }
 
+    
     public function handleStudentAfterLogin(User $user)
     {
+        $checks = [];
+    
         if ($user->isDeleted()) {
-            return [
-                'account' => __('auth.login.account_deleted'),
-            ];
+            $checks['account'] = __('auth.login.account_deleted');
         }
     
         if (!$user->isActive()) {
-            return [
-                'account' => __('auth.login.account_inactive'),
-            ];
+            $checks['account'] = __('auth.login.account_inactive');
         }
     
         if (!$user->isVerified()) {
-            return [
-                'account' => __('auth.login.account_not_verified'),
-            ];
+            $checks['account'] = __('auth.login.account_not_verified');
         }
     
-        if (!$user->isProfileComplete()) {
-            return [
-                'profile' => __('auth.login.profile_incomplete'),
-            ];
-        }
-    
-        return true;
+        // Return result array
+        return [
+            'status' => empty($checks) ? 'success' : 'error',
+            'checks' => $checks
+        ];
     }
+    
     
 }
 

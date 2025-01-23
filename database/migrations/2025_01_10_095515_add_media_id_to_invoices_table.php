@@ -6,27 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-   /**
+    /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('invoices', function (Blueprint $table) {
-            $table->string('term')->nullable()->default('first_term'); // Add a column for term (first_term, second_term, etc.)
+            $table->foreignId('media_id')->nullable()->constrained('media')->onDelete('cascade');
         });
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('invoices', function (Blueprint $table) {
-            $table->dropColumn('term');
+            $table->dropForeign(['media_id']);
+            $table->dropColumn('media_id');
         });
     }
 };

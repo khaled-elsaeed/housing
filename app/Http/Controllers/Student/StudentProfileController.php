@@ -12,6 +12,7 @@ use App\Models\Country;
 use App\Models\Faculty;
 use App\Models\Parents;
 use App\Models\Sibling;
+use App\Models\Invoice;
 use App\Models\EmergencyContact;
 use Illuminate\Support\Facades\Log;
 use Exception;
@@ -33,14 +34,16 @@ class StudentProfileController extends Controller
             $programs = Program::all();
             $countries = Country::all();
             $faculties = Faculty::all();
-
-            return view('student.profile', compact('user', 'governorates', 'programs', 'countries', 'faculties'));
+            $invoices = $user->reservations->flatMap(function($reservation) {
+                return $reservation->invoices;
+            });
+            return view('student.profile', compact('user', 'governorates', 'programs', 'countries', 'faculties','invoices'));
         } catch (\Exception $e) {
             Log::error('Error fetching data for student profile: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return response()->view('errors.generic', [], 500);
+            return response()->view('errors.500', [], 500);
         }
     }
 

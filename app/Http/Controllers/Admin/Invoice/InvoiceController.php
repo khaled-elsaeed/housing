@@ -89,19 +89,19 @@ class InvoiceController extends Controller
 
         $totalAcceptedPayments = $invoices
             ->filter(function ($invoice) {
-                return $invoice->reservation->payment && $invoice->reservation->payment->status === 'accepted';
+                return $invoice->admin_approval === 'accepted';
             })
             ->count();
 
         $totalAcceptedMalePayments = $invoices
             ->filter(function ($invoice) {
-                return $invoice->reservation->payment && $invoice->reservation->payment->status === 'accepted' && optional($invoice->reservation->user)->gender === 'male';
+                return $invoice->admin_approval === 'accepted' && optional($invoice->reservation->user)->gender === 'male';
             })
             ->count();
 
         $totalAcceptedFemalePayments = $invoices
             ->filter(function ($invoice) {
-                return $invoice->reservation->payment && $invoice->reservation->payment->status === 'accepted' && optional($invoice->reservation->user)->gender === 'female';
+                return $invoice->admin_approval === 'accepted' && optional($invoice->reservation->user)->gender === 'female';
             })
             ->count();
 
@@ -131,91 +131,93 @@ class InvoiceController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function fetchInvoices(Request $request)
-{
-    $currentLang = App::getLocale(); // Get current locale
-
-    try {
-        $query = Invoice::with(['reservation' => function($query) {
-            $query->with(['user.student', 'payment']);
-        }]);
-        
-        // Gender filtering
-        if ($request->filled('gender')) {
-            $gender = $request->get('gender');
-            $query->whereHas('reservation.user.student', function ($query) use ($gender) {
-                $query->where('gender', $gender);
-            });
-        }
-
-        // Custom search filtering
-        if ($request->filled('customSearch')) {
-            $searchTerm = $request->get('customSearch');
-            $query->where(function ($query) use ($searchTerm, $currentLang) {
-                $query->whereHas('reservation.user.student', function ($query) use ($searchTerm, $currentLang) {
-                    $query
-                        ->where('name_' . ($currentLang == 'ar' ? 'ar' : 'en'), 'like', "%$searchTerm%")
-                        ->orWhere('national_id', 'like', "%$searchTerm%")
-                        ->orWhere('mobile', 'like', "%$searchTerm%");
+    {
+        $currentLang = App::getLocale(); // Get current locale
+    
+        try {
+            $query = Invoice::with(['reservation' => function($query) {
+                $query->with(['user.student']);
+            }]);
+    
+            // Gender filtering
+            if ($request->filled('gender')) {
+                $gender = $request->get('gender');
+                $query->whereHas('reservation.user.student', function ($query) use ($gender) {
+                    $query->where('gender', $gender);
                 });
-            });
+            }
+    
+            // Custom search filtering
+            if ($request->filled('customSearch')) {
+                $searchTerm = $request->get('customSearch');
+                $query->where(function ($query) use ($searchTerm, $currentLang) {
+                    $query->whereHas('reservation.user.student', function ($query) use ($searchTerm, $currentLang) {
+                        $query
+                            ->where('name_' . ($currentLang == 'ar' ? 'ar' : 'en'), 'like', "%$searchTerm%")
+                            ->orWhere('national_id', 'like', "%$searchTerm%")
+                            ->orWhere('mobile', 'like', "%$searchTerm%");
+                    });
+                });
+            }
+    
+            // Filter invoices by approval status if provided
+            if ($request->filled('admin_approval')) {
+                $approvalStatus = $request->get('admin_approval');
+                $query->where('admin_approval', $approvalStatus);
+            }
+    
+            // Order by payment status and admin approval
+            $query->orderByRaw("FIELD(admin_approval, 'pending', 'accepted', 'rejected')");
+    
+            // Count total and filtered records
+            $totalRecords = $query->count('invoices.id');
+            $filteredRecords = $query->count('invoices.id');
+    
+            // Paginate
+            $invoices = $query
+                ->select('invoices.*') // Select only invoice fields
+                ->skip($request->get('start', 0))
+                ->take($request->get('length', 10))
+                ->get();
+    
+            return response()->json([
+                'draw' => $request->get('draw'),
+                'recordsTotal' => $totalRecords,
+                'recordsFiltered' => $filteredRecords,
+                'data' => $invoices->map(function ($invoice) use ($currentLang) {
+                    $student = $invoice->reservation->user->student ?? null;
+                    $faculty = $student->faculty ?? null;
+    
+                    // Create the approval status button
+                    $approvalButton = '';
+                    if ($invoice->admin_approval == 'pending') {
+                        $approvalButton = '<button type="button" class="btn btn-success approve-btn" data-id="' . $invoice->id . '" data-status="accepted">Approve</button>
+                                           <button type="button" class="btn btn-danger reject-btn" data-id="' . $invoice->id . '" data-status="rejected">Reject</button>';
+                    } else {
+                        $approvalButton = '<span class="badge badge-' . ($invoice->admin_approval == 'accepted' ? 'success' : 'danger') . '">' . ucfirst($invoice->admin_approval) . '</span>';
+                    }
+    
+                    return [
+                        'invoice_id' => $invoice->id,
+                        'name' => $student ? $student->{'name_' . ($currentLang == 'ar' ? 'ar' : 'en')} : 'N/A',
+                        'national_id' => $student ? $student->national_id : 'N/A',
+                        'faculty' => $faculty ? $faculty->{'name_' . ($currentLang == 'ar' ? 'ar' : 'en')} : 'N/A',
+                        'mobile' => $student ? $student->mobile : 'N/A',
+                        'invoice_status' => $invoice->status,
+                        'admin_approval' => $invoice->admin_approval, 
+                        'approval_actions' => $approvalButton, // Include approval actions
+                        'actions' => 
+                            '<button type="button" class="btn btn-round btn-info-rgba" data-invoice-id="' . 
+                            $invoice->id . '" id="details-btn" title="More Details"><i class="feather icon-info"></i></button>',
+                    ];
+                }),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching invoices data: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json(['error' => 'Failed to fetch invoices data.'], 500);
         }
-
-        // Order by payment status
-        $query->leftJoin('reservations', 'invoices.reservation_id', '=', 'reservations.id')
-            ->leftJoin('payments', 'reservations.id', '=', 'payments.reservation_id')
-            ->orderByRaw("
-                CASE 
-                    WHEN payments.status = 'pending' THEN 1
-                    WHEN payments.status = 'rejected' THEN 2
-                    WHEN payments.status = 'accepted' THEN 3
-                    ELSE 4
-                END
-            ");
-
-        // Count total and filtered records
-        $totalRecords = $query->count('invoices.id');
-        $filteredRecords = $query->count('invoices.id');
-
-        // Paginate
-        $invoices = $query
-            ->select('invoices.*') // Select only invoice fields
-            ->skip($request->get('start', 0))
-            ->take($request->get('length', 10))
-            ->get();
-
-        return response()->json([
-            'draw' => $request->get('draw'),
-            'recordsTotal' => $totalRecords,
-            'recordsFiltered' => $filteredRecords,
-            'data' => $invoices->map(function ($invoice) use ($currentLang) {
-                $payment = $invoice->reservation->payment ?? null;
-                $student = $invoice->reservation->user->student ?? null;
-                $faculty = $student->faculty ?? null;
-
-                $buttonStatus = $invoice->status === 'paid' ? '' : 'disabled';
-
-                return [
-                    'invoice_id' => $invoice->id,
-                    'name' => $student ? $student->{'name_' . ($currentLang == 'ar' ? 'ar' : 'en')} : 'N/A',
-                    'national_id' => $student ? $student->national_id : 'N/A',
-                    'faculty' => $faculty ? $faculty->{'name_' . ($currentLang == 'ar' ? 'ar' : 'en')} : 'N/A',
-                    'mobile' => $student ? $student->mobile : 'N/A',
-                    'invoice_status' => $invoice->status,
-                    'payment_status' => $payment ? $payment->status : 'No Payment',
-                    'actions' =>
-                        '<button type="button" class="btn btn-round btn-info-rgba" data-payment-id="' .
-                        ($payment ? $payment->id : '') .
-                        '" id="details-btn" title="More Details" ' .
-                        $buttonStatus .
-                        '><i class="feather icon-info"></i></button>',
-                ];
-            }),
-        ]);
-    } catch (\Exception $e) {
-        Log::error('Error fetching invoices data: ' . $e->getMessage(), ['exception' => $e]);
-        return response()->json(['error' => 'Failed to fetch invoices data.'], 500);
     }
-}
+    
 
     /**
      * Download all invoices in Excel format.
@@ -248,51 +250,74 @@ class InvoiceController extends Controller
      * @param int $paymentId The ID of the payment to fetch.
      * @return \Illuminate\Http\JsonResponse
      */
-    public function fetchInvoice($paymentId)
+    public function fetchInvoice($invoiceId)
     {
         try {
-            $payment = Payment::where('id', $paymentId)->first(['id', 'receipt_image', 'reservation_id']);
-
-            if (!$payment) {
-                return response()->json(['error' => 'Payment not found'], 404);
-            }
-
-            $reservation = $payment->reservation;
-            if (!$reservation || !$reservation->user) {
-                return response()->json(['error' => 'User not found'], 404);
-            }
-
+            // Fetch invoice with all necessary relationships
+            $invoice = Invoice::with([
+                'reservation.user.student.faculty',
+                'reservation.room.apartment.building',
+                'reservation.room.apartment',
+                'media',
+                'details'
+            ])->findOrFail($invoiceId);
+    
+            // Get the reservation and user
+            $reservation = $invoice->reservation;
             $user = $reservation->user;
-
+            $room = $reservation->room;
+    
+            // Build student details
             $studentDetails = [
-                'name' => optional($user->student)->name_en ?? 'N/A',
-                'faculty' => optional($user->student->faculty)->name_en ?? 'N/A',
+                'name' => $user->student->name_en ?? 'N/A',
+                'faculty' => $user->student->faculty->name_en ?? 'N/A',
+                'building' => $room->building->number ?? 'N/A',
+                'apartment' => $room->apartment->number ?? 'N/A',
+                'room' => $room->number ?? 'N/A'
             ];
-
-            $location = $user->getLocationDetails();
-            if ($location) {
-                $studentDetails['building'] = $location['building'] ?? 'N/A';
-                $studentDetails['apartment'] = $location['apartment'] ?? 'N/A';
-                $studentDetails['room'] = $location['room'] ?? 'N/A';
-            } else {
-                $studentDetails['building'] = 'N/A';
-                $studentDetails['apartment'] = 'N/A';
-                $studentDetails['room'] = 'N/A';
+    
+            // Format invoice details
+            $invoiceDetails = $invoice->details->map(function($detail) {
+                return [
+                    'id' => $detail->id,
+                    'invoice_id' => $detail->invoice_id,
+                    'category' => $detail->category,
+                    'amount' => $detail->amount,
+                    'description' => $detail->description
+                ];
+            })->values()->all();
+    
+            // Format media for frontend
+            // The frontend expects an array of media objects
+            $mediaArray = [];
+            if ($invoice->media) {
+                $mediaArray[] = [
+                    'id' => $invoice->media->id,
+                    'payment_url' => asset('storage/' . $invoice->media->path),
+                    'collection' => $invoice->media->collection_name,
+                    'created_at' => $invoice->media->created_at,
+                    'updated_at' => $invoice->media->updated_at
+                ];
             }
-
-            $payments = Payment::where('id', $paymentId)->get();
-            $payments->transform(function ($payment) {
-                $payment->payment_url = $payment->receipt_image ? asset('storage/' . $payment->receipt_image) : null;
-                return $payment;
-            });
-
+    
             return response()->json([
                 'studentDetails' => $studentDetails,
-                'payments' => $payments,
+                'invoiceDetails' => $invoiceDetails,
+                'media' => $mediaArray,  // Now it's an array as expected by frontend
+                'invoice_id' => $invoice->id,  // Added for the status buttons
+                'status' => $invoice->status,
             ]);
+    
+        } catch (ModelNotFoundException $e) {
+            Log::error('Invoice not found:', ['invoice_id' => $invoiceId]);
+            return response()->json(['error' => 'Invoice not found'], 404);
         } catch (\Exception $e) {
-            Log::error('Error fetching invoice details: ' . $e->getMessage(), ['exception' => $e]);
-            return response()->json(['error' => 'Failed to fetch invoice details.'], 500);
+            Log::error('Error fetching invoice details:', [
+                'invoice_id' => $invoiceId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['error' => 'Failed to fetch invoice details'], 500);
         }
     }
 
