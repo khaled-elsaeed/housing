@@ -3,38 +3,20 @@
 namespace App\Services;
 
 use App\Models\User;
+use App\Models\Setting;
 use App\Models\UserNationalLink;
+use App\Models\UniversityArchive;
 use App\Models\UniversityArchiveLite;
 use App\Notifications\AccountActivation;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
+use App\Jobs\SendMailJob;
 
 class RegisterService
 {
-    /**
-     * Check if the registration is open.
-     *
-     * @return bool
-     */
-    public function isRegistrationOpen(): bool
-    {
-        $setting = \App\Models\Setting::where('key', 'registration_open')->first();
-        return $setting && $setting->value == 1;
-    }
-
-    /**
-     * Check if a national ID belongs to a university student.
-     *
-     * @param string $nationalId
-     * @return bool
-     */
-    public function isUniversityStudent(string $nationalId): bool
-    {
-        return UniversityArchiveLite::where('national_id', $nationalId)->exists();
-    }
-
     /**
      * Register a new user.
      *
@@ -44,17 +26,47 @@ class RegisterService
      */
     public function registerUser(array $data): User
     {
-        // Check if registration is open
-        if (!$this->isRegistrationOpen()) {
+        $this->checkRegistrationOpen();
+
+        return DB::transaction(function () use ($data) {
+            $studentRecord = $this->getAndValidateStudentRecord($data['national_id']);
+            $names = $this->getNamesFromRecord($studentRecord);
+
+            $user = $this->createUser($data, $names,$studentRecord);
+            $this->assignUserRole($user);
+            $archiveRecord = $this->createArchiveRecord($studentRecord);
+            $this->linkUserToArchive($user, $studentRecord->national_id, $archiveRecord);
+            // $this->sendActivationNotification($user);
+
+            return $user;
+        });
+    }
+
+    /**
+     * Check if registration is open.
+     *
+     * @throws ValidationException
+     */
+    private function checkRegistrationOpen(): void
+    {
+        $setting = Setting::where('key', 'registration_open')->first();
+        if (!$setting || $setting->value != 1) {
             throw ValidationException::withMessages([
                 'registration' => __('auth.register.registration_closed'),
             ]);
         }
+    }
 
-        // Check if the national ID belongs to a university student
-        $studentRecord = UniversityArchiveLite::where('national_id', $data['national_id'])->first();
-        // link to his full arhive data record
-        $studentArchive = UniversityArchive::where('national_id',$data['national_id'])->first();
+    /**
+     * Get and validate student record.
+     *
+     * @param string $nationalId
+     * @return UniversityArchiveLite
+     * @throws ValidationException
+     */
+    private function getAndValidateStudentRecord(string $nationalId): UniversityArchiveLite
+    {
+        $studentRecord = UniversityArchiveLite::where('national_id', $nationalId)->first();
 
         if (!$studentRecord) {
             throw ValidationException::withMessages([
@@ -62,37 +74,96 @@ class RegisterService
             ]);
         }
 
-        // Extract first and last names
-        $namesEn = $this->splitFullName($studentRecord->name_en);
-        $namesAr = $this->splitFullName($studentRecord->name_ar);
+        return $studentRecord;
+    }
 
-        // Create the user
-        $user = User::create([
-            'first_name_en' => $namesEn['first_name'],
-            'last_name_en' => $namesEn['last_name'],
-            'first_name_ar' => $namesAr['first_name'],
-            'last_name_ar' => $namesAr['last_name'],
+    /**
+     * Create new user.
+     *
+     * @param array $data
+     * @param array $names
+     * @return User
+     */
+    private function createUser(array $data, array $names,$studentRecord): User
+    {
+        return User::create([
+            'first_name_en' => $names['en']['first_name'] ?? null,
+            'last_name_en' => $names['en']['last_name'] ?? null,
+            'first_name_ar' => $names['ar']['first_name'] ?? null,
+            'last_name_ar' => $names['ar']['last_name'] ?? null,
             'password' => Hash::make($data['password']),
-            'email' => $data['email'],
-            'activation_token' => Str::random(60),
-            'is_active' => 1,
-            'activation_expires_at' => Carbon::now()->addHours(2),
+            'email' => $studentRecord->academic_email,
+            'status' => 'active',
+            'profile_completed' => 0 ,
+            'is_verified' => 1 ,
         ]);
+    }
 
-        // Assign the "resident" role
+    /**
+     * Assign role to user.
+     *
+     * @param User $user
+     */
+    private function assignUserRole(User $user): void
+    {
         $user->assignRole('resident');
+    }
 
-        // Link the user to the university archive record
+    /**
+     * Create archive record.
+     *
+     * @param UniversityArchiveLite $studentRecord
+     * @return UniversityArchive
+     */
+    private function createArchiveRecord(UniversityArchiveLite $studentRecord): UniversityArchive
+    {
+        return UniversityArchive::create([
+            'name_en' => $studentRecord->name_en,
+            'name_ar' => $studentRecord->name_ar,
+            'national_id' => $studentRecord->national_id,
+            'academic_id' => $studentRecord->academic_id,
+            'academic_email' => $studentRecord->academic_email,
+        ]);
+    }
+
+    /**
+     * Link user to archive record.
+     *
+     * @param User $user
+     * @param string $nationalId
+     * @param UniversityArchive $archiveRecord
+     */
+    private function linkUserToArchive(User $user, string $nationalId, UniversityArchive $archiveRecord): void
+    {
         UserNationalLink::create([
             'user_id' => $user->id,
-            'national_id' => $data['national_id'],
-            'university_archive_id' => $studentArchive->id,
+            'national_id' => $nationalId,
+            'university_archive_id' => $archiveRecord->id,
         ]);
+    }
 
-        // Send account activation notification
-        $user->notify(new AccountActivation($user));
+    /**
+     * Send activation notification asynchronously.
+     *
+     * @param User $user
+     */
+    private function sendActivationNotification(User $user): void
+    {
+        SendMailJob::dispatch($user, new AccountActivation($user));
+    }
 
-        return $user;
+    /**
+     * Get both Arabic and English names from student record.
+     *
+     * @param UniversityArchiveLite $studentRecord
+     * @return array
+     */
+    private function getNamesFromRecord(UniversityArchiveLite $studentRecord): array
+    {
+        return [
+            'en' => $this->splitFullName($studentRecord->name_en),
+            'ar' => $this->splitFullName($studentRecord->name_ar),
+        ];
     }
 
     /**
@@ -103,10 +174,18 @@ class RegisterService
      */
     private function splitFullName(string $fullName): array
     {
+        $fullName = trim($fullName);
+        if (empty($fullName)) {
+            return [
+                'first_name' => '',
+                'last_name' => '',
+            ];
+        }
+
         $names = explode(' ', $fullName, 2);
         return [
             'first_name' => $names[0] ?? '',
-            'last_name' => $names[count($names)- 1 ] ?? '',
+            'last_name' => $names[count($names)-1] ?? '',
         ];
     }
 }

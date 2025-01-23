@@ -74,12 +74,6 @@
                     <label for="nationalId">@lang('National ID')</label>
                 </div>
 
-                <!-- Email -->
-                <div class="form-floating mb-3">
-                    <input type="email" class="form-control" id="email" name="email" placeholder="@lang('Email')" required>
-                    <label for="email">@lang('Email')</label>
-                </div>
-
                 <!-- Password -->
                 <div class="form-floating mb-3">
                     <input type="password" class="form-control" id="password" name="password" placeholder="@lang('Password')" required>

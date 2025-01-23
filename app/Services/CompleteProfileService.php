@@ -29,15 +29,17 @@ class CompleteProfileService
                 throw new Exception('User not authenticated');
             }
 
+            // Check if user has no profile
+            if (!$user->student()->exists()) {
+                return $this->getNoProfileData($user);
+            }
+
             // Check if user has an incomplete profile
             if (!$user->profile_completed) {
                 return $this->getIncompleteProfileData($user->id);
             }
             
-            // Check if user has no profile
-            if (!$user->student()->exists()) {
-                return $this->getNoProfileData($user->id);
-            }
+
 
             return [];
         } catch (Exception $e) {
@@ -77,10 +79,10 @@ class CompleteProfileService
      * @return array
      * @throws Exception
      */
-    private function getNoProfileData(int $userId): array
+    private function getNoProfileData($user): array
     {
         try {
-            $archiveData = UniversityArchive::where('user_id', $userId)->first();
+            $archiveData = $user->UniversityArchive;
             
             if (!$archiveData) {
                 return $this->getEmptyProfileData();
@@ -395,6 +397,27 @@ class CompleteProfileService
         ];
     }
 
+    /**
+     * Log error with consistent format
+     *
+     * @param string $method
+     * @param \Exception $exception
+     * @param array $context
+     * @return void
+     */
+    private function logError(string $method, \Exception $exception, array $context = []): void
+    {
+        Log::error(sprintf(
+            'Error in %s::%s - %s',
+            self::class,
+            $method,
+            $exception->getMessage()
+        ), array_merge($context, [
+            'trace' => $exception->getTraceAsString(),
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine()
+        ]));
+    }
 
     public function storeProfileData(User $user, array $data)
     {
@@ -478,20 +501,16 @@ class CompleteProfileService
             return ['success' => true];
         } catch (\Exception $e) {
             DB::rollBack();
-    
-            \Log::error('Profile data storage failed', [
+            
+            $this->logError('storeProfileData', $e, [
                 'user_id' => $user->id,
-                'data' => $data,
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'data' => $data
             ]);
-    
+
             return [
                 'success' => false,
-                'message' => __('Failed to store profile data. Please try again or contact support.'),
+                'message' => __('Failed to store profile data. Please try again or contact support.')
             ];
         }
     }
-    
-
 }

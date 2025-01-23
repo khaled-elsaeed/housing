@@ -422,19 +422,19 @@
                         <div class="card-body">
                             <!-- Title and Subtitle -->
                             <h5 class="card-title font-weight-bold text-primary">@lang('Housing') {{$invoice->category}}</h5>
-                            <h6 class="card-subtitle mb-3 text-muted">@lang('Spring') 2024-2025 {{$invoice->term}}</h6>
+                            <h6 class="card-subtitle mb-3 text-muted">@lang('Spring') 2024-2025 - @lang($invoice->term)</h6>
                             <!-- Info Section: Total and Status -->
                             <div class="d-flex justify-content-between mb-2">
                                 <p class="mb-0"><strong>@lang('Total:')</strong> <span class="text-success">{{$invoice->totalAmount()}}</span></p>
-                                <p class="mb-0"><strong>@lang('Status:')</strong> <span class="text-danger">{{$invoice->status}}</span></p>
+                                <p class="mb-0"><strong>@lang('Status:')</strong> <span class="text-danger">@lang($invoice->status)</span></p>
                             </div>
                         </div>
                         <!-- Footer with Buttons -->
                         <div class="card-footer d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
                             <!-- Details Button with Icon -->
-                            <button class="btn btn-outline-primary btn-sm mb-2 mb-sm-0 invoice-details-btn" id="invoice-details-btn" data-invoice-id="{{ $invoice->id }}">
+                            <!-- <button class="btn btn-outline-primary btn-sm mb-2 mb-sm-0 invoice-details-btn" id="invoice-details-btn" data-invoice-id="{{ $invoice->id }}">
                                 <i class="fa fa-info-circle"></i> @lang('Details')
-                            </button>
+                            </button> -->
                             @if($invoice->status == 'unpaid')
                             <!-- Pay Now Button with Icon -->
                             <button class="btn btn-outline-primary btn-sm mb-2 mb-sm-0 pay-now-btn" data-invoice-id="{{ $invoice->id }}">

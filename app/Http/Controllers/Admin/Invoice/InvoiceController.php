@@ -294,7 +294,6 @@ class InvoiceController extends Controller
                 $mediaArray[] = [
                     'id' => $invoice->media->id,
                     'payment_url' => asset('storage/' . $invoice->media->path),
-                    // Include other media fields if needed
                     'collection' => $invoice->media->collection_name,
                     'created_at' => $invoice->media->created_at,
                     'updated_at' => $invoice->media->updated_at
