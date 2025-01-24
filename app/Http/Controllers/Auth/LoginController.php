@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\LoginService;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Setting;
 
 class LoginController extends Controller
 {
@@ -58,6 +59,15 @@ class LoginController extends Controller
             }
 
             if ($this->loginService->isResident($user)) {
+                $settingValue = Setting::where('key', 'under_maintenance')->value('value'); 
+
+                if ($settingValue === null) {
+                    $settingValue = 1;  
+                }
+
+                if ($settingValue == 1) {
+                    return back()->withErrors(['error' => 'Resident login is currently unavailable. It will be available later.']);
+                }
                 $result = $this->loginService->handleStudentAfterLogin($user);
                 
                 if ($result['status'] === 'error') {

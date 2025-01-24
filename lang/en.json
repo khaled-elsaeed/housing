@@ -414,5 +414,7 @@
     "Year": "Year",
     "Yes, logout": "Yes, logout",
     "You will be logged out of your account.": "You will be logged out of your account.",
-    "العربية": "العربية"
+    "العربية": "العربية",
+    "first_term" : "First Term",
+    "second_term" : "Second Term"
 }
