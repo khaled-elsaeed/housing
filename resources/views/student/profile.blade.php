@@ -418,26 +418,34 @@
                 <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
                     <div class="card shadow-sm border-primary">
                         <!-- Image Section -->
-                        <img class="card-img-top rounded-top" src="{{ asset('images/authentication/login-hero.svg') }}" alt="@lang('Housing Fees')">
+                        <img class="card-img-top rounded-top" src="{{ asset('images/invoice/invoice.svg') }}" alt="@lang('Housing Fees')">
                         <div class="card-body">
                             <!-- Title and Subtitle -->
-                            <h5 class="card-title font-weight-bold text-primary">@lang('Housing') {{$invoice->category}}</h5>
-                            <h6 class="card-subtitle mb-3 text-muted">@lang('Spring') 2024-2025 - @lang($invoice->term)</h6>
+                            <h5 class="card-title font-weight-bold text-primary">
+                                @lang('Housing') {{ $invoice->category }}
+                            </h5>
+                            <h6 class="card-subtitle mb-3 text-muted">
+                                @lang('Spring') 2024-2025 - @lang($invoice->reservation->term)
+                            </h6>
                             <!-- Info Section: Total and Status -->
                             <div class="d-flex justify-content-between mb-2">
-                                <p class="mb-0"><strong>@lang('Total:')</strong> <span class="text-success">{{$invoice->totalAmount()}}</span></p>
-                                <p class="mb-0"><strong>@lang('Status:')</strong> <span class="text-danger">@lang($invoice->status)</span></p>
+                                <p class="mb-0">
+                                    <strong>@lang('Total:')</strong> 
+                                    <span class="text-success">{{ $invoice->totalAmount() }}</span>
+                                </p>
+                                <p class="mb-0">
+                                    <strong>@lang('Status:')</strong> 
+                                    <span class="{{ $invoice->status == 'paid' ? 'text-success' : 'text-danger' }}">
+                                        @lang($invoice->status)
+                                    </span>
+                                </p>
                             </div>
                         </div>
                         <!-- Footer with Buttons -->
                         <div class="card-footer d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
-                            <!-- Details Button with Icon -->
-                            <!-- <button class="btn btn-outline-primary btn-sm mb-2 mb-sm-0 invoice-details-btn" id="invoice-details-btn" data-invoice-id="{{ $invoice->id }}">
-                                <i class="fa fa-info-circle"></i> @lang('Details')
-                            </button> -->
                             @if($invoice->status == 'unpaid')
                             <!-- Pay Now Button with Icon -->
-                            <button class="btn btn-outline-primary btn-sm mb-2 mb-sm-0 pay-now-btn" data-invoice-id="{{ $invoice->id }}">
+                            <button class="btn btn-outline-primary btn-sm pay-now-btn" data-invoice-id="{{ $invoice->id }}">
                                 <i class="fa fa-credit-card"></i> @lang('Pay Now')
                             </button>
                             @endif
@@ -445,7 +453,9 @@
                     </div>
                 </div>
                 @endforeach
+
                 <!-- Empty Card with Add New Invoice Button -->
+                @if($invoices->count() < 2)
                 <div class="col-md-6 col-lg-4 col-xl-3 mb-4 d-flex justify-content-center align-items-center">
                     <div class="card shadow-sm border-primary">
                         <div class="card-body d-flex justify-content-center align-items-center" style="height: 200px;">
@@ -455,11 +465,13 @@
                         </div>
                     </div>
                 </div>
+                @endif
             </div>
         </div>
     </div>
 </div>
 <!-- End Payments Info Tab -->
+
 
 
 <!-- Modal for Add New Invoice -->
