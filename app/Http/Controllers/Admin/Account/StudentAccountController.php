@@ -13,20 +13,25 @@ class StudentAccountController extends Controller
      * Display the list of students.
      */
     public function showStudentPage()
-    {
-        try {
-            $students = User::role('resident')->get();
+{
+    try {
+        // Retrieve all students with the 'resident' role
+        $students = User::with('student')->role('resident')->get();
 
-            $totalStudentsCount = $students->count();
-            $maleTotalCount = $students->where('gender', 'male')->count();
-            $femaleTotalCount = $students->where('gender', 'female')->count();
+        // Count total, male, and female students
+        $totalStudentsCount = $students->count();
+        $maleTotalCount = $students->where('gender', 'male')->count();
+        $femaleTotalCount = $students->where('gender', 'female')->count();
 
-            return view('admin.account.student', compact('students', 'totalStudentsCount', 'maleTotalCount', 'femaleTotalCount'));
-        } catch (\Exception $e) {
-            Log::error('Error loading student page: ' . $e->getMessage());
-            return response()->view('errors.500');
-        }
+        // Pass the data to the view
+        return view('admin.account.student', compact('students', 'totalStudentsCount', 'maleTotalCount', 'femaleTotalCount'));
+    } catch (\Exception $e) {
+        // Log the error and return a 500 error page
+        Log::error('Error loading student page: ' . $e->getMessage());
+        return response()->view('errors.500');
     }
+}
+
 
     /**
      * Edit student email.

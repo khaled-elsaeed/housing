@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Invoice;
-use App\Models\Payment; // Add the Payment model import
+use App\Models\Payment;
 use Yajra\DataTables\DataTables;
 use App\Exports\Invoices\InvoicesExport;
 use Illuminate\Support\Facades\Log;
@@ -205,7 +205,7 @@ class InvoiceController extends Controller
                         'mobile' => $student ? $student->mobile : 'N/A',
                         'invoice_status' => $invoice->status,
                         'admin_approval' => $invoice->admin_approval, 
-                        'approval_actions' => $approvalButton, // Include approval actions
+                        'approval_actions' => $approvalButton,
                         'actions' => 
                             '<button type="button" class="btn btn-round btn-info-rgba" data-invoice-id="' . 
                             $invoice->id . '" id="details-btn" title="More Details"><i class="feather icon-info"></i></button>',

@@ -24,6 +24,7 @@ class Reservation extends Model
     {
         return $this->belongsTo(user::class);
     }
+    
 
     /**
      * Get the room that is reserved.

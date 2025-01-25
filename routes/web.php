@@ -24,6 +24,8 @@ use App\Http\Controllers\Admin\Applicant\{
 use App\Http\Controllers\Admin\Reservation\ReservationController;
 
 use App\Http\Controllers\Student\StudentHomeController;
+use App\Http\Controllers\Student\StudentReservationController;
+
 use App\Http\Controllers\Admin\Unit\{
     BuildingController,
     ApartmentController,
@@ -213,8 +215,11 @@ Route::middleware(Localization::class)
         // Student Routes
         Route::prefix('student')->name('student.')->group(function () {
             Route::get('/home', [StudentHomeController::class, 'index'])->name('home');
+
             Route::get('maintenance', [StudentMaintenanceController::class, 'showForm'])->name('maintenance.form');
             Route::post('maintenance/store', [StudentMaintenanceController::class, 'store'])->name('maintenance.store');
+
+            Route::post('/reservation',[StudentReservationController::class,'requestReservation'])->name('reservation.request');
 
             Route::get('permission', [StudentPermissionController::class, 'showForm'])->name('permission.form');
             Route::post('permission/store', [StudentPermissionController::class, 'store'])->name('permission.store');
@@ -252,5 +257,4 @@ Route::post('/student/invoice/add', [StudentPaymentController::class, 'addInvoic
 use App\Http\Controllers\UploadController;
 
 Route::post('upload', UploadController::class)->name('upload');
-
 

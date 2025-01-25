@@ -454,67 +454,12 @@
                 </div>
                 @endforeach
 
-                <!-- Empty Card with Add New Invoice Button -->
-                @if($invoices->count() < 2)
-                <div class="col-md-6 col-lg-4 col-xl-3 mb-4 d-flex justify-content-center align-items-center">
-                    <div class="card shadow-sm border-primary">
-                        <div class="card-body d-flex justify-content-center align-items-center" style="height: 200px;">
-                            <button class="btn btn-outline-secondary w-100" data-bs-toggle="modal" data-bs-target="#addInvoiceModal">
-                                <i class="fa fa-plus"></i> @lang('Add New Invoice')
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                @endif
+                
             </div>
         </div>
     </div>
 </div>
 <!-- End Payments Info Tab -->
-
-
-
-<!-- Modal for Add New Invoice -->
-<div class="modal fade" id="addInvoiceModal" tabindex="-1" aria-labelledby="addInvoiceModalLabel" >
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addInvoiceModalLabel">@lang('Add New Invoice')</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@lang('Close')"></button>
-            </div>
-            <div class="modal-body">
-                <form id="addInvoiceForm">
-                    <!-- Invoice Term -->
-                    <div class="mb-3">
-    <label for="invoiceTerm" class="form-label">@lang('Invoice Term')</label>
-    <select class="form-control" id="invoiceTerm" name="term" disabled>
-        <option value="first">First Term</option>
-        <option value="second" selected>Second Term</option>
-    </select>
-    <!-- Hidden input to include the value in form submission -->
-    <input type="hidden" name="term" value="second_term">
-</div>
-
-                  
-                    <div class="mb-3">
-                        <label for="paymentMethod" class="form-label">@lang('Select Payment Method')</label>
-                        <select class="form-select" id="addInvoicePaymentMethod" name="payment_method" required>
-                            <option value="" disabled selected>@lang('Select Payment Method')</option>
-                            <option value="instapay">@lang('Instapay')</option>
-                            <option value="bank_transfer">@lang('Bank Transfer')</option>
-                        </select>
-                    </div>
-                    <!-- File Upload -->
-                    <div class="mb-3">
-                        <label for="addInvoiceInvoiceReceipt" class="form-label">@lang('Choose File')</label>
-                        <input type="file" class="form-control" id="addInvoiceInvoiceReceipt" name="invoice-receipt" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">@lang('Add Invoice')</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
        <!-- Modal for Reservation and Payment Details -->
 <div class="modal fade" id="invoiceDetailsModal" tabindex="-1" role="dialog" aria-labelledby="invoiceDetailsModalLabel" >
@@ -718,43 +663,6 @@ $(document).ready(function() {
     $('input[type="file"]').on('change', function() {
         const file = this.files[0];
         validateImageFile(file, this);
-    });
-
-    // Add New Invoice Form
-    $('#addInvoiceForm').submit(function(e) {
-        e.preventDefault();
-        const file = $('#addInvoiceInvoiceReceipt')[0].files[0];
-
-        if (!validateImageFile(file, '#addInvoiceInvoiceReceipt')) {
-            return;
-        }
-
-        const formData = new FormData(this);
-
-        $.ajax({
-            type: 'POST',
-            url: "{{ route('student.payment.add') }}",
-            data: formData,
-            contentType: false,
-            cache: false,
-            processData: false,
-            headers: { 
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(response) {
-                swal({
-                    type: 'success',
-                    title: "@lang('Success')",
-                    text: "@lang('Payment file has been uploaded successfully!')"
-                }).then((result) => {
-                    $('#addInvoiceModal').modal('hide');
-                    $('#addInvoiceForm')[0].reset();
-                });
-            },
-            error: function(xhr, status, error) { 
-                console.log(xhr.responseText);
-            }
-        });
     });
 
     // Payment File Upload Form

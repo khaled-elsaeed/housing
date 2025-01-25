@@ -83,6 +83,13 @@
                <span>@lang('Accounts Management')</span>
             </a>
          </li>
+         <!-- Academic Terms Management Section -->
+         <li>
+            <a href="{{ route('admin.academic_terms.index') }}">
+               <img src="{{ asset('images/svg-icon/calendar.svg') }}" class="img-fluid" alt="academic-terms">
+               <span>@lang('Academic Terms')</span>
+            </a>
+         </li>
          <!-- Settings Section -->
          <li>
             <a href="{{ route('admin.setting') }}">

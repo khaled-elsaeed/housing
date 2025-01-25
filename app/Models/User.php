@@ -87,12 +87,22 @@ public function universityArchive()
         return $this->hasOne(Student::class); 
     }
 
+    public function activities()
+    {
+        return $this->hasMany(UserActivity::class);
+    }
 
-    public function reservations()
+
+        public function reservations()
     {
         return $this->hasMany(Reservation::class);
     }
-    
+
+    public function lastReservation()
+    {
+        return $this->reservations()->latest()->first();
+    }
+
     public function parent(){
         return $this->hasOne(Parents::class);
     }

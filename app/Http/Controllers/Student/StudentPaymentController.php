@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Student;
 use App\Models\Invoice;
 use App\Models\Reservation;
 use App\Models\Student;
+use App\Models\UserActivity; // Add this import
 use App\Contracts\UploadServiceContract;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -155,6 +156,20 @@ class StudentPaymentController extends Controller
 
             // Commit transaction
             DB::commit();
+
+            // Update the UserActivity call to handle errors gracefully
+            try {
+                UserActivity::create([
+                    'user_id' => $user->id,
+                    'activity_type' => 'Documents Uploaded',
+                    'description' => 'Housing registration documents successfully submitted'
+                ]);
+            } catch (\Exception $e) {
+                Log::warning('Failed to log user activity', [
+                    'user_id' => $user->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
 
             return response()->json(
                 [
