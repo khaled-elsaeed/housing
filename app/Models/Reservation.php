@@ -17,6 +17,13 @@ class Reservation extends Model
         'status',
     ];
 
+    protected $dates = [
+        'start_date',
+        'end_date',
+        'created_at',
+        'updated_at'
+    ];
+
     /**
      * Get the student that owns the reservation.
      */
@@ -34,11 +41,14 @@ class Reservation extends Model
         return $this->belongsTo(Room::class);
     }
 
-    public function invoices()
+    public function invoice()
     {
-        return $this->hasMany(Invoice::class);
+        return $this->hasOne(Invoice::class);
     }
     
 
-
+    public function academicTerm()
+    {
+        return $this->belongsTo(AcademicTerm::class);
+    }
 }

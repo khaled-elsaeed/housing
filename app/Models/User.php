@@ -98,10 +98,22 @@ public function universityArchive()
         return $this->hasMany(Reservation::class);
     }
 
-    public function lastReservation()
+    /**
+     * Get the user's most recent completed or active long-term reservation for a specific academic year.
+     *
+     * @param int $academicYearId The ID of the academic year to filter reservations.
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function lastReservation($academicYearId)
     {
-        return $this->reservations()->latest()->first();
+        return $this->hasOne(Reservation::class)
+            ->where('academic_term_id', $academicYearId)
+            ->whereIn('status', ['completed', 'active'])
+            ->where('period_type', 'long_term')
+            ->latest('created_at')
+            ->first(); // Resolve and return the actual model
     }
+    
 
     public function parent(){
         return $this->hasOne(Parents::class);

@@ -38,18 +38,13 @@ class StudentReservationController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Validation failed',
+                    'message' => trans('Validation failed'),
                     'errors' => $validator->errors(),
                 ], 422);
             }
 
             // Prepare reservation data
-            $reservationData = [
-                'reservation_period_type' => $request->reservation_period_type,
-                'reservation_academic_term_id' => $request->reservation_academic_term_id,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
-            ];;
+            $reservationData = $this->prepareReservationData($request);
 
             // Handle long-term and short-term reservations separately
             if ($reservationData['reservation_period_type'] === 'long_term') {
@@ -64,42 +59,44 @@ class StudentReservationController extends Controller
             Log::error('Reservation creation failed: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create reservation',
+                'message' => trans('Failed to create reservation'),
             ], 500);
         }
     }
 
-    /**
-     * Handle a long-term reservation request.
-     *
-     * @param array $reservationData
-     * @return array
-     */
-    private function handleLongTermReservation(array $reservationData)
-    {
-        return $this->reservationService->requestReservation(
-            auth()->user(),
-            $reservationData['reservation_period_type'],
-            $reservationData['reservation_academic_term_id'],
-            
-        );
-    }
+  /**
+ * Handle a long-term reservation request.
+ *
+ * @param array $reservationData
+ * @return array
+ */
+private function handleLongTermReservation(array $reservationData)
+{
+    return $this->reservationService->requestReservation(
+        reservationRequester: auth()->user(), // Correct parameter name
+        reservationPeriodType: $reservationData['reservation_period_type'], // Correct parameter name
+        academicTermId: $reservationData['reservation_academic_term_id'] // Correct parameter name
+    );
+}
 
-    /**
-     * Handle a short-term reservation request.
-     *
-     * @param array $reservationData
-     * @return array
-     */
-    private function handleShortTermReservation(array $reservationData)
-    {
-        return $this->reservationService->requestReservation(
-            auth()->user(),
-            $reservationData['reservation_period_type'],
-            $reservationData['start_date'],
-            $reservationData['end_date']
-        );
-    }
+/**
+ * Handle a short-term reservation request.
+ *
+ * @param array $reservationData
+ * @return array
+ */
+private function handleShortTermReservation(array $reservationData)
+{
+    // Log the reservation data for debugging
+
+    return $this->reservationService->requestReservation(
+        reservationRequester: auth()->user(), // Correct parameter name
+        reservationPeriodType: $reservationData['reservation_period_type'], // Correct parameter name
+        shortTermDuration: $reservationData['short_term_duration'], // Correct parameter name
+        startDate: $reservationData['start_date'], // Correct parameter name
+        endDate: $reservationData['end_date'] // Correct parameter name
+    );
+}
 
     /**
      * Validate the reservation request.
@@ -112,7 +109,7 @@ class StudentReservationController extends Controller
         return Validator::make($request->all(), [
             'reservation_period_type' => 'required|in:long_term,short_term',
             'reservation_academic_term_id' => 'required_if:reservation_period_type,long_term|exists:academic_terms,id',
-            'short_term_duration_type' => 'required_if:reservation_period_type,short_term|in:day,week,month',
+            'short_term_duration' => 'required_if:reservation_period_type,short_term|in:day,week,month',
             'start_date' => 'nullable|required_if:reservation_period_type,short_term|date',
             'end_date' => 'nullable|date|after:start_date',
         ]);
@@ -129,7 +126,7 @@ class StudentReservationController extends Controller
         return [
             'reservation_period_type' => $request->reservation_period_type,
             'reservation_academic_term_id' => $request->reservation_academic_term_id,
-            'short_term_duration_type' => $request->short_term_duration_type,
+            'short_term_duration' => $request->short_term_duration,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
         ];
@@ -146,8 +143,7 @@ class StudentReservationController extends Controller
         if ($result['success']) {
             return response()->json([
                 'success' => true,
-                'message' => 'Reservation created successfully!',
-                'reservation' => $result['reservation'],
+                'message' => trans('Reservation created successfully!'),
             ]);
         }
 
@@ -156,7 +152,4 @@ class StudentReservationController extends Controller
             'message' => $result['reason'],
         ], 400);
     }
-
-  
-
 }

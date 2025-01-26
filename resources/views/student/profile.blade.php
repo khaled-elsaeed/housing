@@ -34,8 +34,8 @@
          <div class="card-body">
             <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                <!-- Profile Tab (Always visible) -->
-               <a class="nav-link mb-2 active" id="v-pills-profile-tab" data-bs-toggle="pill"
-                  href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="true">
+               <a class="nav-link mb-2" id="v-pills-profile-tab" data-bs-toggle="pill"
+                  href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">
                <i class="feather icon-user me-2"></i>@lang('Profile')
                </a>
                <!-- My Address Tab -->
@@ -73,6 +73,13 @@
                <i class="feather icon-alert-triangle me-2"></i>@lang('Emergency Info')
                </a>
                @endif
+               <!-- Reservations Info Tab -->
+               @if(optional($user->reservations) )
+               <a class="nav-link mb-2" id="v-pills-reservation-info-tab" data-bs-toggle="pill"
+                  href="#v-pills-reservation-info" role="tab" aria-controls="v-pills-reservation-info" aria-selected="false">
+               <i class="feather icon-calendar me-2"></i>@lang('Reservations')
+               </a>
+               @endif
                <!-- Payments Info Tab -->
                @if($user->reservations)
                <a class="nav-link mb-2" id="v-pills-payments-info-tab" data-bs-toggle="pill"
@@ -89,7 +96,7 @@
    <div class="col-lg-7 col-xl-9">
       <div class="tab-content" id="v-pills-tabContent">
          <!-- My Profile Tab -->
-         <div class="tab-pane fade show active" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+         <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
             <div class="card m-b-30">
                <div class="card-header">
                   <h5 class="card-title mb-0">@lang('My Profile')</h5>
@@ -404,6 +411,101 @@
             </div>
          </div>
          <!-- End Emergency Info Tab -->
+<!-- Reservation Info -->
+<div class="tab-pane fade" id="v-pills-reservation-info" role="tabpanel" aria-labelledby="v-pills-reservation-info-tab">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white py-3">
+            <h5 class="card-title mb-0 fw-bold">@lang('Reservation Information')</h5>
+        </div>
+        <div class="card-body p-3">
+            <div class="row g-3">
+                @if($reservations && $reservations->count() > 0)
+                    @foreach($reservations as $reservation)
+                        <div class="col-md-6 col-xl-4">
+                            <div class="card h-100 border-0 shadow-sm card-hover">
+                                <div class="card-header bg-white border-bottom-0 py-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fa fa-bookmark text-primary me-2"></i>
+                                            <span class="fw-medium">Reservation #{{ $loop->iteration }}</span>
+                                        </div>
+                                        <span class="badge {{ $reservation->status === 'active' ? 'bg-success' : 'bg-warning' }} rounded-pill">
+                                            <i class="fa fa-{{ $reservation->status === 'active' ? 'check' : 'clock' }} me-1"></i>
+                                            {{ ucfirst($reservation->status) }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-body p-3">
+                                    <div class="d-flex flex-column gap-2">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fa fa-door-open text-secondary me-2"></i>
+                                            <span class="text-muted me-2">Room:</span>
+                                            <span class="fw-medium">{{ $reservation->room->number ?? 'Not specified' }}</span>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fa fa-clock text-secondary me-2"></i>
+                                            <span class="text-muted me-2">Period:</span>
+                                            <span class="fw-medium">
+                                                @if($reservation->period_type === 'long_term')
+                                                    {{ optional($reservation->academicTerm)->name ? optional($reservation->academicTerm)->name . ' - ' . optional($reservation->academicTerm)->academic_year : 'Not specified' }}
+                                                @else
+                                                    Short Term
+                                                @endif
+                                            </span>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fa fa-calendar-plus text-secondary me-2"></i>
+                                            <span class="text-muted me-2">Start:</span>
+                                            <span class="fw-medium">
+                                                @if($reservation->period_type === 'long_term')
+                                                    {{ $reservation->academicTerm->start_date ? $reservation->academicTerm->start_date : 'Not specified' }}
+                                                @else
+                                                    {{ $reservation->start_date ? $reservation->start_date->format('Y-m-d') : 'Not specified' }}
+                                                @endif
+                                            </span>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fa fa-calendar-minus text-secondary me-2"></i>
+                                            <span class="text-muted me-2">End:</span>
+                                            <span class="fw-medium">
+                                                @if($reservation->period_type === 'long_term')
+                                                    {{ $reservation->academicTerm->end_date ? $reservation->academicTerm->end_date : 'Not specified' }}
+                                                @else
+                                                    {{ $reservation->end_date ? $reservation->end_date->format('Y-m-d') : 'Not specified' }}
+                                                @endif
+                                            </span>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fa fa-file-invoice text-secondary me-2"></i>
+                                            <span class="text-muted me-2">Invoice Status:</span>
+                                            <span class="fw-medium">{{ $reservation->invoice->status ?? 'N/A' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-white border-top-0 py-3">
+                                    <small class="text-muted">
+                                        <i class="fa fa-sync-alt me-1"></i>
+                                        Last updated: {{ $reservation->updated_at->diffForHumans() }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="col-12">
+                        <div class="alert alert-info mb-0 d-flex align-items-center" role="alert">
+                            <i class="fa fa-info-circle me-2"></i>
+                            No reservations found.
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Reservation Info Tab -->
+
+
          <!-- Payments Info Tab -->
 <!-- Payments Info Tab -->
 <div class="tab-pane fade" id="v-pills-payments-info" role="tabpanel" aria-labelledby="v-pills-payments-info-tab">
@@ -540,6 +642,47 @@
 @section('scripts')
 <script>
 $(document).ready(function() {
+    // Tab Navigation with URL Hash
+    function activateTabFromHash() {
+        let hash = window.location.hash;
+        if (hash) {
+            // Remove 'tab-' prefix if present
+            hash = hash.replace('tab-', '');
+            const $tabLink = $(`a[href="${hash}"]`);
+            if ($tabLink.length) {
+                // Remove any existing active classes
+                $('.nav-link').removeClass('active');
+                $('.tab-pane').removeClass('show active');
+                
+                // Activate the correct tab
+                $tabLink.addClass('active');
+                $(hash).addClass('show active');
+            }
+        } else {
+            // If no hash, activate profile tab by default
+            $('#v-pills-profile-tab').addClass('active');
+            $('#v-pills-profile').addClass('show active');
+        }
+    }
+
+    // Update URL hash when tab changes
+    $('a[data-bs-toggle="pill"]').on('shown.bs.tab', function (e) {
+        const hash = $(e.target).attr('href');
+        if (history.pushState) {
+            history.pushState(null, null, hash);
+        } else {
+            window.location.hash = hash;
+        }
+    });
+
+    // Handle back/forward browser buttons
+    $(window).on('popstate', function() {
+        activateTabFromHash();
+    });
+
+    // Initial tab activation on page load
+    activateTabFromHash();
+    
     // File validation configuration
     const fileConfig = {
         maxSize: 4 * 1024 * 1024, // 4MB

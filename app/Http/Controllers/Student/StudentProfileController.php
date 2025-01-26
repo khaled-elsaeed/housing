@@ -23,30 +23,43 @@ use Illuminate\Support\Facades\Storage;
 
 class StudentProfileController extends Controller
 {
-    /**
-     * Show the student's profile page.
-     */
-    public function index()
-    {
-        try {
-            $user = Auth::user();
-            $governorates = Governorate::all();
-            $programs = Program::all();
-            $countries = Country::all();
-            $faculties = Faculty::all();
-            $invoices = $user->reservations->flatMap(function($reservation) {
-                return $reservation->invoices;
-            });
-            return view('student.profile', compact('user', 'governorates', 'programs', 'countries', 'faculties','invoices'));
-        } catch (\Exception $e) {
-            Log::error('Error fetching data for student profile: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-            ]);
+   /**
+ * Show the student's profile page.
+ *
+ * @return \Illuminate\View\View
+ */
+public function index()
+{
+    try {
+        $user = Auth::user();
+        $governorates = Governorate::all();
+        $programs = Program::all();
+        $countries = Country::all();
+        $faculties = Faculty::all();
+        $invoices = $user->reservations->flatMap(function ($reservation) {
+            return $reservation->invoice;
+        });
 
-            return response()->view('errors.500', [], 500);
-        }
+        // Log reservations
+        $reservations = $user->reservations;
+       
+        return view('student.profile', compact(
+            'user',
+            'reservations',
+            'governorates',
+            'programs',
+            'countries',
+            'faculties',
+            'invoices'
+        ));
+    } catch (Exception $e) {
+        Log::error('Error fetching data for student profile: ' . $e->getMessage(), [
+            'trace' => $e->getTraceAsString(),
+        ]);
+
+        return response()->view('errors.500', [], 500);
     }
-
+}
     /**
      * Update the student's basic profile information.
      */

@@ -193,8 +193,8 @@
 
                     <!-- Short Term Details (Day/Week/Month) -->
                     <div id="shortPeriodDetails" class="d-none">
-                        <label for="shortTermDurationType" class="form-label">@lang('Select Duration')</label>
-                        <select name="short_term_duration_type" id="shortTermDurationType" class="form-select" required>
+                        <label for="shortTermDuration" class="form-label">@lang('Select Duration')</label>
+                        <select name="short_term_duration" id="shortTermDuration" class="form-select" required>
                             <option value="" disabled selected>@lang('Select Duration')</option>
                             <option value="day">@lang('Day')</option>
                             <option value="week">@lang('Week')</option>
@@ -209,7 +209,7 @@
                             </div>
                             <div class="col-md-6 mb-3" id="endDateContainer" style="display: none;">
                                 <label for="endDate" class="form-label">@lang('End Date')</label>
-                                <input type="date" class="form-control" id="endDate" name="end_date" />
+                                <input type="date" class="form-control" id="endDate" name="end_date" readonly />
                             </div>
                         </div>
                     </div>
@@ -238,7 +238,7 @@
         const endDate = document.getElementById("endDate");
         const endDateContainer = document.getElementById("endDateContainer");
         const reservationTerm = document.getElementById("reservationTerm");
-        const shortTermDurationType = document.getElementById("shortTermDurationType");
+        const shortTermDuration = document.getElementById("shortTermDuration");
 
         // Handle the Reservation Period Type change (Long Term / Short Term)
         reservationType.addEventListener("change", function () {
@@ -253,43 +253,73 @@
             if (this.value === "long_term") {
                 longPeriodDetails.classList.remove("d-none");
                 shortPeriodDetails.classList.add("d-none");
-                shortTermDurationType.removeAttribute("required");
+                shortTermDuration.removeAttribute("required");
                 startDate.removeAttribute("required");
                 // Optionally populate long-term terms dynamically
                 reservationTerm.value = ""; // Reset term selection if switching
             } else if (this.value === "short_term") {
                 shortPeriodDetails.classList.remove("d-none");
                 longPeriodDetails.classList.add("d-none");
-                shortTermDurationType.setAttribute("required", "required");
+                shortTermDuration.setAttribute("required", "required");
                 startDate.setAttribute("required", "required");
                 reservationTerm.removeAttribute("required");
                 // Show or hide the end date field based on short term duration
-                endDateContainer.style.display = shortTermDurationType.value === "day" ? "none" : "block";
+                endDateContainer.style.display = shortTermDuration.value === "day" ? "none" : "block";
             }
         });
+        startDate.addEventListener("change", () => {
+   const startDateValue = startDate.value;
+   const startDateObject = new Date(startDateValue);
+   
+   const shortTermType = shortTermDuration.value;
+
+   if (shortTermType === 'week') {
+       const endDateObject = new Date(startDateObject);
+       endDateObject.setDate(startDateObject.getDate() + 6);
+       
+       const endDateFormatted = endDateObject.toISOString().split('T')[0];
+       endDate.value = endDateFormatted;
+   } else if (shortTermType === 'month') {
+       const endDateObject = new Date(startDateObject);
+       endDateObject.setMonth(startDateObject.getMonth() + 1);
+       endDateObject.setDate(0); // Last day of the month
+       
+       const endDateFormatted = endDateObject.toISOString().split('T')[0];
+       endDate.value = endDateFormatted;
+   }
+});
 
         // Handle the short-term duration selection (Day/Week/Month)
-        shortTermDurationType.addEventListener("change", function () {
+        shortTermDuration.addEventListener("change", function () {
             endDateContainer.style.display = this.value === "day" ? "none" : "block";
             if (this.value === "day") {
                 endDate.removeAttribute("required");
             } else {
                 endDate.setAttribute("required", "required");
             }
+            
+            // Set min date to today for start date
+            const today = new Date().toISOString().split('T')[0];
+            startDate.setAttribute('min', today);
+            
             updateSubmitButton();
         });
 
         // Validate Dates
         function validateDates() {
             if (reservationType.value === "short_term") {
-                if (shortTermDurationType.value === "day") {
-                    return startDate.value !== "";
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                if (shortTermDuration.value === "day") {
+                    const selectedDate = new Date(startDate.value);
+                    return selectedDate >= today;
                 }
 
                 if (startDate.value && endDate.value) {
                     const start = new Date(startDate.value);
                     const end = new Date(endDate.value);
-                    return start < end;
+                    return start >= today && start < end;
                 }
                 return false;
             }
@@ -306,9 +336,9 @@
             if (isLongTerm) {
                 isValid = reservationTerm.value !== "";
             } else if (isShortTerm) {
-                if (shortTermDurationType.value === "day") {
+                if (shortTermDuration.value === "day") {
                     isValid = startDate.value !== "";
-                } else if (shortTermDurationType.value) {
+                } else if (shortTermDuration.value) {
                     isValid = startDate.value !== "" && endDate.value !== "" && validateDates();
                 }
             }
@@ -324,9 +354,39 @@
         });
 
         startDate.addEventListener("change", function () {
-            if (endDate.value) {
-                validateDates();
+            // Prevent selection of past dates
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const selectedDate = new Date(this.value);
+            
+            if (selectedDate < today) {
+                swal({
+                    title: '@lang("Invalid Date")',
+                    text: '@lang("Please select a present or future date")',
+                    type: "warning",
+                });
+                this.value = '';
+                updateSubmitButton();
+                return;
             }
+
+            // Update end date based on duration type
+            if (shortTermDuration.value !== "day") {
+                const startDateValue = this.value;
+                const startDateObject = new Date(startDateValue);
+                
+                if (shortTermDuration.value === 'week') {
+                    const endDateObject = new Date(startDateObject);
+                    endDateObject.setDate(startDateObject.getDate() + 6);
+                    endDate.value = endDateObject.toISOString().split('T')[0];
+                } else if (shortTermDuration.value === 'month') {
+                    const endDateObject = new Date(startDateObject);
+                    endDateObject.setMonth(startDateObject.getMonth() + 1);
+                    endDateObject.setDate(0);
+                    endDate.value = endDateObject.toISOString().split('T')[0];
+                }
+            }
+            
             updateSubmitButton();
         });
 
@@ -372,7 +432,7 @@
                     await swal({
                         title: '@lang("Success")',
                         text: data.message || '@lang("Reservation has been added successfully!")',
-                        icon: "success",
+                        type: "success",
                     });
 
                     // Reset form and close modal
@@ -388,7 +448,7 @@
                 await swal({
                     title: '@lang("Error")',
                     text: error.message,
-                    icon: "error",
+                    type: "error",
                 });
             } finally {
                 // Reset button state
