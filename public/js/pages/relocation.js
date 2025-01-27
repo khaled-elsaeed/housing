@@ -1,44 +1,15 @@
-// Centralized error handling and notification
-function showNotification(message, isError = false) {
-    const notificationClass = isError ? 'text-danger' : 'text-success';
-    const notification = $('<div>')
-        .addClass(`alert ${notificationClass} mt-3`)
-        .text(message)
-        .appendTo('#notifications')
-        .fadeIn()
-        .delay(3000)
-        .fadeOut(function() { $(this).remove(); });
-}
-
-function showSwalNotification(message, isError = false) {
-    const title = isError ? 'Error' : 'Success';
-    const type = isError ? 'error' : 'success';
-    
-    swal({
-        title: title,
-        text: message,
-        type: type,
-        confirmButtonText: 'OK',
-    });
-}
-
-
 function showForm(formType, selectedCard) {
-    // Reset all cards
     document.querySelectorAll('.option-card').forEach(card => {
         card.classList.remove('active-card');
         card.querySelector('.card-overlay').classList.remove('show');
     });
 
-    // Highlight selected card
     selectedCard.classList.add('active-card');
     selectedCard.querySelector('.card-overlay').classList.add('show');
 
-    // Show corresponding form
     document.getElementById('relocationForm').style.display = formType === 'relocate' ? 'block' : 'none';
     document.getElementById('swapForm').style.display = formType === 'swap' ? 'block' : 'none';
 
-    // Fetch data if needed
     if (formType === 'relocate') {
         fetchEmptyBuildings();
     }
@@ -55,11 +26,15 @@ async function fetchEmptyBuildings() {
         if (response.success && response.buildings.length > 0) {
             populateBuildingSelect(response.buildings);
         } else {
-            showNotification('No buildings available!', true);
+            swal({
+                title: 'Error',
+                text: 'Error fetching buildings!',
+                type: 'error',
+                confirmButtonText: 'OK',
+            });
         }
     } catch (error) {
         console.error('Error fetching buildings:', error);
-        showNotification('Error fetching buildings!', true);
     }
 }
 
@@ -91,11 +66,21 @@ async function fetchEmptyApartments(buildingId) {
         if (response.success && response.apartments.length > 0) {
             populateApartmentSelect(response.apartments);
         } else {
-            showNotification('No apartments available in this building!', true);
+            swal({
+                title: 'Error',
+                text: 'Error fetching apartments!',
+                type: 'error',
+                confirmButtonText: 'OK',
+            });
         }
     } catch (error) {
         console.error('Error fetching apartments:', error);
-        showSwalNotification('Error fetching apartments!', true);
+        swal({
+            title: 'Error',
+            text: 'Error fetching apartments!',
+            type: 'error',
+            confirmButtonText: 'OK',
+        });
     }
 }
 
@@ -124,24 +109,41 @@ async function fetchEmptyRooms(apartmentId) {
             dataType: 'json'
         });
 
-        if (response.success && response.rooms.length > 0) {
+        if (response.success && response.rooms) {
             populateRoomSelect(response.rooms);
-        } else {
-            showNotification('No rooms available in this apartment!', true);
+        } else{
+            swal({
+                title: 'Error',
+                text: 'Error fetching rooms!',
+                type: 'error',
+                confirmButtonText: 'OK',
+            });
         }
     } catch (error) {
         console.error('Error fetching rooms:', error);
-        showSwalNotification('Error fetching rooms!', true);
+        swal({
+            title: 'Error',
+            text: 'Error fetching rooms!',
+            type: 'error',
+            confirmButtonText: 'OK',
+        });
     }
 }
 
 function populateRoomSelect(rooms) {
     const roomSelect = $('#room_select');
-    roomSelect.empty().append('<option value="">Select Room</option>');
+
+    if(rooms.length > 0 ){
+        roomSelect.empty().append('<option value="">Select Room</option>');
+
+        rooms.forEach(room => {
+            roomSelect.append(`<option value="${room.id}">Room ${room.number}</option>`);
+        });
+    }else{
+        roomSelect.empty().append('<option value="">No Empty Rooms</option>');
+
+    }
     
-    rooms.forEach(room => {
-        roomSelect.append(`<option value="${room.id}">Room ${room.number}</option>`);
-    });
 }
 
 function fetchResidentDetails(nationalIdInput, detailsContainer, reservationIdInput, swapMode = false) {
@@ -182,73 +184,105 @@ function fetchResidentDetails(nationalIdInput, detailsContainer, reservationIdIn
     });
 }
 
-
-// Usage
-fetchResidentDetails($('#resident_nid_1'), $('#residentDetails_1'), $('#reservation_id_1'));
-fetchResidentDetails($('#resident_nid_1_swap'), $('#resident1Details'), $('#reservation_id_1_swap'), true);
-fetchResidentDetails($('#resident_nid_2_swap'), $('#resident2Details'), $('#reservation_id_2_swap'), true);
-
-// Form Submissions
-$('#relocationForm form').on('submit', function(event) {
+function handleRelocationFormSubmission(event) {
     event.preventDefault();
     
-    // Get form data
     const newRoom = $('#room_select').val();
     const reservationId = $('#reservation_id_1').val();
-    const csrfToken = $('meta[name="csrf-token"]').attr('content'); // Fetch CSRF token from meta tag
+    const csrfToken = $('meta[name="csrf-token"]').attr('content');
 
-    // Validate required fields
     if (!newRoom || !reservationId) {
-        showSwalNotification('Please select a room and provide the reservation details.', true);
+        swal({
+            title: 'Error',
+            text: 'Please select a room and provide the reservation details.',
+            type: 'error',
+            confirmButtonText: 'OK',
+        });
         return;
     }
 
-    // AJAX request for relocation
     $.ajax({
-        url: window.routes.relocation, // API endpoint
+        url: window.routes.relocation,
         method: 'POST',
         data: {
-            _token: csrfToken, // Pass the CSRF token
+            _token: csrfToken, 
             room_id: newRoom,
             reservation_id: reservationId  
         },
         success: function(response) {
             if (response.success) {
-                showSwalNotification('Relocation successful!');
-                window.location.reload(true);
+                swal({
+                    title: 'Success',                
+                    text: 'Relocation successful!',  
+                    type: 'success',                 
+                    confirmButtonText: 'OK',         
+                }).then(() => {
+                    window.location.reload(true);    
+                });
             } else {
-                showSwalNotification(response.message || 'Relocation failed. Please try again.', true);
+                swal({
+                    title: 'Error',
+                    text: response.error || 'Relocation failed. Please try again.',
+                    type: 'error',
+                    confirmButtonText: 'OK',
+                });
             }
         },
         error: function(jqXHR) {
-                showSwalNotification('Error during relocation! Please try again.', true);
+            swal({
+                title: 'Error',
+                text: 'Error during relocation! Please try again.',
+                type: 'error',
+                confirmButtonText: 'OK',
+            });
         }
     });
-});
+}
 
-
-$('#swapForm form').on('submit', function(event) {
+function handleSwapFormSubmission(event) {
     event.preventDefault();
     const reservation1Id = $('#reservation_id_1_swap').val();  
     const reservation2Id = $('#reservation_id_2_swap').val();  
-    const csrfToken = $('meta[name="csrf-token"]').attr('content'); // Fetch CSRF token from meta tag
+    const csrfToken = $('meta[name="csrf-token"]').attr('content');
 
-    
     $.ajax({
         url: window.routes.swapReservation,
         method: 'POST',
         data: {
-            _token: csrfToken, // Pass the CSRF token
+            _token: csrfToken,
             reservation_id_1: reservation1Id,
             reservation_id_2: reservation2Id
         },
         success: function() {
-            showSwalNotification('Swap successful!');
-            window.location.reload(true);
-
+            if (response.success) {
+                swal({
+                    title: 'Success',                
+                    text: 'The Reservations Swaped successful!',  
+                    type: 'success',                 
+                    confirmButtonText: 'OK',         
+                }).then(() => {
+                    window.location.reload(true);    
+                });
+            } 
         },
-        error: function() {
-            showSwalNotification('Error during swap!', true);
-        }
+        error: function(error) {
+    const errorMessage = error.responseJSON?.error || 'An unknown error occurred';
+
+        swal({
+            title: 'Error',
+            text: errorMessage,
+            type: 'error',
+            confirmButtonText: 'OK',
+        });
+            }
     });
+}
+
+$(document).ready(function() {
+    fetchResidentDetails($('#resident_nid_1'), $('#residentDetails_1'), $('#reservation_id_1'));
+    fetchResidentDetails($('#resident_nid_1_swap'), $('#residentDetailsSwap1'), $('#reservation_id_1_swap'), true);
+    fetchResidentDetails($('#resident_nid_2_swap'), $('#residentDetailsSwap2'), $('#reservation_id_2_swap'), true);
+
+    $('#relocationForm form').on('submit', handleRelocationFormSubmission);
+    $('#swapForm form').on('submit', handleSwapFormSubmission);
 });

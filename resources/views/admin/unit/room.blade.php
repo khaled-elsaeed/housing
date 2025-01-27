@@ -201,30 +201,30 @@
                     </div>
                     <!-- Filters on the Right -->
                     <div class="d-flex flex-column flex-md-row filters-container">
-                    <select id="buildingFilter" class="form-select mb-2 mb-md-0">
-                        <option value="">@lang('Select Building')</option>
-                        @foreach($buildingNumbers as $buildingNumber)
-                            <option value="Building {{ $buildingNumber }}">
-                                @lang('Building') {{ $buildingNumber }}
-                            </option>
-                        @endforeach
-                    </select>
+                        <select id="buildingFilter" class="form-select mb-2 mb-md-0">
+                            <option value="">@lang('Select Building')</option>
+                            @foreach($buildingNumbers as $buildingNumber)
+                                <option value="Building {{ $buildingNumber }}">
+                                    @lang('Building') {{ $buildingNumber }}
+                                </option>
+                            @endforeach
+                        </select>
 
-                    <select id="apartmentFilter" class="form-select mb-2 mb-md-0">
-                        <option value="">@lang('Select Apartment')</option>
-                        @foreach($apartmentNumbers as $apartmentNumber)
-                            <option value="Apartment {{ $apartmentNumber }}">
-                                @lang('Apartment') {{ $apartmentNumber }}
-                            </option>
-                        @endforeach
-                    </select>
+                        <select id="apartmentFilter" class="form-select mb-2 mb-md-0">
+                            <option value="">@lang('Select Apartment')</option>
+                            @foreach($apartmentNumbers as $apartmentNumber)
+                                <option value="Apartment {{ $apartmentNumber }}">
+                                    @lang('Apartment') {{ $apartmentNumber }}
+                                </option>
+                            @endforeach
+                        </select>
 
-                    <select id="statusFilter" class="form-select mb-2 mb-md-0">
-                        <option value="">@lang('Status')</option>
-                        <option value="Active">@lang('Active')</option>
-                        <option value="Inactive">@lang('Inactive')</option>
-                        <option value="Under maintenance">@lang('Under Maintenance')</option>
-                    </select>
+                        <select id="statusFilter" class="form-select mb-2 mb-md-0">
+                            <option value="">@lang('Status')</option>
+                            <option value="Active">@lang('Active')</option>
+                            <option value="Inactive">@lang('Inactive')</option>
+                            <option value="Under maintenance">@lang('Under Maintenance')</option>
+                        </select>
                     </div>
                 </div>
             </div>

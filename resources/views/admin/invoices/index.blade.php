@@ -279,7 +279,6 @@
                         <th>@lang('Mobile')</th>
                         <th>@lang('Invoice Status')</th>
                         <th>@lang('Admin Approval')</th>
-                        <th>@lang('Approval Actions')</th>
                         <th>@lang('Actions')</th>
                      </tr>
                   </thead>
@@ -298,10 +297,10 @@
 
 <!-- Applicant Details Modal -->
 <div class="modal fade" id="applicantDetailsModal" tabindex="-1" role="dialog" aria-labelledby="applicantDetailsModalLabel" aria-hidden="true">
-   <div class="modal-dialog modal-xl modal-dialog-centered" role="payment">
+   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content">
-         <div class="modal-header">
-            <h5 class="modal-title" id="applicantDetailsModalLabel">@lang('Applicant Payments')</h5>
+         <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title" id="applicantDetailsModalLabel">@lang('Invoice Details')</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
          <div class="modal-body">

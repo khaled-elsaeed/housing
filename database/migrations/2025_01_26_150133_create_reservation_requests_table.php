@@ -18,7 +18,7 @@ class CreateReservationRequestsTable extends Migration
             $table->unsignedBigInteger('user_id'); // Foreign key to users table
             $table->unsignedBigInteger('academic_term_id')->nullable(); // Foreign key to academic_terms table
             $table->string('gender'); // User's gender preference (e.g., male, female)
-            $table->string('period_type'); // Reservation period type (e.g., long_term, short_term)
+            $table->string('period_type'); // Reservation period type (e.g., long, short)
             $table->string('period_duration')->nullable();
             $table->date('start_date')->nullable(); // Start date of the reservation
             $table->date('end_date')->nullable(); // End date of the reservation

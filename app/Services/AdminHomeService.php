@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Student;
+use App\Models\User;
 use App\Models\Room;
 use Carbon\Carbon;
 use App\Models\Building;
@@ -11,10 +11,10 @@ class AdminHomeService
 {
     public function getHomeData()
     {
-        $students = Student::select('gender', 'created_at','application_status')
-        ->where('application_status','final_accepted')
-        ->get();
-        
+        $students = User::whereHas('reservations', function ($query) {
+            $query->whereIn('status', ['active','upcoming']);
+        })->with('reservations')->get();
+
         $maleStudents = $this->filterStudentsByGender($students, 'male');
         $femaleStudents = $this->filterStudentsByGender($students, 'female');
 
@@ -22,7 +22,7 @@ class AdminHomeService
         $totalMaleStudents = $maleStudents->count();
         $totalFemaleStudents = $femaleStudents->count();
 
-        $rooms = Room::select('id', 'status', 'purpose', 'updated_at','created_at')->get();
+        $rooms = Room::select('id', 'status', 'purpose', 'updated_at', 'created_at')->get();
         $occupancyRate = $this->calculateOccupancyRate($rooms);
         $lastUpdatedRoom = $rooms->max('updated_at');
 
@@ -48,16 +48,16 @@ class AdminHomeService
     private function getBuildingsWithRoomStats()
     {
         $buildings = Building::with(['apartments.rooms'])->get();
-    
+
         return $buildings->map(function ($building) {
             $rooms = $building->apartments->flatMap->rooms->where('purpose', 'accommodation');
-    
+
             $totalCount = $rooms->count();
-            $occupiedCount = $rooms->sum('current_occupancy'); 
-            $emptyCount = $rooms->sum('max_occupancy') - $occupiedCount; 
-    
+            $occupiedCount = $rooms->sum('current_occupancy');
+            $emptyCount = $rooms->sum('max_occupancy') - $occupiedCount;
+
             return [
-                'name' => $building->number, 
+                'name' => $building->number,
                 'occupied' => $occupiedCount,
                 'total' => $totalCount,
                 'empty' => $emptyCount,
@@ -77,9 +77,9 @@ class AdminHomeService
         $totalRooms = $rooms->count();
 
         $occupiedRooms = $rooms->filter(function ($room) {
-            return $room->status === 'active' 
-                && $room->purpose === 'accommodation' 
-                && $room->reservations()->where('status', 'confirmed')->count() > 0;
+            return $room->status === 'active'
+                && $room->purpose === 'accommodation'
+                && $room->reservations()->where('status', 'active')->count() > 0;
         })->count();
 
         return $totalRooms > 0 ? ($occupiedRooms / $totalRooms) * 100 : 0;
@@ -92,33 +92,31 @@ class AdminHomeService
         })->sortByDesc('created_at')->first();
     }
 
-   
-
     private function formatLastUpdated($lastUpdated)
     {
         if (!$lastUpdated) {
-            return __('pages.admin.general.never');
+            return 'Never';
         }
-    
+
         $lastUpdated = Carbon::parse($lastUpdated);
         $diffInMinutes = $lastUpdated->diffInMinutes(now());
-    
+
         if ($diffInMinutes < 60) {
-            return __('pages.admin.general.minutes_ago', ['minutes' => $diffInMinutes]);
+            return $diffInMinutes . ' minute(s) ago';
         }
-    
+
         $diffInHours = (int)$lastUpdated->diffInHours(now());
-    
+
         if ($diffInHours < 24) {
             $minutes = $diffInMinutes % 60;
             if ($minutes > 0) {
-                return __('pages.admin.general.hours_and_minutes_ago', ['hours' => $diffInHours, 'minutes' => $minutes]);
+                return $diffInHours . ' hour(s) and ' . $minutes . ' minute(s) ago';
             } else {
-                return __('pages.admin.general.hours_ago', ['hours' => $diffInHours]);
+                return $diffInHours . ' hour(s) ago';
             }
         }
-    
+
         $diffInDays = (int)$lastUpdated->diffInDays(now());
-        return __('pages.admin.general.days_ago', ['days' => $diffInDays]);
+        return $diffInDays . ' day(s) ago';
     }
 }

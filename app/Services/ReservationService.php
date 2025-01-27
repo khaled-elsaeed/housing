@@ -183,7 +183,12 @@ class ReservationService
             $newReservation = new Reservation();
             $newReservation->user_id = $reservationRequester->id;
             $newReservation->room_id = $selectedRoom?->id;
-            $newReservation->status = $status;
+            if($this->getCurrentAcademicTermId() === $academicTermId){
+                $newReservation->status = $status;
+            }else{
+                $newReservation->status = 'upcoming';
+
+            }
             $newReservation->period_type = $reservationPeriodType;
 
             if ($reservationPeriodType === "short_term") {
@@ -477,6 +482,7 @@ class ReservationService
      */
     private function checkLastReservedRoomAvailability(User $reservationRequester, ?int $academicTermId): array
     {
+        // check if he was with us the term before 
         $lastReservedRoom = $reservationRequester->lastReservation($academicTermId)?->room;
 
         if (!$lastReservedRoom) {
@@ -505,10 +511,26 @@ class ReservationService
     private function checkRoomAvailability(int $targetRoomId, ?int $academicTermId): array
     {
         try {
-            $existingReservationConflict = Reservation::where("room_id", $targetRoomId)
-                ->whereIn("status", ["active", "upcoming"])
-                ->where("academic_term_id", $academicTermId)
-                ->exists();
+
+            $activeAcademicTermId = $this->getCurrentAcademicTermId();
+
+            
+            
+
+                if($activeAcademicTermId === $academicTermId){
+                   
+
+                $existingReservationConflict = Reservation::where("room_id", $targetRoomId)
+                    ->whereIn("status", ["active", "pending"])
+                    ->where("academic_term_id", $activeAcademicTermId)
+                    ->exists();
+                }else{
+                    $existingReservationConflict = Reservation::where('room_id',$targetRoomId)
+                    ->where("status",['upcoming'])
+                    ->where("academic_term_id", $activeAcademicTermId)
+                    ->exists();
+                }
+            
 
             if ($existingReservationConflict) {
                 return [

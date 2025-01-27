@@ -258,8 +258,8 @@
                         <th>@lang('Reservation ID')</th>
                         <th>@lang('Name')</th>
                         <th>@lang('Location')</th>
-                        <th>@lang('Start Date')</th>
-                        <th>@lang('End Date')</th>
+                        <th>@lang('Period')</th>
+                        <th>@lang('Duration')</th>
                         <th>@lang('Status')</th>
                      </tr>
                   </thead>

@@ -18,22 +18,15 @@
                <span>@lang('Dashboard')</span>
             </a>
          </li>
-         <!-- Applicants Link -->
+          <!-- Residents Section -->
          <li>
-            <a href="{{ route('admin.applicants') }}">
-               <img src="{{ asset('images/svg-icon/dashboard.svg') }}" class="img-fluid" alt="applicants">
-               <span>@lang('Applicants')</span>
+            <a href="{{ route('admin.residents.index') }}">
+               <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="invoices">
+               <span>@lang('Residents')</span>
             </a>
          </li>
-         <!-- Invoices Link -->
-         <li>
-            <a href="{{ route('admin.invoices.index') }}">
-               <img src="{{ asset('images/svg-icon/dashboard.svg') }}" class="img-fluid" alt="invoices">
-               <span>@lang('Invoices')</span>
-            </a>
-         </li>
-         <!-- Reservation Link -->
-         <li>
+        <!-- Reservation Link -->
+        <li>
             <a href="javascript:void(0);">
                <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="reservation">
                <span>@lang('Reservation')</span>
@@ -44,18 +37,15 @@
                <li><a href="{{ route('admin.reservation.relocation.index') }}">@lang('Relocation')</a></li>
             </ul>
          </li>
-         <!-- Residents Section -->
+         <!-- Invoices Link -->
          <li>
-            <a href="javascript:void(0);">
-               <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="residents">
-               <span>@lang('Residents')</span>
-               <i class="feather icon-chevron-right pull-right"></i>
+            <a href="{{ route('admin.invoices.index') }}">
+               <img src="{{ asset('images/svg-icon/dashboard.svg') }}" class="img-fluid" alt="invoices">
+               <span>@lang('Invoices')</span>
             </a>
-            <ul class="vertical-submenu">
-               <li><a href="{{ route('admin.residents.index') }}">@lang('View Residents')</a></li>
-               <li><a href="{{ route('admin.residents.create') }}">@lang('Add Resident')</a></li>
-            </ul>
          </li>
+         
+        
          <!-- Housing Section -->
          <li>
             <a href="javascript:void(0);">
@@ -83,13 +73,7 @@
                <span>@lang('Accounts Management')</span>
             </a>
          </li>
-         <!-- Academic Terms Management Section -->
-         <li>
-            <a href="{{ route('admin.academic_terms.index') }}">
-               <img src="{{ asset('images/svg-icon/calendar.svg') }}" class="img-fluid" alt="academic-terms">
-               <span>@lang('Academic Terms')</span>
-            </a>
-         </li>
+        
          <!-- Settings Section -->
          <li>
             <a href="{{ route('admin.setting') }}">

@@ -30,49 +30,51 @@
         <!-- Reservation Overview -->
         <div class="col-lg-8">
             @if($reservation)
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-white border-0 py-3">
-                    <h4 class="card-title mb-0"><i class="fa fa-hotel text-primary me-2"></i>{{ __('Active Reservation') }}</h4>
-                </div>
-                <div class="card-body">
-                    <div class="row g-4">
-                        <!-- Reservation Details Cards -->
-                        <div class="col-md-4">
-                            <div class="d-flex align-items-center bg-light p-3 rounded">
-                                <div class="me-3">
-                                    <i class="fa fa-building fa-2x text-primary"></i>
-                                </div>
-                                <div>
-                                    <h6 class="text-muted mb-1">{{ __('Building') }}</h6>
-                                    <p class="h5 mb-0">{{ $reservation->room->apartment->building->number }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="d-flex align-items-center bg-light p-3 rounded">
-                                <div class="me-3">
-                                    <i class="fa fa-home fa-2x text-primary"></i>
-                                </div>
-                                <div>
-                                    <h6 class="text-muted mb-1">{{ __('Apartment') }}</h6>
-                                    <p class="h5 mb-0">{{ $reservation->room->apartment->number }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="d-flex align-items-center bg-light p-3 rounded">
-                                <div class="me-3">
-                                    <i class="fa fa-bed fa-2x text-primary"></i>
-                                </div>
-                                <div>
-                                    <h6 class="text-muted mb-1">{{ __('Room') }}</h6>
-                                    <p class="h5 mb-0">{{ $reservation->room->number }}</p>
-                                </div>
-                            </div>
-                        </div>
+            <div class="card border-0 mb-4">
+    <div class="card-header bg-white border-0 py-3">
+        <h4 class="card-title mb-0 fs-5 fw-semibold">
+            <i class="fa fa-hotel text-primary me-2"></i>{{ __('Active Reservation') }}
+        </h4>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <!-- Reservation Details Cards -->
+            <div class="col-md-4 border">
+                <div class="d-flex align-items-center bg-gradient-light p-3 rounded hover-scale">
+                    <div class="me-3">
+                        <i class="fa fa-building fa-2x text-primary"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1 fs-6">{{ __('Building') }}</h6>
+                        <p class="h5 mb-0 fw-bold">{{ $reservation->room->apartment->building->number }}</p>
                     </div>
                 </div>
             </div>
+            <div class="col-md-4">
+                <div class="d-flex align-items-center bg-gradient-light p-3 rounded hover-scale">
+                    <div class="me-3">
+                        <i class="fa fa-home fa-2x text-primary"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1 fs-6">{{ __('Apartment') }}</h6>
+                        <p class="h5 mb-0 fw-bold">{{ $reservation->room->apartment->number }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex align-items-center bg-gradient-light p-3 rounded hover-scale">
+                    <div class="me-3">
+                        <i class="fa fa-bed fa-2x text-primary"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1 fs-6">{{ __('Room') }}</h6>
+                        <p class="h5 mb-0 fw-bold">{{ $reservation->room->number }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
             @endif
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white border-0 py-3">
@@ -127,18 +129,18 @@
                         <span
                             class="badge 
                      {{ $reservation->status === 'pending' ? 'bg-warning' : 
-                     ($reservation->status === 'confirmed' ? 'bg-success' : 'bg-danger') }}"
+                     ($reservation->status === 'active' ? 'bg-success' : 'bg-danger') }}"
                         >
                             {{ ucfirst($reservation->status) }}
                         </span>
                     </div>
                     <div class="mb-3">
                         <h6 class="text-muted">{{ __('Term') }}</h6>
-                        <p class="mb-0">{{ ucfirst(str_replace('_', ' ', $reservation->term)) }}</p>
+                        <p class="mb-0">{{ ucfirst($reservation->academicTerm->name) }}</p>
                     </div>
                     <div>
                         <h6 class="text-muted">{{ __('Year') }}</h6>
-                        <p class="mb-0">{{ $reservation->year }}</p>
+                        <p class="mb-0">{{ $reservation->academicTerm->academic_year }}</p>
                     </div>
                 </div>
             </div>
@@ -175,8 +177,8 @@
                         <label for="reservationType" class="form-label">@lang('Reservation Period Type')</label>
                         <select name="reservation_period_type" id="reservationType" class="form-select" required>
                             <option value="" disabled selected>@lang('Select Reservation Period Type')</option>
-                            <option value="long_term">@lang('Long Term')</option>
-                            <option value="short_term">@lang('Short Term')</option>
+                            <option value="long">@lang('Long Period')</option>
+                            <option value="short">@lang('Short Period')</option>
                         </select>
                     </div>
 
@@ -193,8 +195,8 @@
 
                     <!-- Short Term Details (Day/Week/Month) -->
                     <div id="shortPeriodDetails" class="d-none">
-                        <label for="shortTermDuration" class="form-label">@lang('Select Duration')</label>
-                        <select name="short_term_duration" id="shortTermDuration" class="form-select" required>
+                        <label for="shortPeriodDuration" class="form-label">@lang('Select Duration')</label>
+                        <select name="short_duration" id="shortPeriodDuration" class="form-select" required>
                             <option value="" disabled selected>@lang('Select Duration')</option>
                             <option value="day">@lang('Day')</option>
                             <option value="week">@lang('Week')</option>
@@ -238,7 +240,7 @@
         const endDate = document.getElementById("endDate");
         const endDateContainer = document.getElementById("endDateContainer");
         const reservationTerm = document.getElementById("reservationTerm");
-        const shortTermDuration = document.getElementById("shortTermDuration");
+        const shortPeriodDuration = document.getElementById("shortPeriodDuration");
 
         // Handle the Reservation Period Type change (Long Term / Short Term)
         reservationType.addEventListener("change", function () {
@@ -250,36 +252,36 @@
                 return;
             }
 
-            if (this.value === "long_term") {
+            if (this.value === "long") {
                 longPeriodDetails.classList.remove("d-none");
                 shortPeriodDetails.classList.add("d-none");
-                shortTermDuration.removeAttribute("required");
+                shortPeriodDuration.removeAttribute("required");
                 startDate.removeAttribute("required");
                 // Optionally populate long-term terms dynamically
                 reservationTerm.value = ""; // Reset term selection if switching
-            } else if (this.value === "short_term") {
+            } else if (this.value === "short") {
                 shortPeriodDetails.classList.remove("d-none");
                 longPeriodDetails.classList.add("d-none");
-                shortTermDuration.setAttribute("required", "required");
+                shortPeriodDuration.setAttribute("required", "required");
                 startDate.setAttribute("required", "required");
                 reservationTerm.removeAttribute("required");
                 // Show or hide the end date field based on short term duration
-                endDateContainer.style.display = shortTermDuration.value === "day" ? "none" : "block";
+                endDateContainer.style.display = shortPeriodDuration.value === "day" ? "none" : "block";
             }
         });
         startDate.addEventListener("change", () => {
    const startDateValue = startDate.value;
    const startDateObject = new Date(startDateValue);
    
-   const shortTermType = shortTermDuration.value;
+   const shortPeriodType = shortPeriodDuration.value;
 
-   if (shortTermType === 'week') {
+   if (shortPeriodType === 'week') {
        const endDateObject = new Date(startDateObject);
        endDateObject.setDate(startDateObject.getDate() + 6);
        
        const endDateFormatted = endDateObject.toISOString().split('T')[0];
        endDate.value = endDateFormatted;
-   } else if (shortTermType === 'month') {
+   } else if (shortPeriodType === 'month') {
        const endDateObject = new Date(startDateObject);
        endDateObject.setMonth(startDateObject.getMonth() + 1);
        endDateObject.setDate(0); // Last day of the month
@@ -290,7 +292,7 @@
 });
 
         // Handle the short-term duration selection (Day/Week/Month)
-        shortTermDuration.addEventListener("change", function () {
+        shortPeriodDuration.addEventListener("change", function () {
             endDateContainer.style.display = this.value === "day" ? "none" : "block";
             if (this.value === "day") {
                 endDate.removeAttribute("required");
@@ -307,11 +309,11 @@
 
         // Validate Dates
         function validateDates() {
-            if (reservationType.value === "short_term") {
+            if (reservationType.value === "short") {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
                 
-                if (shortTermDuration.value === "day") {
+                if (shortPeriodDuration.value === "day") {
                     const selectedDate = new Date(startDate.value);
                     return selectedDate >= today;
                 }
@@ -328,17 +330,17 @@
 
         // Enable submit button when all required fields are filled
         function updateSubmitButton() {
-            const isLongTerm = reservationType.value === "long_term";
-            const isShortTerm = reservationType.value === "short_term";
+            const islongPeriod = reservationType.value === "long";
+            const isshortPeriod = reservationType.value === "short";
 
             let isValid = false;
 
-            if (isLongTerm) {
+            if (islongPeriod) {
                 isValid = reservationTerm.value !== "";
-            } else if (isShortTerm) {
-                if (shortTermDuration.value === "day") {
+            } else if (isshortPeriod) {
+                if (shortPeriodDuration.value === "day") {
                     isValid = startDate.value !== "";
-                } else if (shortTermDuration.value) {
+                } else if (shortPeriodDuration.value) {
                     isValid = startDate.value !== "" && endDate.value !== "" && validateDates();
                 }
             }
@@ -371,15 +373,15 @@
             }
 
             // Update end date based on duration type
-            if (shortTermDuration.value !== "day") {
+            if (shortPeriodDuration.value !== "day") {
                 const startDateValue = this.value;
                 const startDateObject = new Date(startDateValue);
                 
-                if (shortTermDuration.value === 'week') {
+                if (shortPeriodDuration.value === 'week') {
                     const endDateObject = new Date(startDateObject);
                     endDateObject.setDate(startDateObject.getDate() + 6);
                     endDate.value = endDateObject.toISOString().split('T')[0];
-                } else if (shortTermDuration.value === 'month') {
+                } else if (shortPeriodDuration.value === 'month') {
                     const endDateObject = new Date(startDateObject);
                     endDateObject.setMonth(startDateObject.getMonth() + 1);
                     endDateObject.setDate(0);

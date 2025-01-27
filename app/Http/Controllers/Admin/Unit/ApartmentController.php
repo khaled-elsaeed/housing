@@ -125,21 +125,20 @@ class ApartmentController extends Controller
     }
 
     public function fetchEmptyApartments($buildingID)
-    {
-        // Fetch apartments for a specific building with empty rooms
-        $emptyApartments = Apartment::with([
-            'rooms' => function ($query) {
-                // Ensure rooms are not fully occupied
-                $query
-                    ->where('full_occupied', '!=', 1)
-                    ->where('status', 'active')
-                    ->where('purpose', 'accommodation');
-            },
-        ])
-            ->where('building_id', $buildingID)
-            ->select('id', 'number')
-            ->get();
+{
+    try {
+        // Fetch apartments for a specific building that have at least one empty room
+        $emptyApartments = Apartment::whereHas('rooms', function ($query) {
+            // Filter rooms that are not fully occupied, active, and for accommodation
+            $query->where('full_occupied', '!=', 1)
+                  ->where('status', 'active')
+                  ->where('purpose', 'accommodation');
+        })
+        ->where('building_id', $buildingID)
+        ->select('id', 'number')
+        ->get();
 
+        // Map the results to the desired format
         $emptyApartments = $emptyApartments->map(function ($apartment) {
             return [
                 'id' => $apartment->id,
@@ -152,5 +151,13 @@ class ApartmentController extends Controller
             'success' => true,
             'apartments' => $emptyApartments,
         ]);
+    } catch (\Exception $e) {
+        // Log the error and return a failure response
+        Log::error('Error fetching empty apartments: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to fetch empty apartments. Please try again later.',
+        ], 500);
     }
+}
 }

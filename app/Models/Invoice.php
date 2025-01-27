@@ -24,6 +24,8 @@ class Invoice extends Model
     {
         return $this->belongsTo(Reservation::class);
     }
+
+    
     
     /**
      * Get the details for the invoice.
@@ -31,8 +33,8 @@ class Invoice extends Model
     public function details()
     {
         return $this->hasMany(InvoiceDetail::class);
-    } 
-
+    }
+    
     /**
      * Get the payments for the invoice.
      */
@@ -40,11 +42,27 @@ class Invoice extends Model
     {
         return $this->hasMany(Payment::class);
     }
-
+    
+    /**
+     * Calculate the total amount of the invoice.
+     *
+     * @return string
+     */
     public function totalAmount()
     {
-        return $this->details->sum('amount');
+        $total = $this->details->sum('amount'); 
+    
+        $formattedTotal = number_format($total, 2);
+    
+        $currency = $this->currency ?? trans('EGP');
+    
+        return "{$formattedTotal} {$currency}";
     }
+
+    public function academicTerm()
+{
+    return $this->reservation->academicTerm;
+}
 
     public function media()
     {

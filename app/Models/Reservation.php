@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Reservation extends Model
 {
@@ -15,6 +16,7 @@ class Reservation extends Model
         'year',
         'term',
         'status',
+        'period_type'
     ];
 
     protected $dates = [
@@ -51,4 +53,42 @@ class Reservation extends Model
     {
         return $this->belongsTo(AcademicTerm::class);
     }
+
+    public function getFormattedStartDateAttribute()
+    {
+        if($this->period_type === 'long_term'){
+            return $this->academicTerm->start_date ? Carbon::parse($this->academicTerm->start_date)->format('d M Y') : 'Not specified';
+        } else {
+            return $this->start_date ? Carbon::parse($this->start_date)->format('d M Y') : null;
+
+        }
+    }
+
+    public function getFormattedEndDateAttribute()
+    {
+        if($this->period_type === 'long_term'){
+            return $this->academicTerm->end_date ? Carbon::parse($this->academicTerm->end_date)->format('d M Y') : 'Not specified';
+        } else {
+            return $this->end_date ? Carbon::parse($this->end_date)->format('d M Y') : null;
+
+        }    }
+
+        public function getFullRoomDetailsAttribute()
+{
+    $details = [];
+
+    if ($this->room) {
+        $details[] = 'Room ' . $this->room->number;
+
+        if ($this->room->apartment) {
+            $details[] = 'Apartment ' . $this->room->apartment->number;
+
+            if ($this->room->apartment->building) {
+                $details[] = 'Building ' . $this->room->apartment->building->number;
+            }
+        }
+    }
+
+    return $details ? implode(', ', $details) : 'Not specified';
+}
 }

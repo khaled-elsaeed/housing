@@ -45,81 +45,68 @@ class InvoiceController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function fetchStats()
-    {
-        $invoices = Invoice::with(['reservation.user'])->get();
+{
+    // Total invoices
+    $totalInvoice = Invoice::count();
 
-        $totalInvoice = $invoices->count();
-        $totalMaleInvoice = $invoices
-            ->filter(function ($invoice) {
-                return optional($invoice->reservation->user)->gender === 'male';
-            })
-            ->count();
+    // Total male and female invoices
+    $totalMaleInvoice = Invoice::whereHas('reservation.user', function ($query) {
+        $query->where('gender', 'male');
+    })->count();
 
-        $totalFemaleInvoice = $invoices
-            ->filter(function ($invoice) {
-                return optional($invoice->reservation->user)->gender === 'female';
-            })
-            ->count();
+    $totalFemaleInvoice = Invoice::whereHas('reservation.user', function ($query) {
+        $query->where('gender', 'female');
+    })->count();
 
-        $totalPaidInvoice = $invoices->where('status', 'paid')->count();
-        $totalPaidMaleInvoice = $invoices
-            ->filter(function ($invoice) {
-                return $invoice->status === 'paid' && optional($invoice->reservation->user)->gender === 'male';
-            })
-            ->count();
+    // Paid invoices
+    $totalPaidInvoice = Invoice::where('status', 'paid')->count();
+    $totalPaidMaleInvoice = Invoice::where('status', 'paid')
+        ->whereHas('reservation.user', function ($query) {
+            $query->where('gender', 'male');
+        })->count();
+    $totalPaidFemaleInvoice = Invoice::where('status', 'paid')
+        ->whereHas('reservation.user', function ($query) {
+            $query->where('gender', 'female');
+        })->count();
 
-        $totalPaidFemaleInvoice = $invoices
-            ->filter(function ($invoice) {
-                return $invoice->status === 'paid' && optional($invoice->reservation->user)->gender === 'female';
-            })
-            ->count();
+    // Unpaid invoices
+    $totalUnpaidInvoice = Invoice::where('status', 'unpaid')->count();
+    $totalUnpaidMaleInvoice = Invoice::where('status', 'unpaid')
+        ->whereHas('reservation.user', function ($query) {
+            $query->where('gender', 'male');
+        })->count();
+    $totalUnpaidFemaleInvoice = Invoice::where('status', 'unpaid')
+        ->whereHas('reservation.user', function ($query) {
+            $query->where('gender', 'female');
+        })->count();
 
-        $totalUnpaidInvoice = $invoices->where('status', 'unpaid')->count();
-        $totalUnpaidMaleInvoice = $invoices
-            ->filter(function ($invoice) {
-                return $invoice->status === 'unpaid' && optional($invoice->reservation->user)->gender === 'male';
-            })
-            ->count();
+    // Accepted payments
+    $totalAcceptedPayments = Invoice::where('admin_approval', 'accepted')->count();
+    $totalAcceptedMalePayments = Invoice::where('admin_approval', 'accepted')
+        ->whereHas('reservation.user', function ($query) {
+            $query->where('gender', 'male');
+        })->count();
+    $totalAcceptedFemalePayments = Invoice::where('admin_approval', 'accepted')
+        ->whereHas('reservation.user', function ($query) {
+            $query->where('gender', 'female');
+        })->count();
 
-        $totalUnpaidFemaleInvoice = $invoices
-            ->filter(function ($invoice) {
-                return $invoice->status === 'unpaid' && optional($invoice->reservation->user)->gender === 'female';
-            })
-            ->count();
-
-        $totalAcceptedPayments = $invoices
-            ->filter(function ($invoice) {
-                return $invoice->admin_approval === 'accepted';
-            })
-            ->count();
-
-        $totalAcceptedMalePayments = $invoices
-            ->filter(function ($invoice) {
-                return $invoice->admin_approval === 'accepted' && optional($invoice->reservation->user)->gender === 'male';
-            })
-            ->count();
-
-        $totalAcceptedFemalePayments = $invoices
-            ->filter(function ($invoice) {
-                return $invoice->admin_approval === 'accepted' && optional($invoice->reservation->user)->gender === 'female';
-            })
-            ->count();
-
-        return response()->json([
-            'totalInvoice' => $totalInvoice,
-            'totalMaleInvoice' => $totalMaleInvoice,
-            'totalFemaleInvoice' => $totalFemaleInvoice,
-            'totalPaidInvoice' => $totalPaidInvoice,
-            'totalPaidMaleInvoice' => $totalPaidMaleInvoice,
-            'totalPaidFemaleInvoice' => $totalPaidFemaleInvoice,
-            'totalUnpaidInvoice' => $totalUnpaidInvoice,
-            'totalUnpaidMaleInvoice' => $totalUnpaidMaleInvoice,
-            'totalUnpaidFemaleInvoice' => $totalUnpaidFemaleInvoice,
-            'totalAcceptedPayments' => $totalAcceptedPayments,
-            'totalAcceptedMalePayments' => $totalAcceptedMalePayments,
-            'totalAcceptedFemalePayments' => $totalAcceptedFemalePayments,
-        ]);
-    }
+    // Return the response
+    return response()->json([
+        'totalInvoice' => $totalInvoice,
+        'totalMaleInvoice' => $totalMaleInvoice,
+        'totalFemaleInvoice' => $totalFemaleInvoice,
+        'totalPaidInvoice' => $totalPaidInvoice,
+        'totalPaidMaleInvoice' => $totalPaidMaleInvoice,
+        'totalPaidFemaleInvoice' => $totalPaidFemaleInvoice,
+        'totalUnpaidInvoice' => $totalUnpaidInvoice,
+        'totalUnpaidMaleInvoice' => $totalUnpaidMaleInvoice,
+        'totalUnpaidFemaleInvoice' => $totalUnpaidFemaleInvoice,
+        'totalAcceptedPayments' => $totalAcceptedPayments,
+        'totalAcceptedMalePayments' => $totalAcceptedMalePayments,
+        'totalAcceptedFemalePayments' => $totalAcceptedFemalePayments,
+    ]);
+}
 
     /**
      * Fetch and filter a list of invoices with optional criteria.
@@ -167,7 +154,13 @@ class InvoiceController extends Controller
             }
     
             // Order by payment status and admin approval
-            $query->orderByRaw("FIELD(admin_approval, 'pending', 'accepted', 'rejected')");
+            $query->orderByRaw("
+            CASE 
+                WHEN status = 'paid' THEN 1
+                WHEN status = 'unpaid' THEN 2
+                ELSE 3
+            END
+        ");
     
             // Count total and filtered records
             $totalRecords = $query->count('invoices.id');
@@ -188,14 +181,6 @@ class InvoiceController extends Controller
                     $student = $invoice->reservation->user->student ?? null;
                     $faculty = $student->faculty ?? null;
     
-                    // Create the approval status button
-                    $approvalButton = '';
-                    if ($invoice->admin_approval == 'pending') {
-                        $approvalButton = '<button type="button" class="btn btn-success approve-btn" data-id="' . $invoice->id . '" data-status="accepted">Approve</button>
-                                           <button type="button" class="btn btn-danger reject-btn" data-id="' . $invoice->id . '" data-status="rejected">Reject</button>';
-                    } else {
-                        $approvalButton = '<span class="badge badge-' . ($invoice->admin_approval == 'accepted' ? 'success' : 'danger') . '">' . ucfirst($invoice->admin_approval) . '</span>';
-                    }
     
                     return [
                         'invoice_id' => $invoice->id,
@@ -205,7 +190,6 @@ class InvoiceController extends Controller
                         'mobile' => $student ? $student->mobile : 'N/A',
                         'invoice_status' => $invoice->status,
                         'admin_approval' => $invoice->admin_approval, 
-                        'approval_actions' => $approvalButton,
                         'actions' => 
                             '<button type="button" class="btn btn-round btn-info-rgba" data-invoice-id="' . 
                             $invoice->id . '" id="details-btn" title="More Details"><i class="feather icon-info"></i></button>',
@@ -218,27 +202,6 @@ class InvoiceController extends Controller
         }
     }
     
-
-    /**
-     * Download all invoices in Excel format.
-     *
-     * This method exports a list of invoices to an Excel file and returns the file for download.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function downloadInvoicesExcel()
-    {
-        try {
-            $export = new InvoicesExport();
-            return $export->downloadExcel();
-        } catch (\Exception $e) {
-            Log::error('Error exporting applicants to Excel', [
-                'exception' => $e->getMessage(),
-                'stack_trace' => $e->getTraceAsString(),
-            ]);
-            return response()->json(['error' => 'Failed to export applicants to Excel'], 500);
-        }
-    }
 
     /**
      * Fetch detailed information about a specific invoice by payment ID.
@@ -271,7 +234,7 @@ class InvoiceController extends Controller
             $studentDetails = [
                 'name' => $user->student->name_en ?? 'N/A',
                 'faculty' => $user->student->faculty->name_en ?? 'N/A',
-                'building' => $room->building->number ?? 'N/A',
+                'building' => $room->apartment->building->number ?? 'N/A',
                 'apartment' => $room->apartment->number ?? 'N/A',
                 'room' => $room->number ?? 'N/A'
             ];

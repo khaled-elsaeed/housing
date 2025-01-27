@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use App\Models\User;
 use App\Models\City;
 use App\Models\Country;
@@ -14,54 +16,115 @@ use App\Models\Parents;
 use App\Models\Sibling;
 use App\Models\Invoice;
 use App\Models\EmergencyContact;
-use Illuminate\Support\Facades\Log;
-use Exception;
 use App\Models\Program;
 use App\Models\Governorate;
 use App\Models\Notification;
-use Illuminate\Support\Facades\Storage;
+use Exception;
 
 class StudentProfileController extends Controller
 {
-   /**
- * Show the student's profile page.
- *
- * @return \Illuminate\View\View
- */
-public function index()
-{
-    try {
-        $user = Auth::user();
-        $governorates = Governorate::all();
-        $programs = Program::all();
-        $countries = Country::all();
-        $faculties = Faculty::all();
-        $invoices = $user->reservations->flatMap(function ($reservation) {
-            return $reservation->invoice;
-        });
+    /**
+     * Show the student's profile page.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function index()
+    {
+        try {
+            $user = Auth::user();
+            $governorates = Governorate::all();
+            $programs = Program::all();
+            $countries = Country::all();
+            $faculties = Faculty::all();
 
-        // Log reservations
-        $reservations = $user->reservations;
-       
-        return view('student.profile', compact(
-            'user',
-            'reservations',
-            'governorates',
-            'programs',
-            'countries',
-            'faculties',
-            'invoices'
-        ));
-    } catch (Exception $e) {
-        Log::error('Error fetching data for student profile: ' . $e->getMessage(), [
-            'trace' => $e->getTraceAsString(),
-        ]);
+            // Get reservations and invoices
+            $reservations = $this->getUserReservations($user);
+            $invoices = $this->getUserInvoices($user);
 
-        return response()->view('errors.500', [], 500);
+            return view('student.profile', compact(
+                'user',
+                'reservations',
+                'governorates',
+                'programs',
+                'countries',
+                'faculties',
+                'invoices'
+            ));
+        } catch (Exception $e) {
+            Log::error('Error fetching data for student profile: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->view('errors.500', [], 500);
+        }
     }
-}
+
+    /**
+     * Get the user's reservations.
+     *
+     * @param User $user
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    protected function getUserReservations(User $user)
+    {
+        try {
+            $reservations = $user->reservations()->with('invoice')->get();
+
+            // Log reservations for debugging
+            Log::debug('Fetched reservations for user:', [
+                'user_id' => $user->id,
+                'reservations_count' => $reservations->count(),
+                'reservations' => $reservations->toArray(), // Log reservation details
+            ]);
+
+            return $reservations;
+        } catch (Exception $e) {
+            Log::error('Error fetching reservations: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'exception' => $e,
+            ]);
+
+            return collect(); // Return an empty collection in case of error
+        }
+    }
+
+    /**
+     * Get the user's invoices.
+     *
+     * @param User $user
+     * @return \Illuminate\Support\Collection
+     */
+    protected function getUserInvoices(User $user)
+    {
+        try {
+            // Get invoices through reservations with eager loading
+            $invoices = Invoice::whereHas('reservation', function($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })->with(['reservation'])->get();
+
+            // Log for debugging
+            Log::debug('Fetched invoices for user:', [
+                'user_id' => $user->id,
+                'invoices_count' => $invoices->count(),
+                'invoices' => $invoices->toArray()
+            ]);
+
+            return $invoices;
+        } catch (Exception $e) {
+            Log::error('Error fetching invoices: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'exception' => $e,
+            ]);
+
+            return collect();
+        }
+    }
+
     /**
      * Update the student's basic profile information.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request)
     {
@@ -100,6 +163,9 @@ public function index()
 
     /**
      * Update the student's profile picture.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function updateProfilePicture(Request $request)
     {
@@ -140,6 +206,8 @@ public function index()
 
     /**
      * Delete the student's profile picture.
+     *
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function deleteProfilePicture()
     {

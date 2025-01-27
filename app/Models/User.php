@@ -93,27 +93,44 @@ public function universityArchive()
     }
 
 
-        public function reservations()
+    public function reservations()
     {
         return $this->hasMany(Reservation::class);
     }
 
-    /**
-     * Get the user's most recent completed or active long-term reservation for a specific academic year.
-     *
-     * @param int $academicYearId The ID of the academic year to filter reservations.
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function lastReservation($academicYearId)
+    public function invoices()
     {
-        return $this->hasOne(Reservation::class)
-            ->where('academic_term_id', $academicYearId)
-            ->whereIn('status', ['completed', 'active'])
-            ->where('period_type', 'long_term')
-            ->latest('created_at')
-            ->first(); // Resolve and return the actual model
+        return $this->hasManyThrough(Invoice::class, Reservation::class);
     }
-    
+
+   /**
+ * Get the user's most recent completed or active long-term reservation for the same academic year as the provided academic term.
+ *
+ * @param int $academicTermId The ID of the academic term to filter reservations.
+ * @return \App\Models\Reservation|null
+ */
+public function lastReservation($academicTermId)
+{
+    // Find the academic term by ID
+    $academicTerm = AcademicTerm::find($academicTermId);
+
+    if (!$academicTerm) {
+        return null; // Return null if the academic term is not found
+    }
+
+    // Get all academic terms in the same academic year
+    $academicYear = $academicTerm->academic_year;
+
+    // Get the most recent reservation for the user in the same academic year
+    return $this->reservations()
+        ->whereHas('academicTerm', function ($query) use ($academicYear) {
+            $query->where('academic_year', $academicYear);
+        })
+        ->whereIn('status', ['completed', 'active'])
+        ->where('period_type', 'long_term')
+        ->latest('created_at')
+        ->first();
+}
 
     public function parent(){
         return $this->hasOne(Parents::class);
@@ -189,19 +206,33 @@ public function emergencyContact()
     }
 
     public function getLocationDetails()
-    {
-        $room = $this->reservations->room;
-    
-        $roomNumber = $room->number;
-        $apartmentNumber = $room->apartment->number;
-        $buildingNumber = $room->apartment->building->number;
-    
+{
+    // Retrieve the active reservation for the current object
+    $activeReservation = $this->reservations()
+        ->where('status', 'active')
+        ->first();
+
+    // Check if there is an active reservation
+    if (!$activeReservation) {
         return [
-            'building' => $buildingNumber,
-            'apartment' => $apartmentNumber,
-            'room' => $roomNumber
+            'error' => trans('No active reservation found.')
         ];
     }
+
+    // Access room and related location details
+    $room = $activeReservation->room;
+    $roomNumber = $room->number;
+    $apartmentNumber = $room->apartment->number;
+    $buildingNumber = $room->apartment->building->number;
+
+    // Return the structured location data
+    return [
+        'building' => $buildingNumber,
+        'apartment' => $apartmentNumber,
+        'room' => $roomNumber,
+    ];
+}
+
 
  
     

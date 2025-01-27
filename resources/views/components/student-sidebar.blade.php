@@ -27,13 +27,12 @@
                 </a>
             </li>
 
-
             <li>
-                <a href="{{ route('student.profile') }}">
-                    <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="profile">
-                    <span>@lang('My Profile')</span>
-                </a>
-            </li>
+    <a href="{{ route('student.profile') }}" class="{{ request()->routeIs('student.profile*') ? 'active' : '' }}">
+        <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="profile">
+        <span>@lang('My Profile')</span>
+    </a>
+</li>
         </ul>
     </div>
     <!-- End Navigationbar -->

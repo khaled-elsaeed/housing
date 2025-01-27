@@ -181,14 +181,7 @@ $(document).ready(function () {
                         return translation || data;
                     }
                 },{data: "admin_approval",name:"admin_approval"},
-                {
-                    data: "payment_status",
-                    name: "payment_status",
-                    searchable: true,
-                    render: function (data) {
-                        return getTranslation("payment_status." + data) || data;
-                    },
-                },
+            
                 { data: "actions", name: "actions", orderable: false, searchable: false },
             ],
             language: lang === "ar"
@@ -240,7 +233,6 @@ $(document).ready(function () {
 
     fetchStats();
 
-    // Modify modal and other UI components similarly
     function showInvoiceDetails(invoiceId) {
         const modalBody = $("#applicantDetailsModal .modal-body");
         const labels = {
@@ -257,23 +249,25 @@ $(document).ready(function () {
             reject: getTranslation("reject"),
             noDetails: getTranslation("noDetails"),
             loadingFailed: getTranslation("loadingFailed"),
+            paidAmount: getTranslation("paidAmount"),
         };
     
-        const textAlignClass = lang === "ar" ? "text-end" : "text-start";
-        const justifyClass = lang === "ar" ? "justify-content-end" : "justify-content-start";
-    
         // Show loading spinner
-        modalBody.html(
-            `<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>`
-        );
+        modalBody.html(`
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        `);
     
-        // Fetch payment details
+        // Fetch invoice details
         $.ajax({
             url: window.routes.fetchInvoiceDetails.replace(":id", invoiceId),
             method: "GET",
             success: function (data) {
                 if (!data.invoiceDetails || data.invoiceDetails.length === 0) {
-                    modalBody.html(`<p class="text-center text-muted">${labels.noDetails}</p>`);
+                    modalBody.html(`<p class="text-center text-muted py-5">${labels.noDetails}</p>`);
                     return;
                 }
     
@@ -283,18 +277,22 @@ $(document).ready(function () {
     
                 // Generate student details card
                 const studentDetailsHtml = `
-                    <div class="card shadow-sm border-secondary mb-4">
+                    <div class="card mb-4 shadow-sm border-primary">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="card-title mb-0">${labels.studentDetails}</h5>
+                        </div>
                         <div class="card-body">
-                            <h4 class="card-title text-primary ${textAlignClass}">${labels.studentDetails}</h4>
-                            <div class="d-flex flex-wrap gap-4 ${justifyClass}">
+                            <div class="row g-3">
                                 ${["name", "faculty", "building", "apartment", "room"]
                                     .map(
                                         (key) => `
-                                        <div class="p-2 border border-secondary text-center flex-grow-1">
-                                            <strong class="text-primary">${labels[key]}:</strong>
-                                            <span class="text-primary">${studentDetails[key] || "N/A"}</span>
+                                    <div class="col-md-4">
+                                        <div class="p-3 border rounded bg-light">
+                                            <small class="text-muted">${labels[key]}</small>
+                                            <p class="mb-0 fw-bold">${studentDetails[key] || "N/A"}</p>
                                         </div>
-                                    `
+                                    </div>
+                                `
                                     )
                                     .join("")}
                             </div>
@@ -304,21 +302,33 @@ $(document).ready(function () {
     
                 // Generate invoice details card
                 const invoiceDetailsHtml = `
-                    <div class="card shadow-sm border-primary mb-4">
+                    <div class="card mb-4 shadow-sm border-secondary">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="card-title mb-0">Invoice Details</h5>
+                        </div>
                         <div class="card-body">
-                            <h4 class="card-title text-primary ${textAlignClass}">${labels.invoiceDetails}</h4>
-                            <ul class="list-group">
-                                ${invoiceDetails
-                                    .map(
-                                        (detail) => `
-                                        <li class="list-group-item d-flex justify-content-between">
-                                            <span><strong>${detail.category}:</strong> ${detail.description || "N/A"}</span>
-                                            <span class="text-primary">${detail.amount}</span>
-                                        </li>
-                                    `
-                                    )
-                                    .join("")}
-                            </ul>
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Category</th>
+                                            <th class="text-end">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${invoiceDetails
+                                            .map(
+                                                (detail) => `
+                                            <tr>
+                                                <td>${detail.category}</td>
+                                                <td class="fs-5 text-end">${parseFloat(detail.amount).toLocaleString()}</td>
+                                            </tr>
+                                        `
+                                            )
+                                            .join("")}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -327,20 +337,26 @@ $(document).ready(function () {
                 let paymentImagesHtml = '';
                 if (media.length > 0) {
                     paymentImagesHtml = `
-                        <div class="card shadow-sm border-primary">
+                        <div class="card mb-4 shadow-sm border-primary">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="card-title mb-0">${labels.uploadedPictures}</h5>
+                            </div>
                             <div class="card-body">
-                                <h4 class="card-title text-primary ${textAlignClass}">${labels.uploadedPictures}</h4>
                                 <div class="row g-3">
                                     ${media
                                         .map(
                                             (doc) => `
-                                        <div class="col-12 col-md-6">
-                                            <div class="image-container">
-                                                <img src="${doc.payment_url}" alt="Payment" class="img-fluid border rounded shadow-sm w-100" style="height: 200px; object-fit: cover;" onclick="window.open('${doc.payment_url}', '_blank')" />
-                                            </div>
-                                            <div class="d-flex ${justifyClass} mt-2">
-                                                <a href="${doc.payment_url}" target="_blank" class="btn btn-outline-primary me-2">${labels.view}</a>
-                                                <a href="${doc.payment_url}" download class="btn btn-outline-success">${labels.download}</a>
+                                        <div class="col-md-4">
+                                            <div class="card border-0 shadow-sm">
+                                                <img src="${doc.payment_url}" alt="Payment" class="card-img-top" style="height: 150px; object-fit: cover;" />
+                                                <div class="card-body text-center">
+                                                    <a href="${doc.payment_url}" target="_blank" class="btn btn-sm btn-outline-primary me-2">
+                                                        <i class="fa fa-eye"></i> ${labels.view}
+                                                    </a>
+                                                    <a href="${doc.payment_url}" download class="btn btn-sm btn-outline-success">
+                                                        <i class="fa fa-download"></i> ${labels.download}
+                                                    </a>
+                                                </div>
                                             </div>
                                         </div>
                                     `
@@ -351,37 +367,130 @@ $(document).ready(function () {
                         </div>
                     `;
                 } else {
-                    paymentImagesHtml = `<p class="text-center text-muted">${labels.noDetails}</p>`;
+                    paymentImagesHtml = `<p class="text-center text-muted py-3">${labels.noDetails}</p>`;
                 }
     
-                // Generate accept/reject buttons (assuming you will add logic for the invoice status)
+                // Generate amount paid input card
+                const amountPaidHtml = `
+                    <div class="card mb-4 shadow-sm border-primary">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="card-title mb-0">${labels.paidAmount}</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="amountPaid" class="form-label">${labels.paidAmount}</label>
+                                    <input type="text" class="form-control border border-primary" id="amountPaid" placeholder="Enter amount (e.g., 1,000.00)" />
+                                    <small class="text-muted">Enter the amount paid with up to 2 decimal places.</small>
+                                    <div class="invalid-feedback">Please enter a valid amount (e.g., 1,000.00).</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+    
+                // Generate accept/reject buttons
                 const statusButtonsHtml = `
-                    <div class="d-flex justify-content-center mt-4">
-                        <button id="accept-btn" class="btn btn-success me-3" data-invoice-id="${data.invoice_id}" data-status="accepted">${labels.accept}</button>
-                        <button id="reject-btn" class="btn btn-danger" data-invoice-id="${data.invoice_id}" data-status="rejected">${labels.reject}</button>
+                    <div class="d-flex justify-content-center gap-3 mt-4">
+                        <button id="accept-btn" class="btn btn-success" data-invoice-id="${data.invoice_id}" data-status="accepted">
+                            <i class="fa fa-check-circle me-2"></i> ${labels.accept}
+                        </button>
+                        <button id="reject-btn" class="btn btn-danger" data-invoice-id="${data.invoice_id}" data-status="rejected">
+                            <i class="fa fa-times-circle me-2"></i> ${labels.reject}
+                        </button>
                     </div>
                 `;
     
                 // Combine all sections into the modal body
                 modalBody.html(`
                     <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-12">${studentDetailsHtml}</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">${invoiceDetailsHtml}</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">${paymentImagesHtml}</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">${statusButtonsHtml}</div>
-                        </div>
+                        ${studentDetailsHtml}
+                        ${invoiceDetailsHtml}
+                        ${paymentImagesHtml}
+                        ${amountPaidHtml}
+                        ${statusButtonsHtml}
                     </div>
                 `);
+    
+                // Function to format input with commas
+                function formatAmountInput(input) {
+                    // Remove non-numeric characters except decimal point
+                    let value = input.replace(/[^0-9.]/g, "");
+    
+                    // Split into whole and decimal parts
+                    let parts = value.split(".");
+                    let wholePart = parts[0];
+                    let decimalPart = parts.length > 1 ? "." + parts[1] : "";
+    
+                    // Add commas as thousand separators
+                    wholePart = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    
+                    // Combine and update the input value
+                    input = wholePart + decimalPart;
+                    return input;
+                }
+    
+                // Validate and format amount paid input
+                $("#amountPaid").on("input", function () {
+                    const input = $(this);
+                    let value = input.val();
+    
+                    // Format the input with commas
+                    value = formatAmountInput(value);
+                    input.val(value);
+    
+                    // Validate the amount
+                    const regex = /^\d{1,3}(,\d{3})*(\.\d{1,2})?$/; // Allows commas and up to 2 decimal places
+                    if (regex.test(value)) {
+                        input.removeClass("is-invalid").addClass("is-valid");
+                    } else {
+                        input.removeClass("is-valid").addClass("is-invalid");
+                    }
+                });
+    
+                // Add event listener for the "Accept" button
+                $("#accept-btn").on("click", function () {
+                    const amountPaid = $("#amountPaid").val().replace(/,/g, ""); // Remove commas for validation
+                    if (!amountPaid || !/^\d+(\.\d{1,2})?$/.test(amountPaid)) {
+                        $("#amountPaid").addClass("is-invalid");
+                        swal({
+                            type: "error",
+                            title: "Invalid Amount",
+                            text: "Please enter a valid amount with up to 2 decimal places.",
+                        });
+                        return;
+                    }
+    
+                    swal({
+                        title: "Are you sure?",
+                        text: "You are about to accept this invoice.",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: labels.accept,
+                        cancelButtonText: "Cancel",
+                    }).then(() => {
+                            updatePaymentStatus(data.invoice_id, "accepted", parseFloat(amountPaid).toFixed(2));
+                        
+                    });
+                });
+    
+                // Add event listener for the "Reject" button
+                $("#reject-btn").on("click", function () {
+                    swal({
+                        title: "Are you sure?",
+                        text: "You are about to reject this invoice.",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: labels.reject,
+                        cancelButtonText: "Cancel",
+                    }).then(() => {
+                            updatePaymentStatus(data.invoice_id, "rejected");
+                        
+                    });
+                });
             },
             error: function () {
-                modalBody.html(`<p class="text-center text-danger">${labels.loadingFailed}</p>`);
+                modalBody.html(`<p class="text-center text-danger py-5">${labels.loadingFailed}</p>`);
             },
         });
     
@@ -389,51 +498,42 @@ $(document).ready(function () {
         $("#applicantDetailsModal").modal("show");
     }
     
-    
-
-    function updatePaymentStatus(paymentId, status) {
-        // Get CSRF token from meta tag
+    function updatePaymentStatus(paymentId, status, paidAmount = null) {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
-
+    
         $.ajax({
-            url: window.routes.updateInvoiceStatus.replace(":paymentId", paymentId), // Correct route
+            url: window.routes.updateInvoiceStatus.replace(":paymentId", paymentId),
             method: "POST",
             data: {
-                _token: csrfToken, // CSRF token from meta tag
+                _token: csrfToken,
                 status: status,
+                paid_amount: paidAmount,
             },
             success: function (response) {
-                alert(response.message);
-
-                // Update the modal UI based on status
-                if (status === "accepted") {
-                    $("#applicantDetailsModal .modal-body").prepend('<div class="alert alert-success">Payment Status: Accepted</div>');
-                } else {
-                    $("#applicantDetailsModal .modal-body").prepend('<div class="alert alert-danger">Payment Status: Rejected</div>');
-                }
-
-                // Disable buttons after status change
-                $("#accept-btn").prop("disabled", true);
-                $("#reject-btn").prop("disabled", true);
-                window.location.reload();
+                swal({
+                    type: "success",
+                    title: "Success",
+                    text: response.message,
+                }).then(() => {
+                    if (status === "accepted") {
+                        $("#applicantDetailsModal .modal-body").prepend('<div class="alert alert-success">Payment Status: Accepted</div>');
+                    } else {
+                        $("#applicantDetailsModal .modal-body").prepend('<div class="alert alert-danger">Payment Status: Rejected</div>');
+                    }
+                    $("#accept-btn").prop("disabled", true);
+                    $("#reject-btn").prop("disabled", true);
+                    window.location.reload();
+                });
             },
             error: function (xhr) {
-                alert("Error updating payment status: " + xhr.responseJSON.error);
+                swal({
+                    type: "error",
+                    title: "Error",
+                    text: "Error updating payment status: " + xhr.responseJSON.error,
+                });
             },
         });
     }
-
-    $(document).on("click", "#accept-btn", function () {
-        const paymentId = $(this).data("payment-id");
-        const status = $(this).data("status"); // "accepted"
-        updatePaymentStatus(paymentId, status);
-    });
-
-    $(document).on("click", "#reject-btn", function () {
-        const paymentId = $(this).data("payment-id");
-        const status = $(this).data("status"); // "rejected"
-        updatePaymentStatus(paymentId, status);
-    });
 
     $(document).on("click", "#details-btn", function () {
         const paymentId = $(this).data("invoice-id");

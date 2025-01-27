@@ -1,104 +1,133 @@
 @extends('layouts.admin')
-
 @section('title', __('Residents'))
-
 @section('links')
 <!-- DataTables CSS -->
 <link href="{{ asset('plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('plugins/datatables/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-
 <link href="{{ asset('css/custom-datatable.css') }}" rel="stylesheet" type="text/css" />
 @endsection
-
 @section('content')
+
 <!-- Start row -->
 <div class="row">
-    <!-- Start col -->
-    <div class="col-lg-12">
-        <!-- Start row -->
-        <div class="row">
-            <!-- Start col -->
-            <div class="col-lg-3 col-md-6 mb-2">
-                <div class="card m-b-30">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-5">
-                                <span class="action-icon badge badge-primary-inverse me-0">
-                                    <i class="feather icon-user"></i>
-                                </span>
-                            </div>
-                            <div class="col-7 text-end mt-2 mb-2">
-                                <h5 class="card-title font-14">@lang('Total Residents')</h5>
-                                <h4 id="totalResidents">
-                                    <!-- Small loading spinner for Residents (inline) -->
-                                    <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
-                                        <span class="visually-hidden">@lang('Loading...')</span>
-                                    </div>
-                                </h4>
-                            </div>
+      <!-- Students Card -->
+      <div class="col-lg-3 col-md-6 mb-2">
+         <div class="card m-b-30">
+            <div class="card-body">
+               <div class="row align-items-center">
+                  <div class="col-7 text-start  mt-2 mb-2">
+                     <h5 class="card-title font-14">@lang('Total Residents')</h5>
+                     <h4 class="mb-0" id="totalResidents">
+                        <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                           <span class="visually-hidden">@lang('Loading...')</span>
                         </div>
-                    </div>
-                </div>
+                     </h4>
+                  </div>
+                  <div class="col-5 text-end">
+                  <span class="action-icon badge badge-primary rounded-circle p-1 d-inline-flex align-items-center justify-content-center">
+                     <i class="fa fa-users" aria-hidden="true" style="color: white;"></i>
+                  </span>
+                  </div>
+               </div>
             </div>
-            <!-- End col -->
-
-            <!-- Start col -->
-            <div class="col-lg-3 col-md-6 mb-2">
-                <div class="card m-b-30">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-5">
-                                <span class="action-icon badge badge-success-inverse me-0">
-                                    <i class="feather icon-award"></i>
-                                </span>
-                            </div>
-                            <div class="col-7 text-end mt-2 mb-2">
-                                <h5 class="card-title font-14">@lang('Male Residents')</h5>
-                                <h4 id="totalMaleCount">
-                                    <!-- Small loading spinner for Male Count (inline) -->
-                                    <div class="spinner-border spinner-border-sm text-success d-inline-block" role="status">
-                                        <span class="visually-hidden">@lang('Loading...')</span>
-                                    </div>
-                                </h4>
-                            </div>
+            <div class="card-footer">
+               <div class="row align-items-center">
+                  <div class="col-8">
+                     <div class="font-13" id="lastUpdateOverall">
+                        <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                           <span class="visually-hidden">@lang('Loading...')</span>
                         </div>
-                    </div>
-                </div>
+                     </div>
+                  </div>
+                  <div class="col-4 text-end ">
+                     <span class="badge badge-secondary">
+                        <i class="feather icon-info"></i>
+                     </span>
+                  </div>
+               </div>
             </div>
-            <!-- End col -->
-
-            <!-- Start col -->
-            <div class="col-lg-3 col-md-6 mb-2">
-                <div class="card m-b-30">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-5">
-                                <span class="action-icon badge badge-warning-inverse me-0">
-                                    <i class="feather icon-briefcase"></i>
-                                </span>
-                            </div>
-                            <div class="col-7 text-end mt-2 mb-2">
-                                <h5 class="card-title font-14">@lang('Female Residents')</h5>
-                                <h4 id="totalFemaleCount">
-                                    <!-- Small loading spinner for Female Count (inline) -->
-                                    <div class="spinner-border spinner-border-sm text-warning d-inline-block" role="status">
-                                        <span class="visually-hidden">@lang('Loading...')</span>
-                                    </div>
-                                </h4>
-                            </div>
+         </div>
+      </div>
+      <!-- Males Card -->
+      <div class="col-lg-3 col-md-6 mb-2">
+         <div class="card m-b-30">
+            <div class="card-body">
+               <div class="row align-items-center">
+                  <div class="col-7 text-start  mt-2 mb-2">
+                     <h5 class="card-title font-14">@lang('Males')</h5>
+                     <h4 class="mb-0" id="totalMaleCount">
+                        <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                           <span class="visually-hidden">@lang('Loading...')</span>
                         </div>
-                    </div>
-                </div>
+                     </h4>
+                  </div>
+                  <div class="col-5 text-end">
+                  <span class="action-icon badge badge-primary rounded-circle p-1 d-inline-flex align-items-center justify-content-center">
+                     <i class="fa fa-male" aria-hidden="true" style="color: white;"></i>
+                  </span>
+                  </div>
+               </div>
             </div>
-            <!-- End col -->
-        </div>
-        <!-- End row -->
-    </div>
-    <!-- End col -->
-</div>
-<!-- End row -->
-
+            <div class="card-footer">
+               <div class="row align-items-center">
+                  <div class="col-8">
+                     <div class="font-13" id="lastUpdateMaleResidents">
+                        <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                           <span class="visually-hidden">@lang('Loading...')</span>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-4 text-end">
+                     <span class="badge badge-secondary">
+                        <i class="feather icon-info"></i>
+                     </span>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- Females Card -->
+      <div class="col-lg-3 col-md-6 mb-2">
+         <div class="card m-b-30">
+            <div class="card-body">
+               <div class="row align-items-center">
+                  <div class="col-7 text-start  mt-2 mb-2">
+                     <h5 class="card-title font-14">@lang('Females')</h5>
+                     <h4 class="mb-0" id="totalFemaleCount">
+                        <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                           <span class="visually-hidden">@lang('Loading...')</span>
+                        </div>
+                     </h4>
+                  </div>
+                  <div class="col-5 text-end">
+                  <span class="action-icon badge badge-primary rounded-circle p-1 d-inline-flex align-items-center justify-content-center">
+                     <i class="fa fa-female" aria-hidden="true" style="color: white;"></i>
+                  </span>
+                  </div>
+               </div>
+            </div>
+            <div class="card-footer">
+               <div class="row align-items-center">
+                  <div class="col-8">
+                     <div class="font-13" id="lastUpdateFemaleResidents">
+                        <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
+                           <span class="visually-hidden">@lang('Loading...')</span>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-4 text-end ">
+                     <span class="badge badge-secondary">
+                        <i class="feather icon-info"></i>
+                     </span>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+     
+   </div>
+   <!-- End row -->
 <!-- Header for Residents Table and Controls -->
 <div class="row">
    <div class="col-lg-12">
@@ -115,22 +144,36 @@
       </div>
    </div>
 </div>
-
 <!-- Search Filter -->
 <div class="collapse" id="collapseExample">
    <div class="search-filter-container card card-body">
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
-        <!-- Search Box with Icon on the Left -->
-        <div class="search-container d-flex align-items-center mb-3 mb-md-0">
-           <div class="search-icon-container">
-              <i class="fa fa-search search-icon"></i>
-           </div>
-           <input type="search" class="form-control search-input" id="searchBox" placeholder="@lang('Search residents')" />
-        </div>
+         <!-- Search Box with Icon on the Left -->
+         <div class="search-container d-flex align-items-center mb-3 mb-md-0">
+            <div class="search-icon-container">
+               <i class="fa fa-search search-icon"></i>
+            </div>
+            <input type="search" class="form-control search-input" id="searchBox" placeholder="@lang('Search residents')" />
+         </div>
+         <div class="d-flex flex-column flex-md-row filters-container">
+            <!-- Building Select -->
+            <select id="buildingFilter" class="form-select mb-2 mb-md-0" name="building_id">
+               <option value="">Select Building</option>
+               @foreach($buildings as $number)
+               <option value="{{ $number }}">@lang('Building'){{ $number }}</option>
+               @endforeach
+            </select>
+            <!-- Apartment Select -->
+            <select id="apartmentFilter" class="form-select mb-2 mb-md-0" name="apartment_id">
+               <option value="">Select Apartment</option>
+               @foreach($apartments as $number)
+               <option value="{{ $number }}">@lang('Apartment'){{ $number }}</option>
+               @endforeach
+            </select>
+         </div>
       </div>
    </div>
 </div>
-
 <!-- Residents Table -->
 <div class="row">
    <div class="col-lg-12">
@@ -145,17 +188,16 @@
                         <th>@lang('Location')</th>
                         <th>@lang('Faculty')</th>
                         <th>@lang('Mobile')</th>
-                        <th>@lang('Registration Date')</th>
                      </tr>
                   </thead>
-                  <tbody></tbody> <!-- Data will load via Ajax -->
+                  <tbody></tbody>
+                  <!-- Data will load via Ajax -->
                </table>
             </div>
          </div>
       </div>
    </div>
 </div>
-
 <!-- Resident Details Modal -->
 <div class="modal fade" id="residentDetailsModal" tabindex="-1" role="dialog" aria-labelledby="residentDetailsModalLabel" aria-hidden="true">
    <div class="modal-dialog" role="document">
@@ -200,9 +242,7 @@
       </div>
    </div>
 </div>
-
 @endsection
-
 @section('scripts')
 <!-- Datatable JS -->
 <script src="{{ asset('plugins/datatables/jquery.dataTables.min.js') }}?v={{ config('app.version') }}"></script>
@@ -211,7 +251,6 @@
 <script src="{{ asset('plugins/datatables/buttons.bootstrap4.min.js') }}?v={{ config('app.version') }}"></script>
 <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}?v={{ config('app.version') }}"></script>
 <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}?v={{ config('app.version') }}"></script>
-
 <script src="{{ asset('js/pages/residents.js') }}"></script>
 <script>
    window.routes = {
