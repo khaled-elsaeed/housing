@@ -291,47 +291,34 @@ class InvoiceController extends Controller
      * @param int $paymentId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updatePaymentStatus(Request $request, $paymentId)
+    public function updatePaymentStatus(Request $request, $invoiceId)
     {
         try {
             $validated = $request->validate([
                 'status' => 'required|in:accepted,rejected',
+                'paid_amount' => 'required'
             ]);
 
             $status = $validated['status'];
 
-            $payment = Payment::find($paymentId);
+            $invoice = Invoice::find($invoiceId);
 
-            if (!$payment) {
-                return response()->json(['error' => 'Payment not found'], 404);
+            if (!$invoiceId) {
+                return response()->json(['error' => 'Invoice not found'], 404);
             }
 
-            $payment->status = $status;
-            $payment->save();
-
-            $invoice = $payment->reservation->invoice;
-            if ($invoice) {
-                if ($status === 'accepted') {
-                    $invoice->status = 'paid';
-                    $invoice->save();
-                } elseif ($status === 'rejected') {
-                    $invoice->status = 'unpaid';
-                    $invoice->save();
-                }
-
-                Log::channel('access')->info('Invoice status updated', [
-                    'user_id' => optional($request->user())->id,
-                    'invoice_id' => $invoice->id,
-                    'new_status' => $status,
-                    'ip' => $request->ip(),
-                    'timestamp' => now(),
-                ]);
+            $invoice->admin_approval = $status;
+            if($status == 'accepted'){
+                $invoice->paid_amount = $validated['paid_amount'];
             }
+            
+            $invoice->save();
+
+            
             return response()->json([
                 'success' => true,
-                'message' => 'Payment status updated successfully',
+                'message' => 'inovice status updated successfully',
                 'status' => $status,
-                'payment_id' => $paymentId,
             ]);
         } catch (\Exception $e) {
             Log::error('Error updating payment status: ' . $e->getMessage(), ['exception' => $e]);

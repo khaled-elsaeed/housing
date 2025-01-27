@@ -15,6 +15,7 @@ class Invoice extends Model
         'reservation_id', 
         'amount', 
         'due_date', 
+        'paid_amount',
         'status', 
         'category',
         'media_id'
