@@ -47,9 +47,9 @@ class StudentReservationController extends Controller
             $reservationData = $this->prepareReservationData($request);
 
             // Handle long-term and short-term reservations separately
-            if ($reservationData['reservation_period_type'] === 'long_term') {
+            if ($reservationData['reservation_period_type'] === 'long') {
                 $result = $this->handleLongTermReservation($reservationData);
-            } else {
+            } elseif ($reservationData['reservation_period_type'] === 'short') {
                 $result = $this->handleShortTermReservation($reservationData);
             }
 
@@ -73,9 +73,9 @@ class StudentReservationController extends Controller
 private function handleLongTermReservation(array $reservationData)
 {
     return $this->reservationService->requestReservation(
-        reservationRequester: auth()->user(), // Correct parameter name
-        reservationPeriodType: $reservationData['reservation_period_type'], // Correct parameter name
-        academicTermId: $reservationData['reservation_academic_term_id'] // Correct parameter name
+        reservationRequester: auth()->user(), 
+        reservationPeriodType: $reservationData['reservation_period_type'], 
+        academicTermId: $reservationData['reservation_academic_term_id']
     );
 }
 
@@ -92,7 +92,7 @@ private function handleShortTermReservation(array $reservationData)
     return $this->reservationService->requestReservation(
         reservationRequester: auth()->user(), // Correct parameter name
         reservationPeriodType: $reservationData['reservation_period_type'], // Correct parameter name
-        shortTermDuration: $reservationData['short_term_duration'], // Correct parameter name
+        shortTermDuration: $reservationData['short_period_duration'], // Correct parameter name
         startDate: $reservationData['start_date'], // Correct parameter name
         endDate: $reservationData['end_date'] // Correct parameter name
     );
@@ -107,10 +107,10 @@ private function handleShortTermReservation(array $reservationData)
     private function validateReservationRequest(Request $request)
     {
         return Validator::make($request->all(), [
-            'reservation_period_type' => 'required|in:long_term,short_term',
-            'reservation_academic_term_id' => 'required_if:reservation_period_type,long_term|exists:academic_terms,id',
-            'short_term_duration' => 'required_if:reservation_period_type,short_term|in:day,week,month',
-            'start_date' => 'nullable|required_if:reservation_period_type,short_term|date',
+            'reservation_period_type' => 'required|in:long,short',
+            'reservation_academic_term_id' => 'required_if:reservation_period_type,long|exists:academic_terms,id',
+            'short_period_duration' => 'required_if:reservation_period_type,short|in:day,week,month',
+            'start_date' => 'nullable|required_if:reservation_period_type,short|date',
             'end_date' => 'nullable|date|after:start_date',
         ]);
     }
@@ -126,7 +126,7 @@ private function handleShortTermReservation(array $reservationData)
         return [
             'reservation_period_type' => $request->reservation_period_type,
             'reservation_academic_term_id' => $request->reservation_academic_term_id,
-            'short_term_duration' => $request->short_term_duration,
+            'short_period_duration' => $request->short_period_duration,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
         ];

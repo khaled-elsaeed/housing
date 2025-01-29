@@ -27,6 +27,7 @@ class User extends Authenticatable
         'activation_expires_at',
         'profile_completed',
         'status',
+        'balance',
     ];
 
     protected $hidden = [
@@ -127,7 +128,7 @@ public function lastReservation($academicTermId)
             $query->where('academic_year', $academicYear);
         })
         ->whereIn('status', ['completed', 'active'])
-        ->where('period_type', 'long_term')
+        ->where('period_type', 'long')
         ->latest('created_at')
         ->first();
 }

@@ -38,9 +38,9 @@ use App\Http\Controllers\Admin\Invoice\InvoiceController;
 use App\Http\Controllers\Student\StudentMaintenanceController;
 use App\Http\Controllers\Student\StudentPermissionController;
 use App\Http\Controllers\Student\StudentProfileController;
-use App\Http\Controllers\LocalizationController;
+use App\Http\Controllers\App\LocalizationController;
 
-use App\Http\Controllers\CompleteProfileController;
+use App\Http\Controllers\student\StudentProfileCompleteController;
 
 use App\Http\Controllers\DataTableController;
 use App\Http\Controllers\Admin\Account\StudentAccountController;
@@ -241,8 +241,8 @@ Route::middleware(Localization::class)
     Route::POST('/student/emergency-info', [StudentProfileController::class, 'updateOrCreateEmergencyInfo'])->name('student.updateOrCreateEmergencyInfo');
 
 
-    Route::get('complete-profile', [CompleteProfileController::class, 'index'])->name('profile.complete');
-    Route::post('complete-profile/store', [CompleteProfileController::class, 'store'])->name('profile.store');
+    Route::get('complete-profile', [StudentProfileCompleteController::class, 'index'])->name('profile.complete');
+    Route::post('complete-profile/store', [StudentProfileCompleteController::class, 'store'])->name('profile.store');
 
     
 });
@@ -254,7 +254,7 @@ Route::post('/student/payment/upload', [StudentPaymentController::class, 'payInv
 Route::post('/student/invoice/detail', [StudentPaymentController::class, 'getInvoiceDetails'])->name('student.payment.info');
 Route::post('/student/invoice/add', [StudentPaymentController::class, 'addInvoice'])->name('student.payment.add');
 
-use App\Http\Controllers\UploadController;
+use App\Http\Controllers\App\UploadController;
 
 Route::post('upload', UploadController::class)->name('upload');
 

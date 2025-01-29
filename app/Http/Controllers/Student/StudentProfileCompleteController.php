@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Student;
 
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -12,7 +12,7 @@ use App\Models\Country;
 use App\Services\CompleteProfileService;
 use App\Http\Requests\CompleteProfileRequest;
 
-class CompleteProfileController extends Controller
+class StudentProfileCompleteController extends Controller
 {
 
     protected $completeProfileService;

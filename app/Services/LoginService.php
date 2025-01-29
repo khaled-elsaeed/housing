@@ -43,16 +43,26 @@ class LoginService
     {
         $checks = [];
     
+        $settingValue = Setting::where('key', 'under_maintenance')->value('value'); 
+
+        if ($settingValue === null) {
+            $settingValue = 1;  
+        }
+
+        if ($settingValue == 1) {
+            $checks['maintenance'] = trans('The resident login is currently unavailable. It will be available later');
+        }
+
         if ($user->isDeleted()) {
-            $checks['account'] = __('auth.login.account_deleted');
+            $checks['account'] = trans('Your account has been deleted');
         }
     
         if (!$user->isActive()) {
-            $checks['account'] = __('auth.login.account_inactive');
+            $checks['account'] = trans('Your account is inactive');
         }
     
         if (!$user->isVerified()) {
-            $checks['account'] = __('auth.login.account_not_verified');
+            $checks['account'] = trans('Your account is not verified');
         }
     
         // Return result array

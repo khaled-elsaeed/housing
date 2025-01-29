@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Services\LoginService;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Setting;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Crypt;
 
 class LoginController extends Controller
 {
@@ -35,9 +36,16 @@ class LoginController extends Controller
         $rateLimiterKey = 'login:' . $request->ip() . '|' . $request->input('identifier');
 
         if (RateLimiter::tooManyAttempts($rateLimiterKey, 5)) {
+            Log::channel('security')->alert('Suspicious login activity detected', [
+                'ip' => Crypt::encryptString($request->ip()),
+                'identifier' => $request->input('identifier'),
+                'user_agent' => Crypt::encryptString($request->header('User-Agent')),
+                'action' => 'suspicious_activity',
+            ]);
+
             return redirect()
                 ->route('login')
-                ->withErrors(['error' => __('auth.too_many_login_attempts')]);
+                ->withErrors(['error' => trans('Too many login attempts. Please try again later.')]);
         }
 
         $credentials = $request->only('identifier', 'password');
@@ -46,7 +54,14 @@ class LoginController extends Controller
 
         if (!$user) {
             RateLimiter::hit($rateLimiterKey);
-            return back()->withErrors(['credentials' => __('auth.login.user_not_found')]);
+            Log::channel('security')->warning('User not found', [
+                'ip' => Crypt::encryptString($request->ip()),
+                'identifier' => $credentials['identifier'],
+                'user_agent' => Crypt::encryptString($request->header('User-Agent')),
+                'action' => 'user_not_found',
+            ]);
+
+            return back()->withErrors(['credentials' => trans('User not found.')]);
         }
 
         if (Hash::check($credentials['password'], $user->password)) {
@@ -54,27 +69,26 @@ class LoginController extends Controller
             $request->session()->regenerate();
             RateLimiter::clear($rateLimiterKey);
 
+            Log::channel('security')->info('User logged in successfully', [
+                'user_id' => $user->id,
+                'ip' => Crypt::encryptString($request->ip()),
+                'user_agent' => Crypt::encryptString($request->header('User-Agent')),
+                'session_id' => $request->session()->getId(),
+                'action' => 'login_success',
+            ]);
+
             if ($this->loginService->isAdmin($user)) {
                 return redirect()->route('admin.home');
             }
 
             if ($this->loginService->isResident($user)) {
-                $settingValue = Setting::where('key', 'under_maintenance')->value('value'); 
-
-                if ($settingValue === null) {
-                    $settingValue = 1;  
-                }
-
-                if ($settingValue == 1) {
-                    return back()->withErrors(['error' => 'Resident login is currently unavailable. It will be available later.']);
-                }
                 $result = $this->loginService->handleStudentAfterLogin($user);
                 
                 if ($result['status'] === 'error') {
                     return back()->withErrors($result['checks']);
                 }
                 
-                if(!$user->profile_completed){
+                if (!$user->profile_completed) {
                     return redirect()->route('profile.complete');
                 }
                 
@@ -85,6 +99,13 @@ class LoginController extends Controller
         }
 
         RateLimiter::hit($rateLimiterKey);
-        return back()->withErrors(['credentials' => __('auth.login.invalid_credentials')]);
+        Log::channel('security')->warning('Invalid credentials', [
+            'ip' => Crypt::encryptString($request->ip()),
+            'user_id' => $user->id,
+            'user_agent' => Crypt::encryptString($request->header('User-Agent')),
+            'action' => 'invalid_password',
+        ]);
+
+        return back()->withErrors(['credentials' => trans('Invalid credentials.')]);
     }
 }

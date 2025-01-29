@@ -347,6 +347,26 @@
                                         <input type="text" class="form-control" id="parent_living_abroad" name="parent_living_abroad" 
                                             value="{{ old('parent_living_abroad', $user->parent->living_abroad == 1 ? 'Yes' : 'No') }}" disabled>
                                     </div>
+                                    <!-- Living With parents -->
+                                    <div class="col-md-6">
+                                        <label for="parent_living_with">@lang('Living With parents')</label>
+                                        <input type="text" class="form-control" id="parent_living_with" name="parent_living_with" 
+                                            value="{{ old('parent_living_with', $user->parent->living_with == 1 ? 'Yes' : 'No') }}" disabled>
+                                    </div>
+
+                                    @if($user->parent->living_with == 0) <!-- Only show if living_with is 0 (no) -->
+                                        <div class="col-md-6">
+                                            <label for="parent_city">@lang('Parent City')</label>
+                                            <input type="text" class="form-control" id="parent_city" name="parent_city" 
+                                                value="{{ old('parent_city', $user->parent->city ?? '') }}">
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <label for="parent_governorate">@lang('Parent Governorate')</label>
+                                            <input type="text" class="form-control" id="parent_governorate" name="parent_governorate" 
+                                                value="{{ old('parent_governorate', $user->parent->governorate ?? '') }}">
+                                        </div>
+                                    @endif
                                 </div>
                             </form>
                             @else
@@ -545,7 +565,7 @@
                                     <div class="flex-grow-1">
                                         <h6 class="text-uppercase text-muted mb-1" style="font-size: 11px; letter-spacing: 0.5px;">Period</h6>
                                         <div class="font-weight-bold" style="font-size: 0.95rem;">
-                                            @if($reservation->period_type === 'long_term')
+                                            @if($reservation->period_type === 'long')
                                                 {{ optional($reservation->academicTerm)->name. ' - '.optional($reservation->academicTerm)->academic_year ?? 'Not specified' }}
                                             @else
                                                 <span class="d-flex align-items-center">

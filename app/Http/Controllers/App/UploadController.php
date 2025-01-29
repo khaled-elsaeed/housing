@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\App;
 
+use App\Http\Controllers\Controller;
 use App\Contracts\UploadServiceContract;
 use App\Http\Requests\UploadRequest;
 use App\Models\Media;

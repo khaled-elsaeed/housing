@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('category'); 
             $table->decimal('amount', 10, 2);
             $table->text('description')->nullable(); 
+            $table->enum('status',['paid','unpaid'])->default('unpaid');
             $table->timestamps();
         });
     

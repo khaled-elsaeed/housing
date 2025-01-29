@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\RegisterService;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Crypt;
 
 class RegisterController extends Controller
 {
@@ -24,6 +26,7 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         try {
+            // Validate the request
             $validated = $request->validate([
                 'password' => 'required|string|min:8',
                 'national_id' => [
@@ -33,17 +36,43 @@ class RegisterController extends Controller
                 ],
             ]);
 
+            // Log registration attempt
+            Log::channel('security')->info('User registration attempt', [
+                'national_id' => Crypt::encryptString($validated['national_id']), 
+                'ip' => Crypt::encryptString($request->ip()),
+                'user_agent' => Crypt::encryptString($request->header('User-Agent')),
+                'action' => 'registration_attempt',
+            ]);
+
+            // Register the user
             $this->registerService->registerUser([
                 'password' => $validated['password'],
                 'national_id' => $validated['national_id'],
             ]);
 
-            session()->flash('success', __('auth.register.user_registered_successfully'));
+            // Log successful registration
+            Log::channel('security')->info('User registered successfully', [
+                'national_id' => Crypt::encryptString($validated['national_id']),
+                'ip' => Crypt::encryptString($request->ip()),
+                'user_agent' => Crypt::encryptString($request->header('User-Agent')),
+                'action' => 'registration_success',
+            ]);
+
+            // Flash success message and redirect
+            session()->flash('success', trans('User registered successfully'));
             return redirect()
                 ->route('login')
                 ->withInput();
 
         } catch (ValidationException $e) {
+            // Log validation errors
+            Log::channel('security')->warning('User registration validation failed', [
+                'errors' => $e->errors(),
+                'ip' => Crypt::encryptString($request->ip()),
+                'user_agent' => Crypt::encryptString($request->header('User-Agent')),
+                'action' => 'registration_validation_failed',
+            ]);
+
             return back()
                 ->withErrors($e->errors())
                 ->withInput();

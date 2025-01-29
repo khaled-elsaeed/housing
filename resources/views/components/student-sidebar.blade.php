@@ -20,12 +20,12 @@
                 </a>
             </li>
 
-            <li>
+            <!-- <li>
                 <a href="{{ route('student.maintenance.form') }}">
                     <img src="{{ asset('images/svg-icon/components.svg') }}" class="img-fluid" alt="maintenance">
                     <span>@lang('Maintenance')</span>
                 </a>
-            </li>
+            </li> -->
 
             <li>
     <a href="{{ route('student.profile') }}" class="{{ request()->routeIs('student.profile*') ? 'active' : '' }}">

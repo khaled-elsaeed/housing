@@ -8,31 +8,24 @@ class UserActivity extends Model
 {
     protected $fillable = [
         'admin_id',
-        'user_id', 
-        'activity_type', 
-        'description'
+        'user_id',
+        'activity_type',
+        'description',
     ];
 
+    /**
+     * Get the user associated with the activity.
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Method to log a new activity
-    public static function logActivity($adminId,$userId, $activity_type, $description)
+    /**
+     * Get the admin associated with the activity.
+     */
+    public function admin()
     {
-        return self::create([
-            'admin_id' => $adminId,
-            'user_id' => $userId,
-            'activity_type' => $activity_type,
-            'description' => $description
-        ]);
-    }
-
-    // Scope to get recent activities
-    public function scopeRecent($query, $limit = 5)
-    {
-        return $query->orderBy('created_at', 'desc')
-                     ->limit($limit);
+        return $this->belongsTo(User::class, 'admin_id');
     }
 }

@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('invoices', function (Blueprint $table) {
-            $table->enum('admin_approval',['pending','accepted','rejected'])->default('pending');
-            $table->enum('paid_status', ['pending', 'partial_paid', 'full_paid'])->default('pending');
+            $table->text('notes')->nullable();
         });
     }
 

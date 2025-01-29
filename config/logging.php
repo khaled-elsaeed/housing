@@ -127,12 +127,13 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
-        'access' => [
-        'driver' => 'daily',
-        'path' => storage_path('logs/access.log'),
-        'level' => 'info',
-        'formatter' => \Monolog\Formatter\JsonFormatter::class,
-        'days' => 30,
+
+        'security' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/security/security.log'),
+            'level' => 'info',
+            'days' => 30,
+            'formatter' => \Monolog\Formatter\JsonFormatter::class,
         ],
 
     ],

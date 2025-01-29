@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('invoices', function (Blueprint $table) {
-            $table->enum('admin_approval',['pending','accepted','rejected'])->default('pending');
-            $table->enum('paid_status', ['pending', 'partial_paid', 'full_paid'])->default('pending');
+        Schema::table('payments', function (Blueprint $table) {
+            // Add rank column
+            $table->unsignedInteger('rank')->nullable()->after('status'); // Adjust the position as needed
         });
     }
 
@@ -23,7 +23,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('invoices', function (Blueprint $table) {
-            //
+
+            // Drop rank and image_path columns
+            $table->dropColumn('rank');
         });
     }
 };

@@ -170,7 +170,7 @@
             </div>
          </div>
          <!-- End col -->
-
+   
          <!-- Start col - Accepted Payments -->
          <div class="col-lg-3 col-md-5 mb-2">
             <div class="card m-b-30">

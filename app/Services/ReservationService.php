@@ -135,7 +135,7 @@ class ReservationService
                         $this->createReservation(
                             $applicant,
                             $oldRoom,
-                            "long_term",
+                            "long",
                             $this->getCurrentAcademicTermId()
                         );
                     } else {
@@ -191,7 +191,7 @@ class ReservationService
             }
             $newReservation->period_type = $reservationPeriodType;
 
-            if ($reservationPeriodType === "short_term") {
+            if ($reservationPeriodType === "short") {
                 $newReservation->start_date = $startDate;
                 $newReservation->end_date = $endDate;
             }
@@ -229,13 +229,16 @@ class ReservationService
         string $reservationPeriodType,
         ?string $shortTermDuration = null
     ): void {
+
         $invoice = Invoice::create([
             "reservation_id" => $reservation->id,
             "status" => "unpaid",
         ]);
 
-        if ($reservationPeriodType === "long_term") {
-            $this->addLongTermInvoiceDetails($invoice);
+        $roomType = $reservation->room->type;
+
+        if ($reservationPeriodType === "long") {
+            $this->addLongTermInvoiceDetails($invoice,$roomType);
         } else {
             $this->addShortTermInvoiceDetails($invoice, $shortTermDuration);
         }
@@ -246,20 +249,62 @@ class ReservationService
      *
      * @param Invoice $invoice
      */
-    private function addLongTermInvoiceDetails(Invoice $invoice): void
-    {
+    private function addLongTermInvoiceDetails(Invoice $invoice, $roomType): void
+{
+    try {
+        Log::info('Adding long-term invoice details.', [
+            'invoice_id' => $invoice->id,
+            'room_type' => $roomType,
+        ]);
+
+        // Determine fee amount based on room type
+        $feeAmount = $roomType === 'single' ? 10000 : 8000;
+
+        // Add the base fee to the invoice
         InvoiceDetail::create([
             "invoice_id" => $invoice->id,
             "category" => "fee",
-            "amount" => 10000,
+            "amount" => $feeAmount,
         ]);
 
-        InvoiceDetail::create([
-            "invoice_id" => $invoice->id,
-            "category" => "insurance",
-            "amount" => 5000,
+        Log::info('Base fee added to invoice.', [
+            'invoice_id' => $invoice->id,
+            'amount' => $feeAmount,
         ]);
+
+        $user = $invoice->reservation->user;
+        $academicTerm = $invoice->reservation->academicTerm;
+
+        Log::info('Fetching user and academic term details.', [
+            'user_id' => $user->id,
+            'academic_term_id' => $academicTerm->id,
+        ]);
+
+        $lastReservation = $user->lastReservation($academicTerm->id - 1); 
+
+        if (!$lastReservation) {
+
+            InvoiceDetail::create([
+                "invoice_id" => $invoice->id,
+                "category" => "insurance",
+                "amount" => 5000,
+            ]);
+
+            Log::info('Insurance fee added to invoice.', [
+                'invoice_id' => $invoice->id,
+                'amount' => 5000,
+            ]);
+        }
+    } catch (\Exception $e) {
+        Log::error('Failed to add long-term invoice details.', [
+            'invoice_id' => $invoice->id ?? null,
+            'room_type' => $roomType,
+            'error_message' => $e->getMessage(),
+        ]);
+
+        throw new \Exception(trans('Failed to add long-term invoice details: ') . $e->getMessage());
     }
+}
 
     /**
      * Add short-term invoice details.
@@ -308,7 +353,7 @@ class ReservationService
      */
     public function requestReservation(
         User $reservationRequester,
-        string $reservationPeriodType = "long_term",
+        string $reservationPeriodType = "long",
         ?int $academicTermId = null,
         ?string $shortTermDuration = null,
         ?string $startDate = null,
@@ -320,7 +365,7 @@ class ReservationService
             if ($this->hasExistingReservation($reservationRequester, $academicTermId)) {
                 return [
                     "success" => false,
-                    "reason" => trans('You already have an active or upcoming reservation.'),
+                    "reason" => trans('You already have an active or upcoming reservation in this period.'),
                 ];
             }
 
@@ -332,11 +377,11 @@ class ReservationService
                 ];
             }
 
-            if ($reservationPeriodType === "long_term") {
+            if ($reservationPeriodType === "long") {
                 return $this->handleLongTermPeriodReservation($reservationRequester, $academicTermId);
             }
 
-            if ($reservationPeriodType === "short_term") {
+            if ($reservationPeriodType === "short") {
                 return $this->handleShortTermPeriodReservation(
                     $reservationRequester,
                     $academicTermId,
@@ -375,7 +420,7 @@ class ReservationService
                 $reservationRequester,
                 $academicTermId,
                 $reservationRequester->gender,
-                "long_term",
+                "long",
                 null,
                 null,
                 null
@@ -390,7 +435,7 @@ class ReservationService
         $createdReservation = $this->createReservation(
             $reservationRequester,
             Room::find($roomAvailabilityStatus['roomId']),
-            "long_term",
+            "long",
             $academicTermId
         );
 
@@ -421,7 +466,7 @@ class ReservationService
             $reservationRequester,
             $academicTermId,
             $reservationRequester->gender,
-            "short_term",
+            "short",
             $shortTermDuration,
             $startDate,
             $endDate
@@ -514,22 +559,20 @@ class ReservationService
 
             $activeAcademicTermId = $this->getCurrentAcademicTermId();
 
-            
-            
 
-                if($activeAcademicTermId === $academicTermId){
-                   
+            if($activeAcademicTermId === $academicTermId){
 
                 $existingReservationConflict = Reservation::where("room_id", $targetRoomId)
                     ->whereIn("status", ["active", "pending"])
                     ->where("academic_term_id", $activeAcademicTermId)
                     ->exists();
-                }else{
-                    $existingReservationConflict = Reservation::where('room_id',$targetRoomId)
-                    ->where("status",['upcoming'])
-                    ->where("academic_term_id", $activeAcademicTermId)
-                    ->exists();
-                }
+            }
+            else{
+                $existingReservationConflict = Reservation::where('room_id',$targetRoomId)
+                ->where("status",['upcoming'])
+                ->where("academic_term_id", $activeAcademicTermId)
+                ->exists();
+            }
             
 
             if ($existingReservationConflict) {
@@ -569,22 +612,37 @@ class ReservationService
      * @return bool
      */
     public function hasExistingReservation(User $user, ?int $academicTermId = null): bool
-    {
-        try {
-            
-            $existingReservation = Reservation::where('user_id', $user->id)
-                ->whereIn('status', ['active', 'upcoming'])
-                ->when($academicTermId, function ($query, $academicTermId) {
-                    return $query->where('academic_term_id', $academicTermId);
-                })
-                ->exists();
+{
+    try {
+        Log::info('Checking existing reservation for user.', [
+            'user_id' => $user->id,
+            'academic_term_id' => $academicTermId,
+        ]);
 
-            return $existingReservation;
-        } catch (\Exception $e) {
-            Log::error("Failed to check existing reservations: " . $e->getMessage());
-            throw new \Exception(trans('Failed to check existing reservations: ') . $e->getMessage());
-        }
+        $existingReservation = Reservation::where('user_id', $user->id)
+            ->whereIn('status', ['active', 'upcoming'])
+            ->when($academicTermId, function ($query, $academicTermId) {
+                return $query->where('academic_term_id', $academicTermId);
+            })
+            ->exists();
+
+        Log::info('Reservation check completed.', [
+            'user_id' => $user->id,
+            'academic_term_id' => $academicTermId,
+            'exists' => $existingReservation,
+        ]);
+
+        return $existingReservation;
+    } catch (\Exception $e) {
+        Log::error('Failed to check existing reservations.', [
+            'user_id' => $user->id,
+            'academic_term_id' => $academicTermId,
+            'error_message' => $e->getMessage(),
+        ]);
+
+        throw new \Exception(trans('Failed to check existing reservations: ') . $e->getMessage());
     }
+}
 
     /**
      * Check if the user already has pending or active reservation requests.
@@ -596,6 +654,7 @@ class ReservationService
     public function hasExistingReservationRequests(User $user, ?int $academicTermId = null): bool
     {
         try {
+            
             $existingRequests = DB::table('reservation_requests')
                 ->where('user_id', $user->id)
                 ->whereIn('status', ['pending'])
@@ -620,8 +679,7 @@ class ReservationService
     private function getCurrentAcademicTermId(): ?int
     {
         return DB::table('academic_terms')
-            ->where('start_date', '<=', now())
-            ->where('end_date', '>=', now())
+            ->where('status', 'active')
             ->value('id');
     }
 }

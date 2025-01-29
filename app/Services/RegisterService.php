@@ -52,7 +52,7 @@ class RegisterService
         $setting = Setting::where('key', 'registration_open')->first();
         if (!$setting || $setting->value != 1) {
             throw ValidationException::withMessages([
-                'registration' => __('auth.register.registration_closed'),
+                'registration' => trans('Registration is currently closed'),
             ]);
         }
     }
@@ -70,7 +70,7 @@ class RegisterService
 
         if (!$studentRecord) {
             throw ValidationException::withMessages([
-                'national_id' => __('auth.register.student_not_registered'),
+                'national_id' => trans('Student not found in university records'),
             ]);
         }
 

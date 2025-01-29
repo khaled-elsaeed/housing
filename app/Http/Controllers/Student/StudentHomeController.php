@@ -27,7 +27,7 @@ class StudentHomeController extends Controller
                 ->first();
 
             $activities = $user->activities()
-                ->recent(10) // Ensure this is a custom scope in your UserActivity model
+                ->recent(10) 
                 ->get();
 
             $availableTerms = AcademicTerm::whereIn('status', ['active', 'planned'])
@@ -36,7 +36,7 @@ class StudentHomeController extends Controller
             return view('student.home', compact('user', 'reservation', 'activities', 'availableTerms'));
         } catch (\Exception $e) {
             Log::error('Error loading student home: ' . $e->getMessage(), ['exception' => $e]);
-            return redirect()->route('home')->with('error', 'Something went wrong while loading the page.');
+            return redirect()->route('login')->with('error', 'Something went wrong while loading the page.');
         }
     }
 
@@ -54,7 +54,7 @@ class StudentHomeController extends Controller
             // Validate the request data
             $request->validate([
                 'reservationTermId' => 'required|string',
-                'reservationPeriodType' => 'required|in:short_term,long_term',
+                'reservationPeriodType' => 'required|in:short,long',
                 'start_date' => 'nullable|date',
                 'end_date' => 'nullable|date',
             ]);
