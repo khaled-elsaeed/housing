@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\UserNationalLink;
+use App\Models\Setting;
 
 class LoginService
 {

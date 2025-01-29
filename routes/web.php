@@ -258,3 +258,10 @@ use App\Http\Controllers\App\UploadController;
 
 Route::post('upload', UploadController::class)->name('upload');
 
+
+Route::post('/extend-session', function () {
+    // Extend the session lifetime
+    session()->migrate(true, 15);
+    return response()->json(['message' => 'Session extended']);
+})->middleware('auth');
+

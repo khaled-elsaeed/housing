@@ -80,5 +80,13 @@
       @yield('scripts')
       <!-- Core JS -->
       <script src="{{ asset('js/core.js') }}?v={{ config('app.version') }}"></script>
+      <script src="{{ asset('js/session-handler.js') }}?v={{ config('app.version') }}"></script>
+      <script>
+         const sessionHandler = new SessionHandler({
+            sessionTimeout: {{ config('session.lifetime') * 60 * 1000 }},
+            warningTime: 5 * 60 * 1000, // warning 5 minutes before session time out
+            checkInterval: 60 * 1000 // check every minute
+         });
+      </script>
    </body>
 </html>

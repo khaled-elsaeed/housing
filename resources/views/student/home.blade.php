@@ -1,4 +1,6 @@
-@extends('layouts.student') @section('title', __('Student Dashboard')) @section('content')
+@extends('layouts.student') 
+@section('title', __('Student Dashboard')) 
+@section('content')
 <div class="container-fluid py-4">
     <!-- Welcome Section -->
     <div class="row mb-4">
@@ -153,7 +155,7 @@
                 <div class="card-body">
                     <div class="d-grid gap-3">
                         <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addReservationModal"><i class="fa fa-plus-circle me-2"></i>{{ __('New Reservation') }}</button>
-                        <button class="btn btn-outline-secondary"><i class="fa fa-file-text-o me-2"></i>{{ __('View Documents') }}</button>
+                        <button class="btn btn-outline-secondary"data-bs-toggle="modal" data-bs-target="#guideModal"><i class="fa fa-file-text-o me-2"></i>{{ __('View Guide') }}</button>
                         <button class="btn btn-outline-info"><i class="fa fa-support me-2"></i>{{ __('Help & Support') }}</button>
                     </div>
                 </div>
@@ -161,56 +163,90 @@
         </div>
     </div>
 </div>
+
 <!-- Add Reservation Modal -->
 <div class="modal fade" id="addReservationModal" tabindex="-1" aria-labelledby="addReservationModalLabel">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addReservationModalLabel">@lang('Add New Reservation')</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="@lang('Close')"></button>
+                <h5 class="modal-title" id="addReservationModalLabel">{{ __('Add New Reservation') }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('Close') }}"></button>
             </div>
             <div class="modal-body">
                 <form id="addReservationForm" method="POST" action="{{ route('student.reservation.request') }}">
                     @csrf
                     <!-- Reservation Period Type -->
                     <div class="mb-3">
-                        <label for="reservationType" class="form-label">@lang('Reservation Period Type')</label>
+                        <label for="reservationType" class="form-label">{{ __('Reservation Period Type') }}</label>
                         <select name="reservation_period_type" id="reservationType" class="form-select" required>
-                            <option value="" disabled selected>@lang('Select Reservation Period Type')</option>
-                            <option value="long">@lang('Long Period')</option>
-                            <option value="short">@lang('Short Period')</option>
+                            <option value="" disabled selected>{{ __('Select Reservation Period Type') }}</option>
+                            <option value="long">{{ __('Long Period') }}</option>
+                            <option value="short">{{ __('Short Period') }}</option>
                         </select>
                     </div>
 
                     <!-- Long Term Details (Academic Terms) -->
                     <div id="longPeriodDetails" class="mb-3 d-none">
-                        <label for="reservationTerm" class="form-label">@lang('Select Academic Term')</label>
+                        <label for="reservationTerm" class="form-label">{{ __('Select Academic Term') }}</label>
                         <select name="reservation_academic_term_id" id="reservationTerm" class="form-select" required>
-                            <option value="" disabled selected>@lang('Select Term')</option>
+                            <option value="" disabled selected>{{ __('Select Term') }}</option>
                             @foreach($availableTerms as $term)
-                            <option value="{{ $term->id }}">@lang($term->name) - {{$term->academic_year}}</option>
+                            <option value="{{ $term->id }}">{{ __($term->term) }} term  ({{ $term->name }}-{{ $term->academic_year }})</option>
                             @endforeach
                         </select>
+
+                        if(!$user->lastReservation()){
+                            <!-- Room Type Selection -->
+                        <div class="mb-3 mt-3">
+                            <label for="roomType" class="form-label">{{ __('Room Type Preference') }}</label>
+                            <select name="room_type" id="roomType" class="form-select" required>
+                                <option value="" disabled selected>{{ __('Select Room Type') }}</option>
+                                <option value="single">{{ __('Single Room') }}</option>
+                                <option value="double">{{ __('Double Room') }}</option>
+                            </select>
+                        </div>
+
+                        <!-- Sibling Option (Only shows if user has eligible siblings) -->
+                        @if($sibling)
+                        <div id="siblingOption" class="mb-3 d-none">
+                            <div class="alert alert-info">
+                                <i class="fa fa-info-circle me-2"></i>
+                               {{ __('We detected that you have a sibling of the same gender in the system. Would you like to share a double room?') }}
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="shareWithSibling" name="share_with_sibling">
+                                <label class="form-check-label" for="shareWithSibling">
+                                    {{ __('Yes, I want to share a double room with my sibling') }}
+                                </label>
+                            </div>
+                
+                        </div>
+                        @endif
+                        }
+                        
                     </div>
+
+                    <!-- Room type prefer single or double -->
+                     
 
                     <!-- Short Term Details (Day/Week/Month) -->
                     <div id="shortPeriodDetails" class="d-none">
-                        <label for="shortPeriodDuration" class="form-label">@lang('Select Duration')</label>
+                        <label for="shortPeriodDuration" class="form-label">{{ __('Select Duration') }}</label>
                         <select name="short_duration" id="shortPeriodDuration" class="form-select" required>
-                            <option value="" disabled selected>@lang('Select Duration')</option>
-                            <option value="day">@lang('Day')</option>
-                            <option value="week">@lang('Week')</option>
-                            <option value="month">@lang('Month')</option>
+                            <option value="" disabled selected>{{ __('Select Duration') }}</option>
+                            <option value="day">{{ __('Day') }}</option>
+                            <option value="week">{{ __('Week') }}</option>
+                            <option value="month">{{ __('Month') }}</option>
                         </select>
 
                         <!-- Dates for short term -->
                         <div class="row mt-3">
                             <div class="col-md-6 mb-3">
-                                <label for="startDate" class="form-label">@lang('Start Date')</label>
+                                <label for="startDate" class="form-label">{{ __('Start Date') }}</label>
                                 <input type="date" class="form-control" id="startDate" name="start_date" required />
                             </div>
                             <div class="col-md-6 mb-3" id="endDateContainer" style="display: none;">
-                                <label for="endDate" class="form-label">@lang('End Date')</label>
+                                <label for="endDate" class="form-label">{{ __('End Date') }}</label>
                                 <input type="date" class="form-control" id="endDate" name="end_date" readonly />
                             </div>
                         </div>
@@ -220,7 +256,7 @@
                     <div class="mt-3">
                         <button type="submit" class="btn btn-primary w-100" id="submitReservation" disabled>
                             <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true" id="submitSpinner"></span>
-                            <span id="submitText">@lang('Add Reservation')</span>
+                            <span id="submitText">{{ __('Add Reservation') }}</span>
                         </button>
                     </div>
                 </form>
@@ -228,7 +264,170 @@
         </div>
     </div>
 </div>
-@endsection @section('scripts')
+
+<!-- Guide Modal -->
+<div class="modal fade" id="guideModal" tabindex="-1" aria-labelledby="guideModalLabel">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="guideModalLabel">{{ __('Housing System Guide') }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="{{ __('Close') }}"></button>
+            </div>
+            <div class="modal-body">
+                <h6 class="card-subtitle mb-4">{{ __('Welcome to NMU Housing System. Here\'s everything you need to know about managing your housing.') }}</h6>
+                <div class="accordion" id="housingGuideAccordion">
+                    <!-- Room Reservation Guide -->
+                    <div class="card">
+                        <div class="card-header" id="reservationGuide">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link" type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#collapseReservation" aria-expanded="true" 
+                                        aria-controls="collapseReservation">
+                                    <i class="feather icon-home me-2"></i>{{ __('How to Reserve a Room') }}
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="collapseReservation" class="collapse show" 
+                             aria-labelledby="reservationGuide" 
+                             data-parent="#housingGuideAccordion">
+                            <div class="card-body">
+                                <ol class="list-group list-group-numbered">
+                                    <li class="list-group-item">{{ __('Check the available reservation periods in your dashboard') }}</li>
+                                    <li class="list-group-item">{{ __('Select your preferred building and room type') }}</li>
+                                    <li class="list-group-item">{{ __('Fill out the reservation form with your personal details') }}</li>
+                                    <li class="list-group-item">{{ __('Upload any required documents (medical reports, address proof, etc.)') }}</li>
+                                    <li class="list-group-item">{{ __('Review and submit your reservation request') }}</li>
+                                    <li class="list-group-item">{{ __('Wait for approval from the housing administration') }}</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Guide -->
+                    <div class="card">
+                        <div class="card-header" id="paymentGuide">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link collapsed" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#collapsePayment" 
+                                        aria-expanded="false" aria-controls="collapsePayment">
+                                    <i class="feather icon-credit-card me-2"></i>{{ __('Payment Instructions') }}
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="collapsePayment" class="collapse" 
+                             aria-labelledby="paymentGuide" 
+                             data-parent="#housingGuideAccordion">
+                            <div class="card-body">
+                                <h6 class="fw-bold">{{ __('Payment Methods:') }}</h6>
+                                <ul class="list-group mb-3">
+                                    <li class="list-group-item">{{ __('Online payment through the university portal') }}</li>
+                                    <li class="list-group-item">{{ __('Bank transfer to university account') }}</li>
+                                    <li class="list-group-item">{{ __('Direct payment at university cashier') }}</li>
+                                </ul>
+                                <h6 class="fw-bold">{{ __('Payment Timeline:') }}</h6>
+                                <ul class="list-group">
+                                    <li class="list-group-item">{{ __('Initial payment: Within 48 hours of reservation approval') }}</li>
+                                    <li class="list-group-item">{{ __('Semester payments: Before the start of each semester') }}</li>
+                                    <li class="list-group-item">{{ __('Late payment fees apply after due dates') }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rules and Regulations -->
+                    <div class="card">
+                        <div class="card-header" id="rulesGuide">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link collapsed" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#collapseRules" 
+                                        aria-expanded="false" aria-controls="collapseRules">
+                                    <i class="feather icon-book me-2"></i>{{ __('Housing Rules & Regulations') }}
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="collapseRules" class="collapse" 
+                             aria-labelledby="rulesGuide" 
+                             data-parent="#housingGuideAccordion">
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    {{ __('All residents must follow these rules to maintain their housing eligibility.') }}
+                                </div>
+                                <ul class="list-group">
+                                    <li class="list-group-item">{{ __('Quiet hours: 10:00 PM - 7:00 AM') }}</li>
+                                    <li class="list-group-item">{{ __('No visitors allowed after 8:00 PM') }}</li>
+                                    <li class="list-group-item">{{ __('Keep rooms and common areas clean') }}</li>
+                                    <li class="list-group-item">{{ __('Report maintenance issues immediately') }}</li>
+                                    <li class="list-group-item">{{ __('No smoking in buildings') }}</li>
+                                    <li class="list-group-item">{{ __('Respect other residents and staff') }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Support & Contact -->
+                    <div class="card">
+                        <div class="card-header" id="supportGuide">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link collapsed" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#collapseSupport" 
+                                        aria-expanded="false" aria-controls="collapseSupport">
+                                    <i class="feather icon-help-circle me-2"></i>{{ __('Support & Contact Information') }}
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="collapseSupport" class="collapse" aria-labelledby="supportGuide" data-parent="#housingGuideAccordion">
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Female Housing Contacts -->
+                                    <div class="col-md-6">
+                                        <h6 class="fw-bold">{{ __('Female Housing Contacts:') }}</h6>
+                                        <ul class="list-group mb-3">
+                                            <!-- Shaymaa Elaraby -->
+                                            <li class="list-group-item">
+                                                <strong>{{ __('Shaymaa Elaraby:') }}</strong><br>
+                                                {{ __('Role: Housing Manager') }}<br>
+                                                {{ __('Phone: +201061612433') }}<br>
+                                            </li>
+                                            <!-- Hend Gabr -->
+                                            <li class="list-group-item">
+                                                <strong>{{ __('Hend Gabr:') }}</strong><br>
+                                                {{ __('Role: Housing Manager') }}<br>
+                                                {{ __('Phone: +20 106 295 1959') }}<br>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <!-- Male Housing Contacts -->
+                                    <div class="col-md-6">
+                                        <h6 class="fw-bold">{{ __('Male Housing Contacts:') }}</h6>
+                                        <ul class="list-group mb-3">
+                                            <!-- Mohamed Douad -->
+                                            <li class="list-group-item">
+                                                <strong>{{ __('Mohamed Douad:') }}</strong><br>
+                                                {{ __('Role: Housing Manager') }}<br>
+                                                {{ __('Phone: [Insert Phone Number]') }}<br>
+                                            </li>
+                                            <!-- Ismail -->
+                                            <li class="list-group-item">
+                                                <strong>{{ __('Ismail:') }}</strong><br>
+                                                {{ __('Role: Housing Manager') }}<br>
+                                                {{ __('Phone: [Insert Phone Number]') }}<br>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection 
+@section('scripts')
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const form = document.getElementById("addReservationForm");
@@ -363,8 +562,8 @@
             
             if (selectedDate < today) {
                 swal({
-                    title: '@lang("Invalid Date")',
-                    text: '@lang("Please select a present or future date")',
+                    title: "{{ __('Invalid Date') }}",
+                    text: "{{ __('Please select a present or future date') }}",
                     type: "warning",
                 });
                 this.value = '';
@@ -415,7 +614,7 @@
             // Disable button and show loading state
             submitBtn.disabled = true;
             spinner.classList.remove("d-none");
-            submitText.textContent = '@lang("Processing...")';
+            submitText.textContent = '{{ __('Processing...') }}';
 
             try {
                 const formData = new FormData(form);
@@ -432,8 +631,8 @@
 
                 if (response.ok) {
                     await swal({
-                        title: '@lang("Success")',
-                        text: data.message || '@lang("Reservation has been added successfully!")',
+                        title: '{{ __('Success') }}',
+                        text: data.message || '{{ __('Reservation has been added successfully!') }}',
                         type: "success",
                     });
 
@@ -444,11 +643,11 @@
                     // Optionally reload the page or update the UI
                     window.location.reload();
                 } else {
-                    throw new Error(data.message || '@lang("Something went wrong!")');
+                    throw new Error(data.message || '{{ __('Something went wrong!') }}');
                 }
             } catch (error) {
                 await swal({
-                    title: '@lang("Error")',
+                    title: '{{ __('Error') }}',
                     text: error.message,
                     type: "error",
                 });
@@ -456,7 +655,7 @@
                 // Reset button state
                 submitBtn.disabled = false;
                 spinner.classList.add("d-none");
-                submitText.textContent = '@lang("Add Reservation")';
+                submitText.textContent = '{{ __('Add Reservation') }}';
             }
         });
     });

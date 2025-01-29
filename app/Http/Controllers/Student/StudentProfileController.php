@@ -68,23 +68,34 @@ class StudentProfileController extends Controller
     protected function getUserReservations(User $user)
     {
         try {
-            $reservations = $user->reservations()->with('invoice')->get();
+            if (!$user || !$user->exists) {
+                Log::warning('Invalid user provided to getUserReservations');
+                return collect();
+            }
+
+            $reservations = $user->reservations()
+                ->with(['invoice', 'room'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            if ($reservations->isEmpty()) {
+                Log::info('No reservations found for user:', ['user_id' => $user->id]);
+            }
 
             // Log reservations for debugging
             Log::debug('Fetched reservations for user:', [
                 'user_id' => $user->id,
-                'reservations_count' => $reservations->count(),
-                'reservations' => $reservations->toArray(), // Log reservation details
+                'reservations_count' => $reservations->count()
             ]);
 
             return $reservations;
         } catch (Exception $e) {
             Log::error('Error fetching reservations: ' . $e->getMessage(), [
                 'user_id' => $user->id,
-                'exception' => $e,
+                'trace' => $e->getTraceAsString()
             ]);
 
-            return collect(); // Return an empty collection in case of error
+            throw new Exception('Failed to retrieve reservations: ' . $e->getMessage());
         }
     }
 
