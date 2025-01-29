@@ -280,7 +280,7 @@ class ReservationService
             'academic_term_id' => $academicTerm->id,
         ]);
 
-        $lastReservation = $user->lastReservation($academicTerm->id - 1); 
+        $lastReservation = $user->lastReservation($academicTerm->id); 
 
         if (!$lastReservation) {
 
@@ -361,6 +361,19 @@ class ReservationService
     ): array {
         try {
 
+            // Check if the user already has a reservation in the specified academic term
+            $existingReservation = Reservation::where('user_id', $reservationRequester->id)
+            ->where('academic_term_id', $academicTermId)
+            ->whereIn('status', ['active', 'completed'])
+            ->first();
+
+            if ($existingReservation) {
+                return [
+                    "success" => false,
+                    "reason" => trans('You already have a reservation in this academic term.'),
+                ];
+            }
+
             // Check if the user already has an active or upcoming reservation
             if ($this->hasExistingReservation($reservationRequester, $academicTermId)) {
                 return [
@@ -368,6 +381,7 @@ class ReservationService
                     "reason" => trans('You already have an active or upcoming reservation in this period.'),
                 ];
             }
+
 
             // Check if the user already has pending  reservation requests
             if ($this->hasExistingReservationRequests($reservationRequester, $academicTermId)) {
@@ -412,38 +426,43 @@ class ReservationService
      * @return array
      */
     private function handleLongTermPeriodReservation(User $reservationRequester, ?int $academicTermId): array
-    {
-        $roomAvailabilityStatus = $this->checkLastReservedRoomAvailability($reservationRequester, $academicTermId);
+{
 
-        if (!$roomAvailabilityStatus["available"]) {
-            $this->createReservationRequest(
-                $reservationRequester,
-                $academicTermId,
-                $reservationRequester->gender,
-                "long",
-                null,
-                null,
-                null
-            );
 
-            return [
-                "success" => true,
-                "message" => trans('Your reservation request has been submitted for admin approval.'),
-            ];
-        }
+    // Check room availability
+    $roomAvailabilityStatus = $this->checkLastReservedRoomAvailability($reservationRequester, $academicTermId);
 
-        $createdReservation = $this->createReservation(
+    if (!$roomAvailabilityStatus["available"]) {
+        // Create a reservation request if the room is not available
+        $this->createReservationRequest(
             $reservationRequester,
-            Room::find($roomAvailabilityStatus['roomId']),
+            $resademicTermId,
+            $reservationRequester->gender,
             "long",
-            $academicTermId
+            null,
+            null,
+            null
         );
 
         return [
             "success" => true,
-            "reservation" => $createdReservation,
+            "message" => trans('Your reservation request has been submitted for admin approval.'),
         ];
     }
+
+    // Create a reservation if the room is available
+    $createdReservation = $this->createReservation(
+        $reservationRequester,
+        Room::find($roomAvailabilityStatus['roomId']),
+        "long",
+        $academicTermId
+    );
+
+    return [
+        "success" => true,
+        "reservation" => $createdReservation,
+    ];
+}
 
     /**
      * Handle short-term reservation requests.

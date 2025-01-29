@@ -189,7 +189,7 @@
                   <select name="reservation_academic_term_id" id="reservationTerm" class="form-select" required>
                      <option value="" disabled selected>{{ __('Select Term') }}</option>
                      @foreach($availableTerms as $term)
-                     <option value="{{ $term->id }}">{{ __($term->term) }} term  ({{ $term->name }}-{{ $term->academic_year }})</option>
+                     <option value="{{ $term->id }}">{{ __($term->semester) }} term  ({{ $term->name }}-{{ $term->academic_year }})</option>
                      @endforeach
                   </select>
                   @if(!$user->lastReservation(null))

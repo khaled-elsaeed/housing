@@ -20,7 +20,7 @@ class User extends Authenticatable
         'last_name_ar',
         'password',
         'is_active',
-        'profile_picture',
+        'media_id',
         'last_login',
         'is_verified',
         'activation_token',
@@ -194,13 +194,36 @@ class User extends Authenticatable
 
     // Filter by academic term
     return $query->whereHas('academicTerm', function ($query) use ($academicTerm) {
-            $query->where('academic_year', $academicTerm->academic_year)
-                  ->where('start_date', '<', $academicTerm->start_date);
+            $query->where('academic_year', $academicTerm->academic_year);
+
+            // Only filter by start_date if it is not NULL
+            if ($academicTerm->start_date) {
+                $query->where('start_date', '<', $academicTerm->start_date);
+            }
         })
         ->latest('created_at')
         ->first();
 }
 
+
+public function media()
+{
+    return $this->hasOne(Media::class, 'id', 'media_id');
+}
+
+    public function profilePicture()
+    {
+        if ($this->hasProfilePicture()) {
+            return asset("storage/" . $this->media->path);
+        }
+
+        return asset('images/users/boy.svg');
+    }
+
+    public function hasProfilePicture()
+    {
+        return $this->media && $this->media->path && $this->media->collection === 'profile_picture';
+    }
     public function getLocationDetails()
     {
         $activeReservation = $this->reservations()

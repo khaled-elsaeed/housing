@@ -86,6 +86,8 @@
             sessionTimeout: {{ config('session.lifetime') * 60 * 1000 }},
             warningTime: 5 * 60 * 1000, // warning 5 minutes before session time out
             checkInterval: 60 * 1000 // check every minute
+            logoutRoute: '{{ route("logout") }}',
+            loginRoute: '{{ route("login") }}',
          });
       </script>
    </body>

@@ -12,6 +12,7 @@ class AcademicTerm extends Model
     protected $fillable = [
         'name', 
         'academic_year', 
+        'semester',
         'start_date', 
         'end_date', 
         'description', 

@@ -19,45 +19,59 @@ use App\Models\EmergencyContact;
 use App\Models\Program;
 use App\Models\Governorate;
 use App\Models\Notification;
+use App\Contracts\UploadServiceContract;
 use Exception;
 
 class StudentProfileController extends Controller
 {
+
+    private $uploadService;
+
+    public function __construct(UploadServiceContract $uploadService)
+    {
+        $this->uploadService = $uploadService;
+    }
+
     /**
      * Show the student's profile page.
      *
      * @return \Illuminate\View\View
      */
     public function index()
-    {
-        try {
-            $user = Auth::user();
-            $governorates = Governorate::all();
-            $programs = Program::all();
-            $countries = Country::all();
-            $faculties = Faculty::all();
-
-            // Get reservations and invoices
-            $reservations = $this->getUserReservations($user);
-            $invoices = $this->getUserInvoices($user);
-
-            return view('student.profile', compact(
-                'user',
-                'reservations',
-                'governorates',
-                'programs',
-                'countries',
-                'faculties',
-                'invoices'
-            ));
-        } catch (Exception $e) {
-            Log::error('Error fetching data for student profile: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return response()->view('errors.500', [], 500);
+{
+    try {
+        // Ensure the user is authenticated
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', __('auth.login_required'));
         }
+
+        $user = Auth::user();
+        $governorates = Governorate::all();
+        $programs = Program::all();
+        $countries = Country::all();
+        $faculties = Faculty::all();
+
+        // Get reservations and invoices
+        $reservations = $this->getUserReservations($user);
+        $invoices = $this->getUserInvoices($user);
+
+        return view('student.profile', compact(
+            'user',
+            'reservations',
+            'governorates',
+            'programs',
+            'countries',
+            'faculties',
+            'invoices'
+        ));
+    } catch (Exception $e) {
+        Log::error('Error fetching data for student profile: ' . $e->getMessage(), [
+            'trace' => $e->getTraceAsString(),
+        ]);
+
+        return response()->view('errors.500', [], 500);
     }
+}
 
     /**
      * Get the user's reservations.
@@ -75,7 +89,7 @@ class StudentProfileController extends Controller
 
             $reservations = $user->reservations()
                 ->with(['invoice', 'room'])
-                ->orderBy('created_at', 'desc')
+                ->orderBy('created_at', 'asc')
                 ->get();
 
             if ($reservations->isEmpty()) {
@@ -178,41 +192,62 @@ class StudentProfileController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateProfilePicture(Request $request)
-    {
-        try {
-            $request->validate([
-                'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            ]);
+    /**
+ * Update the student's profile picture.
+ *
+ * @param Request $request
+ * @return \Illuminate\Http\RedirectResponse
+ */
+public function updateProfilePicture(Request $request)
+{
+    try {
+        // Validate the uploaded file
+        $request->validate([
+            'profile_picture' => 'required',
+        ]);
 
-            $user = Auth::user();
-            $directory = 'profile_pictures';
+        // Get the authenticated user
+        $user = Auth::user();
 
-            if (!Storage::disk('public')->exists($directory)) {
-                Storage::disk('public')->makeDirectory($directory);
-            }
+        // Check if the user already has a profile picture
+        if ($user->media) {
+            // Delete the old profile picture file from storage
+            $this->uploadService->delete($user->media->path);
 
-            // Delete old profile picture if exists
-            if ($user->profile_picture) {
-                Storage::disk('public')->delete('profile_pictures/' . $user->profile_picture);
-            }
+            // Delete the old Media record from the database
+            $user->media->delete();
 
-            $path = Storage::disk('public')->putFile($directory, $request->file('profile_picture'));
-
-            // Generate the full URL for the file
-            $imagePath = Storage::url($path);
-
-            $user->profile_picture = $imagePath;
+            $user->media_id = null;
             $user->save();
-
-            return back()->with('success', __('pages.student.profile.profile_picture_update_success'));
-        } catch (Exception $e) {
-            Log::error('Error updating profile picture: ' . $e->getMessage(), [
-                'user_id' => Auth::user()->id,
-                'exception' => $e,
-            ]);
-            return back()->with('error', __('pages.student.profile.profile_picture_update_error'));
         }
+
+        // Store the new profile picture
+        $profileImage = $this->storeProfileImage($request->file('profile_picture'));
+
+        // Update the user's media_id to the new profile picture
+        $user->media_id = $profileImage->id;
+        $user->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => __('pages.student.profile.profile_picture_update_success'),
+                
+            ]);
+        } catch (Exception $e) {
+        Log::error('Error updating profile picture: ' . $e->getMessage(), [
+            'user_id' => Auth::user()->id,
+            'exception' => $e,
+        ]);
+        return back()->with('error', __('pages.student.profile.profile_picture_update_error'));
+    }
+}
+
+    private function storeProfileImage($file)
+    {
+        if (!$file) {
+            throw new \Exception("Profile image file is required.");
+        }
+        return $this->uploadService->upload($file, "profile_picture");
     }
 
     /**

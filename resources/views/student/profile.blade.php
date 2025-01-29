@@ -114,7 +114,7 @@
                     <div class="card-body">
                         <!-- Profile Picture Section -->
                         <div class="text-center mb-5">
-                            <img src="{{ $user->profile_picture ? asset($user->profile_picture) : asset('images/users/boy.svg') }}" 
+                            <img src="{{ $user->profilePicture() }}" 
                                 class="img-fluid mb-3 rounded-circle shadow-sm" 
                                 style="width: 150px; height: 150px; object-fit: cover;" 
                                 alt="@lang('user')">
@@ -125,7 +125,7 @@
                                     <i class="fa fa-edit me-2"></i> @lang('Change Picture')
                                     </a>
                                 </li>
-                                @if($user->profile_picture)
+                                @if($user->hasProfilePicture())
                                 <li class="list-inline-item">
                                     <form action="{{ route('student.profile.delete-picture') }}" method="POST" style="display:inline;">
                                         @csrf
@@ -197,13 +197,25 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form action="{{ route('student.profile.update-picture') }}" method="POST" enctype="multipart/form-data">
+                                <form id="profilePictureForm" enctype="multipart/form-data">
                                     @csrf
                                     <div class="mb-3">
                                         <label for="profile_picture" class="form-label">@lang('Select New Picture')</label>
                                         <input type="file" class="form-control" id="profile_picture" name="profile_picture" accept="image/*" required>
+                                        <div class="mt-2">
+                                            <small class="text-muted">
+                                                @lang('Allowed formats'): JPG, PNG. @lang('Max size'): 4MB
+                                            </small>
+                                        </div>
+                                        <!-- Preview container -->
+                                        <div id="imagePreview" class="mt-3 text-center" style="display: none;">
+                                            <img src="" alt="Preview" class="img-thumbnail" style="max-width: 200px;">
+                                        </div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary w-100">@lang('Upload New Picture')</button>
+                                    <button type="submit" class="btn btn-primary w-100" id="uploadProfilePicBtn">
+                                        <span class="button-text">@lang('Upload New Picture')</span>
+                                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                    </button>
                                 </form>
                             </div>
                         </div>
@@ -783,29 +795,22 @@
 @section('scripts')
 <script>
     $(document).ready(function() {
-        // Tab Navigation with URL Hash
+        // Initialize first tab if no hash present
+        if (!window.location.hash) {
+            $('#v-pills-profile-tab').tab('show');
+        }
+
+        // Handle tab navigation
         function activateTabFromHash() {
             let hash = window.location.hash;
             if (hash) {
-                // Remove 'tab-' prefix if present
-                hash = hash.replace('tab-', '');
                 const $tabLink = $(`a[href="${hash}"]`);
                 if ($tabLink.length) {
-                    // Remove any existing active classes
-                    $('.nav-link').removeClass('active');
-                    $('.tab-pane').removeClass('show active');
-                    
-                    // Activate the correct tab
-                    $tabLink.addClass('active');
-                    $(hash).addClass('show active');
+                    $tabLink.tab('show');
                 }
-            } else {
-                // If no hash, activate profile tab by default
-                $('#v-pills-profile-tab').addClass('active');
-                $('#v-pills-profile').addClass('show active');
             }
         }
-    
+
         // Update URL hash when tab changes
         $('a[data-bs-toggle="pill"]').on('shown.bs.tab', function (e) {
             const hash = $(e.target).attr('href');
@@ -815,216 +820,174 @@
                 window.location.hash = hash;
             }
         });
-    
+
         // Handle back/forward browser buttons
-        $(window).on('popstate', function() {
-            activateTabFromHash();
-        });
-    
-        // Initial tab activation on page load
+        $(window).on('popstate', activateTabFromHash);
+
+        // Initial tab activation
         activateTabFromHash();
-        
-        // File validation configuration
+
+        // File validation config
         const fileConfig = {
-            maxSize: 4 * 1024 * 1024, // 4MB
-            allowedTypes: ['image/jpeg', 'image/png'],
-            allowedExtensions: ['.jpg', '.jpeg', '.png']
+            maxSize: 4 * 1024 * 1024,
+            allowedTypes: ['image/jpeg', 'image/png']
         };
-    
-        // Validate image file
-        function validateImageFile(file, inputElement) {
-            if (!file) {
-                swal({
-                    type: 'warning',
-                    title: "@lang('No File Selected')",
-                    text: "@lang('Please select an image file.')",
-                    confirmButtonText: "@lang('OK')"
-                });
-                return false;
-            }
-    
-            // Check file size
+
+        // Password section toggle
+        $('#toggle-password-btn').click(function() {
+            $('#password-section').toggle();
+            $(this).text(
+                $('#password-section').is(':visible') 
+                ? "@lang('Cancel Password Change')" 
+                : "@lang('Change Password')"
+            );
+        });
+
+        // Image file validation
+        function validateImageFile(file) {
+            if (!file) return false;
             if (file.size > fileConfig.maxSize) {
                 swal({
-                    type: 'error',
+                    icon: 'error',
                     title: "@lang('File Too Large')",
-                    text: "@lang('Image size must be less than 4MB')",
-                    confirmButtonText: "@lang('OK')"
+                    text: "@lang('Image size must be less than 4MB')"
                 });
-                $(inputElement).val(''); // Clear the file input
                 return false;
             }
-    
-            // Check file type
             if (!fileConfig.allowedTypes.includes(file.type)) {
                 swal({
-                    type: 'error',
+                    icon: 'error',
                     title: "@lang('Invalid File Type')",
-                    text: "@lang('Please upload only JPG or PNG images')",
-                    confirmButtonText: "@lang('OK')"
+                    text: "@lang('Please upload only JPG or PNG images')"
                 });
-                $(inputElement).val(''); // Clear the file input
                 return false;
             }
-    
             return true;
         }
-    
-        // Password Toggle
-        $('#toggle-password-btn').click(function() {
-            const $passwordSection = $('#password-section');
-            const isVisible = $passwordSection.is(':visible');
-    
-            $passwordSection.toggle();
-            $(this).text(isVisible ? "@lang('Change Password')" : "@lang('Cancel Password Change')");
+
+        // Profile picture preview
+        $('#profile_picture').on('change', function() {
+            const file = this.files[0];
+            if (file && validateImageFile(file)) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#imagePreview')
+                        .show()
+                        .find('img')
+                        .attr('src', e.target.result);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                $(this).val('');
+                $('#imagePreview').hide();
+            }
         });
-    
-        // Invoice Details
-        $('.invoice-details-btn').click(function() {
-            const invoiceId = $(this).data('invoice-id');
-    
+
+        // Profile picture upload
+        $('#profilePictureForm').on('submit', function(e) {
+            e.preventDefault();
+            const $form = $(this);
+            const $btn = $('#uploadProfilePicBtn');
+            const $spinner = $btn.find('.spinner-border');
+            const $btnText = $btn.find('.button-text');
+
+            const formData = new FormData(this);
+
+            $btn.prop('disabled', true);
+            $spinner.removeClass('d-none');
+            $btnText.text("@lang('Uploading...')");
+
             $.ajax({
-                url: "{{ route('student.payment.info') }}",
-                method: 'POST',
-                data: {
-                    invoice_id: invoiceId
-                },
+                url: "{{ route('student.profile.update-picture') }}",
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(response) {
-                    // Update location
-                    const location = response.reservation.location;
-                    $('#location').text([
-                        location.building,
-                        location.apartment,
-                        location.room
-                    ].join('-') || "@lang('Empty')");
-    
-                    // Update payment details
-                    let totalAmount = 0;
-                    const $paymentDetails = $('#paymentDetails').empty();
-    
-                    response.paymentDetails.forEach(function(payment) {
-                        totalAmount += parseFloat(payment.amount || 0);
-                        $paymentDetails.append(`
-                            <tr>
-                                <td>${payment.category || "@lang('Empty')"}</td>
-                                <td>${(payment.amount || 0)} @lang('USD')</td>
-                            </tr>
-                        `);
-                    });
-    
-                    $('#totalAmount').text(`${totalAmount} @lang('USD')`);
-    
-                    // Show modal
-                    $('#invoiceDetailsModal').modal('show');
-                },
-                error: function(xhr, status, error) {
-                    console.error("@lang('Error fetching invoice details:')", error);
+                    if (response.image_url) {
+                        $('.profile-picture').attr('src', response.image_url);
+                    }
                     swal({
-                        type: 'error',
-                        title: "@lang('Error')",
-                        text: "@lang('Failed to load invoice details. Please try again.')",
-                        confirmButtonText: "@lang('OK')"
+                        icon: 'success',
+                        title: "@lang('Success')",
+                        text: "@lang('Profile picture updated successfully!')"
+                    }).then(() => {
+                        $('#profilePicModal').modal('hide');
                     });
+                },
+                error: function(xhr) {
+                    swal({
+                        icon: 'error',
+                        title: "@lang('Error')",
+                        text: xhr.responseJSON?.message || "@lang('Failed to update profile picture')"
+                    });
+                },
+                complete: function() {
+                    $btn.prop('disabled', false);
+                    $spinner.addClass('d-none');
+                    $btnText.text("@lang('Upload New Picture')");
                 }
             });
         });
-    
-        // File Upload for Pay Now with Loading State
-        $('.pay-now-btn').click(function(e) {
-    e.preventDefault();
 
-    // Use $(this) to refer to the clicked button
-    const $btn = $(this);
-    const invoiceId = $btn.data('invoice-id');
-
-    // Show modal and reset button state
-    $('#fileUploadModal')
-        .data('invoice-id', invoiceId)
-        .modal('show');
-});
-    
-        // Real-time image validation on file input change
-        $('input[type="file"]').on('change', function() {
-            const file = this.files[0];
-            validateImageFile(file, this);
+        // Payment handling
+        $('.pay-now-btn').click(function() {
+            const invoiceId = $(this).data('invoice-id');
+            $('#fileUploadModal')
+                .data('invoice-id', invoiceId)
+                .modal('show');
         });
-    
-        // Payment File Upload Form with Loading State
-        $('#fileUploadForm').submit(function(e) {
+
+        // Payment file upload
+        $('#fileUploadForm').on('submit', function(e) {
             e.preventDefault();
             const $form = $(this);
-            const $submitBtn = $form.find('button[type="submit"]');
-            const originalBtnText = $submitBtn.html();
-
-            // Show loading state
-            $submitBtn.prop('disabled', true)
-                     .html('<i class="fa fa-spinner fa-spin"></i> @lang("Processing...")');
-
+            const $btn = $form.find('button[type="submit"]');
+            const originalBtnText = $btn.html();
             const file = $('#uploadInvoiceReceipt')[0].files[0];
             const invoiceId = $('#fileUploadModal').data('invoice-id');
 
-            if (!validateImageFile(file, '#uploadInvoiceReceipt')) {
-                // Reset button state
-                $submitBtn.prop('disabled', false).html(originalBtnText);
-                return;
-            }
+            if (!validateImageFile(file)) return;
 
             const formData = new FormData(this);
             formData.append('invoice_id', invoiceId);
 
+            $btn.prop('disabled', true)
+                .html('<i class="fa fa-spinner fa-spin"></i> @lang("Processing...")');
+
             $.ajax({
-                type: 'POST',
                 url: "{{ route('student.invoice.pay') }}",
+                type: 'POST',
                 data: formData,
-                contentType: false,
-                cache: false,
                 processData: false,
-                headers: { 
+                contentType: false,
+                headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(response) {
                     swal({
-                        type: 'success',
+                        icon: 'success',
                         title: "@lang('Success')",
-                        text: "@lang('Payment file has been uploaded successfully!')"
-                    }).then((result) => {
+                        text: "@lang('Payment file uploaded successfully!')"
+                    }).then(() => {
                         $('#fileUploadModal').modal('hide');
-                        $form[0].reset();
-                        // Optionally refresh the page or update the UI
                         location.reload();
                     });
                 },
-                error: function(xhr, status, error) {
-                    console.log(xhr.responseText);
+                error: function(xhr) {
                     swal({
-                        type: 'error',
+                        icon: 'error',
                         title: "@lang('Error')",
-                        text: "@lang('Failed to upload payment file. Please try again.')"
+                        text: xhr.responseJSON?.message || "@lang('Failed to upload payment file')"
                     });
                 },
                 complete: function() {
-                    // Reset button state
-                    $submitBtn.prop('disabled', false).html(originalBtnText);
+                    $btn.prop('disabled', false).html(originalBtnText);
                 }
             });
-        });
-    
-        // Form validation
-        $('form').on('submit', function(e) {
-            if (!this.checkValidity()) {
-                e.preventDefault();
-                e.stopPropagation();
-                swal({
-                    type: 'warning',
-                    title: "@lang('Validation Error')",
-                    text: "@lang('Please fill in all required fields correctly.')",
-                    confirmButtonText: "@lang('OK')"
-                });
-            }
-            $(this).addClass('was-validated');
         });
     });
 </script>

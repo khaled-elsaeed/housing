@@ -4,6 +4,9 @@ class SessionHandler {
             sessionTimeout: 60 * 60 * 1000,
             warningTime: 5 * 60 * 1000,
             checkInterval: 60 * 1000,
+            loginRoute: '/logout', // default value
+            logoutRoute: '/login', // default value
+
             ...options
         };
 
@@ -102,7 +105,7 @@ class SessionHandler {
             if (result.isConfirmed) {
                 await this.extendSession();
             } else if (result.dismiss === Swal.DismissReason.cancel) {
-                window.location.href = '/logout';
+                window.location.href = this.options.logoutRoute;
             } else if (result.dismiss === Swal.DismissReason.timer) {
                 this.handleSessionExpired();
             }
@@ -148,7 +151,7 @@ class SessionHandler {
             confirmButtonText: this.getText('loginAgain'),
             allowOutsideClick: false
         }).then(() => {
-            window.location.href = '/login';
+            window.location.href = this.options.loginRoute;
         });
     }
 
