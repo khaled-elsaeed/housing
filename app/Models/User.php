@@ -167,34 +167,39 @@ class User extends Authenticatable
         return $this->first_name_en . ' ' . $this->last_name_en;
     }
 
-    // Reservation Methods
     public function lastReservation($academicTermId)
-    {
-        if(!$academicTermId){
+{
+    // Validate input
+    if ($academicTermId && (!is_int($academicTermId) || $academicTermId <= 0)) {
+        throw new \InvalidArgumentException('Academic term ID must be a positive integer or null.');
+    }
 
-            return $this->reservations()
-            ->whereHas('academicTerm')
-            ->whereIn('status', ['completed'])
-            ->where('period_type', 'long')
-            ->latest('created_at')
-            ->first();
-        }
+    // Base query
+    $query = $this->reservations()
+        ->where('period_type', 'long')
+        ->whereIn('status', ['completed', 'active']);
 
-        $academicTerm = AcademicTerm::find($academicTermId);
-        if (!$academicTerm) return null;
-        
-        $academicYear = $academicTerm->academic_year;
-
-        return $this->reservations()
-            ->whereHas('academicTerm', function ($query) use ($academicYear, $academicTerm) {
-                $query->where('academic_year', $academicYear)
-                      ->where('start_date', '<', $academicTerm->start_date);
-            })
-            ->whereIn('status', ['completed', 'active'])
-            ->where('period_type', 'long')
+    // Handle null academic term ID
+    if (!$academicTermId) {
+        return $query->whereHas('academicTerm')
             ->latest('created_at')
             ->first();
     }
+
+    // Fetch academic term
+    $academicTerm = AcademicTerm::find($academicTermId);
+    if (!$academicTerm) {
+        throw new \Exception('Academic term not found.');
+    }
+
+    // Filter by academic term
+    return $query->whereHas('academicTerm', function ($query) use ($academicTerm) {
+            $query->where('academic_year', $academicTerm->academic_year)
+                  ->where('start_date', '<', $academicTerm->start_date);
+        })
+        ->latest('created_at')
+        ->first();
+}
 
     public function getLocationDetails()
     {
