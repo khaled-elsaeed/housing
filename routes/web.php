@@ -43,7 +43,7 @@ use App\Http\Controllers\App\LocalizationController;
 use App\Http\Controllers\student\StudentProfileCompleteController;
 
 use App\Http\Controllers\DataTableController;
-use App\Http\Controllers\Admin\Account\StudentAccountController;
+use App\Http\Controllers\Admin\Account\UserAccountController;
 use App\Http\Middleware\Localization;
 
 Route::get('localization/{local}',LocalizationController::class)->name('localization');
@@ -105,13 +105,13 @@ Route::middleware(Localization::class)
 
             Route::prefix('account')->name('account.')->group(function () {
                 // Show the student account page
-                Route::get('students', [StudentAccountController::class, 'showStudentPage'])->name('student.index');
+                Route::get('students', [UserAccountController::class, 'showStudentPage'])->name('student.index');
 
                 // Edit student email
-                Route::post('students/edit-email', [StudentAccountController::class, 'editEmail'])->name('student.editEmail');
+                Route::post('students/edit-email', [UserAccountController::class, 'editEmail'])->name('student.editEmail');
             
                 // Reset student password
-                Route::post('students/reset-password', [StudentAccountController::class, 'resetPassword'])->name('student.resetPassword');
+                Route::post('students/reset-password', [UserAccountController::class, 'resetPassword'])->name('student.resetPassword');
             });
 
             
