@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedInteger('rank')->nullable()->after('status'); // Adjust the position as needed
 
             // Add image_path column
-            $table->string('path')->nullable()->after('rank'); // Adjust the position as needed
+            $table->string('path')->nullable(); // Adjust the position as needed
 
             // Add foreign key for media_id
             $table->foreignId('media_id')->nullable()->constrained('media')->onDelete('setNull');
