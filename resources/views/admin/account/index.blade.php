@@ -38,8 +38,8 @@
                         <span class="action-icon badge badge-primary-inverse me-0"><i class="feather icon-user"></i></span>
                      </div>
                      <div class="col-7 text-end mt-2 mb-2">
-                        <h5 class="card-title font-14">{{ __('Total Students') }}</h5>
-                        <h4 class="mb-0">{{ $totalStudentsCount }}</h4>
+                        <h5 class="card-title font-14">{{ __('Total Users') }}</h5>
+                        <h4 class="mb-0">{{ $totalUsersCount }}</h4>
                      </div>
                   </div>
                </div>
@@ -75,7 +75,7 @@
    <div class="col-lg-12">
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
          <!-- Title on the Left -->
-         <h2 class="page-title text-primary mb-2 mb-md-0">{{ __('Student Accounts') }}</h2>
+         <h2 class="page-title text-primary mb-2 mb-md-0">{{ __('User Accounts') }}</h2>
          <div>
             <button class="btn btn-outline-primary btn-sm toggle-btn" id="toggleButton" type="button" data-bs-toggle="collapse"
                data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
@@ -114,7 +114,7 @@
                   <thead>
                      <tr>
                         <th>{{ __('No') }}</th>
-                        <th>{{ __('Student Name') }}</th>
+                        <th>{{ __('User Name') }}</th>
                         <th>{{ __('National ID') }}</th>
                         <th>{{ __('Email') }}</th>
                         <th>{{ __('Status') }}</th>
@@ -122,16 +122,16 @@
                      </tr>
                   </thead>
                   <tbody>
-                  @foreach($students as $student)
+                  @foreach($users as $user)
 <tr>
     <td>{{ $loop->iteration }}</td>
-    <td>{{ $student->getUsernameEnAttribute() ?? 'N/A' }}</td>
-    <td>{{ $student->student?->national_id ?? 'N/A' }}</td>
-    <td>{{ $student->email ?? 'N/A' }}</td>
+    <td>{{ $user->getUsernameEnAttribute() ?? 'N/A' }}</td>
+    <td>{{ $user->student?->national_id ?? 'N/A' }}</td>
+    <td>{{ $user->email ?? 'N/A' }}</td>
     <td>
-        @if($student->status === 'active') 
+        @if($user->status === 'active') 
             <span class="badge bg-success"> {{ __('Active') }} </span>
-        @elseif($student->status === 'inactive') 
+        @elseif($user->status === 'inactive') 
             <span class="badge bg-danger">{{ __('Inactive') }} </span>
         @else
             <span class="badge bg-secondary">{{  __('Unknown')  }}</span>
@@ -139,12 +139,12 @@
     </td>
     <td>
         <!-- Reset Email Button -->
-        <button type="button" class="btn btn-round btn-info-rgba ms-2" data-bs-toggle="modal" data-bs-target="#resetEmailModal" data-student-id="{{ $student->id }}" title="{{ __('Reset Email') }}">
+        <button type="button" class="btn btn-round btn-info-rgba ms-2" data-bs-toggle="modal" data-bs-target="#resetEmailModal" data-user-id="{{ $user->id }}" title="{{ __('Reset Email') }}">
             <i class="feather icon-mail"></i> 
         </button>
 
         <!-- Reset Password Button -->
-        <button type="button" class="btn btn-round btn-danger-rgba ms-2" data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-student-id="{{ $student->id }}" title="{{ __('Reset Password') }}">
+        <button type="button" class="btn btn-round btn-danger-rgba ms-2" data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-user-id="{{ $user->id }}" title="{{ __('Reset Password') }}">
             <i class="feather icon-lock"></i> 
         </button>
     </td>
@@ -170,9 +170,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form action="{{ route('admin.account.student.editEmail') }}" method="POST">
+        <form action="{{ route('admin.account.user.editEmail') }}" method="POST">
           @csrf
-          <input type="hidden" id="studentIdEmail" name="student_id" />
+          <input type="hidden" id="userIdEmail" name="user_id" />
           <div class="mb-3">
             <label for="newEmail" class="form-label">{{ __('New Email Address') }}</label>
             <input type="email" class="form-control" id="newEmail" name="new_email" required />
@@ -193,9 +193,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form action="{{ route('admin.account.student.resetPassword') }}" method="POST">
+        <form action="{{ route('admin.account.user.resetPassword') }}" method="POST">
           @csrf
-          <input type="hidden" id="studentIdPassword" name="student_id" />
+          <input type="hidden" id="userIdPassword" name="user_id" />
           <div class="mb-3">
             <label for="newPassword" class="form-label">{{ __('New Password') }}</label>
             <input type="password" class="form-control" id="newPassword" name="new_password" required />
@@ -235,17 +235,17 @@
     // Modal to reset email
     $('#resetEmailModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
-        var studentId = button.data('student-id');
+        var userId = button.data('user-id');
         var modal = $(this);
-        modal.find('#studentIdEmail').val(studentId);
+        modal.find('#userIdEmail').val(userId);
     });
 
     // Modal to reset password
     $('#resetPasswordModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
-        var studentId = button.data('student-id');
+        var userId = button.data('user-id');
         var modal = $(this);
-        modal.find('#studentIdPassword').val(studentId);
+        modal.find('#userIdPassword').val(userId);
     });
 </script>
 @endsection
