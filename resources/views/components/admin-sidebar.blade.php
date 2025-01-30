@@ -68,7 +68,7 @@
          </li>
          <!-- Accounts Management Section -->
          <li>
-            <a href="{{ route('admin.account.student.index') }}">
+            <a href="{{ route('admin.account.user.index') }}">
                <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="accounts">
                <span>@lang('Accounts Management')</span>
             </a>
