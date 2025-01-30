@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', @lang('My Profile'))
+@section('title', __('My Profile'))
 
 @section('content')
 <!-- Start row -->
@@ -44,7 +44,7 @@
                     <div class="card-body">
                         <div class="profilebox pt-4 text-center">
                             <!-- Profile Image -->
-                            <img src="{{ $user->profile_picture ? asset('storage/profile_pictures/' . $user->profile_picture) : asset('images/users/boy.svg') }}" 
+                            <img src="{{ $user->profilePicture() }}" 
                                  class="img-fluid mb-3 rounded-circle" style="width: 150px; height: 150px; object-fit: cover;" alt="user">
 
                             <!-- Profile Picture Actions -->
@@ -57,7 +57,7 @@
                                 </li>
                                 
                                 <!-- Delete Profile Picture Button -->
-                                @if($user->profile_picture)
+                                @if($user->hasProfilePicture())
                                     <li class="list-inline-item">
                                         <form action="{{ route('admin.profile.delete-picture') }}" method="POST" style="display:inline;">
                                             @csrf
