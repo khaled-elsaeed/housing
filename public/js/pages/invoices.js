@@ -23,7 +23,25 @@ $(document).ready(function() {
             accept: "Accept",
             reject: "Reject",
             noDetails: "No details or pictures available for this applicant.",
-            loadingFailed: "Failed to load details."
+            loadingFailed: "Failed to load details.",
+            balance: "Balance",
+            paidAmount: "Paid Amount",
+            invoiceDetails: "Invoice Details",
+            category: "Category",
+            amount: "Amount",
+            paid: "Paid",
+            overpaymentAmount: "Overpayment Amount",
+            enterOverpayment: "Enter overpayment amount (if any)",
+            adminNotes: "Admin Notes",
+            addNotes: "Add any notes about this invoice (optional)",
+            areYouSureReject: "You are about to reject this invoice.",
+            areYouSureAccept: "You are about to accept this invoice with the selected payments.",
+            warning: "Warning",
+            selectPayment: "Please select at least one payment detail to accept.",
+            negativeAmount: "Overpayment amount cannot be negative.",
+            success: "Success",
+            error: "Error",
+            errorUpdating: "Error updating payment status: "
         },
         ar: {
             invoice_status: {
@@ -48,7 +66,25 @@ $(document).ready(function() {
             accept: "قبول",
             reject: "رفض",
             noDetails: "لا توجد تفاصيل أو صور لهذا الطالب.",
-            loadingFailed: "فشل في تحميل التفاصيل."
+            loadingFailed: "فشل في تحميل التفاصيل.",
+            balance: "الرصيد",
+            paidAmount: "المبلغ المدفوع",
+            invoiceDetails: "تفاصيل الفاتورة",
+            category: "الفئة",
+            amount: "المبلغ",
+            paid: "مدفوع",
+            overpaymentAmount: "مبلغ الدفع الزائد",
+            enterOverpayment: "أدخل مبلغ الدفع الزائد (إن وجد)",
+            adminNotes: "ملاحظات الإدارة",
+            addNotes: "أضف أي ملاحظات حول هذه الفاتورة (اختياري)",
+            areYouSureReject: "أنت على وشك رفض هذه الفاتورة.",
+            areYouSureAccept: "أنت على وشك قبول هذه الفاتورة مع المدفوعات المحددة.",
+            warning: "تحذير",
+            selectPayment: "يرجى تحديد تفاصيل دفع واحد على الأقل للقبول.",
+            negativeAmount: "لا يمكن أن يكون مبلغ الدفع الزائد سالباً.",
+            success: "نجاح",
+            error: "خطأ",
+            errorUpdating: "خطأ في تحديث حالة الدفع: "
         }
     };
 
@@ -292,16 +328,16 @@ $(document).ready(function() {
         return `
             <div class="card mb-4 shadow-sm border-secondary">
                 <div class="card-header bg-secondary text-white">
-                    <h5 class="card-title mb-0">Invoice Details</h5>
+                    <h5 class="card-title mb-0">${getTranslation('invoiceDetails')}</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
-                                    <th>Category</th>
-                                    <th class="text-end">Amount</th>
-                                    <th class="text-end">Paid</th>
+                                    <th>${getTranslation('category')}</th>
+                                    <th class="text-end">${getTranslation('amount')}</th>
+                                    <th class="text-end">${getTranslation('paid')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -323,14 +359,15 @@ $(document).ready(function() {
     
                     ${showOverpayment ? `
                         <div class="mt-3">
-                            <label for="overpayment-amount" class="form-label">Overpayment Amount</label>
-                            <input type="number" id="overpayment-amount" class="form-control border border-secondary" placeholder="Enter overpayment amount (if any)">
+                            <label for="overpayment-amount" class="form-label">${getTranslation('overpaymentAmount')}</label>
+                            <input type="number" id="overpayment-amount" class="form-control border border-secondary" 
+                                   placeholder="${getTranslation('enterOverpayment')}">
                         </div>
 
                         <div class="mt-3">
-                            <label for="admin-notes" class="form-label">Admin Notes</label>
+                            <label for="admin-notes" class="form-label">${getTranslation('adminNotes')}</label>
                             <textarea id="admin-notes" class="form-control border border-secondary" rows="3" 
-                                placeholder="Add any notes about this invoice (optional)"></textarea>
+                                placeholder="${getTranslation('addNotes')}"></textarea>
                         </div>
                     ` : ''}
                 </div>
@@ -422,12 +459,12 @@ $(document).ready(function() {
 
     function handleRejectButtonClick(response, labels) {
         swal({
-            title: "Are you sure?",
-            text: "You are about to reject this invoice.",
+            title: getTranslation('warning'),
+            text: getTranslation('areYouSureReject'),
             type: "warning",
             showCancelButton: true,
             confirmButtonText: labels.reject,
-            cancelButtonText: "Cancel",
+            cancelButtonText: getTranslation('cancel'),
         }).then(() => {
             updatePaymentStatus(response.invoice_id, "rejected", null);
 
@@ -442,8 +479,8 @@ $(document).ready(function() {
         if (currentInvoiceDetails.paidDetails.length === 0 && overPaymentAmount === 0) {
             swal({
                 type: "warning",
-                title: "Warning",
-                text: "Please select at least one payment detail to accept.",
+                title: getTranslation('warning'),
+                text: getTranslation('selectPayment'),
             });
             return;
         }
@@ -452,19 +489,19 @@ $(document).ready(function() {
         if (overPaymentAmount < 0) {
             swal({
                 type: "warning",
-                title: "Warning",
-                text: "Overpayment amount cannot be negative.",
+                title: getTranslation('warning'),
+                text: getTranslation('negativeAmount'),
             });
             return;
         }
 
         swal({
-            title: "Are you sure?",
-            text: "You are about to accept this invoice with the selected payments.",
+            title: getTranslation('warning'),
+            text: getTranslation('areYouSureAccept'),
             type: "warning",
             showCancelButton: true,
             confirmButtonText: labels.accept,
-            cancelButtonText: "Cancel",
+            cancelButtonText: getTranslation('cancel'),
         }).then(() => {
             updatePaymentStatus(
                 currentInvoiceDetails.id, 
@@ -497,7 +534,7 @@ $(document).ready(function() {
             success: function(response) {
                 swal({
                     type: "success",
-                    title: "Success",
+                    title: getTranslation('success'),
                     text: response.message,
                 }).then(() => {
                     showInvoiceDetails(invoiceId);
@@ -508,8 +545,8 @@ $(document).ready(function() {
             error: function(xhr) {
                 swal({
                     type: "error",
-                    title: "Error",
-                    text: "Error updating payment status: " + xhr.responseJSON.error,
+                    title: getTranslation('error'),
+                    text: getTranslation('errorUpdating') + xhr.responseJSON.error,
                 });
             },
         });
