@@ -16,12 +16,12 @@ class UserAccountController extends Controller
 {
     try {
         // Retrieve all Users with the 'resident' role
-        $Users = User::with('student')->role('resident')->get();
+        $users = User::with('student')->role('resident')->get();
 
         // Count total, male, and female Users
-        $totalUsersCount = $Users->count();
-        $maleTotalCount = $Users->where('gender', 'male')->count();
-        $femaleTotalCount = $Users->where('gender', 'female')->count();
+        $totalUsersCount = $users->count();
+        $maleTotalCount = $users->where('gender', 'male')->count();
+        $femaleTotalCount = $users->where('gender', 'female')->count();
 
         // Pass the data to the view
         return view('admin.account.index', compact('users', 'totalUsersCount', 'maleTotalCount', 'femaleTotalCount'));
