@@ -105,13 +105,13 @@ Route::middleware(Localization::class)
 
             Route::prefix('account')->name('account.')->group(function () {
                 // Show the student account page
-                Route::get('students', [UserAccountController::class, 'showStudentPage'])->name('student.index');
+                Route::get('users', [UserAccountController::class, 'showUserPage'])->name('user.index');
 
                 // Edit student email
-                Route::post('students/edit-email', [UserAccountController::class, 'editEmail'])->name('student.editEmail');
+                Route::post('users/edit-email', [UserAccountController::class, 'editEmail'])->name('user.editEmail');
             
                 // Reset student password
-                Route::post('students/reset-password', [UserAccountController::class, 'resetPassword'])->name('student.resetPassword');
+                Route::post('users/reset-password', [UserAccountController::class, 'resetPassword'])->name('user.resetPassword');
             });
 
             
