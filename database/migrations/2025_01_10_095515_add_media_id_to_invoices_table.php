@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('path')->nullable(); // Adjust the position as needed
 
             // Add foreign key for media_id
-            $table->foreignId('media_id')->nullable()->constrained('media')->onDelete('setNull');
+            $table->foreignId('media_id')->nullable()->constrained('media')->onDelete('set null');
         });
     }
 

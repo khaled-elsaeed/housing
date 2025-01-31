@@ -81,7 +81,10 @@
                data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                <i class="fa fa-search-plus"></i>
             </button>
-           
+            <button class="btn btn-outline-danger btn-sm ms-2" type="button" data-bs-toggle="modal" 
+               data-bs-target="#resetAllPasswordsModal">
+               <i class="feather icon-lock"></i> {{ __('Reset All Passwords') }}
+            </button>
          </div>
       </div>
    </div>
@@ -205,6 +208,33 @@
             <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required />
           </div>
           <button type="submit" class="btn btn-primary">{{ __('Reset Password') }}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Reset All Passwords -->
+<div class="modal fade" id="resetAllPasswordsModal" tabindex="-1" aria-labelledby="resetAllPasswordsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="resetAllPasswordsModalLabel">{{ __('Reset All Users Passwords') }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-warning">
+          <i class="feather icon-alert-triangle"></i>
+          {{ __('This action will reset passwords for all users to their default values. Are you sure you want to continue?') }}
+        </div>
+        <form action="{{ route('admin.account.user.resetAllPasswords') }}" method="POST">
+          @csrf
+          <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+            <button type="submit" class="btn btn-danger">
+              <i class="feather icon-lock"></i> {{ __('Reset All Passwords') }}
+            </button>
+          </div>
         </form>
       </div>
     </div>

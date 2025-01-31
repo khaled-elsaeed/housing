@@ -43,7 +43,7 @@ use App\Http\Controllers\Student\StudentPermissionController;
 use App\Http\Controllers\Student\StudentProfileController;
 use App\Http\Controllers\App\LocalizationController;
 
-use App\Http\Controllers\Student\StudentProfileCompleteController; // Fix casing
+use App\Http\Controllers\Student\StudentProfileCompleteController; 
 
 use App\Http\Controllers\DataTableController;
 use App\Http\Controllers\Admin\Account\UserAccountController;
@@ -117,7 +117,8 @@ Route::middleware(Localization::class)
 
                 // Edit student email
                 Route::post('users/edit-email', [UserAccountController::class, 'editEmail'])->name('user.editEmail');
-            
+                Route::post('users/all-users/reset-password', [UserAccountController::class, 'resetAllUsersPasswords'])->name('user.resetAllPasswords');
+
                 // Reset student password
                 Route::post('users/reset-password', [UserAccountController::class, 'resetPassword'])->name('user.resetPassword');
             });

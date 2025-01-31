@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\ResetAccountCredentials;
 
 class UserAccountController extends Controller
 {
@@ -82,4 +83,20 @@ class UserAccountController extends Controller
             return redirect()->back()->with('error', trans('messages.unable_to_reset_password'));
         }
     }
+
+    public function resetAllUsersPasswords()
+{
+    try{
+    // Find all resident users
+    $residents = User::role('resident')->get();
+
+    // Use a job to process password resets
+    ResetAccountCredentials::dispatch($residents);
+
+    return redirect()->back()->with('success', __('All resident passwords have been reset.'));
+    } catch (\Exception $e) {
+        Log::error('Error resetting for all users: ' . $e->getMessage());
+        return redirect()->back()->with('error', trans('messages.unable_to_reset_password'));
+    }
+}
 }

@@ -79,11 +79,11 @@
                      </div>
                      <div class="card-body">
                         <!-- Add New Term Button -->
-                        <div class="mb-4">
+                        <!-- <div class="mb-4">
                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTermModal">
                            <i class="feather icon-plus me-2"></i> {{ __('Add New Term') }}
                            </button>
-                        </div>
+                        </div> -->
                         <div class="row g-3">
                            @foreach($academicTerms as $term)
                            <div class="col-12 col-sm-6 col-md-4 col-xl-3">
@@ -91,9 +91,10 @@
                                  <div class="card-header {{ $term->status === 'active' ? 'bg-primary' : ($term->status === 'completed' ? 'bg-secondary' : 'bg-light') }} text-white d-flex justify-content-between align-items-center">
                                     <div>
                                        <h6 class="mb-0 text-white">{{ trans($term->name) }}</h6>
-                                       <small class="opacity-75">{{ trans($term->academic_year) }}</small>
+                                       <small class="opacity-75 d-block">{{ trans($term->academic_year) }}</small>
+                                       <small class="opacity-75">{{__('Term')}}  {{ trans($term->semester) }}</small>
                                     </div>
-                                    <span class="badge bg-white text-dark rounded-pill">{{ ucfirst($term->status) }}</span>
+                                    <span class="badge bg-white text-dark rounded-pill">{{ trans($term->status) }}</span>
                                  </div>
                                  <div class="card-body">
                                     <!-- Start Section with Icon -->
@@ -126,7 +127,7 @@
                                        {{__('End')}}    
                                        <i class="feather icon-stop-circle"></i>
                                        </button>
-                                       <div class="btn-group" role="group">
+                                       <!-- <div class="btn-group" role="group">
                                           <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                           <i class="feather icon-more-horizontal"></i>
                                           </button>
@@ -145,7 +146,7 @@
                                                 </button>
                                              </li>
                                           </ul>
-                                       </div>
+                                       </div> -->
                                     </div>
                                     @endif
                                  </div>
@@ -173,7 +174,7 @@
 </div>
 <!-- End row -->
 <!-- Modal for Adding/Editing Academic Term -->
-<div class="modal fade" id="addTermModal" tabindex="-1" aria-labelledby="addTermModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="addTermModal" tabindex="-1" aria-labelledby="addTermModalLabel" aria-hidden="true">
    <div class="modal-dialog">
       <div class="modal-content">
          <div class="modal-header">
@@ -204,7 +205,7 @@
          </div>
       </div>
    </div>
-</div>
+</div> -->
 <!-- Include SweetAlert -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!-- JavaScript for Academic Terms Management -->

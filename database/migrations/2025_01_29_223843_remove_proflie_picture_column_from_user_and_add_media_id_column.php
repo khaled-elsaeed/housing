@@ -14,10 +14,8 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('profile_picture');
 
-            $table->foreignId('media_id') // Creates a `media_id` column
-            ->nullable()              // Allows NULL values
-            ->constrained('media')    // References the `id` column in the `media` table
-            ->onDelete('set null');   // Sets `media_id` to NULL when the referenced `media` record is deleted
+            $table->foreignId('media_id')->nullable()->constrained('media')->onDelete('set null');
+
         });
     }
 
