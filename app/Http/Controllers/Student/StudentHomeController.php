@@ -99,7 +99,7 @@ class StudentHomeController extends Controller
 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Reservation requested successfully!',
+                    'message' => trans('Reservation requested successfully!'),
                     'reservation' => $result['reservation'],
                 ]);
             }
@@ -125,7 +125,7 @@ class StudentHomeController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to process reservation request: ' . $e->getMessage(),
+                'message' => trans('Failed to process reservation request, please try again later.'),
             ], 500);
         }
     }
@@ -143,6 +143,7 @@ class StudentHomeController extends Controller
         }
 
         $siblingGender = $user->sibling->gender;
+        
         $userGender = $user->gender;
 
         if ($siblingGender === 'brother' && $userGender === 'male') {

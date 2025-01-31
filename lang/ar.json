@@ -168,7 +168,12 @@
     "Help & Support": "المساعدة والدعم",
     "Hend Sabry:": "هند صبري:",
     "Nagwa Ebrahim:": "نجوى ابراهيم:",
-
+    "Invoice already paid": "الفاتورة مدفوعة بالفعل" ,
+    "Invoice paid successfully": "تم رفع الفاتورة بنجاح !",
+    "Failed to pay invoice":"فشل رفع الفاتورة",
+    "Payment receipt file is required." : "صورة الايصال مطلوبة",
+    "Reservation requested successfully!" : "تم طلب الحجز بنجاح!",
+    "Failed to process reservation request, please try again later" : " لقد فشل الحجز ، الرجاء المحاولة في وقت أخر ",
     "Home": "الصفحة الرئيسية",
     "Housing": "السكن",
     "Housing Fees": "رسوم السكن",

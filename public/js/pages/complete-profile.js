@@ -246,8 +246,7 @@ $(document).ready(function() {
                 $(`#step${currentStep}`).addClass('active show');
                 handleEmergencyContactStep('forward');
                 updateNavigation();
-                console.log('Current step:', currentStep);
-                console.log('emergencyContack: forward');
+             
 
             }
             if(clickedStep > currentStep || validateStep(currentStep)){
@@ -258,8 +257,7 @@ $(document).ready(function() {
                 $(`#step${currentStep}`).addClass('active show');
                 handleEmergencyContactStep('backward');
                 updateNavigation();
-                console.log('Current step:', currentStep);
-                console.log('emergencyContack: backward');
+            
             }
         }
     });
@@ -286,7 +284,6 @@ $(document).ready(function() {
                 data: formData,
                 success: function (response) {
                     // Handle success
-                    console.log('Success:', response);
     
                     swal({
                         type: 'success',

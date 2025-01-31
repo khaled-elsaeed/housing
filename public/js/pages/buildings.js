@@ -211,7 +211,6 @@ $('#statusFilter').on('change', function () {
  
     $('#statusFilter').on('change', function () {
        const selectedStatus = $(this).val();
-       console.log('Selected Status:', selectedStatus);
  
        table.search('').draw();
        if (selectedStatus) {
@@ -314,7 +313,6 @@ $('#statusFilter').on('change', function () {
        const row = button.closest('tr');
        const buildingId = button.attr('id').split('-').pop();
        const note = row.find('td:nth-last-child(2)').text().trim();
-       console.log(note);
  
        $('#editBuildingNote').val(note === 'No description available' ? '' : note);
        $('#editBuildingNoteModal').attr('data-building-id', buildingId).modal('show');

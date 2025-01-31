@@ -257,10 +257,6 @@ class ReservationService
     private function addLongTermInvoiceDetails(Invoice $invoice, $roomType): void
 {
     try {
-        Log::info('Adding long-term invoice details.', [
-            'invoice_id' => $invoice->id,
-            'room_type' => $roomType,
-        ]);
 
         // Determine fee amount based on room type
         $feeAmount = $roomType === 'single' ? 10000 : 8000;
@@ -272,18 +268,9 @@ class ReservationService
             "amount" => $feeAmount,
         ]);
 
-        Log::info('Base fee added to invoice.', [
-            'invoice_id' => $invoice->id,
-            'amount' => $feeAmount,
-        ]);
-
         $user = $invoice->reservation->user;
         $academicTerm = $invoice->reservation->academicTerm;
 
-        Log::info('Fetching user and academic term details.', [
-            'user_id' => $user->id,
-            'academic_term_id' => $academicTerm->id,
-        ]);
 
         $lastReservation = $user->lastReservation($academicTerm->id); 
 
@@ -295,10 +282,6 @@ class ReservationService
                 "amount" => 5000,
             ]);
 
-            Log::info('Insurance fee added to invoice.', [
-                'invoice_id' => $invoice->id,
-                'amount' => 5000,
-            ]);
         }
     } catch (\Exception $e) {
         Log::error('Failed to add long-term invoice details.', [
@@ -647,10 +630,7 @@ class ReservationService
     public function hasExistingReservation(User $user, ?int $academicTermId = null): bool
 {
     try {
-        Log::info('Checking existing reservation for user.', [
-            'user_id' => $user->id,
-            'academic_term_id' => $academicTermId,
-        ]);
+       
 
         $existingReservation = Reservation::where('user_id', $user->id)
             ->whereIn('status', ['active', 'upcoming'])
@@ -659,11 +639,7 @@ class ReservationService
             })
             ->exists();
 
-        Log::info('Reservation check completed.', [
-            'user_id' => $user->id,
-            'academic_term_id' => $academicTermId,
-            'exists' => $existingReservation,
-        ]);
+      
 
         return $existingReservation;
     } catch (\Exception $e) {

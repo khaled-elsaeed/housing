@@ -4,21 +4,9 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-use App\Models\User;
-use App\Models\City;
-use App\Models\Country;
-use App\Models\Faculty;
-use App\Models\Parents;
-use App\Models\Sibling;
-use App\Models\Invoice;
-use App\Models\EmergencyContact;
-use App\Models\Program;
-use App\Models\Governorate;
-use App\Models\Notification;
+use Illuminate\Support\Facades\{Auth,Storage,Log,Hash};
+use App\Models\{User,Notification,Governorate,Program,EmergencyContact,
+    Invoice,Sibling,Parents,Faculty,Country,City};
 use App\Contracts\UploadServiceContract;
 use Exception;
 
@@ -92,16 +80,6 @@ class StudentProfileController extends Controller
                 ->orderBy('created_at', 'asc')
                 ->get();
 
-            if ($reservations->isEmpty()) {
-                Log::info('No reservations found for user:', ['user_id' => $user->id]);
-            }
-
-            // Log reservations for debugging
-            Log::debug('Fetched reservations for user:', [
-                'user_id' => $user->id,
-                'reservations_count' => $reservations->count()
-            ]);
-
             return $reservations;
         } catch (Exception $e) {
             Log::error('Error fetching reservations: ' . $e->getMessage(), [
@@ -109,7 +87,7 @@ class StudentProfileController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
 
-            throw new Exception('Failed to retrieve reservations: ' . $e->getMessage());
+            throw new Exception('Failed to retrieve reservations');
         }
     }
 
@@ -126,13 +104,6 @@ class StudentProfileController extends Controller
             $invoices = Invoice::whereHas('reservation', function($query) use ($user) {
                 $query->where('user_id', $user->id);
             })->with(['reservation'])->get();
-
-            // Log for debugging
-            Log::debug('Fetched invoices for user:', [
-                'user_id' => $user->id,
-                'invoices_count' => $invoices->count(),
-                'invoices' => $invoices->toArray()
-            ]);
 
             return $invoices;
         } catch (Exception $e) {
@@ -177,6 +148,7 @@ class StudentProfileController extends Controller
             return redirect()
                 ->route('student.profile')
                 ->with('success', trans('Profile updated successfully'));
+
         } catch (Exception $e) {
             Log::error('Error updating profile: ' . $e->getMessage(), [
                 'user_id' => Auth::user()->id,
@@ -211,19 +183,13 @@ public function updateProfilePicture(Request $request)
 
         // Check if the user already has a profile picture
         if ($user->media) {
-            // Delete the old profile picture file from storage
             $this->uploadService->delete($user->media->path);
-
-            // Delete the old Media record from the database
             $user->media->delete();
-
             $user->save();
         }
 
-        // Store the new profile picture
         $profileImage = $this->storeProfileImage($request->file('profile_picture'));
 
-        // Update the user's media_id to the new profile picture
         $user->media_id = $profileImage->id;
         $user->save();
 
@@ -232,6 +198,7 @@ public function updateProfilePicture(Request $request)
                 'message' => trans('Profile picture updated successfully'),
                 
             ]);
+
         } catch (Exception $e) {
         Log::error('Error updating profile picture: ' . $e->getMessage(), [
             'user_id' => Auth::user()->id,
@@ -265,12 +232,8 @@ public function updateProfilePicture(Request $request)
         $profilePicture = $user->profilePictureMedia()->first();
 
         if ($profilePicture) {
-            // Delete the file from storage
             $this->uploadService->delete($profilePicture->path);
-
-            // Delete the media record from the database
             $profilePicture->delete();
-
             return back()->with('success', trans('Profile picture deleted successfully'));
         }
 

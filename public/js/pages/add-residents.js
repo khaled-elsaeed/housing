@@ -11,7 +11,6 @@ $(document).ready(function () {
         });
 
         citiesSelect.empty();
-        console.log(governoratesCities);
 
         if (governoratesCities.length > 0) {
             governoratesCities.forEach((city) => {
@@ -41,7 +40,6 @@ $(document).ready(function () {
         });
 
         programsSelect.empty();
-        console.log(facultysPrograms);
 
         if (facultysPrograms.length > 0) {
             facultysPrograms.forEach((program) => {

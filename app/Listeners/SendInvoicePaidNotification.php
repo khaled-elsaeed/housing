@@ -33,7 +33,7 @@ class SendInvoicePaidNotification implements ShouldQueue
             }
 
             if (!$invoice->reservation?->user) {
-                throw new \Exception('User not found for the invoice');
+                throw new \Exception('User not found for this invoice');
             }
 
             $invoice->reservation->user->notify(new InvoicePaidNotification($invoice));

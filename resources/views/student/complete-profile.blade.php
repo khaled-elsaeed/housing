@@ -479,7 +479,6 @@
                newOption.value = option.dataset.cityId;
                newOption.text = option.value;
    
-               console.log(option);
                citySelect.appendChild(newOption);
            });
        });
@@ -501,7 +500,6 @@
                newOption.value = option.dataset.cityId;
                newOption.text = option.value;
    
-               console.log(option);
                parentCitySelect.appendChild(newOption);
            });
        });

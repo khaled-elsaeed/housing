@@ -207,7 +207,6 @@ $(document).ready(function () {
        const row = button.closest('tr');
        const apartmentId = button.attr('id').split('-').pop();
        const note = row.find('td:nth-last-child(2)').text().trim();
-       console.log(note);
  
        $('#editApartmentNote').val(note === 'No description available' ? '' : note);
        $('#editApartmentNoteModal').attr('data-apartment-id', apartmentId).modal('show');

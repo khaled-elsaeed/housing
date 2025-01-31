@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to toggle issue details
     function toggleIssueDetails(issueType) {
-        console.log(issueType);
         // Select the corresponding issue section by id
         var issueSection = document.getElementById(issueType + '_issues');
 
