@@ -530,5 +530,25 @@
     "Cannot start a completed academic term.": "لا يمكن بدء فصل دراسي مكتمل.",
     "Academic term started successfully.": "تم بدء الفصل الدراسي بنجاح.",
     "Only active academic terms can be ended.": "يمكن إنهاء الفصول الدراسية النشطة فقط.",
-    "Academic term ended successfully and all related reservations have been completed.": "تم إنهاء الفصل الدراسي بنجاح وتم إكمال جميع الحجوزات المرتبطة به."
+    "Academic term ended successfully and all related reservations have been completed.": "تم إنهاء الفصل الدراسي بنجاح وتم إكمال جميع الحجوزات المرتبطة به.",
+
+        "The resident login is currently unavailable. It will be available later": "تسجيل دخول المقيم غير متاح حاليًا. سيكون متاحًا لاحقًا",
+        "Your account has been deleted": "تم حذف حسابك",
+        "Your account is inactive": "حسابك غير نشط",
+        "Your account is not verified": "لم يتم التحقق من حسابك",
+        "Too many login attempts. Please try again later.": "محاولات تسجيل دخول كثيرة. يرجى المحاولة مرة أخرى لاحقًا.",
+        "Invalid credentials": "بيانات الاعتماد غير صالحة",
+        "User registered successfully": "تم تسجيل المستخدم بنجاح",
+        "We could not find a user with that email address.": "لم نتمكن من العثور على مستخدم بهذا البريد الإلكتروني.",
+        "Too many password reset attempts. Please try again in :minutes minutes.": "محاولات كثيرة لإعادة تعيين كلمة المرور. يرجى المحاولة مرة أخرى بعد :minutes دقيقة.",
+        "Password reset link has been sent to your email": "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني",
+        "An error occurred while processing your request.": "حدث خطأ أثناء معالجة طلبك.",
+        "Invalid or expired password reset token": "رمز إعادة تعيين كلمة المرور غير صالح أو منتهي الصلاحية",
+        "Password reset token has expired": "انتهت صلاحية رمز إعادة تعيين كلمة المرور",
+        "User not found": "لم يتم العثور على المستخدم",
+        "Password has been reset successfully": "تم إعادة تعيين كلمة المرور بنجاح",
+        "This activation token is not valid": "رمز التفعيل هذا غير صالح",
+        "This activation link has expired": "انتهت صلاحية رابط التفعيل هذا",
+        "Your account has been activated successfully": "تم تفعيل حسابك بنجاح"
+ 
 }
