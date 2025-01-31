@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\Applicant\{
 
 
 use App\Http\Controllers\Admin\Reservation\ReservationController;
+use App\Http\Controllers\App\UploadController;
 
 use App\Http\Controllers\Student\StudentHomeController;
 use App\Http\Controllers\Student\StudentReservationController;
@@ -252,5 +253,5 @@ Route::middleware(Localization::class)
 });
 
 // Keep only non-auth routes outside
-Route::post('upload', UploadController::class)->name('upload');
+Route::post('upload', UploadController::class,'')->name('upload');
 
