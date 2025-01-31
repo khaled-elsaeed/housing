@@ -253,9 +253,4 @@ Route::middleware(Localization::class)
 
 // Keep only non-auth routes outside
 Route::post('upload', UploadController::class)->name('upload');
-Route::post('/extend-session', function () {
-    // Extend the session lifetime
-    session()->migrate(true, 15);
-    return response()->json(['message' => 'Session extended']);
-})->middleware('auth');
 
