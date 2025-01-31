@@ -182,42 +182,7 @@
        
        
    
-       // Save Term (Add/Edit)
-       document.getElementById('saveTermBtn').addEventListener('click', function () {
-           const formData = new FormData(document.getElementById('termForm'));
-           fetch("{{ route('admin.academic.create') }}", {
-               method: 'POST',
-               body: formData,
-               headers: {
-                   'X-CSRF-TOKEN': '{{ csrf_token() }}'
-               }
-           })
-           .then(response => response.json())
-           .then(data => {
-               if (data.success) {
-                   swal({
-                       type: 'success',
-                       title: '{{ __("Success") }}',
-                       text: data.message,
-                   }).then(() => {
-                       window.location.reload();
-                   });
-               } else {
-                   swal({
-                       type: 'error',
-                       title: '{{ __("Error") }}',
-                       text: data.message,
-                   });
-               }
-           })
-           .catch(error => {
-               swal({
-                   type: 'error',
-                   title: '{{ __("Error") }}',
-                   text: '{{ __("An unexpected error occurred") }}',
-               });
-           });
-       });
+      
    
        // Start Term
        document.querySelectorAll('.start-term-btn').forEach(button => {
