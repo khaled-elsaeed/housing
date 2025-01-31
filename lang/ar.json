@@ -521,5 +521,8 @@
     "Yes, logout": "نعم، تسجيل الخروج",
     "You will be logged out of your account.": "سيتم تسجيل خروجك من حسابك.",
     "You won't be able to revert this!": "لن تتمكن من التراجع عن هذا!",
-    "العربية": "العربية"
+    "العربية": "العربية",
+    "Begin": "بدء",
+    "fall/spring": "خريف/ربيع",
+    "An error occurred": "حدث خطأ"
 }

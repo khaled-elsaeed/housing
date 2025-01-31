@@ -47,7 +47,8 @@ class AcademicTerm extends Model
         return $now->between($this->start_date, $this->end_date);
     }
 
-    public function reservation(){
-        return $this->belongsTo(Reservation::class);
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class);
     }
 }

@@ -362,7 +362,6 @@
     "Role: Housing Manager": "Role: Housing Manager",
     "Role: Supervisor-female" : "Role: Supervisor",
     "Role: Supervisor-male" : "Role: Supervisor",
-
     "Room": "Room",
     "Room Note": "Room Note",
     "Room Number": "Room Number",
@@ -515,5 +514,8 @@
     "Yes, logout": "Yes, logout",
     "You will be logged out of your account.": "You will be logged out of your account.",
     "You won't be able to revert this!": "You won't be able to revert this!",
-    "العربية": "العربية"
+    "العربية": "العربية",
+    "Begin": "Begin",
+    "fall/spring": "fall/spring",
+    "An error occurred": "An error occurred"
 }

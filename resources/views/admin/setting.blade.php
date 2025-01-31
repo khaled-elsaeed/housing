@@ -90,8 +90,8 @@
                               <div class="card border-0 shadow-sm rounded-3">
                                  <div class="card-header {{ $term->status === 'active' ? 'bg-primary' : ($term->status === 'completed' ? 'bg-secondary' : 'bg-light') }} text-white d-flex justify-content-between align-items-center">
                                     <div>
-                                       <h6 class="mb-0 text-white">{{ $term->name }}</h6>
-                                       <small class="opacity-75">{{ $term->academic_year }}</small>
+                                       <h6 class="mb-0 text-white">{{ trans($term->name) }}</h6>
+                                       <small class="opacity-75">{{ trans($term->academic_year) }}</small>
                                     </div>
                                     <span class="badge bg-white text-dark rounded-pill">{{ ucfirst($term->status) }}</span>
                                  </div>
@@ -119,7 +119,7 @@
                                     @else
                                     <div class="btn-group w-100" role="group">
                                        <button class="btn btn-sm btn-primary rounded-start-pill start-term-btn" data-id="{{ $term->id }}" {{ $term->status === 'active' ? 'disabled' : '' }}>
-                                       Begin
+                                       {{ __('Begin') }}
                                        <i class="feather icon-play"></i>
                                        </button>
                                        <button class="btn btn-sm btn-secondary end-term-btn" data-id="{{ $term->id }}" {{ $term->status === 'inactive' ? 'disabled' : '' }}>
@@ -234,7 +234,7 @@
        // Save Term (Add/Edit)
        document.getElementById('saveTermBtn').addEventListener('click', function () {
            const formData = new FormData(document.getElementById('termForm'));
-           fetch("#", {
+           fetch("{{ route('admin.academic.create') }}", {
                method: 'POST',
                body: formData,
                headers: {
@@ -265,29 +265,24 @@
        document.querySelectorAll('.start-term-btn').forEach(button => {
            button.addEventListener('click', function () {
                const termId = this.dataset.id;
-               fetch(`/admin/settings/academic-terms/${termId}/start`, {
+               fetch(`{{ url('admin/academic-terms') }}/${termId}/start`, {
                    method: 'POST',
                    headers: {
-                       'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                       'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                       'Content-Type': 'application/json'
                    }
                })
                .then(response => response.json())
                .then(data => {
-                   if (data.success) {
-                       swal({
-                           type: 'success',
-                           title: '{{ __("Success") }}',
-                           text: data.message,
-                       }).then(() => {
+                   swal({
+                       type: data.message ? 'success' : 'error',
+                       title: data.message ? __('Success') : __('Error'),
+                       text: data.message || __('An error occurred'),
+                   }).then(() => {
+                       if (data.message) {
                            window.location.reload();
-                       });
-                   } else {
-                       swal({
-                           type: 'error',
-                           title: '{{ __("Error") }}',
-                           text: data.message,
-                       });
-                   }
+                       }
+                   });
                });
            });
        });
@@ -296,27 +291,33 @@
        document.querySelectorAll('.end-term-btn').forEach(button => {
            button.addEventListener('click', function () {
                const termId = this.dataset.id;
-               fetch(`/admin/settings/academic-terms/${termId}/end`, {
-                   method: 'POST',
-                   headers: {
-                       'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                   }
-               })
-               .then(response => response.json())
-               .then(data => {
-                   if (data.success) {
-                       swal({
-                           type: 'success',
-                           title: '{{ __("Success") }}',
-                           text: data.message,
-                       }).then(() => {
-                           window.location.reload();
-                       });
-                   } else {
-                       swal({
-                           type: 'error',
-                           title: '{{ __("Error") }}',
-                           text: data.message,
+               swal({
+                   title: 'Are you sure?',
+                   text: 'This will end the academic term and mark all related reservations as completed.',
+                   type 'warning',
+                   showCancelButton: true,
+                   confirmButtonText: 'Yes, end it',
+                   cancelButtonText: 'Cancel'
+               }).then((result) => {
+                   if (result.isConfirmed) {
+                       fetch(`{{ url('admin/academic-terms') }}/${termId}/end`, {
+                           method: 'POST',
+                           headers: {
+                               'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                               'Content-Type': 'application/json'
+                           }
+                       })
+                       .then(response => response.json())
+                       .then(data => {
+                           swal({
+                               type data.message ? 'success' : 'error',
+                               title: data.message ? __('Success') : __('Error'),
+                               text: data.message || __('An error occurred'),
+                           }).then(() => {
+                               if (data.message) {
+                                   window.location.reload();
+                               }
+                           });
                        });
                    }
                });
