@@ -42,7 +42,7 @@ class StudentProfileController extends Controller
     try {
         // Ensure the user is authenticated
         if (!Auth::check()) {
-            return redirect()->route('login')->with('error', __('auth.login_required'));
+            return redirect()->route('login')->with('error', trans('Please login first'));
         }
 
         $user = Auth::user();
@@ -176,13 +176,13 @@ class StudentProfileController extends Controller
 
             return redirect()
                 ->route('student.profile')
-                ->with('success', __('pages.student.profile.update_success'));
+                ->with('success', trans('Profile updated successfully'));
         } catch (Exception $e) {
             Log::error('Error updating profile: ' . $e->getMessage(), [
                 'user_id' => Auth::user()->id,
                 'exception' => $e,
             ]);
-            return back()->with('error', __('pages.student.profile.update_error'));
+            return back()->with('error', trans('Error updating profile'));
         }
     }
 
@@ -217,7 +217,6 @@ public function updateProfilePicture(Request $request)
             // Delete the old Media record from the database
             $user->media->delete();
 
-            $user->media_id = null;
             $user->save();
         }
 
@@ -230,7 +229,7 @@ public function updateProfilePicture(Request $request)
 
             return response()->json([
                 'success' => true,
-                'message' => __('pages.student.profile.profile_picture_update_success'),
+                'message' => trans('Profile picture updated successfully'),
                 
             ]);
         } catch (Exception $e) {
@@ -238,7 +237,7 @@ public function updateProfilePicture(Request $request)
             'user_id' => Auth::user()->id,
             'exception' => $e,
         ]);
-        return back()->with('error', __('pages.student.profile.profile_picture_update_error'));
+        return back()->with('error', trans('Error updating profile picture'));
     }
 }
 
@@ -256,25 +255,33 @@ public function updateProfilePicture(Request $request)
      * @return \Illuminate\Http\RedirectResponse
      */
     public function deleteProfilePicture()
-    {
-        try {
-            $user = Auth::user();
-
-            if ($user->profile_picture) {
-                Storage::disk('public')->delete('profile_pictures/' . $user->profile_picture);
-                $user->profile_picture = null;
-                $user->save();
-
-                return back()->with('success', __('pages.student.profile.profile_picture_delete_success'));
-            }
-
-            return back()->with('error', __('pages.student.profile.no_profile_picture'));
-        } catch (Exception $e) {
-            Log::error('Error deleting profile picture: ' . $e->getMessage(), [
-                'user_id' => Auth::user()->id,
-                'exception' => $e,
-            ]);
-            return back()->with('error', __('pages.student.profile.profile_picture_delete_error'));
+{
+    try {
+        if (!Auth::check()) {
+            return back()->with('error', trans('Please login first'));
         }
+
+        $user = Auth::user();
+        $profilePicture = $user->profilePictureMedia()->first();
+
+        if ($profilePicture) {
+            // Delete the file from storage
+            $this->uploadService->delete($profilePicture->path);
+
+            // Delete the media record from the database
+            $profilePicture->delete();
+
+            return back()->with('success', trans('Profile picture deleted successfully'));
+        }
+
+        return back()->with('error', trans('No profile picture found'));
+    } catch (Exception $e) {
+        Log::error('Error deleting profile picture: ' . $e->getMessage(), [
+            'user_id' => Auth::id(),
+            'exception' => $e,
+        ]);
+        return back()->with('error', trans('Error deleting profile picture'));
     }
+}
+
 }

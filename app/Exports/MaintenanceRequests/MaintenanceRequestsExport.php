@@ -28,7 +28,7 @@ class MaintenanceRequestsExport
         foreach ($maintenanceRequests as $request) {
             $location = $request->room ? $request->room->getLocation() : ['building' => 'N/A', 'apartment' => 'N/A', 'room' => 'N/A'];
             $sheet->setCellValue("A{$row}", $row - 1); 
-            $sheet->setCellValue("B{$row}", $request->user->getUsernameEnAttribute() ?? 'N/A');
+            $sheet->setCellValue("B{$row}", $request->user->getUsername() ?? 'N/A');
             $sheet->setCellValue("C{$row}", "Building {$location['building']} - Apartment {$location['apartment']} - Room {$location['room']}");
             $sheet->setCellValue("D{$row}", $request->issue_type ?? 'Unknown');
             $sheet->setCellValue("E{$row}", $request->description ?? 'No Description');

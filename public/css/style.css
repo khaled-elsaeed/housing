@@ -943,7 +943,7 @@ code {
 }
 
 .secondary-rgba {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
 }
 
 .success-rgba {
@@ -1454,7 +1454,7 @@ code {
 }
 .dropdown-menu .dropdown-item:hover {
   color: #263a5b;
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
 }
 
 .dropdown-divider {
@@ -1508,7 +1508,7 @@ code {
 }
 
 .bg-secondary-rgba {
-  background-color: rgba(129, 167, 205, 0.1) !important;
+  background-color: rgba(140, 47, 57, 0.1) !important;
 }
 
 .bg-success-rgba {
@@ -26466,7 +26466,7 @@ mark {
   display: none;
 }
 .topbar-mobile .mobile-togglebar a.topbar-toggle-hamburger:hover {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
 }
 .topbar-mobile .mobile-togglebar a.topbar-toggle-hamburger:hover img {
   filter: brightness(0) saturate(100%) invert(19%) sepia(51%) saturate(1863%) hue-rotate(322deg) brightness(100%) contrast(88%);
@@ -26494,7 +26494,7 @@ mark {
 }
 
 .topbar-mobile .mobile-togglebar .menu-hamburger:hover {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
 }
 .topbar-mobile .mobile-togglebar .menu-hamburger:hover img {
   filter: brightness(0) saturate(100%) invert(19%) sepia(51%) saturate(1863%) hue-rotate(322deg) brightness(100%) contrast(88%);
@@ -26517,7 +26517,7 @@ mark {
   width: 220px;
 }
 .topbar .searchbar input[type=search] {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
   color: #263a5b;
   font-size: 16px;
   padding-left: 20px;
@@ -26531,7 +26531,7 @@ mark {
   margin-left: 0px;
 }
 .topbar .searchbar .btn {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
   color: #263a5b;
   font-weight: 700;
   font-size: 18px;
@@ -26565,7 +26565,7 @@ mark {
   display: none;
 }
 .topbar .togglebar .menu-hamburger:hover {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
 }
 .topbar .togglebar .menu-hamburger:hover img {
   filter: brightness(0) saturate(100%) invert(19%) sepia(51%) saturate(1863%) hue-rotate(322deg) brightness(100%) contrast(88%);
@@ -26608,7 +26608,7 @@ mark {
   background-color: #8C2F39;
 }
 .topbar .infobar .infobar-icon:hover {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
 }
 .topbar .infobar .infobar-icon:hover img {
   filter: brightness(0) saturate(100%) invert(19%) sepia(51%) saturate(1863%) hue-rotate(322deg) brightness(100%) contrast(88%);
@@ -26619,7 +26619,7 @@ mark {
   border-radius: 3px;
 }
 .topbar .infobar .languagebar a:hover {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
 }
 .topbar .infobar .flag {
   display: inline-block;
@@ -26750,7 +26750,7 @@ mark {
   border-radius: 3px;
 }
 .infobar-settings-sidebar .infobar-settings-sidebar-head .infobar-settings-close:hover {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
 }
 .infobar-settings-sidebar .infobar-settings-sidebar-head .infobar-settings-close img {
   width: 20px;
@@ -26843,7 +26843,7 @@ mark {
   border-radius: 3px;
 }
 .profilebar a:hover {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
 }
 .profilebar img {
   width: 26px;
@@ -26939,8 +26939,8 @@ mark {
 
 .alert-secondary {
   color: #234E70;
-  background-color: rgba(129, 167, 205, 0.1);
-  border-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
+  border-color: rgba(140, 47, 57, 0.1);
 }
 .alert-secondary .alert-link {
   color: #234E70;
@@ -27148,7 +27148,7 @@ mark {
 }
 
 .badge-secondary-inverse {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
   color: #234E70;
 }
 .badge-secondary-inverse[href]:hover {
@@ -28364,7 +28364,7 @@ mark {
 }
 
 .btn-secondary-rgba {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
   border: none;
   color: #234E70;
 }
@@ -29440,7 +29440,7 @@ canvas {
   border-bottom: 1px solid rgba(0, 0, 0, 0.03);
 }
 .chat-list .chat-search input[type=search] {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
   color: #234E70;
   font-size: 16px;
   padding-left: 20px;
@@ -29454,7 +29454,7 @@ canvas {
   margin-left: 0px;
 }
 .chat-list .chat-search .btn {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
   color: #234E70;
   font-size: 18px;
   border-radius: 0 3px 3px 0;
@@ -29483,7 +29483,7 @@ canvas {
   margin-bottom: 0;
 }
 .chat-list .chat-user-list li:hover {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
 }
 
 .chat-detail {
@@ -29584,7 +29584,7 @@ canvas {
   overflow: hidden;
 }
 .accordion > .card .card-header {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
   border: none;
   padding: 0;
   margin-bottom: 0;
@@ -30120,7 +30120,7 @@ canvas {
   color: #234E70;
 }
 .email-rightbar .card-body tr:hover {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
 }
 .email-rightbar .card-body tr.email-unread td {
   font-weight: 600;
@@ -33275,14 +33275,14 @@ input[type=range]:focus {
 }
 
 .table-secondary {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
 }
 .table-secondary > td {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
   color: #234E70;
 }
 .table-secondary > th {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
   color: #234E70;
 }
 
@@ -33922,12 +33922,12 @@ table.focus-on tfoot tr.focused td {
   border-radius: 3px;
 }
 .cd-single-step .cd-more-info .cd-tour-nav a.cd-prev.inactive {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
   border: none;
   color: #234E70;
 }
 .cd-single-step .cd-more-info .cd-tour-nav a.cd-next.inactive {
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
   border: none;
   color: #234E70;
 }
@@ -33981,12 +33981,12 @@ table.focus-on tfoot tr.focused td {
     border-radius: 3px;
   }
   .cd-single-step .cd-more-info .cd-tour-nav a.cd-prev.inactive {
-    background-color: rgba(129, 167, 205, 0.1);
+    background-color: rgba(140, 47, 57, 0.1);
     border: none;
     color: #234E70;
   }
   .cd-single-step .cd-more-info .cd-tour-nav a.cd-next.inactive {
-    background-color: rgba(129, 167, 205, 0.1);
+    background-color: rgba(140, 47, 57, 0.1);
     border: none;
     color: #234E70;
   }
@@ -34052,7 +34052,7 @@ table.focus-on tfoot tr.focused td {
   width: 3px;
   top: 20px;
   left: 6px;
-  background: rgba(129, 167, 205, 0.1);
+  background: rgba(140, 47, 57, 0.1);
 }
 .activities-history-list .activities-history-item {
   margin-left: 30px;
@@ -34129,7 +34129,7 @@ table.focus-on tfoot tr.focused td {
 }
 .dash-widget .nav-pills .nav-link.active {
   color: #8C2F39;
-  background-color: rgba(129, 167, 205, 0.1);
+  background-color: rgba(140, 47, 57, 0.1);
 }
 
 .storage-num {

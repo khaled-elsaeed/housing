@@ -82,6 +82,10 @@ class User extends Authenticatable
         return $this->hasMany(Reservation::class);
     }
 
+    public function reservationRequests(){
+        return $this->hasMany(reservationRequests::class);
+    }
+
     public function invoices()
     {
         return $this->hasManyThrough(Invoice::class, Reservation::class);
@@ -162,9 +166,17 @@ class User extends Authenticatable
     }
 
     // Attribute Methods
-    public function getUsernameEnAttribute()
+    public function getUsername()
     {
+        $lang = app()->getLocale();
+
+        if ($lang == 'ar') {
+            return $this->first_name_ar . ' ' . $this->last_name_ar;
+        }
+
         return $this->first_name_en . ' ' . $this->last_name_en;
+
+
     }
 
     public function lastReservation($academicTermId)
@@ -211,19 +223,28 @@ public function media()
     return $this->hasOne(Media::class, 'id', 'media_id');
 }
 
-    public function profilePicture()
-    {
-        if ($this->hasProfilePicture()) {
-            return asset("storage/" . $this->media->path);
-        }
-
-        return asset('images/users/boy.svg');
+public function profilePicture()
+{
+    $media = $this->profilePictureMedia()->first();
+    
+    if ($media && $media->path) {
+        return asset("storage/" . $media->path);
     }
 
-    public function hasProfilePicture()
-    {
-        return $this->media && $this->media->path && $this->media->collection === 'profile_picture';
-    }
+    return asset('images/users/boy.svg');
+}
+
+public function hasProfilePicture()
+{
+    return (bool) $this->profilePictureMedia()->exists();
+}
+
+public function profilePictureMedia()
+{
+    return $this->media()->where('collection', 'profile_picture');
+}
+
+
     public function getLocationDetails()
     {
         $activeReservation = $this->reservations()

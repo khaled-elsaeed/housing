@@ -7,6 +7,7 @@ use App\Models\Reservation;
 use App\Models\Student;
 use App\Models\UserActivity;
 use App\Contracts\UploadServiceContract;
+use App\Events\InvoicePaid;  // Add this import
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -41,6 +42,7 @@ class StudentPaymentController extends Controller
         DB::beginTransaction();
 
         try {
+
             $paymentImage = $this->storePaymentImage($request->file("invoice-receipt"));
 
             $invoice->update([
@@ -51,6 +53,9 @@ class StudentPaymentController extends Controller
             ]);
 
             DB::commit();
+
+            event(new InvoicePaid($invoice));
+
 
             return response()->json(["message" => "Invoice paid successfully"], 200);
         } catch (\Exception $e) {

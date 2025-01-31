@@ -2,9 +2,12 @@
 
 namespace App\Services;
 
-use App\Models\{User, Room, Reservation, Invoice, InvoiceDetail};
+use App\Models\{User, Room, Reservation, Invoice, InvoiceDetail,ReservationRequest};
 use Illuminate\Support\Facades\{DB, Log};
 use Illuminate\Support\Carbon;
+use App\Events\ReservationCreated;
+use App\Events\ReservationRequested;
+
 
 class ReservationService
 {
@@ -209,6 +212,8 @@ class ReservationService
 
             DB::commit();
 
+            event(new ReservationCreated($newReservation));
+
             return $newReservation;
         } catch (\Exception $e) {
             DB::rollBack();
@@ -360,6 +365,19 @@ class ReservationService
         ?string $endDate = null
     ): array {
         try {
+            
+
+            if ($reservationPeriodType === "long") {
+
+
+                // Check if the user already has an active or upcoming reservation
+            if ($this->hasExistingReservation($reservationRequester, $academicTermId)) {
+                return [
+                    "success" => false,
+                    "reason" => trans('You already have an active or upcoming reservation in this period.'),
+                ];
+            }
+            
 
             // Check if the user already has a reservation in the specified academic term
             $existingReservation = Reservation::where('user_id', $reservationRequester->id)
@@ -374,16 +392,6 @@ class ReservationService
                 ];
             }
 
-            // Check if the user already has an active or upcoming reservation
-            if ($this->hasExistingReservation($reservationRequester, $academicTermId)) {
-                return [
-                    "success" => false,
-                    "reason" => trans('You already have an active or upcoming reservation in this period.'),
-                ];
-            }
-
-
-            // Check if the user already has pending  reservation requests
             if ($this->hasExistingReservationRequests($reservationRequester, $academicTermId)) {
                 return [
                     "success" => false,
@@ -391,7 +399,7 @@ class ReservationService
                 ];
             }
 
-            if ($reservationPeriodType === "long") {
+
                 return $this->handleLongTermPeriodReservation($reservationRequester, $academicTermId);
             }
 
@@ -426,43 +434,43 @@ class ReservationService
      * @return array
      */
     private function handleLongTermPeriodReservation(User $reservationRequester, ?int $academicTermId): array
-{
+    {
 
 
-    // Check room availability
-    $roomAvailabilityStatus = $this->checkLastReservedRoomAvailability($reservationRequester, $academicTermId);
+        // Check room availability
+        $roomAvailabilityStatus = $this->checkLastReservedRoomAvailability($reservationRequester, $academicTermId);
 
-    if (!$roomAvailabilityStatus["available"]) {
-        // Create a reservation request if the room is not available
-        $this->createReservationRequest(
+        if (!$roomAvailabilityStatus["available"]) {
+            // Create a reservation request if the room is not available
+            $this->createReservationRequest(
+                $reservationRequester,
+                $academicTermId, // Fix typo from $resademicTermId to $academicTermId
+                $reservationRequester->gender,
+                "long",
+                null,
+                null,
+                null
+            );
+
+            return [
+                "success" => true,
+                "message" => trans('Your reservation request has been submitted for admin approval.'),
+            ];
+        }
+
+        // Create a reservation if the room is available
+        $createdReservation = $this->createReservation(
             $reservationRequester,
-            $resademicTermId,
-            $reservationRequester->gender,
+            Room::find($roomAvailabilityStatus['roomId']),
             "long",
-            null,
-            null,
-            null
+            $academicTermId
         );
 
         return [
             "success" => true,
-            "message" => trans('Your reservation request has been submitted for admin approval.'),
+            "reservation" => $createdReservation,
         ];
     }
-
-    // Create a reservation if the room is available
-    $createdReservation = $this->createReservation(
-        $reservationRequester,
-        Room::find($roomAvailabilityStatus['roomId']),
-        "long",
-        $academicTermId
-    );
-
-    return [
-        "success" => true,
-        "reservation" => $createdReservation,
-    ];
-}
 
     /**
      * Handle short-term reservation requests.
@@ -481,6 +489,7 @@ class ReservationService
         ?string $startDate,
         ?string $endDate
     ): array {
+        
         $this->createReservationRequest(
             $reservationRequester,
             $academicTermId,
@@ -519,7 +528,8 @@ class ReservationService
         ?string $endDate = null
     ): void {
         try {
-            DB::table('reservation_requests')->insert([
+            
+            $ReservationRequest = ReservationRequest::create([
                 'user_id' => $user->id,
                 'academic_term_id' => $academicTermId,
                 'gender' => $gender,
@@ -531,7 +541,11 @@ class ReservationService
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-        } catch (\Exception $e) {
+
+            event(new ReservationRequested($ReservationRequest));
+
+        } 
+        catch (\Exception $e) {
             Log::error("Failed to create reservation request: " . $e->getMessage());
             throw new \Exception(trans('Failed to create reservation request: ') . $e->getMessage());
         }

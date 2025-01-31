@@ -14,7 +14,7 @@
                      </div>
                   </div>
                   <div class="flex-grow-1">
-                     <h1 class="h4 mb-1 fw-bold">{{ __('Welcome') }}, {{ $user->getUsernameEnAttribute() }}</h1>
+                     <h1 class="h4 mb-1 fw-bold">{{ __('Welcome') }}, {{ $user->getUsername() }}</h1>
                      <p class="text-primary-50 mb-0 d-none d-md-block">{{ __('Manage your housing and stay updated with your recent activities') }}</p>
                   </div>
                   <div class="flex-shrink-0 d-none d-md-block">
@@ -133,16 +133,21 @@
                      {{ $reservation->status === 'pending' ? 'bg-warning' : 
                      ($reservation->status === 'active' ? 'bg-success' : 'bg-danger') }}"
                      >
-                  {{ ucfirst($reservation->status) }}
+                  {{ __($reservation->status) }}
                   </span>
                </div>
                <div class="mb-3">
                   <h6 class="text-muted">{{ __('Term') }}</h6>
-                  <p class="mb-0">{{ ucfirst($reservation->academicTerm->name) }}</p>
+    <p class="mb-0">{{ __($reservation->academicTerm->semester) }}</p>
+
                </div>
                <div>
-                  <h6 class="text-muted">{{ __('Year') }}</h6>
-                  <p class="mb-0">{{ $reservation->academicTerm->academic_year }}</p>
+                  <h6 class="text-muted">{{ __('Academic Year') }}</h6>
+                  @if(app()->getLocale() == 'ar')
+    <p class="mb-0">{{ __($reservation->academicTerm->name)}}  {{ arabicNumbers($reservation->academicTerm->academic_year) }}</p>
+@else
+<p class="mb-0">{{  __($reservation->academicTerm->name) }}  {{ $reservation->academicTerm->academic_year }}</p>
+@endif
                </div>
             </div>
          </div>
@@ -189,7 +194,10 @@
                   <select name="reservation_academic_term_id" id="reservationTerm" class="form-select" required>
                      <option value="" disabled selected>{{ __('Select Term') }}</option>
                      @foreach($availableTerms as $term)
-                     <option value="{{ $term->id }}">{{ __($term->semester) }} term  ({{ $term->name }}-{{ $term->academic_year }})</option>
+                     <option value="{{ $term->id }}">
+    {{ __($term->semester) }}
+    ({{ __($term->name) }}  {{ app()->getLocale() == 'ar' ? arabicNumbers($term->academic_year) : $term->academic_year }})
+</option>
                      @endforeach
                   </select>
                   @if(!$user->lastReservation(null))
@@ -223,7 +231,7 @@
                <!-- Short Term Details (Day/Week/Month) -->
                <div id="shortPeriodDetails" class="d-none">
                   <label for="shortPeriodDuration" class="form-label">{{ __('Select Duration') }}</label>
-                  <select name="short_duration" id="shortPeriodDuration" class="form-select" required>
+                  <select name="short_period_duration" id="shortPeriodDuration" class="form-select" required>
                      <option value="" disabled selected>{{ __('Select Duration') }}</option>
                      <option value="day">{{ __('Day') }}</option>
                      <option value="week">{{ __('Week') }}</option>
@@ -253,6 +261,7 @@
       </div>
    </div>
 </div>
+
 <!-- Guide Modal -->
 <div class="modal fade" id="guideModal" tabindex="-1" aria-labelledby="guideModalLabel">
    <div class="modal-dialog modal-lg">
@@ -374,6 +383,7 @@
       </div>
    </div>
 </div>
+
 <!-- Help & Support Modal -->
 <div class="modal fade" id="helpSupportModal" tabindex="-1" aria-labelledby="helpSupportModalLabel">
    <div class="modal-dialog modal-lg">
@@ -406,14 +416,18 @@
                               <h6 class="fw-bold">{{ __('Female Housing Contacts:') }}</h6>
                               <ul class="list-group mb-3">
                                  <li class="list-group-item">
-                                    <strong>{{ __('Shaymaa Elaraby:') }}</strong><br>
+                                    <strong>{{ __('Shaima Abdel-Mordi:') }}</strong><br>
                                     {{ __('Role: Housing Manager') }}<br>
-                                    {{ __('Phone: +201061612433') }}
                                  </li>
                                  <li class="list-group-item">
-                                    <strong>{{ __('Hend Gabr:') }}</strong><br>
-                                    {{ __('Role: Housing Manager') }}<br>
-                                    {{ __('Phone: +20 106 295 1959') }}
+                                    <strong>{{ __('Hend Sabry:') }}</strong><br>
+                                    {{ __('Role: Supervisor-female') }}<br>
+                                    
+                                 </li>
+                                 <li class="list-group-item">
+                                    <strong>{{ __('Nagwa Ebrahim:') }}</strong><br>
+                                    {{ __('Role: Supervisor-female') }}<br>
+                                    
                                  </li>
                               </ul>
                            </div>
@@ -423,13 +437,15 @@
                               <ul class="list-group mb-3">
                                  <li class="list-group-item">
                                     <strong>{{ __('Mohamed Douad:') }}</strong><br>
-                                    {{ __('Role: Housing Manager') }}<br>
-                                    {{ __('Phone: [Insert Phone Number]') }}
+                                    {{ __('Role: Supervisor-male') }}<br>
                                  </li>
                                  <li class="list-group-item">
                                     <strong>{{ __('Ismail:') }}</strong><br>
-                                    {{ __('Role: Housing Manager') }}<br>
-                                    {{ __('Phone: [Insert Phone Number]') }}
+                                    {{ __('Role: Supervisor-male') }}<br>
+                                 </li>
+                                 <li class="list-group-item">
+                                    <strong>{{ __('Mohammed Al Rahmani:') }}</strong><br>
+                                    {{ __('Role: Supervisor-male') }}<br>
                                  </li>
                               </ul>
                            </div>
@@ -455,10 +471,10 @@
                         <h6 class="fw-bold">{{ __('IT Department (Available from 9 AM to 4 PM (IT Office))') }}</h6>
                         <ul class="list-group mb-3">
                            <li class="list-group-item">
-                              <strong>{{ __('Eng. Ahmed Elemam') }}</strong><br>
+                              <strong>{{ __('Ahmed Elemam') }}</strong><br>
                            </li>
                            <li class="list-group-item">
-                              <strong>{{ __('Eng. Khaled Zahran') }}</strong><br>
+                              <strong>{{ __('Khaled Zahran') }}</strong><br>
                            </li>
                         </ul>
                      </div>
