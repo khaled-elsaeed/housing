@@ -762,7 +762,7 @@
                            <select class="form-select" id="uploadPaymentMethod" name="payment_method" required>
                               <option value="" disabled selected>{{ __('Select Payment Method') }}</option>
                               <option value="instapay">{{ __('Instapay') }}</option>
-                              <option value="bank_transfer">{{ __('Bank Statement') }}</option>
+                              <option value="bank_transfer">{{ __('Bank Transfere') }}</option>
                            </select>
                         </div>
                         <!-- File Upload -->
