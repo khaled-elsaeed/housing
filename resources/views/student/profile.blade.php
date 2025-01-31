@@ -661,7 +661,7 @@
                               </h5>
                               <h6 class="card-subtitle mb-3 text-muted">
                                  @if ($invoice->reservation && $invoice->reservation->academicTerm)
-                                 {{ __($invoice->reservation->academicTerm->name) }} - {{ arabicNumbers($invoice->reservation->academicTerm->academic_year) }}
+                                 {{ __($invoice->reservation->academicTerm->name) }} - {{ app()->getLocale() == 'ar' ? arabicNumbers($invoice->reservation->academicTerm->academic_year) : $invoice->reservation->academicTerm->academic_year }}
                                  @else
                                  {{ __('No academic term specified') }}
                                  @endif

@@ -138,16 +138,16 @@
                </div>
                <div class="mb-3">
                   <h6 class="text-muted">{{ __('Term') }}</h6>
-    <p class="mb-0">{{ __($reservation->academicTerm->semester) }}</p>
+                  <p class="mb-0">{{ __($reservation->academicTerm->semester) }}</p>
 
                </div>
                <div>
                   <h6 class="text-muted">{{ __('Academic Year') }}</h6>
                   @if(app()->getLocale() == 'ar')
-    <p class="mb-0">{{ __($reservation->academicTerm->name)}}  {{ arabicNumbers($reservation->academicTerm->academic_year) }}</p>
-@else
-<p class="mb-0">{{  __($reservation->academicTerm->name) }}  {{ $reservation->academicTerm->academic_year }}</p>
-@endif
+                     <p class="mb-0">{{ __($reservation->academicTerm->name)}}  {{ arabicNumbers($reservation->academicTerm->academic_year) }}</p>
+                  @else
+                  <p class="mb-0">{{  __($reservation->academicTerm->name) }}  {{ $reservation->academicTerm->academic_year }}</p>
+                  @endif
                </div>
             </div>
          </div>
@@ -195,9 +195,9 @@
                      <option value="" disabled selected>{{ __('Select Term') }}</option>
                      @foreach($availableTerms as $term)
                      <option value="{{ $term->id }}">
-    {{ __($term->semester) }}
-    ({{ __($term->name) }}  {{ app()->getLocale() == 'ar' ? arabicNumbers($term->academic_year) : $term->academic_year }})
-</option>
+                        {{ __($term->semester) }}
+                        ({{ __($term->name) }}  {{ app()->getLocale() == 'ar' ? arabicNumbers($term->academic_year) : $term->academic_year }})
+                     </option>
                      @endforeach
                   </select>
                   @if(!$user->lastReservation(null))
