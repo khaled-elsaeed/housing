@@ -570,55 +570,78 @@ class ReservationService
      * @return array
      */
     private function checkRoomAvailability(int $targetRoomId, ?int $academicTermId): array
-    {
-        try {
+{
+    try {
+        $activeAcademicTermId = $this->getCurrentAcademicTermId();
 
-            $activeAcademicTermId = $this->getCurrentAcademicTermId();
+        // Fetch the room details
+        $roomToVerify = Room::findOrFail($targetRoomId);
 
-
-            if($activeAcademicTermId === $academicTermId){
-
-                $existingReservationConflict = Reservation::where("room_id", $targetRoomId)
-                    ->whereIn("status", ["active", "pending"])
-                    ->where("academic_term_id", $activeAcademicTermId)
-                    ->exists();
-            }
-            else{
-                $existingReservationConflict = Reservation::where('room_id',$targetRoomId)
-                ->where("status",['upcoming'])
-                ->where("academic_term_id", $activeAcademicTermId)
-                ->exists();
-            }
-            
-
-            if ($existingReservationConflict) {
-                return [
-                    "available" => false,
-                    "reason" => trans('Room has active or upcoming reservations.'),
-                ];
-            }
-
-            $roomToVerify = Room::findOrFail($targetRoomId);
-
-            if ($roomToVerify->purpose !== "accommodation" || $roomToVerify->status !== "active") {
-                return [
-                    "available" => false,
-                    "reason" => trans('Room is inactive or not for accommodation.'),
-                ];
-            }
-
-            return [
-                "available" => true,
-                "reason" => trans('Room is available.'),
-            ];
-        } catch (\Exception $e) {
-            Log::error("Room availability check failed: " . $e->getMessage());
+        // Check if the room is active and for accommodation
+        if ($roomToVerify->purpose !== "accommodation" || $roomToVerify->status !== "active") {
             return [
                 "available" => false,
-                "reason" => trans('Error checking room availability: ') . $e->getMessage(),
+                "reason" => trans('Room is inactive or not for accommodation.'),
             ];
         }
+
+        // Determine if the room is a double room
+        $isDoubleRoom = $roomToVerify->type === "double";
+
+        // Check for existing reservations based on the academic term
+        if ($activeAcademicTermId === $academicTermId) {
+            $existingReservations = Reservation::where("room_id", $targetRoomId)
+                ->whereIn("status", ["active", "pending"])
+                ->where("academic_term_id", $activeAcademicTermId)
+                ->get();
+        } else {
+            $existingReservations = Reservation::where('room_id', $targetRoomId)
+                ->where("status", "upcoming")
+                ->where("academic_term_id", $activeAcademicTermId)
+                ->get();
+        }
+
+        if ($isDoubleRoom) {
+
+            $maxCapacity = $roomToVerify->max_occupancy; 
+
+            if ($existingReservations->count() < $maxCapacity) {
+                
+                return [
+                    "available" => true,
+                    "reason" => trans('Room is available.'),
+                ];
+
+            } else {
+
+                return [
+                    "available" => false,
+                    "reason" => trans('Room is fully booked.'),
+                ];
+                
+            }
+        }
+
+        // For single rooms, check if there are any existing reservations
+        if ($existingReservations->isNotEmpty()) {
+            return [
+                "available" => false,
+                "reason" => trans('Room has active or upcoming reservations.'),
+            ];
+        }
+
+        return [
+            "available" => true,
+            "reason" => trans('Room is available.'),
+        ];
+    } catch (\Exception $e) {
+        Log::error("Room availability check failed: " . $e->getMessage());
+        return [
+            "available" => false,
+            "reason" => trans('Error checking room availability: ') . $e->getMessage(),
+        ];
     }
+}
 
     /**
      * Check if the user already has an active or upcoming reservation.
