@@ -123,11 +123,11 @@
             <img src="https://es.nmu.edu.eg/housing/images/email/invoice.svg" alt="Invoice" title="Invoice" class="centered-image">
 
             <h2 style="color:#1e293b;margin-top:0;">مرحباً {{ $user->first_name_ar .' '.$user->last_name_ar }}،</h2>
-            @if($invoice->reservation->status == 'planned' || $invoice->reservation->status == 'pending')
-    <p>تم استلام الدفع الخاص بحجزك في السكن الجامعي بجامعة المنصورة الجديدة بنجاح. يرجى الانتظار حتى يتم مراجعة الدفع من قبل إدارة السكن وتأكيد الحجز.</p>
-@elseif($invoice->reservation->status == 'completed')
-<p>تم استلام الدفع الخاص بحجزك في السكن الجامعي بجامعة المنصورة الجديدة بنجاح. يرجى الانتظار حتى يتم مراجعة الدفع من قبل إدارة السكن.</p>
-@endif
+            @if($invoice->reservation->status == 'upcoming' || $invoice->reservation->status == 'pending')
+             <p>تم استلام الدفع الخاص بحجزك في السكن الجامعي بجامعة المنصورة الجديدة بنجاح. يرجى الانتظار حتى يتم مراجعة الدفع من قبل إدارة السكن وتأكيد الحجز.</p>
+            @elseif($invoice->reservation->status == 'completed')
+            <p>تم استلام الدفع الخاص بحجزك في السكن الجامعي بجامعة المنصورة الجديدة بنجاح. يرجى الانتظار حتى يتم مراجعة الدفع من قبل إدارة السكن.</p>
+            @endif
             <div class="invoice->reservation-details">
                 <h3 style="color:#8C2F39;margin-top:0;">تفاصيل الحجز</h3>
                 <p>

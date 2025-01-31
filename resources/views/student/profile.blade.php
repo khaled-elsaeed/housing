@@ -657,7 +657,7 @@
                            <div class="card-body">
                               <!-- Title and Subtitle -->
                               <h5 class="card-title font-weight-bold text-primary">
-                                 {{ __('Housing') }} {{ $invoice->category }}
+                                 {{ __('Housing') }}
                               </h5>
                               <h6 class="card-subtitle mb-3 text-muted">
                                  @if ($invoice->reservation && $invoice->reservation->academicTerm)
