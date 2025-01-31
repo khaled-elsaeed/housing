@@ -207,8 +207,6 @@
    </div>
 </div> -->
 <!-- Include SweetAlert -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<!-- JavaScript for Academic Terms Management -->
 <script>
    document.addEventListener('DOMContentLoaded', function () {
        const addTermModal = new bootstrap.Modal(document.getElementById('addTermModal'));
