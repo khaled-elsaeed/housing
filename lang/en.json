@@ -541,5 +541,8 @@
     "Password has been reset successfully": "Password has been reset successfully",
     "This activation token is not valid": "This activation token is not valid",
     "This activation link has expired": "This activation link has expired",
-    "Your account has been activated successfully": "Your account has been activated successfully"
+    "Your account has been activated successfully": "Your account has been activated successfully",
+    "Please login first": "Please login first",
+    "Profile updated successfully": "Profile updated successfully",
+    "Error updating profile": "Error updating profile"
 }
