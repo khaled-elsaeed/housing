@@ -129,7 +129,7 @@
             <div class="reservation-details">
                 <h3 style="color:#8C2F39;margin-top:0;">تفاصيل الحجز</h3>
                 <p>
-                نوع الغرفة: {{ $invoice->reservation->room->type == 'single' ? 'غرفة مفردة' : 'غرفة مزدوجة' }}<br>
+                نوع الغرفة: {{ $reservation->room->type == 'single' ? 'مفردة' : 'مزدوجة' }}<br>
                 
                     @if($reservation->period_type == 'long')
                         المدة: فصل دراسي كامل 
