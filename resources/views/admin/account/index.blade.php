@@ -125,7 +125,7 @@
                   @foreach($users as $user)
 <tr>
     <td>{{ $loop->iteration }}</td>
-    <td>{{ $user->getUsernameEnAttribute() ?? 'N/A' }}</td>
+    <td>{{ $user->getUsername() ?? 'N/A' }}</td>
     <td>{{ $user->student?->national_id ?? 'N/A' }}</td>
     <td>{{ $user->email ?? 'N/A' }}</td>
     <td>

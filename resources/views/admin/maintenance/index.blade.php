@@ -226,7 +226,7 @@
                      @foreach($maintenanceRequests as $request)
                         <tr>
                            <td>{{ $loop->iteration }}</td>
-                           <td>{{ $request->user->getUsernameEnAttribute() }}</td>
+                           <td>{{ $request->user->getUsername() }}</td>
                            <?php
                               $location = method_exists($request->user, 'getLocationDetails') 
                               ? $request->user->getLocationDetails() 
