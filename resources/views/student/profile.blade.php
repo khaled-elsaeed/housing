@@ -430,10 +430,7 @@
                            <input type="text" class="form-control" id="sibling_faculty" name="sibling_faculty" value="{{ old('sibling_faculty', optional($user->sibling->faculty)->name_en) }}">
                         </div>
                      </div>
-                     <!-- Submit Button -->
-                     <div class="col-md-12 text-center mt-4">
-                        <button type="submit" class="btn btn-primary">{{ __('Save Changes') }}</button>
-                     </div>
+                    
                   </form>
                   @else
                   <p class="text-muted">{{ __('No sibling information available') }}</p>
