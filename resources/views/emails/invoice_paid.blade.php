@@ -123,12 +123,15 @@
             <img src="https://es.nmu.edu.eg/housing/images/email/invoice.svg" alt="Invoice" title="Invoice" class="centered-image">
 
             <h2 style="color:#1e293b;margin-top:0;">مرحباً {{ $user->first_name_ar .' '.$user->last_name_ar }}،</h2>
-            <p>تم استلام الدفع الخاص بحجزك في السكن الجامعي بجامعة المنصورة الجديدة بنجاح. يرجى الانتظار حتى يتم مراجعة الدفع من قبل إدارة السكن وتأكيد الحجز.</p>
-
+            @if($invoice->reservation->status == 'planned' || $invoice->reservation->status == 'pending')
+    <p>تم استلام الدفع الخاص بحجزك في السكن الجامعي بجامعة المنصورة الجديدة بنجاح. يرجى الانتظار حتى يتم مراجعة الدفع من قبل إدارة السكن وتأكيد الحجز.</p>
+@elseif($invoice->reservation->status == 'completed')
+<p>تم استلام الدفع الخاص بحجزك في السكن الجامعي بجامعة المنصورة الجديدة بنجاح. يرجى الانتظار حتى يتم مراجعة الدفع من قبل إدارة السكن.</p>
+@endif
             <div class="invoice->reservation-details">
                 <h3 style="color:#8C2F39;margin-top:0;">تفاصيل الحجز</h3>
                 <p>
-                    نوع الغرفة: {{ trans($invoice->reservation->room->type) }}<br>
+                    نوع الغرفة: {{ $invoice->reservation->room->type == 'single' ? 'غرفة مفردة' : 'غرفة مزدوجة' }}<br>
                 
                     @if($invoice->reservation->period_type == 'long')
                         المدة: فصل دراسي كامل 
@@ -138,9 +141,9 @@
                             (الفصل الدراسي الأول)
                         @endif
                         <br>
-                        $if($invoice->reservation->status == "planned")
+                        @if($invoice->reservation->status == "planned")
                         تاريخ البداية: {{ $invoice->reservation->academicTerm->start_date }}<br>
-                        $endif
+                        @endif
                     @else
                         @php
                             $start_date = \Carbon\Carbon::parse($invoice->reservation->start_date);
@@ -166,7 +169,7 @@
 
             <div class="info-box">
                 <strong>ملاحظة هامة:</strong>
-                <p style="margin:5px 0 0;">سيتم إعلامك عبر البريد الإلكتروني بمجرد تأكيد الحجز من قبل إدارة السكن.</p>
+                <p style="margin:5px 0 0;">سيتم إعلامك عبر البريد الإلكتروني بمجرد مراجعة عملية الدفع من قبل إدارة السكن.</p>
             </div>
 
             <center>
