@@ -26,6 +26,8 @@ use App\Http\Controllers\App\UploadController;
 
 use App\Http\Controllers\Student\StudentHomeController;
 use App\Http\Controllers\Student\StudentReservationController;
+use App\Http\Controllers\Student\StudentPaymentController;
+
 
 use App\Http\Controllers\Admin\Unit\{
     BuildingController,
