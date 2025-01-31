@@ -78,9 +78,9 @@ Route::middleware(Localization::class)
         Route::prefix('admin')->name('admin.')->middleware('can:is-admin')->group(function () {
 
 
-Route::post('/academic-terms', [AcademicTermController::class, 'create'])->name('academic.create');
-Route::post('/academic-terms/{id}/start', [AcademicTermController::class, 'start'])->name('academic.start');
-Route::post('/academic-terms/{id}/end', [AcademicTermController::class, 'end'])->name('academic.end');
+            Route::post('/academic-terms', [AcademicTermController::class, 'create'])->name('academic.create');
+            Route::post('/academic-terms/{id}/start', [AcademicTermController::class, 'start'])->name('academic.start');
+            Route::post('/academic-terms/{id}/end', [AcademicTermController::class, 'end'])->name('academic.end');
 
             Route::prefix('home')->name('home')->group(function () {
                 Route::get('/', [AdminHomeController::class, 'showDashboard'])->name('');

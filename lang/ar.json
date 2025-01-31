@@ -524,5 +524,11 @@
     "العربية": "العربية",
     "Begin": "بدء",
     "fall/spring": "خريف/ربيع",
-    "An error occurred": "حدث خطأ"
+    "An error occurred": "حدث خطأ",
+    "Academic term created successfully.": "تم إنشاء الفصل الدراسي بنجاح.",
+    "Another academic term is already active.": "هناك فصل دراسي نشط بالفعل.",
+    "Cannot start a completed academic term.": "لا يمكن بدء فصل دراسي مكتمل.",
+    "Academic term started successfully.": "تم بدء الفصل الدراسي بنجاح.",
+    "Only active academic terms can be ended.": "يمكن إنهاء الفصول الدراسية النشطة فقط.",
+    "Academic term ended successfully and all related reservations have been completed.": "تم إنهاء الفصل الدراسي بنجاح وتم إكمال جميع الحجوزات المرتبطة به."
 }

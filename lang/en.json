@@ -517,5 +517,11 @@
     "العربية": "العربية",
     "Begin": "Begin",
     "fall/spring": "fall/spring",
-    "An error occurred": "An error occurred"
+    "An error occurred": "An error occurred",
+    "Academic term created successfully.": "Academic term created successfully.",
+    "Another academic term is already active.": "Another academic term is already active.",
+    "Cannot start a completed academic term.": "Cannot start a completed academic term.",
+    "Academic term started successfully.": "Academic term started successfully.",
+    "Only active academic terms can be ended.": "Only active academic terms can be ended.",
+    "Academic term ended successfully and all related reservations have been completed.": "Academic term ended successfully and all related reservations have been completed."
 }

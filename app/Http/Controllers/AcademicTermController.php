@@ -39,7 +39,8 @@ class AcademicTermController extends Controller
 
         // Return JSON response
         return response()->json([
-            'message' => 'Academic term created successfully.',
+            'success' => true,
+            'message' => trans('Academic term created successfully.'),
         ], 201);
     }
 
@@ -58,12 +59,12 @@ class AcademicTermController extends Controller
 
             // Check if there's already an active term
             if (AcademicTerm::where('status', 'active')->exists()) {
-                throw new Exception('Another academic term is already active.');
+                throw new Exception(trans('Another academic term is already active.'));
             }
 
             // Check if the term is already completed
             if ($academicTerm->status === 'completed') {
-                throw new Exception('Cannot start a completed academic term.');
+                throw new Exception(trans('Cannot start a completed academic term.'));
             }
 
             $academicTerm->update([
@@ -71,15 +72,22 @@ class AcademicTermController extends Controller
                 'start_date' => now()
             ]);
 
+            // Update all related reservations to completed
+            Reservation::where('academic_term_id', $id)
+                      ->where('status', 'upcoming')
+                      ->update(['status' => 'active']);
+
             DB::commit();
 
             return response()->json([
-                'message' => 'Academic term started successfully.'
+                'success' => true,
+                'message' => trans('Academic term started successfully.')
             ]);
 
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
+                'success' => false,
                 'error' => $e->getMessage()
             ], 400);
         }
@@ -100,7 +108,7 @@ class AcademicTermController extends Controller
 
             // Check if the term is active
             if ($academicTerm->status !== 'active') {
-                throw new Exception('Only active academic terms can be ended.');
+                throw new Exception(trans('Only active academic terms can be ended.'));
             }
 
             $academicTerm->update([
@@ -116,12 +124,14 @@ class AcademicTermController extends Controller
             DB::commit();
 
             return response()->json([
-                'message' => 'Academic term ended successfully and all related reservations have been completed.'
+                'success' => true,
+                'message' => trans('Academic term ended successfully and all related reservations have been completed.')
             ]);
 
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json([
+                'success' => false,
                 'error' => $e->getMessage()
             ], 400);
         }

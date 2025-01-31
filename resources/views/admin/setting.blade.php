@@ -86,8 +86,8 @@
                         </div>
                         <div class="row g-3">
                            @foreach($academicTerms as $term)
-                           <div class="col-md-4 col-lg-3">
-                              <div class="card border-0 shadow-sm rounded-3">
+                           <div class="col-12 col-sm-6 col-md-4 col-xl-3">
+                              <div class="card border-0 shadow-sm rounded-3 h-100">
                                  <div class="card-header {{ $term->status === 'active' ? 'bg-primary' : ($term->status === 'completed' ? 'bg-secondary' : 'bg-light') }} text-white d-flex justify-content-between align-items-center">
                                     <div>
                                        <h6 class="mb-0 text-white">{{ trans($term->name) }}</h6>
@@ -123,7 +123,7 @@
                                        <i class="feather icon-play"></i>
                                        </button>
                                        <button class="btn btn-sm btn-secondary end-term-btn" data-id="{{ $term->id }}" {{ $term->status === 'inactive' ? 'disabled' : '' }}>
-                                       End    
+                                       {{__('End')}}    
                                        <i class="feather icon-stop-circle"></i>
                                        </button>
                                        <div class="btn-group" role="group">
@@ -258,6 +258,13 @@
                        text: data.message,
                    });
                }
+           })
+           .catch(error => {
+               swal({
+                   type: 'error',
+                   title: '{{ __("Error") }}',
+                   text: '{{ __("An unexpected error occurred") }}',
+               });
            });
        });
    
@@ -275,11 +282,11 @@
                .then(response => response.json())
                .then(data => {
                    swal({
-                       type: data.message ? 'success' : 'error',
-                       title: data.message ? __('Success') : __('Error'),
-                       text: data.message || __('An error occurred'),
+                       type: data.success ? 'success' : 'error',
+                       title: data.success ? '{{ __("Success") }}' : '{{ __("Error") }}',
+                       text: data.message || '{{ __("An error occurred") }}',
                    }).then(() => {
-                       if (data.message) {
+                       if (data.success) {
                            window.location.reload();
                        }
                    });
@@ -292,14 +299,13 @@
            button.addEventListener('click', function () {
                const termId = this.dataset.id;
                swal({
-                   title: 'Are you sure?',
-                   text: 'This will end the academic term and mark all related reservations as completed.',
-                   type 'warning',
+                   title: '{{ __("Are you sure?") }}',
+                   text: '{{ __("This will end the academic term and mark all related reservations as completed.") }}',
+                   type: 'warning',
                    showCancelButton: true,
-                   confirmButtonText: 'Yes, end it',
-                   cancelButtonText: 'Cancel'
+                   confirmButtonText: '{{ __("Yes, end it") }}',
+                   cancelButtonText: '{{ __("Cancel") }}'
                }).then((result) => {
-                   if (result.isConfirmed) {
                        fetch(`{{ url('admin/academic-terms') }}/${termId}/end`, {
                            method: 'POST',
                            headers: {
@@ -310,16 +316,16 @@
                        .then(response => response.json())
                        .then(data => {
                            swal({
-                               type data.message ? 'success' : 'error',
-                               title: data.message ? __('Success') : __('Error'),
-                               text: data.message || __('An error occurred'),
+                               type: data.success ? 'success' : 'error',
+                               title: data.success ? '{{ __("Success") }}' : '{{ __("Error") }}',
+                               text: data.message || '{{ __("An error occurred") }}',
                            }).then(() => {
-                               if (data.message) {
+                               if (data.success) {
                                    window.location.reload();
                                }
                            });
                        });
-                   }
+                   
                });
            });
        });
@@ -337,7 +343,6 @@
                    cancelButtonColor: '#3085d6',
                    confirmButtonText: '{{ __("Delete") }}'
                }).then((result) => {
-                   if (result.isConfirmed) {
                        fetch(`/admin/settings/academic-terms/${termId}/delete`, {
                            method: 'DELETE',
                            headers: {
@@ -346,23 +351,17 @@
                        })
                        .then(response => response.json())
                        .then(data => {
-                           if (data.success) {
-                               swal({
-                                   type: 'success',
-                                   title: '{{ __("Deleted!") }}',
-                                   text: data.message,
-                               }).then(() => {
+                           swal({
+                               type: data.success ? 'success' : 'error',
+                               title: data.success ? '{{ __("Deleted!") }}' : '{{ __("Error") }}',
+                               text: data.message,
+                           }).then(() => {
+                               if (data.success) {
                                    window.location.reload();
-                               });
-                           } else {
-                               swal({
-                                   type: 'error',
-                                   title: '{{ __("Error") }}',
-                                   text: data.message,
-                               });
-                           }
+                               }
+                           });
                        });
-                   }
+                   
                });
            });
        });
