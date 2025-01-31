@@ -40,7 +40,7 @@ use App\Http\Controllers\Student\StudentPermissionController;
 use App\Http\Controllers\Student\StudentProfileController;
 use App\Http\Controllers\App\LocalizationController;
 
-use App\Http\Controllers\student\StudentProfileCompleteController;
+use App\Http\Controllers\Student\StudentProfileCompleteController; // Fix casing
 
 use App\Http\Controllers\DataTableController;
 use App\Http\Controllers\Admin\Account\UserAccountController;
@@ -224,41 +224,35 @@ Route::middleware(Localization::class)
             Route::get('permission', [StudentPermissionController::class, 'showForm'])->name('permission.form');
             Route::post('permission/store', [StudentPermissionController::class, 'store'])->name('permission.store');
         });
+
+        // Move these routes inside auth middleware
+        Route::get('/get-cities/{governorateId}', [StudentProfileController::class, 'getCitiesByGovernorate'])->name('get-cities');
+        Route::get('/get-programs/{facultyId}', [StudentProfileController::class, 'getProgramsForFaculty'])->name('get-programs');
+        Route::get('/profile', [StudentProfileController::class, 'index'])->name('student.profile');
+        Route::put('/profile/update', [StudentProfileController::class, 'update'])->name('student.profile.update');
+        Route::post('profile/update-picture', [StudentProfileController::class, 'updateProfilePicture'])->name('student.profile.update-picture');
+        Route::DELETE('profile/delete-picture', [StudentProfileController::class, 'deleteProfilePicture'])->name('student.profile.delete-picture');
+        Route::put('/student/address', [StudentProfileController::class, 'updateAddress'])->name('student.updateAddress');
+        Route::put('/student/academic-info', [StudentProfileController::class, 'updateAcademicInfo'])->name('student.updateAcademicInfo');
+        Route::put('/student/update-parent-info', [StudentProfileController::class, 'updateParentInfo'])->name('student.updateParentInfo');
+        Route::POST('/student/sibling-info', [StudentProfileController::class, 'updateOrCreateSiblingInfo'])->name('student.updateOrCreateSiblingInfo');
+        Route::POST('/student/emergency-info', [StudentProfileController::class, 'updateOrCreateEmergencyInfo'])->name('student.updateOrCreateEmergencyInfo');
+
+        Route::get('complete-profile', [StudentProfileCompleteController::class, 'index'])->name('profile.complete');
+        Route::post('complete-profile/store', [StudentProfileCompleteController::class, 'store'])->name('profile.store');
+
+        // Move payment routes inside auth middleware
+        Route::post('/student/payment/upload', [StudentPaymentController::class, 'payInvoice'])->name('student.invoice.pay');
+        Route::post('/student/invoice/detail', [StudentPaymentController::class, 'getInvoiceDetails'])->name('student.payment.info');
+        Route::post('/student/invoice/add', [StudentPaymentController::class, 'addInvoice'])->name('student.payment.add');
     });
 
     // Logout Route
     Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
-    Route::get('/get-cities/{governorateId}', [StudentProfileController::class, 'getCitiesByGovernorate'])->name('get-cities');
-    Route::get('/get-programs/{facultyId}', [StudentProfileController::class, 'getProgramsForFaculty'])->name('get-programs');
-    Route::get('/profile', [StudentProfileController::class, 'index'])->name('student.profile');
-    Route::put('/profile/update', [StudentProfileController::class, 'update'])->name('student.profile.update');
-    Route::post('profile/update-picture', [StudentProfileController::class, 'updateProfilePicture'])->name('student.profile.update-picture');
-    Route::DELETE('profile/delete-picture', [StudentProfileController::class, 'deleteProfilePicture'])->name('student.profile.delete-picture');
-    Route::put('/student/address', [StudentProfileController::class, 'updateAddress'])->name('student.updateAddress');
-    Route::put('/student/academic-info', [StudentProfileController::class, 'updateAcademicInfo'])->name('student.updateAcademicInfo');
-    Route::put('/student/update-parent-info', [StudentProfileController::class, 'updateParentInfo'])->name('student.updateParentInfo');
-    Route::POST('/student/sibling-info', [StudentProfileController::class, 'updateOrCreateSiblingInfo'])->name('student.updateOrCreateSiblingInfo');
-    Route::POST('/student/emergency-info', [StudentProfileController::class, 'updateOrCreateEmergencyInfo'])->name('student.updateOrCreateEmergencyInfo');
-
-
-    Route::get('complete-profile', [StudentProfileCompleteController::class, 'index'])->name('profile.complete');
-    Route::post('complete-profile/store', [StudentProfileCompleteController::class, 'store'])->name('profile.store');
-
-    
 });
 
-use App\Http\Controllers\Student\StudentPaymentController;
-
-// Route to handle payment receipt upload
-Route::post('/student/payment/upload', [StudentPaymentController::class, 'payInvoice'])->name('student.invoice.pay');
-Route::post('/student/invoice/detail', [StudentPaymentController::class, 'getInvoiceDetails'])->name('student.payment.info');
-Route::post('/student/invoice/add', [StudentPaymentController::class, 'addInvoice'])->name('student.payment.add');
-
-use App\Http\Controllers\App\UploadController;
-
+// Keep only non-auth routes outside
 Route::post('upload', UploadController::class)->name('upload');
-
-
 Route::post('/extend-session', function () {
     // Extend the session lifetime
     session()->migrate(true, 15);
