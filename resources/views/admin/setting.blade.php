@@ -174,61 +174,13 @@
 </div>
 <!-- End row -->
 <!-- Modal for Adding/Editing Academic Term -->
-<!-- <div class="modal fade" id="addTermModal" tabindex="-1" aria-labelledby="addTermModalLabel" aria-hidden="true">
-   <div class="modal-dialog">
-      <div class="modal-content">
-         <div class="modal-header">
-            <h5 class="modal-title" id="addTermModalLabel">{{ __('Add New Term') }}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-         </div>
-         <div class="modal-body">
-            <form id="termForm">
-               @csrf
-               <input type="hidden" id="termId" name="term_id">
-               <div class="mb-3">
-                  <label for="termName" class="form-label">{{ __('Term Name') }}</label>
-                  <input type="text" class="form-control" id="termName" name="term_name" required>
-               </div>
-               <div class="mb-3">
-                  <label for="startDate" class="form-label">{{ __('Start Date') }}</label>
-                  <input type="date" class="form-control" id="startDate" name="start_date" required>
-               </div>
-               <div class="mb-3">
-                  <label for="endDate" class="form-label">{{ __('End Date') }}</label>
-                  <input type="date" class="form-control" id="endDate" name="end_date" required>
-               </div>
-            </form>
-         </div>
-         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
-            <button type="button" class="btn btn-primary" id="saveTermBtn">{{ __('Save Term') }}</button>
-         </div>
-      </div>
-   </div>
-</div> -->
+
 <!-- Include SweetAlert -->
 <script>
    document.addEventListener('DOMContentLoaded', function () {
-       const addTermModal = new bootstrap.Modal(document.getElementById('addTermModal'));
    
-       // Open Modal for Adding New Term
-       document.querySelector('[data-bs-target="#addTermModal"]').addEventListener('click', function () {
-           document.getElementById('addTermModalLabel').innerText = '{{ __("Add New Term") }}';
-           document.getElementById('termForm').reset();
-           document.getElementById('termId').value = '';
-       });
-   
-       // Open Modal for Editing Term
-       document.querySelectorAll('.edit-term-btn').forEach(button => {
-           button.addEventListener('click', function () {
-               document.getElementById('addTermModalLabel').innerText = '{{ __("Edit Term") }}';
-               document.getElementById('termId').value = this.dataset.id;
-               document.getElementById('termName').value = this.dataset.name;
-               document.getElementById('startDate').value = this.dataset.start;
-               document.getElementById('endDate').value = this.dataset.end;
-               addTermModal.show();
-           });
-       });
+       
+       
    
        // Save Term (Add/Edit)
        document.getElementById('saveTermBtn').addEventListener('click', function () {
@@ -329,41 +281,7 @@
            });
        });
    
-       // Delete Term
-       document.querySelectorAll('.delete-term-btn').forEach(button => {
-           button.addEventListener('click', function () {
-               const termId = this.dataset.id;
-               swal({
-                   title: '{{ __("Are you sure?") }}',
-                   text: '{{ __("You won\'t be able to revert this!") }}',
-                   type: 'warning',
-                   showCancelButton: true,
-                   confirmButtonColor: '#d33',
-                   cancelButtonColor: '#3085d6',
-                   confirmButtonText: '{{ __("Delete") }}'
-               }).then((result) => {
-                       fetch(`/admin/settings/academic-terms/${termId}/delete`, {
-                           method: 'DELETE',
-                           headers: {
-                               'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                           }
-                       })
-                       .then(response => response.json())
-                       .then(data => {
-                           swal({
-                               type: data.success ? 'success' : 'error',
-                               title: data.success ? '{{ __("Deleted!") }}' : '{{ __("Error") }}',
-                               text: data.message,
-                           }).then(() => {
-                               if (data.success) {
-                                   window.location.reload();
-                               }
-                           });
-                       });
-                   
-               });
-           });
-       });
+       
    });
 </script>
 @endsection
