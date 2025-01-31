@@ -8,6 +8,7 @@ use App\Services\ReservationService;
 use App\Models\AcademicTerm;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use App\Models\UserActivity;
 
 class StudentReservationController extends Controller
 {
@@ -141,6 +142,11 @@ private function handleShortTermReservation(array $reservationData)
     private function handleReservationResult(array $result)
     {
         if ($result['success']) {
+            UserActivity::create([
+                'user_id' => auth()->id(),
+                'activity_type' => 'Reservation Created',
+                'description' => 'Reservation created successfully'
+            ]);
             return response()->json([
                 'success' => true,
                 'message' => trans('Reservation created successfully!'),

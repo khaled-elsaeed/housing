@@ -67,7 +67,7 @@
                </a>
                @endif
                <!-- Emergency Info Tab -->
-               @if(optional($user->parent)->living_abroad == 1 && optional($user->EmergencyContact) || optional($user->parent)->living_abroad !== null)
+               @if(optional($user->parent)->living_abroad == 1 && optional($user->EmergencyContact))
                <a class="nav-link mb-2" id="v-pills-emergency-info-tab" data-bs-toggle="pill"
                   href="#v-pills-emergency-info" role="tab" aria-controls="v-pills-emergency-info" aria-selected="false">
                <i class="feather icon-alert-triangle me-2"></i>{{ __('Emergency Info') }}
@@ -661,7 +661,7 @@
                               </h5>
                               <h6 class="card-subtitle mb-3 text-muted">
                                  @if ($invoice->reservation && $invoice->reservation->academicTerm)
-                                 {{ $invoice->reservation->academicTerm->name }} - {{ $invoice->reservation->academicTerm->academic_year }}
+                                 {{ __($invoice->reservation->academicTerm->name) }} - {{ arabicNumbers($invoice->reservation->academicTerm->academic_year) }}
                                  @else
                                  {{ __('No academic term specified') }}
                                  @endif

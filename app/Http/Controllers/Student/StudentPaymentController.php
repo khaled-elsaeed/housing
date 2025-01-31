@@ -55,7 +55,11 @@ class StudentPaymentController extends Controller
             DB::commit();
 
             event(new InvoicePaid($invoice));
-
+            UserActivity::create([
+                'user_id' => auth()->id(),
+                'activity_type' => 'Invoice Upload',
+                'description' => 'Invoice uploaded successfully'
+            ]);
 
             return response()->json(["message" => "Invoice paid successfully"], 200);
         } catch (\Exception $e) {

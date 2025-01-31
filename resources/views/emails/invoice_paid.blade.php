@@ -128,7 +128,7 @@
             <div class="invoice->reservation-details">
                 <h3 style="color:#8C2F39;margin-top:0;">تفاصيل الحجز</h3>
                 <p>
-                    نوع الغرفة: {{ $invoice->reservation->room->type }}<br>
+                    نوع الغرفة: {{ trans($invoice->reservation->room->type) }}<br>
                 
                     @if($invoice->reservation->period_type == 'long')
                         المدة: فصل دراسي كامل 
@@ -138,7 +138,9 @@
                             (الفصل الدراسي الأول)
                         @endif
                         <br>
+                        $if($invoice->reservation->status == "planned")
                         تاريخ البداية: {{ $invoice->reservation->academicTerm->start_date }}<br>
+                        $endif
                     @else
                         @php
                             $start_date = \Carbon\Carbon::parse($invoice->reservation->start_date);

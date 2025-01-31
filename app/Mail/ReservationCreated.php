@@ -20,7 +20,7 @@ class ReservationCreated extends Mailable
     public function __construct(Reservation $reservation)
     {
         $this->reservation = $reservation;
-        $this->user = $reservation->user; // Automatically get the associated user from the reservation
+        $this->user = $reservation->user; 
     }
 
 
@@ -30,7 +30,7 @@ class ReservationCreated extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Reservation Creation',
+            subject: 'تأكيد الحجز',
         );
     }
 

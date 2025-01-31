@@ -89,9 +89,9 @@
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                      <div class="d-flex align-items-center">
                         <div class="me-3">
-                           @if($activity->activity_type === 'reservation Confirmed')
+                           @if($activity->activity_type === 'Reservation Created')
                            <i class="fa fa-check-circle text-success"></i>
-                           @elseif($activity->activity_type === 'Documents Uploaded')
+                           @elseif($activity->activity_type === 'Invoice Upload')
                            <i class="fa fa-upload text-primary"></i>
                            @elseif($activity->activity_type === 'Room Assignment')
                            <i class="fa fa-building text-info"></i>
@@ -102,8 +102,8 @@
                            @endif
                         </div>
                         <div>
-                           <h6 class="mb-1">{{ $activity->activity_type }}</h6>
-                           <small class="text-muted">{{ $activity->description }}</small>
+                           <h6 class="mb-1">{{ __($activity->activity_type) }}</h6>
+                           <small class="text-muted">{{ __($activity->description) }}</small>
                         </div>
                      </div>
                      <span class="text-muted small">{{ $activity->created_at->diffForHumans() }}</span>
