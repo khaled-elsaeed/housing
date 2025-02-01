@@ -110,8 +110,8 @@ class CompleteProfileService
 
         return [
             'personalInformation' => [
-                'name_en' => $archiveData->name_en,
-                'name_ar' => $archiveData->name_ar,
+                'nameEn' => $archiveData->name_en,
+                'nameAr' => $archiveData->name_ar,
                 'nationalId' => $archiveData->national_id,
                 'birthDate' => $archiveData->birthDate,
                 'gender' => $archiveData->gender,

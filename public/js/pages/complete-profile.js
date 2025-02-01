@@ -387,4 +387,46 @@ $(document).ready(function() {
     const isParentAbroad = document.getElementById('isParentAbroad');
     
     isParentAbroad.addEventListener('change', toggleAbroadFields);
+
+  
+
+function generateGenderAndBirthdate(nationalId) {
+    // Validate the national ID
+    if (typeof nationalId !== 'string' || nationalId.length !== 14 || !/^\d{14}$/.test(nationalId)) {
+        return { error: "Please enter a valid 14-digit national ID." };
+    }
+
+    // Extract birthdate from the first 7 digits
+    const yearPart = nationalId.substring(0, 2); // YY
+    const monthPart = nationalId.substring(2, 4); // MM
+    const dayPart = nationalId.substring(4, 6); // DD
+
+    // Determine the full year based on the first digit
+    const firstDigit = nationalId.charAt(0);
+    let fullYear;
+    if (firstDigit === '2' || firstDigit === '3') {
+        fullYear = `19${yearPart}`; // 1900s
+    } else if (firstDigit === '4' || firstDigit === '5') {
+        fullYear = `20${yearPart}`; // 2000s
+    } else {
+        return { error: "Invalid year in national ID." };
+    }
+
+    // Construct the birthdate in YYYY-MM-DD format
+    const birthdate = `${fullYear}-${monthPart}-${dayPart}`;
+
+    // Extract the 13th digit (index 12 in zero-based indexing)
+    const genderDigit = nationalId.charAt(12);
+
+    // Determine gender based on the digit
+    const gender = genderDigit % 2 === 1 ? "Male" : "Female";
+
+    // Return both gender and birthdate
+    return {
+        gender: gender,
+        birthdate: birthdate
+    };
+}
+    
+   
 });
