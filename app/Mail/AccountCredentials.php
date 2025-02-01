@@ -31,7 +31,7 @@ class AccountCredentials extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'بيانات الدخول الخاصة بك - بوابة  الجامعي',
+            subject: 'بيانات الدخول الخاصة بك - بوابة السكن الجامعي',
         );
     }
 

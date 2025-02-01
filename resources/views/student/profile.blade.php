@@ -84,7 +84,7 @@
                @if($user->reservations)
                <a class="nav-link mb-2" id="v-pills-payments-info-tab" data-bs-toggle="pill"
                   href="#v-pills-payments-info" role="tab" aria-controls="v-pills-payments-info" aria-selected="false">
-               <i class="feather icon-credit-card me-2"></i>{{ __('Payments Info') }}
+               <i class="feather icon-credit-card me-2"></i>{{ __('Payments') }}
                </a>
                @endif
             </div>
@@ -353,18 +353,18 @@
                               <input type="text" class="form-control" id="parent_mobile" name="parent_mobile" 
                                  value="{{ old('parent_mobile', $user->parent->mobile) }}" disabled>
                            </div>
-                           <!-- Living Abroad -->
-                           <div class="col-md-6">
-                              <label for="parent_living_abroad">{{ __('Living Abroad') }}</label>
-                              <input type="text" class="form-control" id="parent_living_abroad" name="parent_living_abroad" 
-                                 value="{{ old('parent_living_abroad', $user->parent->living_abroad == 1 ? 'Yes' : 'No') }}" disabled>
-                           </div>
-                           <!-- Living With parents -->
-                           <div class="col-md-6">
-                              <label for="parent_living_with">{{ __('Living With parents') }}</label>
-                              <input type="text" class="form-control" id="parent_living_with" name="parent_living_with" 
-                                 value="{{ old('parent_living_with', $user->parent->living_with == 1 ? 'Yes' : 'No') }}" disabled>
-                           </div>
+                              <!-- Living Abroad -->
+                              <div class="col-md-6">
+                                <label for="parent_living_abroad">{{ __('Living Abroad') }}</label>
+                                <input type="text" class="form-control" id="parent_living_abroad" name="parent_living_abroad" 
+                                  value="{{ old('parent_living_abroad', $user->parent->living_abroad == 1 ? __('Yes') : __('No')) }}" disabled>
+                              </div>
+                              <!-- Living With parents -->
+                              <div class="col-md-6">
+                                <label for="parent_living_with">{{ __('Living With parents') }}</label>
+                                <input type="text" class="form-control" id="parent_living_with" name="parent_living_with" 
+                                  value="{{ old('parent_living_with', $user->parent->living_with == 1 ? __('Yes') : __('No')) }}" disabled>
+                              </div>
                            @if($user->parent->living_with == 0) <!-- Only show if living_with is 0 (no) -->
                            <div class="col-md-6">
                               <label for="parent_city">{{ __('Parent City') }}</label>

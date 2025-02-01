@@ -30,7 +30,7 @@ class ReservationCreated extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'تأكيد الحجز',
+            subject: 'تأكيد الحجز الخاص بك',
         );
     }
 

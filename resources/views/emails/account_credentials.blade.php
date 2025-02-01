@@ -53,12 +53,9 @@
             justify-content: space-between;
             align-items: center;
         }
-        .copy-btn {
-            background: #8C2F39;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
+        .copy-link {
+            color: #8C2F39;
+            text-decoration: underline;
             cursor: pointer;
             font-size: 12px;
         }
@@ -110,14 +107,14 @@
                         <span style="color:#234E70;" >اسم المستخدم:</span>
                         <strong id="username">{{ $user->email}}</strong>
                     </div>
-                    <button class="copy-btn" onclick="copyToClipboard('username')">نسخ</button>
+                    <a class="copy-link" onclick="copyToClipboard('username')">نسخ</a>
                 </div>
                 <div class="credentials-item">
                     <div>
                         <span style="color:#234E70;">كلمة المرور:</span>
                         <strong id="password">{{ $password }}</strong>
                     </div>
-                    <button class="copy-btn" onclick="copyToClipboard('password')">نسخ</button>
+                    <a class="copy-link" onclick="copyToClipboard('password')">نسخ</a>
                 </div>
             </div>
 

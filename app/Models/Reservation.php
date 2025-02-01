@@ -57,7 +57,7 @@ class Reservation extends Model
     public function getFormattedStartDateAttribute()
     {
         if($this->period_type === 'long'){
-            return $this->academicTerm->start_date ? Carbon::parse($this->academicTerm->start_date)->format('d M Y') : 'Not specified';
+            return $this->academicTerm->start_date ? Carbon::parse($this->academicTerm->start_date)->format('d M Y') : trans('Not specified');
         } else {
             return $this->start_date ? Carbon::parse($this->start_date)->format('d M Y') : null;
 
@@ -67,7 +67,7 @@ class Reservation extends Model
     public function getFormattedEndDateAttribute()
     {
         if($this->period_type === 'long'){
-            return $this->academicTerm->end_date ? Carbon::parse($this->academicTerm->end_date)->format('d M Y') : 'Not specified';
+            return $this->academicTerm->end_date ? Carbon::parse($this->academicTerm->end_date)->format('d M Y') : trans('Not specified');
         } else {
             return $this->end_date ? Carbon::parse($this->end_date)->format('d M Y') : null;
 
