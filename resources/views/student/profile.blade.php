@@ -647,57 +647,77 @@
                   <div class="row">
                      <!-- Existing Invoice Cards -->
                      @foreach($invoices as $invoice)
-                     <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
+                       <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
                         <div class="card shadow-sm border-primary">
                            <!-- Image Section -->
                            <img class="card-img-top rounded-top" src="{{ asset('images/invoice/invoice.svg') }}" alt="{{ __('Housing Fees') }}">
                            <div class="card-body">
-                              <!-- Title and Subtitle -->
-                              <h5 class="card-title font-weight-bold text-primary">
-                                 {{ __('Housing') }}
-                              </h5>
-                              <h6 class="card-subtitle mb-3 text-muted">
-                                 @if ($invoice->reservation && $invoice->reservation->academicTerm)
-                                 {{ __($invoice->reservation->academicTerm->name) }} - {{ app()->getLocale() == 'ar' ? arabicNumbers($invoice->reservation->academicTerm->academic_year) : $invoice->reservation->academicTerm->academic_year }}
-                                 @else
-                                 {{ __('No academic term specified') }}
-                                 @endif
+                            <!-- Title and Subtitle -->
+                            <h5 class="card-title font-weight-bold text-primary">
+                              {{ __('Housing') }}
+                            </h5>
+                            <h6 class="card-subtitle mb-3 text-muted">
+                            @if($invoice->reservation->period_type === 'long')
+                            <h6 class="text">
+                              @if(app()->getLocale() == 'ar')
+                            {{ __('Term') }} {{ $invoice->reservation->academicTerm->term }}
+
+                                {{ __($invoice->reservation->academicTerm->semester) }}  
+                                @else
+
+                                {{ __($invoice->reservation->academicTerm->semester) }}  
+                                {{ __('Term') }} {{ $invoice->reservation->academicTerm->term }}
+
+                                @endif
+
+</h6>
+                              <div class="d-flex align-items-center gap-2">
+                               
+                               <span>{{ __(optional($invoice->reservation->academicTerm)->name). ' - '.optional($invoice->reservation->academicTerm)->academic_year ?? __('Not specified') }}</span>
+                              </div>
+                            @else
+                              <span class="d-flex align-items-center">
+                               {{ __('Short Term') }}
+                               <i class="feather icon-zap ml-2 text-warning" style="font-size: 14px;"></i>
+                              </span>
+                            @endif
+                            </h6>
+                            
+                            <!-- Info Section: Total and Status -->
+                            <div class="mb-2">
+                              <h6 class="text-secondary">
+                               <strong>{{ __('Total:') }}</strong>
                               </h6>
-                              <!-- Info Section: Total and Status -->
-                              <div class="mb-2">
-                                 <h6 class="text-secondary">
-                                    <strong>{{ __('Total:') }}</strong>
-                                 </h6>
-                                 <h6 class="text-success">
-                                    {{ $invoice->totalAmount() }}
-                                 </h6>
-                              </div>
-                              <!-- Info Section: Total and Status -->
-                              <div class="d-flex justify-content-between mb-2">
-                                 <p class="mb-0">
-                                    <span class="badge rounded-pill {{ 
-                                       $invoice->status == 'paid' ? 'bg-success' : 
-                                       ($invoice->status == 'pending' ? 'bg-warning' : 'bg-danger') 
-                                       }}">
-                                    <i class="fa fa-circle me-1 small"></i>
-                                    {{ __($invoice->status) }}
-                                    </span>
-                                 </p>
-                              </div>
+                              <h6 class="text-success">
+                               {{ $invoice->totalAmount() }}
+                              </h6>
+                            </div>
+                            <!-- Info Section: Total and Status -->
+                            <div class="d-flex justify-content-between mb-2">
+                              <p class="mb-0">
+                               <span class="badge rounded-pill {{ 
+                                 $invoice->status == 'paid' ? 'bg-success' : 
+                                 ($invoice->status == 'pending' ? 'bg-warning' : 'bg-danger') 
+                                 }}">
+                               <i class="fa fa-circle me-1 small"></i>
+                               {{ __($invoice->status) }}
+                               </span>
+                              </p>
+                            </div>
                            </div>
                            <!-- Footer with Buttons -->
                            <div class="card-footer d-flex flex-column flex-sm-row justify-content-center align-items-center align-items-sm-center gap-2">
-                              @if($invoice->status == 'unpaid')
-                              <!-- Pay Now Button with Icon and Loading State -->
-                              <button class="btn btn-outline-primary btn-sm pay-now-btn" data-invoice-id="{{ $invoice->id }}">
-                              <span class="button-content">
-                              <i class="fa fa-credit-card"></i> {{ __('Pay Now') }}
-                              </span>
-                              </button>
-                              @endif
+                            @if($invoice->status == 'unpaid')
+                            <!-- Pay Now Button with Icon and Loading State -->
+                            <button class="btn btn-outline-primary btn-sm pay-now-btn" data-invoice-id="{{ $invoice->id }}">
+                            <span class="button-content">
+                            <i class="fa fa-credit-card"></i> {{ __('Pay Now') }}
+                            </span>
+                            </button>
+                            @endif
                            </div>
                         </div>
-                     </div>
+                       </div>
                      @endforeach
                   </div>
                </div>
