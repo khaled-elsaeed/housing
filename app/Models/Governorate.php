@@ -13,4 +13,10 @@ class Governorate extends Model
     {
         return $this->belongsToMany(Student::class); // Many-to-Many relationship via the reservations table
     }
+
+    public function getNameAttribute()
+{
+    return app()->getLocale() === 'ar' ? $this->name_ar : $this->name_en;
+}
+
 }

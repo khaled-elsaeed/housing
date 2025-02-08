@@ -347,11 +347,11 @@
                               <input type="email" class="form-control" id="parent_email" name="parent_email" 
                                  value="{{ old('parent_email', $user->parent->email) }}" disabled>
                            </div>
-                           <!-- Parent Mobile -->
+                           <!-- Parent Phone -->
                            <div class="col-md-6">
-                              <label for="parent_mobile">{{ __('Parent Mobile') }}</label>
-                              <input type="text" class="form-control" id="parent_mobile" name="parent_mobile" 
-                                 value="{{ old('parent_mobile', $user->parent->mobile) }}" disabled>
+                              <label for="parent_phone">{{ __('Parent Phone') }}</label>
+                              <input type="text" class="form-control" id="parent_phone" name="parent_phone" 
+                                 value="{{ old('parent_phone', $user->parent->phone) }}" disabled>
                            </div>
                               <!-- Living Abroad -->
                               <div class="col-md-6">

@@ -116,15 +116,17 @@ class RegisterService
      * @return UniversityArchive
      */
     private function createArchiveRecord(UniversityArchiveLite $studentRecord): UniversityArchive
-    {
-        return UniversityArchive::create([
+{
+    return UniversityArchive::updateOrCreate(
+        ['national_id' => $studentRecord->national_id], // Search by national_id
+        [
             'name_en' => $studentRecord->name_en,
             'name_ar' => $studentRecord->name_ar,
-            'national_id' => $studentRecord->national_id,
             'academic_id' => $studentRecord->academic_id,
             'academic_email' => $studentRecord->academic_email,
-        ]);
-    }
+        ]
+    );
+}
 
     /**
      * Link user to archive record.
@@ -182,7 +184,7 @@ class RegisterService
             ];
         }
 
-        $names = explode(' ', $fullName, 2);
+        $names = explode(' ',$fullName);
         return [
             'first_name' => $names[0] ?? '',
             'last_name' => $names[count($names)-1] ?? '',

@@ -1,432 +1,789 @@
 $(document).ready(function() {
+    // Global variables
     let currentStep = 1;
     let totalSteps = $('.form-step').length;
+    const lang = document.documentElement.lang || 'en';
+    
     const validatedSteps = new Set();
+      // Translate function
 
-    // Validation rules remain the same
-    const validationRules = {
-        firstName: {
-            required: true,
-            minLength: 2,
-            pattern: /^[A-Za-z\s]+$/,
-            message: 'Please enter a valid first name (minimum 2 characters, letters only)'
+  
+  // Translations organized by field and language
+const translations = {
+    phone: {
+        required: {
+            en: 'Please enter a valid phone number (minimum 11 digits).',
+            ar: 'يرجى إدخال رقم هاتف صحيح (11 أرقام على الأقل).',
         },
-        lastName: {
-            required: true,
-            minLength: 2,
-            pattern: /^[A-Za-z\s]+$/,
-            message: 'Please enter a valid last name (minimum 2 characters, letters only)'
+        pattern: {
+            en: 'Please enter a valid phone number (e.g., 01014545865).',
+            ar: 'يرجى إدخال رقم هاتف صحيح (مثال: 01014545865).',
         },
-        birthDate: {
-            required: true,
-            message: 'Please select your date of birth'
+    },
+    street: {
+        required: {
+            en: 'Please enter your complete address (minimum 15 characters).',
+            ar: 'يرجى إدخال عنوانك الكامل (15 أحرف على الأقل).',
         },
-        email: {
-            required: true,
-            pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-            message: 'Please enter a valid email address'
+        minLength: {
+            en: 'Please enter your complete address (minimum 15 characters).',
+            ar: 'يرجى إدخال عنوانك الكامل (15 أحرف على الأقل).',
         },
-        phone: {
-            required: true,
-            pattern: /^\+?[\d\s-]{10,}$/,
-            message: 'Please enter a valid phone number (minimum 10 digits)'
+    },
+    governorate: {
+        required: {
+            en: 'Please select a governorate.',
+            ar: 'يرجى اختيار المحافظة.',
         },
-        address: {
-            required: true,
-            minLength: 10,
-            message: 'Please enter your complete address (minimum 10 characters)'
-        }
-    };
+    },
+    city: {
+        required: {
+            en: 'Please select a city.',
+            ar: 'يرجى اختيار المدينة.',
+        },
+    },
+    faculty: {
+        required: {
+            en: 'Please select a faculty.',
+            ar: 'يرجى اختيار الكلية.',
+        },
+    },
+    program: {
+        required: {
+            en: 'Please select a program.',
+            ar: 'يرجى اختيار البرنامج.',
+        },
+    },
+    parentRelationship: {
+        required: {
+            en: 'Please select your relationship with the parent.',
+            ar: 'يرجى اختيار صلة القرابة.',
+        },
+    },
+    parentName: {
+        required: {
+            en: 'Please enter the parent’s name.',
+            ar: 'يرجى إدخال اسم ولي الأمر.',
+        },
+        minLength: {
+            en: 'Please enter your complete parent name.',
+            ar: 'يرجى إدخال اسم ولي الأمر كامل.',
+        },
+    },
+    parentPhone: {
+        required: {
+            en: 'Please enter a valid phone number.',
+            ar: 'يرجى إدخال رقم هاتف صحيح.',
+        },
+        pattern: {
+            en: 'Please enter a valid phone number with the correct format.',
+            ar: 'يرجى إدخال رقم هاتف صحيح بالتنسيق المناسب.',
+        },
+    },
+    isParentAbroad: {
+        required: {
+            en: 'Please specify if the parent is abroad.',
+            ar: 'يرجى تحديد ما إذا كان ولي الأمر بالخارج.',
+        },
+    },
+    abroadCountry:{
+        required:{
+            en:"Please choose the abroad country.",
+            ar:"يرجى اختيار البلد",
+        },
+    },
+    parentGovernorate: {
+        required: {
+            en: 'Please select a governorate.',
+            ar: 'يرجى اختيار المحافظة.',
+        },
+    },
+    parentCity: {
+        required: {
+            en: 'Please select a city.',
+            ar: 'يرجى اختيار المدينة.',
+        },
+    },
+};
 
-    // Enhanced validation feedback
+// Function to safely fetch translations with a fallback message
+function translate(field, rule, lang) {
+    return translations[field] && translations[field][rule] && translations[field][rule][lang]
+        ? translations[field][rule][lang]
+        : `Validation error for ${field} (${rule})`; // Default fallback
+}
+
+// Validation rules
+const validationRules = {
+    governorate: { required: true },
+    city: { required: true },
+    faculty: { required: true },
+    program: { required: true },
+    phone: {
+        required: true,
+        pattern: /^01[0-25]\d{8}$/, // Egyptian phone format
+    },
+    street: {
+        required: true,
+        minLength: 15,
+    },
+    parentRelationship: { required: true },
+    parentName: { required: true, minLength: 15 },
+    parentPhone: {
+        required: true,
+        pattern: /^(?:\+\d{1,3}\s?\d{6,14}|01[0-25]\d{8})$/,
+    },
+    isParentAbroad: {
+        required: true,
+    },
+    abroadCountry: {
+        required: function () {
+            return $("#isParentAbroad").val() === '1';
+        },
+    },
+    parentGovernorate: {
+        required: function () {
+            return $("#isParentAbroad").val() === '0' && $("#livingWithParent").val() === "0";
+        },
+    },
+    parentCity: {
+        required: function () {
+            return $("#isParentAbroad").val() === '0' && $("#livingWithParent").val() === "0";
+        },
+    },
+};
+
+// Validation messages
+const validationMessages = {
+    governorate: {
+        required: translate('governorate', 'required', lang),
+    },
+    city: {
+        required: translate('city', 'required', lang),
+    },
+    faculty: {
+        required: translate('faculty', 'required', lang),
+    },
+    program: {
+        required: translate('program', 'required', lang),
+    },
+    phone: {
+        required: translate('phone', 'required', lang),
+        pattern: translate('phone', 'pattern', lang),
+    },
+    street: {
+        required: translate('street', 'required', lang),
+        minLength: translate('street', 'minLength', lang),
+    },
+    parentRelationship: {
+        required: translate('parentRelationship', 'required', lang),
+    },
+    parentName: {
+        required: translate('parentName', 'required', lang),
+        minLength: translate('parentName', 'minLength', lang),
+    },
+    parentPhone: {
+        required: translate('parentPhone', 'required', lang),
+        pattern: translate('parentPhone', 'pattern', lang),
+    },
+    isParentAbroad: {
+        required: translate('isParentAbroad', 'required', lang),
+    },
+    abroadCountry:{
+        required: translate('abroadCountry', 'required', lang),
+    }   ,
+    parentGovernorate: {
+        required: translate('parentGovernorate', 'required', lang),
+    },
+    parentCity: {
+        required: translate('parentCity', 'required', lang),
+    },
+};
+
+
+    /**
+     * Form Validation Functions
+     */
+
+    /**
+     * Display error message for a form field
+     * @param {HTMLElement} element - The form field element
+     * @param {string} message - Error message to display
+     */
     function showError(element, message) {
         const errorElement = $(element).siblings('.error-message');
         errorElement.text(message).addClass('show');
         $(element).addClass('is-invalid');
     }
 
+    /**
+     * Clear error message for a form field
+     * @param {HTMLElement} element - The form field element
+     */
     function clearError(element) {
         const errorElement = $(element).siblings('.error-message');
         errorElement.text('').removeClass('show');
         $(element).removeClass('is-invalid');
     }
 
-    // Enhanced field validation
+    /**
+     * Validate a single form field
+     * @param {HTMLElement} field - The form field to validate
+     * @returns {boolean} - True if valid, false otherwise
+     */
     function validateField(field) {
         const value = field.value;
         const name = field.name;
         const rules = validationRules[name];
-
+        const messages = validationMessages[name];
+    
         if (!rules) return true;
-
+    
         clearError(field);
-
-        if (rules.required && !value) {
-            showError(field, rules.message);
+    
+        // Properly evaluate `required`
+        const isRequired = typeof rules.required === 'function' ? rules.required() : rules.required;
+        console.log("field ",field," type ",typeof rules.required);
+        // Check required
+        if (isRequired && !value) {
+            showError(field, messages.required);
             return false;
         }
-
+    
+        // Check minLength
         if (rules.minLength && value.length < rules.minLength) {
-            showError(field, rules.message);
+            showError(field, messages.minLength);
             return false;
         }
-
+    
+        // Check pattern
         if (rules.pattern && !rules.pattern.test(value)) {
-            showError(field, rules.message);
+            showError(field, messages.pattern);
             return false;
         }
-
-        if (rules.match) {
-            const matchValue = document.getElementById(rules.match).value;
-            if (value !== matchValue) {
-                showError(field, rules.message);
-                return false;
-            }
-        }
-
+    
         return true;
     }
+    
 
-    // Enhanced step validation
+    /**
+     * Validate all fields in a step
+     * @param {number} step - The step number to validate
+     * @returns {boolean} - True if all fields are valid
+     */
     function validateStep(step) {
-        const fields = $(`#step${step} input, #step${step} textarea`).get();
+        const fields = $(`#step${step} input, #step${step} textarea, #step${step} select`).get();
         const isValid = fields.every(field => validateField(field));
 
         if (isValid) {
             validatedSteps.add(step);
-            $(`#step${step}-tab`)
-                .removeClass('disabled')
-                .removeClass('active')
-                .addClass('completed')
-                .find('.step-status')
-                .html('<i class="fa fa-check"></i>');
-
-            // Enable next tab if it exists
-            if (step < totalSteps) {
-                $(`#step${step + 1}-tab`).removeClass('disabled');
-            }
+            updateStepStatus(step, true);
         } else {
             validatedSteps.delete(step);
-            $(`#step${step}-tab`)
-                .removeClass('completed')
-                .find('.step-status')
-                .text(step);
+            updateStepStatus(step, false);
         }
 
         return isValid;
     }
 
-    function updateNavigation() {
-       
-        if(currentStep > 1){
-            $('#navBtnsContainer').removeClass('justify-content-end');
-            $('#navBtnsContainer').addClass('justify-content-between');
-        }else{
-            $('#navBtnsContainer').addClass('justify-content-end');
-            $('#navBtnsContainer').removeClass('justify-content-between');
-        }
+    /**
+     * Update the visual status of a step
+     * @param {number} step - The step number
+     * @param {boolean} isValid - Whether the step is valid
+     */
+    function updateStepStatus(step, isValid) {
+        const stepTab = $(`#step${step}-tab`);
+        if (isValid) {
+            stepTab
+                .removeClass('disabled active')
+                .addClass('completed')
+                .find('.step-status')
+                .html('<i class="fa fa-check"></i>');
 
-        $('#prevBtn').toggle(currentStep > 1);
-        $('#nextBtn').toggle(currentStep < totalSteps);
-        $('#submitBtn').toggle(currentStep === totalSteps);
-    
-        // Update tab states 
-        $('.nav-tabs .nav-link').each(function() {
-            const stepNum = parseInt($(this).data('step'));
-
-            $(this).removeClass('active');  
-            
-
-            if (stepNum < currentStep) {
-                // Keep the completed state if step was previously validated
-                if (validatedSteps.has(stepNum)) {
-                    $(this).addClass('completed');
-                }
-            } else if (stepNum === currentStep) {
-                $(this).addClass('active');
-                // Keep completed state if current step was validated
-                if (validatedSteps.has(stepNum)) {
-                    $(this).addClass('completed');
-                }
-            } else {
-                // For future steps, keep completed state if validated
-                if (validatedSteps.has(stepNum)) {
-                    $(this).addClass('completed');
-                }
-                // Only disable if previous step isn't validated
-                if (!validatedSteps.has(stepNum - 1)) {
-                    $(this).addClass('disabled');
-                } else {
-                    $(this).removeClass('disabled');
-                }
-            }
-        });
-    }
-
-    // Enhanced real-time validation
-    $('input, textarea').on('input change', function() {
-        validateField(this);
-
-    });
-
-    // Enhanced next button handler
-    $('#nextBtn').click(function() {
-        if (validateStep(currentStep)) {
-            if (currentStep < totalSteps) {
-                handleEmergencyContactStep('forward');
-                currentStep++;
-                $('.nav-tabs .nav-link').removeClass('active');
-                $('.form-step').removeClass('active show');
-                $(`#step${currentStep}-tab`)
-                    .addClass('active')
-                    .removeClass('disabled')
-                    .tab('show');
-                $(`#step${currentStep}`).addClass('active show');
-                updateNavigation();
+            if (step < totalSteps) {
+                $(`#step${step + 1}-tab`).removeClass('disabled');
             }
         } else {
-            // Shake effect on invalid fields
-            $('.is-invalid').each(function() {
-                $(this).closest('.mb-2').addClass('shake');
-
-                // Remove the shake class after animation ends to allow re-triggering
-                setTimeout(() => {
-                    $(this).closest('.mb-2').removeClass('shake');
-                }, 500); // Matches the animation duration
-            });
-
+            stepTab
+                .removeClass('completed')
+                .find('.step-status')
+                .text(step);
         }
-    });
+    }
 
-    function handleEmergencyContactStep(navDirection) {
+    /**
+     * Navigation Functions
+     */
+
+    /**
+     * Handle emergency contact step navigation
+     * @param {string} direction - Navigation direction ('forward' or 'backward')
+     */
+    function handleEmergencyContactStep(direction) {
         const isParentAbroad = $('#isParentAbroad').val();
 
-        if (currentStep === 5 && navDirection === 'forward') {
-            if (isParentAbroad !== 'yes') {
+        if (currentStep === 5 && direction === 'forward') {
+            if (isParentAbroad !== '1') {
                 currentStep++;
             }
         }
 
-        if (currentStep === 7 && navDirection === 'backward') { 
-            if (isParentAbroad !== 'yes') {
+        if (currentStep === 7 && direction === 'backward') { 
+            if (isParentAbroad !== '1') {
                 currentStep--;
             }
         }
     }
 
-    // Enhanced previous button handler
-    $('#prevBtn').click(function() {
+    /**
+     * Update the form navigation state
+     */
+    function updateNavigation() {
+        updateNavigationButtons();
+        updateTabStates();
+    }
+
+    /**
+     * Update navigation button states
+     */
+    function updateNavigationButtons() {
+        if (currentStep > 1) {
+            $('#navBtnsContainer')
+                .removeClass('justify-content-end')
+                .addClass('justify-content-between');
+        } else {
+            $('#navBtnsContainer')
+                .addClass('justify-content-end')
+                .removeClass('justify-content-between');
+        }
+
+        $('#prevBtn').toggle(currentStep > 1);
+        $('#nextBtn').toggle(currentStep < totalSteps);
+        $('#submitBtn').toggle(currentStep === totalSteps);
+    }
+
+    /**
+     * Update tab states based on current step
+     */
+    function updateTabStates() {
+        $('.nav-tabs .nav-link').each(function() {
+            const stepNum = parseInt($(this).data('step'));
+            $(this).removeClass('active');
+            updateTabState($(this), stepNum);
+        });
+    }
+
+    /**
+     * Update individual tab state
+     * @param {jQuery} tab - The tab element
+     * @param {number} stepNum - Step number
+     */
+    function updateTabState(tab, stepNum) {
+        if (stepNum < currentStep) {
+            if (validatedSteps.has(stepNum)) {
+                tab.addClass('completed');
+            }
+        } else if (stepNum === currentStep) {
+            tab.addClass('active');
+            if (validatedSteps.has(stepNum)) {
+                tab.addClass('completed');
+            }
+        } else {
+            if (validatedSteps.has(stepNum)) {
+                tab.addClass('completed');
+            }
+            if (!validatedSteps.has(stepNum - 1)) {
+                tab.addClass('disabled');
+            } else {
+                tab.removeClass('disabled');
+            }
+        }
+    }
+
+    /**
+     * Event Handlers
+     */
+
+    /**
+     * Handle next button click
+     */
+    function handleNextButton() {
+        if (validateStep(currentStep)) {
+            if (currentStep < totalSteps) {
+                handleEmergencyContactStep('forward');
+                currentStep++;
+                changeStep();
+            }
+        } else {
+            showInvalidFieldsShake();
+        }
+    }
+
+    /**
+     * Handle previous button click
+     */
+    function handlePreviousButton() {
         if (currentStep > 1) {
             handleEmergencyContactStep('backward');
             currentStep--;
-            $('.nav-tabs .nav-link').removeClass('active');
-            $('.form-step').removeClass('active show');
-            $(`#step${currentStep}-tab`).addClass('active').tab('show');
-            $(`#step${currentStep}`).addClass('active show');
-            updateNavigation();
+            changeStep();
         }
-    });
+    }
 
-    // Enhanced tab click handler with validation
-    $('.nav-tabs .nav-link').click(function(e) {
+    /**
+     * Handle tab click
+     * @param {Event} e - Click event
+     */
+    function handleTabClick(e) {
         e.preventDefault();
         const clickedStep = parseInt($(this).data('step'));
-
-        // Allow clicking if:
-        // 1. Tab is not disabled
-        // 2. Going to a previous step
-        // 3. Going to next step only if current step is validated
 
         if (!$(this).hasClass('disabled')) {
             if (clickedStep < currentStep || validateStep(currentStep)) {
                 currentStep = clickedStep;
-                $('.nav-tabs .nav-link').removeClass('active');
-                $('.form-step').removeClass('active show');
-                $(this).addClass('active');
-                $(`#step${currentStep}`).addClass('active show');
+                changeStep();
                 handleEmergencyContactStep('forward');
-                updateNavigation();
-             
-
-            }
-            if(clickedStep > currentStep || validateStep(currentStep)){
-                currentStep = clickedStep;
-                $('.nav-tabs .nav-link').removeClass('active');
-                $('.form-step').removeClass('active show');
-                $(this).addClass('active');
-                $(`#step${currentStep}`).addClass('active show');
-                handleEmergencyContactStep('backward');
-                updateNavigation();
-            
             }
         }
-    });
+    }
 
-    // Enhanced form submission handler
-    $('#submitBtn').on('click', function (e) {
+    /**
+     * Change to a new step
+     */
+    function changeStep() {
+        $('.nav-tabs .nav-link').removeClass('active');
+        $('.form-step').removeClass('active show');
+        $(`#step${currentStep}-tab`).addClass('active').tab('show');
+        $(`#step${currentStep}`).addClass('active show');
+        updateNavigation();
+    }
+
+    /**
+     * Add shake effect to invalid fields
+     */
+    function showInvalidFieldsShake() {
+        $('.is-invalid').each(function() {
+            $(this).closest('.mb-2').addClass('shake');
+            setTimeout(() => {
+                $(this).closest('.mb-2').removeClass('shake');
+            }, 500);
+        });
+    }
+
+    /**
+     * Form Submission
+     */
+
+    /**
+     * Handle form submission
+     * @param {Event} e - Submit event
+     */
+    function handleFormSubmission(e) {
         e.preventDefault();
-    
-        if (formValidated()) {
-            // Show loading state
-            $('#submitBtn').prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-2"></i>Submitting...');
-    
-            const form = $('#multiStepForm');
-            const formData = {};
-    
-            // Serialize form data into an object
-            $(form).serializeArray().forEach(item => {
-                formData[item.name] = item.value;
-            });
-    
-            $.ajax({
-                method: 'POST',
-                url: form.attr('action'), // Use attr() to get the 'action' attribute
-                data: formData,
-                success: function (response) {
-                    // Handle success
-    
-                    swal({
-                        type: 'success',
-                        title: 'Success!',
-                        text: 'Your registration has been completed successfully.',
-                        confirmButtonColor: '#198754'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Redirect or reset form
-                            window.location.reload();
-                        }
-                    });
-                },
-                error: function (error) {
-                    // Handle error
-                    console.error('Error:', error);
-    
-                    swal({
-                        type: 'error',
-                        title: 'Submission Failed',
-                        text: 'There was an issue submitting your form. Please try again.',
-                        confirmButtonColor: '#dc3545'
-                    });
-                },
-                complete: function () {
-                    // Re-enable the button regardless of success or failure
-                    $('#submitBtn').prop('disabled', false).html('Submit');
-                }
-            });
+
+        if (validateAllSteps()) {
+            submitForm();
         } else {
-            // Show validation error
-            swal({
-                type: 'error',
-                title: 'Oops...',
-                text: 'Please complete all required fields correctly before submitting.',
-                confirmButtonColor: '#dc3545'
-            });
+            showSubmissionError();
         }
-    });
-    
-    // Enhanced complete form validation
-    function formValidated() {
-        let isValid = true;
+    }
+
+    /**
+     * Validate all form steps
+     * @returns {boolean} - True if all steps are valid
+     */
+    function validateAllSteps() {
         for (let i = 1; i <= totalSteps; i++) {
             if (!validateStep(i)) {
-                isValid = false;
-                if (currentStep !== i) {
-                    currentStep = i;
-                    $('.nav-tabs .nav-link').removeClass('active');
-                    $('.form-step').removeClass('active show');
-                    $(`#step${currentStep}-tab`).addClass('active').tab('show');
-                    $(`#step${currentStep}`).addClass('active show');
-                    updateNavigation();
-                }
-                break;
+                currentStep = i;
+                changeStep();
+                return false;
             }
         }
-        return isValid;
+        return true;
     }
 
-    // Initialize tooltips
-    $('[data-bs-toggle="tooltip"]').tooltip();
+    /**
+     * Submit form data
+     */
+    function submitForm() {
+        const submitBtn = $('#submitBtn');
+        submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-2"></i>Submitting...');
 
-    // Initialize navigation
-    updateNavigation();
+        const formData = {};
+        $('#multiStepForm').serializeArray().forEach(item => {
+            formData[item.name] = item.value;
+        });
 
-    function toggleAbroadFields() {
-        const isParentAbroad = document.getElementById('isParentAbroad').value;
-        const abroadCountryDiv = document.getElementById('abroadCountryDiv');
-        const livingWithParentDiv = document.getElementById('livingWithParentDiv');
-        const parentGovernorateCityDiv = document.getElementById('parentGovernorateCityDiv');
-        const emergencyContactStep = document.getElementById('step6');
-        const emergencyContactStepTab = document.getElementById('step6-tab');
+        $.ajax({
+            method: 'POST',
+            url: $('#multiStepForm').attr('action'),
+            data: formData,
+            success: handleSubmitSuccess,
+            error: handleSubmitError,
+            complete: () => submitBtn.prop('disabled', false).html('Submit')
+        });
+    }
 
+    /**
+     * Handle successful form submission
+     * @param {Object} response - Server response
+     */
+    function handleSubmitSuccess(response) {
+        swal({
+            type: 'success',
+            title: 'Success!',
+            text: response.message,
+            confirmButtonColor: '#198754'
+        }).then((result) => {
+            if (response.success && response.redirect) {
+                window.location.href = response.redirect;
+            }
+        });
+    }
 
-        
-        if (isParentAbroad === 'yes') {
-            abroadCountryDiv.classList.remove('d-none');
-            emergencyContactStep.classList.remove('d-none')
-            emergencyContactStepTab.classList.remove('d-none')
-            livingWithParentDiv.classList.add('d-none');
-            parentGovernorateCityDiv.classList.add('d-none');
+    /**
+     * Handle form submission error
+     * @param {Object} error - Error object
+     */
+    function handleSubmitError(error) {
+        console.error('Error:', error);
+        swal({
+            type: 'error',
+            title: 'Submission Failed',
+            text: 'There was an issue submitting your form. Please try again.',
+            confirmButtonColor: '#dc3545'
+        });
+    }
 
-        } else if (isParentAbroad === 'no') {
-            abroadCountryDiv.classList.add('d-none');
-            livingWithParentDiv.classList.remove('d-none');
-            parentGovernorateCityDiv.classList.add('d-none');
-            emergencyContactStep.classList.add('d-none');
-            emergencyContactStepTab.classList.add('d-none');
+    /**
+     * Show submission validation error
+     */
+    function showSubmissionError() {
+        swal({
+            type: 'error',
+            title: 'Oops...',
+            text: 'Please complete all required fields correctly before submitting.',
+            confirmButtonColor: '#dc3545'
+        });
+    }
+
+    /**
+     * National ID Processing
+     */
+
+    /**
+     * Generate gender and birthdate from national ID
+     * @param {string} nationalId - National ID number
+     * @returns {Object} - Gender and birthdate information
+     */
+    function generateGenderAndBirthdate(nationalId) {
+        if (typeof nationalId !== 'string' || nationalId.length !== 14 || !/^\d{14}$/.test(nationalId)) {
+            return { error: "Please enter a valid 14-digit national ID." };
+        }
+
+        const yearPart = nationalId.substring(1, 3);
+        const monthPart = nationalId.substring(3, 5);
+        const dayPart = nationalId.substring(5, 7);
+        const firstDigit = nationalId.charAt(0);
+
+        let fullYear;
+        if (firstDigit === '2') {
+            fullYear = `19${yearPart}`;
+        } else if (firstDigit === '3') {
+            fullYear = `20${yearPart}`;
         } else {
-            abroadCountryDiv.classList.add('d-none');
-            livingWithParentDiv.classList.add('d-none');
-            parentGovernorateCityDiv.classList.add('d-none');
-            emergencyContactStep.classList.add('d-none');
-            emergencyContactStepTab.classList.add('d-none');
+            return { error: "Invalid year identifier in national ID." };
+        }
+
+        const month = parseInt(monthPart, 10);
+        const day = parseInt(dayPart, 10);
+        if (month < 1 || month > 12 || day < 1 || day > 31) {
+            return { error: "Invalid date in national ID." };
+        }
+
+        const birthdate = `${fullYear}-${monthPart}-${dayPart}`;
+        const genderDigit = parseInt(nationalId.charAt(12), 10);
+        const gender = genderDigit % 2 === 1 ? "Male" : "Female";
+
+        return { gender, birthdate };
+    }
+
+    /**
+     * Location and Program Selection Handlers
+     */
+
+    /**
+     * Handle governorate selection change
+     * @param {Event} e - Change event
+     */
+    function handleGovernorateChange(e) {
+
+        const selectedGovernorateId = e.target.value;
+        const citySelect = e.target.id === 'parentGovernorate' ? 
+            $('#parentCity') : $('#city');
+        console.log(citySelect);
+        updateCityOptions(citySelect, selectedGovernorateId);
+    }
+
+    /**
+     * Update city dropdown options
+     * @param {jQuery} citySelect - City select element
+     * @param {string} governorateId - Selected governorate ID
+     */
+    function updateCityOptions(citySelect, governorateId) {
+
+        if(lang == 'ar'){
+            citySelect.prop('disabled', false).html('<option value="">أختر المدينة</option>');
+        }else{
+            citySelect.prop('disabled', false).html('<option value="">Select City</option>');
+        }
+        const cityOptions = $('#city-list option').filter(function() {
+            return $(this).data('governorate-id') == governorateId;
+        });
+
+        cityOptions.each(function() {
+            const option = document.createElement('option');
+            option.value = $(this).data('city-id');
+            option.text = $(this).val();
+            citySelect.append(option);
+        });
+    }
+
+    /**
+     * Handle faculty selection change
+     */
+    function handleFacultyChange() {
+        const facultyId = $(this).val();
+        const programSelect = $('#program');
+        updateProgramOptions(programSelect, facultyId);
+    }
+
+    /**
+     * Update program dropdown options
+     * @param {jQuery} programSelect - Program select element
+     * @param {string} facultyId - Selected faculty ID
+     */
+    function updateProgramOptions(programSelect, facultyId) {
+            if(lang == 'ar'){
+                programSelect.html('<option value="">أختر البرنامج</option>').prop('disabled', !facultyId);
+            }else{
+                programSelect.html('<option value="">Select Program</option>').prop('disabled', !facultyId);
+            }
+        if (facultyId) {
+            $('#faculty-programs option').filter(function() {
+                return $(this).data('faculty-id') == facultyId;
+            }).each(function() {
+                const option = document.createElement('option');
+                option.value = $(this).data('program-id');
+                option.text = $(this).val();
+                programSelect.append(option);
+            });
         }
     }
-    
-   
 
-    const isParentAbroad = document.getElementById('isParentAbroad');
-    
-    isParentAbroad.addEventListener('change', toggleAbroadFields);
+    /**
+     * Initialize Event Listeners
+     */
+    function initializeEventListeners() {
+        // Form field validation
+        $('input, textarea, select').on('input change', function() {
+            validateField(this);
+        });
 
-  
+        // Navigation buttons
+        $('#nextBtn').click(handleNextButton);
+        $('#prevBtn').click(handlePreviousButton);
+        $('.nav-tabs .nav-link').click(handleTabClick);
+        $('#submitBtn').click(handleFormSubmission);
 
-function generateGenderAndBirthdate(nationalId) {
-    // Validate the national ID
-    if (typeof nationalId !== 'string' || nationalId.length !== 14 || !/^\d{14}$/.test(nationalId)) {
-        return { error: "Please enter a valid 14-digit national ID." };
+        // National ID processing
+        $('#nationalId').on('input', function() {
+            $(this).siblings('.error-message').text('');
+            $('#birthDate').siblings('.error-message').text('');
+            $('#gender').siblings('.error-message').text('');
+
+            const result = generateGenderAndBirthdate($(this).val());
+
+            if (result.error) {
+                $(this).siblings('.error-message').text(result.error);
+                $('#birthDate').val('');
+                $('#gender').val('');
+            } else {
+                $('#birthDate').val(result.birthdate);
+                $('#gender').val(result.gender.toLowerCase());
+            }
+        });
+
+        // Location selections
+        $('#governorate, #parentGovernorate').on('change', handleGovernorateChange);
+
+        $('#faculty').on('change', handleFacultyChange);
+
+        // Parent abroad handling
+        $('#isParentAbroad').on('change', function() {
+            toggleAbroadFields();
+        });
+
+        // Living with parent handling
+        $('#livingWithParent').on('change', function() {
+            const livingWithParent = $(this).val();
+            $('#parentGovernorateCityDiv').toggleClass('d-none', livingWithParent !== '0');
+        });
+
+        // Sibling in dorm handling
+        $('#hasSiblingInDorm').on('change', function() {
+            const hasSibling = $(this).val();
+            $('#siblingInfoSection').toggleClass('d-none', hasSibling !== '1');
+        });
     }
 
-    // Extract birthdate from the first 7 digits
-    const yearPart = nationalId.substring(0, 2); // YY
-    const monthPart = nationalId.substring(2, 4); // MM
-    const dayPart = nationalId.substring(4, 6); // DD
+    /**
+     * Field Visibility Functions
+     */
 
-    // Determine the full year based on the first digit
-    const firstDigit = nationalId.charAt(0);
-    let fullYear;
-    if (firstDigit === '2' || firstDigit === '3') {
-        fullYear = `19${yearPart}`; // 1900s
-    } else if (firstDigit === '4' || firstDigit === '5') {
-        fullYear = `20${yearPart}`; // 2000s
-    } else {
-        return { error: "Invalid year in national ID." };
+    /**
+     * Toggle fields based on parent abroad status
+     */
+    function toggleAbroadFields() {
+        const isParentAbroad = $('#isParentAbroad').val();
+        resetAbroadFields();
+
+        if (isParentAbroad === '1') {
+            $('#abroadCountryDiv, #step6, #step6-tab').removeClass('d-none');
+        } else if (isParentAbroad === '0') {
+            $('#livingWithParentDiv').removeClass('d-none');
+        }
     }
 
-    // Construct the birthdate in YYYY-MM-DD format
-    const birthdate = `${fullYear}-${monthPart}-${dayPart}`;
+    /**
+     * Reset all abroad-related fields to hidden state
+     */
+    function resetAbroadFields() {
+        $('#abroadCountryDiv, #livingWithParentDiv, #parentGovernorateCityDiv, #step6, #step6-tab')
+            .addClass('d-none');
+    }
 
-    // Extract the 13th digit (index 12 in zero-based indexing)
-    const genderDigit = nationalId.charAt(12);
+    /**
+     * Initialize Form
+     */
+    function initializeForm() {
+        // Initialize tooltips
+        $('[data-bs-toggle="tooltip"]').tooltip();
 
-    // Determine gender based on the digit
-    const gender = genderDigit % 2 === 1 ? "Male" : "Female";
+        // Initialize navigation
+        updateNavigation();
 
-    // Return both gender and birthdate
-    return {
-        gender: gender,
-        birthdate: birthdate
-    };
-}
-    
-   
+        // Initialize event listeners
+        initializeEventListeners();
+
+        // Trigger initial field states
+        $('#nationalId').trigger('input');
+        $('#isParentAbroad').trigger('change');
+        $('#hasSiblingInDorm').trigger('change');
+        $('#livingWithParent').trigger('change');
+    }
+
+    // Start initialization
+    initializeForm();
 });

@@ -20,4 +20,9 @@ class Faculty extends Model
     {
         return $this->hasMany(Program::class); // Corrected method to hasMany
     }
+
+    public function getNameAttribute()
+    {
+        return app()->getLocale() === 'ar' ? $this->name_ar : $this->name_en;
+    }
 }

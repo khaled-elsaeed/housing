@@ -1,4 +1,4 @@
-<!-- Start Topbar Mobile -->
+<!-- Start Topbar Phone -->
 <div class="topbar-mobile">
     <div class="row align-items-center">
         <div class="col-md-12">
@@ -30,4 +30,4 @@
         </div>
     </div>
 </div>
-<!-- End Topbar Mobile -->
+<!-- End Topbar Phone -->

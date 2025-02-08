@@ -8,6 +8,8 @@ use App\Services\RegisterService;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Auth;
+
 
 class RegisterController extends Controller
 {
@@ -45,7 +47,7 @@ class RegisterController extends Controller
             ]);
 
             // Register the user
-            $this->registerService->registerUser([
+            $user = $this->registerService->registerUser([
                 'password' => $validated['password'],
                 'national_id' => $validated['national_id'],
             ]);
@@ -58,11 +60,9 @@ class RegisterController extends Controller
                 'action' => 'registration_success',
             ]);
 
+            Auth::login($user);
             // Flash success message and redirect
-            session()->flash('success', trans('User registered successfully'));
-            return redirect()
-                ->route('login')
-                ->withInput();
+            return redirect()->route('profile.complete');
 
         } catch (ValidationException $e) {
             // Log validation errors

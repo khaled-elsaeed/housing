@@ -15,7 +15,7 @@ class UniversityArchiveLite extends Model
         'academic_id',
         'name_en',
         'name_ar',
-        'academic_email'
+        'academic_email',
     ];
 
     /**

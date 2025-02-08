@@ -47,7 +47,7 @@
 
          <!-- Start Rightbar -->
          <div class="rightbar">
-            <!-- Start Topbar Mobile -->
+            <!-- Start Topbar Phone -->
             <x-mobile-topbar />
             <!-- Start Topbar -->
             <x-topbar />

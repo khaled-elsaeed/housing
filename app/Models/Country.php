@@ -15,5 +15,9 @@ class Country extends Model
     // Define which fields are fillable
     protected $fillable = ['name', 'code'];
 
-    // Optional: You can add relationships if you have any (e.g., related cities)
+    public function getNameAttribute()
+{
+    return app()->getLocale() === 'ar' ? $this->name_ar : $this->name_en;
+}
+
 }

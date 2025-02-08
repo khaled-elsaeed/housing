@@ -2,7 +2,6 @@
 @section('title', __('Complete Profile'))
 @section('links')
 <link rel="stylesheet" href="{{ asset('css/complete-profile.css') }}">
-
 @endsection
 @section('content')
 <div class="container py-2 py-sm-2 py-md-3">
@@ -87,7 +86,7 @@
                               <!-- Gender -->
                               <div class="col-md-6 mb-2">
                                  <label for="gender" class="form-label">{{ __('Gender') }}</label>
-                                 <select class="form-control" id="gender" name="gender">
+                                 <select class="form-control" id="gender" name="gender" readonly>
                                     <option value="">{{ __('Select Gender') }}</option>
                                     <option value="male" {{ old('gender', $profileData['personalInformation']['gender'] ?? '') == 'male' ? 'selected' : '' }}>{{ __('Male') }}</option>
                                     <option value="female" {{ old('gender', $profileData['personalInformation']['gender'] ?? '') == 'female' ? 'selected' : '' }}>{{ __('Female') }}</option>
@@ -106,8 +105,8 @@
                                  <select class="form-control" id="governorate" name="governorate" required>
                                     <option value="">{{ __('Select Governorate') }}</option>
                                     @foreach ($formData['governorates'] ?? [] as $governorate)
-                                    <option value="{{ $governorate->id }}" {{ old('governorate', $profileData['contactDetails']['governorate'] ?? '') == $governorate->id ? 'selected' : '' }}>
-                                       {{ $governorate->name_en }}
+                                    <option value="{{ $governorate->id }}" {{ old('governorate', $profileData['contactInformation']['governorate'] ?? '') == $governorate->id ? 'selected' : '' }}>
+                                    {{ $governorate->name }}
                                     </option>
                                     @endforeach
                                  </select>
@@ -115,30 +114,24 @@
                               </div>
                               <!-- City (Dropdown) -->
                               <div class="col-md-6 mb-2">
-                                
-
-
-
                                  <label for="city" class="form-label">{{ __('City') }}</label>
-                                 
-                                 @if($profileData['contactDetails']['city'])
-                                 <select class="form-control" id="city" name="city" required>
+                                 @if($profileData['contactInformation']['city'])
+                                 <select class="form-control" id="city" name="city" >
                                  @foreach ($formData['cities'] as $city)
-                                 <option value="{{ $city->id }}" {{ old('city', $profileData['contactDetails']['city'] ?? '') == $city->id ? 'selected' : '' }}>
-                                       {{ $city->name_en }}
-                                    </option>
-                                    @endforeach
-                                    </select>
-
+                                 <option value="{{ $city->id }}" {{ old('city', $profileData['contactInformation']['city'] ?? '') == $city->id ? 'selected' : '' }}>
+                                 {{ $city->name }}
+                                 </option>
+                                 @endforeach
+                                 </select>
                                  @else
-                                 <select class="form-control" id="city" name="city" required disabled>
+                                 <select class="form-control" id="city" name="city"  disabled>
                                     <option value="">{{ __('Select Governorate First') }}</option>
                                  </select>
                                  @endif
                                  <!-- Hidden Datalist -->
                                  <datalist class="d-none" id="city-list">
                                     @foreach ($formData['cities'] as $city)
-                                    <option data-governorate-id="{{ $city->governorate_id }}" data-city-id="{{ $city->id }}" value="{{ $city->name_en }}"></option>
+                                    <option data-governorate-id="{{ $city->governorate_id }}" data-city-id="{{ $city->id }}" value="{{ $city->name }}"></option>
                                     @endforeach
                                  </datalist>
                                  <div class="error-message"></div>
@@ -147,13 +140,14 @@
                            <!-- Street -->
                            <div class="mb-2">
                               <label for="street" class="form-label">{{ __('Street') }}</label>
-                              <input type="text" class="form-control" id="street" name="street">
+                              <input type="text" class="form-control" id="street" name="street" value="{{ old('street', $profileData['contactInformation']['street'] ?? '') }}">
                               <div class="error-message"></div>
                            </div>
-                           <!-- Phone Number -->
                            <div class="mb-2">
                               <label for="phone" class="form-label">{{ __('Phone Number') }}</label>
-                              <input type="tel" class="form-control" id="phone" name="phone">
+                              <input type="tel" class="form-control" id="phone" name="phone" 
+                                 value="{{ old('phone', $profileData['contactInformation']['phone'] ?? '') }}">
+                              <small class="form-text text-muted">{{ __('Enter your phone number in international format (e.g., 01014545865).') }}</small>
                               <div class="error-message"></div>
                            </div>
                         </div>
@@ -164,11 +158,11 @@
                            <div class="row">
                               <div class="col-md-6 mb-2">
                                  <label for="faculty" class="form-label">{{ __('Faculty') }}</label>
-                                 <select class="form-control" id="faculty" name="faculty" required>
+                                 <select class="form-control" id="faculty" name="faculty" >
                                     <option value="">{{ __('Select Faculty') }}</option>
                                     @foreach ($formData['faculties'] as $faculty)
                                     <option value="{{ $faculty->id }}" {{ old('faculty', $profileData['academicInformation']['faculty'] ?? '') == $faculty->id ? 'selected' : '' }}>
-                                    {{ $faculty->name_en }}
+                                    {{ $faculty->name }}
                                     </option>
                                     @endforeach
                                  </select>
@@ -177,27 +171,23 @@
                               <!-- Program (Dropdown) -->
                               <div class="col-md-6  mb-2">
                                  <label for="program" class="form-label">{{ __('Program') }}</label>
-
-
                                  @if($profileData['academicInformation']['program'])
-                                 <select class="form-control" id="program" name="program" required>
+                                 <select class="form-control" id="program" name="program" >
                                  @foreach ($formData['programs'] as $program)
                                  <option value="{{ $program->id }}" {{ old('program', $profileData['academicInformation']['program'] ?? '') == $program->id ? 'selected' : '' }}>
-                                       {{ $program->name_en }}
-                                    </option>
-                                    @endforeach
-                                    </select>
-
+                                 {{ $program->name }}
+                                 </option>
+                                 @endforeach
+                                 </select>
                                  @else
-                                 <select class="form-control" id="program" name="program" required disabled>
+                                 <select class="form-control" id="program" name="program"  disabled>
                                     <option value="">{{ __('Select faculty First') }}</option>
                                  </select>
                                  @endif
-
                                  <!-- Hidden Datalist -->
                                  <datalist class="d-none" id="faculty-programs">
                                     @foreach ($formData['programs'] as $program)
-                                    <option data-faculty-id="{{ $program->faculty->id }}" data-program-id="{{ $program->id }}" value="{{ $program->name_en }}"></option>
+                                    <option data-faculty-id="{{ $program->faculty->id }}" data-program-id="{{ $program->id }}" value="{{ $program->name }}"></option>
                                     @endforeach
                                  </datalist>
                                  <div class="error-message"></div>
@@ -205,20 +195,20 @@
                            </div>
                            <!-- University ID -->
                            <div class="mb-2">
-                              <label for="universityId" class="form-label">{{ __('University ID') }}</label>
-                              <input type="text" class="form-control" id="universityId" name="universityId" value="{{ old('universityId', $profileData['academicInformation']['universityId'] ?? '') }}" readonly>
+                              <label for="academicId" class="form-label">{{ __('University ID') }}</label>
+                              <input type="text" class="form-control" id="academicId" name="academicId" value="{{ old('academicId', $profileData['academicInformation']['academicId'] ?? '') }}" readonly>
                               <div class="error-message"></div>
                            </div>
                            <!-- University Email -->
                            <div class="mb-2">
-                              <label for="universityEmail" class="form-label">{{ __('University Email') }}</label>
-                              <input type="email" class="form-control" id="universityEmail" name="universityEmail" value="{{ old('universityEmail', $profileData['academicInformation']['universityEmail'] ?? '') }}" readonly>
+                              <label for="academicEmail" class="form-label">{{ __('University Email') }}</label>
+                              <input type="email" class="form-control" id="academicEmail" name="academicEmail" value="{{ old('academicEmail', $profileData['academicInformation']['academicEmail'] ?? '') }}" readonly>
                               <div class="error-message"></div>
                            </div>
                            <!-- GPA/Score -->
                            <div class="mb-2">
-                              <label for="gpa" class="form-label">{{ __('GPA/Score') }}</label>
-                              <input type="number" class="form-control" id="gpa" name="gpa" step="0.01" min="0" max="4.0" value="{{ old('gpa', $profileData['academicInformation']['gpa'] ?? '') }}">
+                              <label for="score" class="form-label">{{ __('GPA/Score') }}</label>
+                              <input type="number" class="form-control" id="score" name="score" value="{{ old('score', $profileData['academicInformation']['score'] ?? '') }}"  readonly>
                               <div class="error-message"></div>
                            </div>
                         </div>
@@ -229,45 +219,51 @@
                            <div class="row">
                               <div class="col-md-4 mb-2">
                                  <label for="parentRelationship" class="form-label">{{ __('Relationship') }}</label>
-                                 <select name="parentRelationship" id="parentRelationship" class="form-control" required>
+                                 <select name="parentRelationship" id="parentRelationship" class="form-control" >
                                     <option value="">{{ __('Select Relationship') }}</option>
                                     <option value="father" {{ old('parentRelationship', $profileData['parentInformation']['parentRelationship'] ?? '') == 'father' ? 'selected' : '' }}>{{ __('Father') }}</option>
                                     <option value="mother" {{ old('parentRelationship', $profileData['parentInformation']['parentRelationship'] ?? '') == 'mother' ? 'selected' : '' }}>{{ __('Mother') }}</option>
-                                       <option value="grandfather">{{ __('Grandfather') }}</option>
-                                       <option value="grandmother">{{ __('Grandmother') }}</option>
-                                       <option value="uncle">{{ __('Uncle') }}</option>
-                                       <option value="aunt">{{ __('Aunt') }}</option>
-                                       <option value="cousin">{{ __('Cousin') }}</option>
                                  </select>
+                                 <div class="error-message"></div>
                               </div>
                               <!-- Name -->
                               <div class="col-md-8 mb-2">
                                  <label for="parentName" class="form-label">{{ __('Name') }}</label>
                                  <input type="text" class="form-control" id="parentName" name="parentName" 
-                                    value="{{ old('parentName', $profileData['parentInformation']['parentName'] ?? '') }}" required>
+                                    value="{{ old('parentName', $profileData['parentInformation']['parentName'] ?? '') }}" >
+                                 <div class="error-message"></div>
                               </div>
                            </div>
                            <!-- Phone Number -->
                            <div class="mb-2">
-                              <label for="parentMobile" class="form-label">{{ __('Phone Number') }}</label>
-                              <input type="tel" class="form-control" id="parentMobile" name="parentMobile" 
-                                 value="{{ old('parentMobile', $profileData['parentInformation']['parentMobile'] ?? '') }}" required>
+                              <label for="parentPhone" class="form-label">{{ __('Phone Number') }}</label>
+                              <input type="tel" class="form-control" id="parentPhone" name="parentPhone" 
+                                 value="{{ old('parentPhone', $profileData['parentInformation']['parentPhone'] ?? '') }}" >
+                              <div class="error-message"></div>
                            </div>
                            <!-- Email -->
                            <div class="mb-2">
-                              <label for="parentEmail" class="form-label">{{ __('Email') }}</label>
+                           <label for="parentEmail" class="form-label">
+    {{ __('Email') }} <span class="text-muted">({{ __('Optional') }})</span>
+</label>
                               <input type="email" class="form-control" id="parentEmail" name="parentEmail" 
                                  value="{{ old('parentEmail', $profileData['parentInformation']['parentEmail'] ?? '') }}">
+                              <div class="error-message"></div>
                            </div>
                            <div class="row">
                               <!-- Is Abroad -->
                               <div class="col-md-6 mb-2">
                                  <label for="isParentAbroad" class="form-label">{{ __('Is the Parent Abroad?') }}</label>
-                                 <select name="isParentAbroad" id="isParentAbroad" class="form-control" required>
+                                 <select name="isParentAbroad" id="isParentAbroad" class="form-control" >
                                     <option value="">{{ __('Select Option') }}</option>
-                                    <option value="yes">{{ __('Yes') }}</option>
-                                    <option value="no">{{ __('No') }}</option>
+                                    <option value="1" {{ old('isParentAbroad', $profileData['parentInformation']['isParentAbroad'] ?? '') == "1" ? 'selected' : '' }}>
+                                    {{ __('Yes') }}
+                                    </option>
+                                    <option value="0" {{ old('isParentAbroad', $profileData['parentInformation']['isParentAbroad'] ?? '') == "0" ? 'selected' : '' }}>
+                                    {{ __('No') }}
+                                    </option>
                                  </select>
+                                 <div class="error-message"></div>
                               </div>
                               <!-- Country if Abroad -->
                               <div class="col-md-6 mb-2 d-none" id="abroadCountryDiv">
@@ -277,30 +273,36 @@
                                     @foreach ($formData['countries'] ?? [] as $country)
                                     <option value="{{ $country->id }}" 
                                     {{ old('abroadCountry', $profileData['parentInformation']['abroadCountry'] ?? '') == $country->id ? 'selected' : '' }}>
-                                    {{ __($country->name_en) }}
+                                    {{ __($country->name) }}
                                     </option>
                                     @endforeach
                                  </select>
+                                 <div class="error-message"></div>
                               </div>
                               <!-- Living with Parent if Not Abroad -->
                               <div class="col-md-6 d-none" id="livingWithParentDiv">
                                  <label for="livingWithParent" class="form-label">{{ __('Do You Live With Them?') }}</label>
                                  <select name="livingWithParent" id="livingWithParent" class="form-control">
                                     <option value="">{{ __('Select Option') }}</option>
-                                    <option value="yes">{{ __('Yes') }}</option>
-                                    <option value="no">{{ __('No') }}</option>
+                                    <option value="1" {{ old('livingWithParent', $profileData['parentInformation']['livingWithParent'] ?? '') == "1" ? 'selected' : '' }}>
+                                    {{ __('Yes') }}
+                                    </option>
+                                    <option value="0" {{ old('livingWithParent', $profileData['parentInformation']['livingWithParent'] ?? '') == "0" ? 'selected' : '' }}>
+                                    {{ __('No') }}
+                                    </option>
                                  </select>
+                                 <div class="error-message"></div>
                               </div>
                            </div>
                            <!-- Governorate and City (only shown if not living with them) -->
                            <div class="row d-none" id="parentGovernorateCityDiv">
                               <div class="col-md-6 mb-2">
                                  <label for="parentGovernorate" class="form-label">{{ __('Governorate') }}</label>
-                                 <select class="form-control" id="parentGovernorate" name="parentGovernorate" required>
+                                 <select class="form-control" id="parentGovernorate" name="parentGovernorate" >
                                     <option value="">{{ __('Select Governorate') }}</option>
                                     @foreach ($formData['governorates'] as $governorate)
                                     <option value="{{ $governorate->id }}">
-                                       {{ $governorate->name_en }}
+                                       {{ $governorate->name }}
                                     </option>
                                     @endforeach
                                  </select>
@@ -309,7 +311,7 @@
                               <!-- City (Dropdown) -->
                               <div class="col-md-6 mb-2">
                                  <label for="parentCity" class="form-label">{{ __('City') }}</label>
-                                 <select class="form-control" id="parentCity" name="parentCity" required disabled>
+                                 <select class="form-control" id="parentCity" name="parentCity"  disabled>
                                     <option value="">{{ __('Select Governorate First') }}</option>
                                  </select>
                                  <div class="error-message"></div>
@@ -322,65 +324,54 @@
                            <!-- Do you have a sibling in dorm? -->
                            <div class="mb-3">
                               <label for="hasSiblingInDorm" class="form-label">{{ __('Do you have a sibling in the dorm?') }}</label>
-                              <select name="hasSiblingInDorm" id="hasSiblingInDorm" class="form-control" required onchange="toggleSiblingFields()">
+                              <select name="hasSiblingInDorm" id="hasSiblingInDorm" class="form-control"  >
                                  <option value="">{{ __('Select Option') }}</option>
-                                 <option value="yes">{{ __('Yes') }}</option>
-                                 <option value="no" selected>{{ __('No') }}</option>
+                                 <option value="1" {{ old('hasSiblingInDorm', $profileData['siblingInformation']['hasSiblingInDorm'] ?? '') == '1' ? 'selected' : '' }}>{{ __('Yes') }}</option>
+                                 <option value="0" {{ old('hasSiblingInDorm', $profileData['siblingInformation']['hasSiblingInDorm'] ?? '') == '0' ? 'selected' : '' }}>{{ __('No') }}</option>
                               </select>
+                              <div class="error-message"></div>
                            </div>
                            <!-- Sibling Information - This will be shown if the user has a sibling in the dorm -->
                            <div id="siblingInfoSection" class="d-none">
                               <!-- Relationship -->
                               <div class="row">
                                  <div class="col-md-4 mb-2">
-                                    <label for="siblingRelationship" class="form-label">{{ __('Relationship') }}</label>
-                                    <select name="siblingRelationship" id="siblingRelationship" class="form-control" required>
+                                    <label for="siblingGender" class="form-label">{{ __('Relationship') }}</label>
+                                    <select name="siblingGender" id="siblingGender" class="form-control" >
                                        <option value="">{{ __('Select Relationship') }}</option>
-                                       <option value="brother">{{ __('Brother') }}</option>
-                                       <option value="sister">{{ __('Sister') }}</option>
-                                       <option value="other">{{ __('Other') }}</option>
+                                       <option value="male" {{ old('siblingGender', $profileData['siblingInformation']['siblingGender'] ?? '') == 'male' ? 'selected' : '' }}>{{ __('Brother') }}</option>
+                                       <option value="female" {{ old('siblingGender', $profileData['siblingInformation']['siblingGender'] ?? '') == 'female' ? 'selected' : '' }}>{{ __('Sister') }}</option>
                                     </select>
+                                    <div class="error-message"></div>
                                  </div>
                                  <!-- Name -->
                                  <div class="col-md-8 mb-2">
                                     <label for="siblingName" class="form-label">{{ __('Name') }}</label>
-                                    <input type="text" class="form-control" id="siblingName" name="siblingName" value="{{ old('siblingName', $profileData['siblingInformation']['siblingName'] ?? '') }}" required>
+                                    <input type="text" class="form-control" id="siblingName" name="siblingName" value="{{ old('siblingName', $profileData['siblingInformation']['siblingName'] ?? '') }}" >
+                                    <div class="error-message"></div>
                                  </div>
                               </div>
                               <!-- National ID -->
                               <div class="mb-2">
                                  <label for="siblingNationalId" class="form-label">{{ __('National ID') }}</label>
                                  <input type="text" class="form-control" id="siblingNationalId" name="siblingNationalId" value="{{ old('siblingNationalId', $profileData['siblingInformation']['siblingNationalId'] ?? '') }}">
+                                 <div class="error-message"></div>
                               </div>
                               <!-- Faculty -->
                               <div class="mb-2">
                                  <label for="siblingFaculty" class="form-label">{{ __('Faculty') }}</label>
-                                 <select class="form-control" id="siblingFaculty" name="siblingFaculty" required>
+                                 <select class="form-control" id="siblingFaculty" name="siblingFaculty" >
                                     <option value="">{{ __('Select Faculty') }}</option>
-                                    @foreach ($formData['faculties'] ?? [] as $faculty)
-                                    <option value="{{ $faculty->id }}" 
-                                    {{ old('siblingFaculty', $profileData['siblingInformation']['faculty'] ?? '') == $faculty->id ? 'selected' : '' }}>
-                                    {{ $faculty->name_en }}
+                                    @foreach ($formData['faculties'] as $faculty)
+                                    <option value="{{ $faculty->id }}" {{ old('siblingFaculty', $profileData['siblingInformation']['siblingFaculty'] ?? '') == $faculty->id ? 'selected' : '' }}>
+                                    {{ $faculty->name }}
                                     </option>
                                     @endforeach
                                  </select>
+                                 <div class="error-message"></div>
                               </div>
                            </div>
                         </div>
-                        <script>
-                           // Function to toggle sibling information based on the selection
-                           function toggleSiblingFields() {
-                              const hasSiblingInDorm = document.getElementById('hasSiblingInDorm').value;
-                              const siblingInfoSection = document.getElementById('siblingInfoSection');
-                              
-                              // Show sibling info if the user selects 'Yes'
-                              if (hasSiblingInDorm === 'yes') {
-                                 siblingInfoSection.classList.remove('d-none');
-                              } else {
-                                 siblingInfoSection.classList.add('d-none');
-                              }
-                           }
-                        </script>
                         <!-- Step 6: Emergency Contact Information -->
                         <div class="form-step tab-pane fade d-none" id="step6">
                            <h4 class="mb-4">{{ __('Emergency Contact Information') }}</h4>
@@ -388,7 +379,7 @@
                            <div class="row">
                               <div class="col-md-4 mb-2">
                                  <label for="emergencyContactRelationship" class="form-label">{{ __('Relationship') }}</label>
-                                 <select name="emergencyContactRelationship" id="emergencyContactRelationship" class="form-control" required>
+                                 <select name="emergencyContactRelationship" id="emergencyContactRelationship" class="form-control" >
                                     <option value="">{{ __('Select Relationship') }}</option>
                                     <option value="father" {{ old('emergencyContactRelationship', $profileData['emergencyContact']['emergencyContactRelationship'] ?? '') == 'father' ? 'selected' : '' }}>{{ __('Father') }}</option>
                                     <option value="mother" {{ old('emergencyContactRelationship', $profileData['emergencyContact']['emergencyContactRelationship'] ?? '') == 'mother' ? 'selected' : '' }}>{{ __('Mother') }}</option>
@@ -396,19 +387,22 @@
                                     <option value="sister" {{ old('emergencyContactRelationship', $profileData['emergencyContact']['emergencyContactRelationship'] ?? '') == 'sister' ? 'selected' : '' }}>{{ __('Sister') }}</option>
                                     <option value="other" {{ old('emergencyContactRelationship', $profileData['emergencyContact']['emergencyContactRelationship'] ?? '') == 'other' ? 'selected' : '' }}>{{ __('Other') }}</option>
                                  </select>
+                                 <div class="error-message"></div>
                               </div>
                               <!-- Name -->
                               <div class="col-md-8 mb-2">
                                  <label for="emergencyContactName" class="form-label">{{ __('Name') }}</label>
                                  <input type="text" class="form-control" id="emergencyContactName" name="emergencyContactName" 
-                                    value="{{ old('emergencyContactName', $profileData['emergencyContact']['emergencyContactName'] ?? '') }}" required>
+                                    value="{{ old('emergencyContactName', $profileData['emergencyContact']['emergencyContactName'] ?? '') }}" >
+                                 <div class="error-message"></div>
                               </div>
                            </div>
                            <!-- Phone Number -->
                            <div class="mb-2">
                               <label for="emergencyContactPhone" class="form-label">{{ __('Phone Number') }}</label>
                               <input type="tel" class="form-control" id="emergencyContactPhone" name="emergencyContactPhone" 
-                                 value="{{ old('emergencyContactPhone', $profileData['emergencyContact']['emergencyContactPhone'] ?? '') }}" required>
+                                 value="{{ old('emergencyContactPhone', $profileData['emergencyContact']['emergencyContactPhone'] ?? '') }}" >
+                              <div class="error-message"></div>
                            </div>
                         </div>
                         <div class="form-step tab-pane fade" id="step7">
@@ -418,8 +412,9 @@
                                  {{ __('By proceeding, you agree to the following Terms and Conditions') }}:
                               </p>
                               <div class="form-check">
-                              <input class="form-check-input" type="checkbox" value="accepted" id="termsCheckbox" name="termsCheckbox" required>
-                              <label class="form-check-label" for="termsCheckbox">
+                                 <input class="form-check-input border border-primary" type="checkbox" value="accepted" id="termsCheckbox" name="termsCheckbox" >
+                                 <div class="error-message"></div>
+                                 <label class="form-check-label" for="termsCheckbox">
                                  {{ __('I agree to the') }} 
                                  <a href="#" target="_blank">{{ __('Terms and Conditions') }}</a> 
                                  {{ __('and') }} 
@@ -428,21 +423,24 @@
                               </div>
                            </div>
                         </div>
-                        
                      </div>
                   </form>
                   <!-- Navigation Buttons -->
+                  @php
+                  $isRtl = app()->getLocale() === 'ar' ? true : false; // Adjust based on your RTL language
+                  @endphp
                   <div class="d-flex justify-content-end mt-4 gap-2" id="navBtnsContainer">
-                           <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
-                           <i class="fa fa-arrow-left me-2"></i>{{ __('Previous') }}
-                           </button>
-                           <button type="button" class="btn btn-primary" id="nextBtn">
-                           {{ __('Next') }}<i class="fa fa-arrow-right ms-2"></i>
-                           </button>
-                           <button type="submit" class="btn btn-success" id="submitBtn" style="display: none;">
-                           <i class="fa fa-check me-2"></i>{{ __('Submit') }}
-                           </button>
-                        </div>
+                     <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
+                     <i class="fa {{ $isRtl ? 'fa-arrow-right' : 'fa-arrow-left' }} me-2"></i> {{ __('Previous') }}
+                     </button>
+                     <button type="button" class="btn btn-primary" id="nextBtn">
+                     {{ __('Next') }} 
+                     <i class="fa {{ $isRtl ? 'fa-arrow-left' : 'fa-arrow-right' }} ms-2"></i>
+                     </button>
+                     <button type="submit" class="btn btn-success" id="submitBtn" style="display: none;">
+                     <i class="fa fa-check me-2"></i> {{ __('Submit') }}
+                     </button>
+                  </div>
                </div>
             </div>
          </div>
@@ -452,94 +450,4 @@
 @endsection
 @section('scripts')
 <script src="{{ asset('js/pages/complete-profile.js') }}"></script>
-<script>
-   document.addEventListener('DOMContentLoaded', function() {
-       const governorateSelect = document.getElementById('governorate');
-       const parentGovernorateSelect = document.getElementById('parentGovernorate');
-   
-       const citySelect = document.getElementById('city');
-       const parentCitySelect = document.getElementById('parentCity');
-       const cityList = document.getElementById('city-list');
-   
-   
-       governorateSelect.addEventListener('change', function() {
-           const selectedGovernorateId = this.value;
-   
-           // Enable the city dropdown and clear previous selections
-           citySelect.disabled = false;
-           citySelect.innerHTML = '<option value="">{{ __('Select City') }}</option>';
-   
-           // Filter cities from the datalist based on the selected governorate
-           const cityOptions = cityList.querySelectorAll('option');
-           const filteredCities = Array.from(cityOptions).filter(option => option.dataset.governorateId == selectedGovernorateId);
-   
-           // Populate the city dropdown with filtered cities
-           filteredCities.forEach(option => {
-               const newOption = document.createElement('option');
-               newOption.value = option.dataset.cityId;
-               newOption.text = option.value;
-   
-               citySelect.appendChild(newOption);
-           });
-       });
-   
-       parentGovernorateSelect.addEventListener('change', function() {
-           const selectedGovernorateId = this.value;
-   
-           // Enable the city dropdown and clear previous selections
-           parentCitySelect.disabled = false;
-           parentCitySelect.innerHTML = '<option value="">{{ __('Select City') }}</option>';
-   
-           // Filter cities from the datalist based on the selected governorate
-           const cityOptions = cityList.querySelectorAll('option');
-           const filteredCities = Array.from(cityOptions).filter(option => option.dataset.governorateId == selectedGovernorateId);
-   
-           // Populate the city dropdown with filtered cities
-           filteredCities.forEach(option => {
-               const newOption = document.createElement('option');
-               newOption.value = option.dataset.cityId;
-               newOption.text = option.value;
-   
-               parentCitySelect.appendChild(newOption);
-           });
-       });
-   
-       // When the Faculty is selected, update the Program options
-       document.getElementById('faculty').addEventListener('change', function() {
-           var facultyId = this.value;
-           var programSelect = document.getElementById('program');
-           var programsList = document.getElementById('faculty-programs').querySelectorAll('option');
-           
-           // Clear existing program options
-           programSelect.innerHTML = '<option value="">{{ __('Select Program') }}</option>';
-   
-           if (facultyId) {
-               programSelect.removeAttribute('disabled'); // Enable the program dropdown
-               // Add the filtered programs based on selected faculty
-               programsList.forEach(function(option) {
-                   if (option.getAttribute('data-faculty-id') == facultyId) {
-                       var programOption = document.createElement('option');
-                       programOption.value = option.dataset.programId;
-                       programOption.text = option.value;
-                       programSelect.appendChild(programOption);
-                   }
-               });
-           } else {
-               programSelect.setAttribute('disabled', 'true');
-           }
-       });
-       document.getElementById('livingWithParent').addEventListener('change', function() {
-         const livingWithParent = document.getElementById('livingWithParent').value;
-        const parentGovernorateCityDiv = document.getElementById('parentGovernorateCityDiv');
-        
-        if (livingWithParent === 'no') {
-            parentGovernorateCityDiv.classList.remove('d-none');
-        } else {
-            parentGovernorateCityDiv.classList.add('d-none');
-        }
-       });
-       
-   });
-</script>
 @endsection
-

@@ -7,6 +7,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 class User extends Authenticatable
 {
@@ -178,6 +180,25 @@ class User extends Authenticatable
 
 
     }
+
+  
+    
+    public function getNameAttribute()
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login')->send(); // Redirects immediately to login
+        }
+    
+        $lang = app()->getLocale();
+    
+        if ($lang == 'ar') {
+            return $this->first_name_ar . ' ' . $this->last_name_ar;
+        }
+    
+        return $this->first_name_en . ' ' . $this->last_name_en;
+    }
+    
+
 
     public function lastReservation($academicTermId)
 {

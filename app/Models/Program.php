@@ -17,4 +17,9 @@ class Program extends Model
     public function faculty(){
         return $this->belongsTo(Faculty::class);
     }
+
+    public function getNameAttribute()
+    {
+        return app()->getLocale() === 'ar' ? $this->name_ar : $this->name_en;
+    }
 }

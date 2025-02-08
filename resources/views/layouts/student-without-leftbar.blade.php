@@ -10,7 +10,7 @@
       <meta name="csrf-token" content="{{ csrf_token() }}">
 
       <!-- Dynamic Page Title -->
-      <title>__('NMU Housing') - @yield('title', __('Default Title'))</title>
+      <title>@lang('NMU Housing') - @yield('title', __('Default Title'))</title>
 
       <!-- Icons -->
       <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}?v={{ config('app.version') }}">
@@ -40,7 +40,7 @@
 
          <!-- Start Rightbar -->
          <div class="rightbar">
-            <!-- Start Topbar Mobile -->
+            <!-- Start Topbar Phone -->
             <x-mobile-topbar />
             <!-- Start Topbar -->
             <x-topbar />

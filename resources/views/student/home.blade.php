@@ -14,7 +14,7 @@
                      </div>
                   </div>
                   <div class="flex-grow-1">
-                     <h1 class="h4 mb-1 fw-bold">{{ __('Welcome') }}, {{ $user->getUsername() }}</h1>
+                     <h1 class="h4 mb-1 fw-bold">{{ __('Welcome') }}, {{ $user->name}}</h1>
                      <p class="text-primary-50 mb-0 d-none d-md-block">{{ __('Manage your housing and stay updated with your recent activities') }}</p>
                   </div>
                   <div class="flex-shrink-0 d-none d-md-block">
