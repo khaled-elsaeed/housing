@@ -339,7 +339,7 @@
                            <div class="col-md-6">
                               <label for="parent_relation">{{ __('Parent Relation') }}</label>
                               <input type="text" class="form-control" id="parent_relation" name="parent_relation" 
-                                 value="{{ old('parent_relation', $user->parent->relation) }}" disabled>
+                                 value="{{ __($user->parent->relation) }}" disabled>
                            </div>
                            <!-- Parent Email -->
                            <div class="col-md-6">

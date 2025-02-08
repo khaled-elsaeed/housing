@@ -205,12 +205,7 @@
                               <input type="email" class="form-control" id="academicEmail" name="academicEmail" value="{{ old('academicEmail', $profileData['academicInformation']['academicEmail'] ?? '') }}" readonly>
                               <div class="error-message"></div>
                            </div>
-                           <!-- GPA/Score -->
-                           <div class="mb-2">
-                              <label for="score" class="form-label">{{ __('GPA/Score') }}</label>
-                              <input type="number" class="form-control" id="score" name="score" value="{{ old('score', $profileData['academicInformation']['score'] ?? '') }}"  readonly>
-                              <div class="error-message"></div>
-                           </div>
+                           
                         </div>
                         <!-- step 4 parent info -->
                         <div class="form-step tab-pane fade" id="step4">

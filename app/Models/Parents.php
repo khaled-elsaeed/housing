@@ -14,7 +14,7 @@ class Parents extends Model
         'name',
         'relation',
         'email',
-        'mobile',
+        'phone',
         'living_abroad',
         'abroad_country_id',
         'living_with',

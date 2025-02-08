@@ -8,199 +8,249 @@ $(document).ready(function() {
       // Translate function
 
   
-  // Translations organized by field and language
-const translations = {
-    phone: {
-        required: {
-            en: 'Please enter a valid phone number (minimum 11 digits).',
-            ar: 'يرجى إدخال رقم هاتف صحيح (11 أرقام على الأقل).',
+      const translations = {
+        phone: {
+            required: {
+                en: 'Please enter a valid phone number (minimum 11 digits).',
+                ar: 'يرجى إدخال رقم هاتف صحيح (11 أرقام على الأقل).',
+            },
+            pattern: {
+                en: 'Please enter a valid phone number (e.g., 01014545865).',
+                ar: 'يرجى إدخال رقم هاتف صحيح (مثال: 01014545865).',
+            },
         },
-        pattern: {
-            en: 'Please enter a valid phone number (e.g., 01014545865).',
-            ar: 'يرجى إدخال رقم هاتف صحيح (مثال: 01014545865).',
+        street: {
+            required: {
+                en: 'Please enter your complete address (minimum 15 characters).',
+                ar: 'يرجى إدخال عنوانك الكامل (15 أحرف على الأقل).',
+            },
+            minLength: {
+                en: 'Please enter your complete address (minimum 15 characters).',
+                ar: 'يرجى إدخال عنوانك الكامل (15 أحرف على الأقل).',
+            },
         },
-    },
-    street: {
-        required: {
-            en: 'Please enter your complete address (minimum 15 characters).',
-            ar: 'يرجى إدخال عنوانك الكامل (15 أحرف على الأقل).',
+        governorate: {
+            required: {
+                en: 'Please select a governorate.',
+                ar: 'يرجى اختيار المحافظة.',
+            },
         },
-        minLength: {
-            en: 'Please enter your complete address (minimum 15 characters).',
-            ar: 'يرجى إدخال عنوانك الكامل (15 أحرف على الأقل).',
+        city: {
+            required: {
+                en: 'Please select a city.',
+                ar: 'يرجى اختيار المدينة.',
+            },
         },
-    },
-    governorate: {
-        required: {
-            en: 'Please select a governorate.',
-            ar: 'يرجى اختيار المحافظة.',
+        faculty: {
+            required: {
+                en: 'Please select a faculty.',
+                ar: 'يرجى اختيار الكلية.',
+            },
         },
-    },
-    city: {
-        required: {
-            en: 'Please select a city.',
-            ar: 'يرجى اختيار المدينة.',
+        program: {
+            required: {
+                en: 'Please select a program.',
+                ar: 'يرجى اختيار البرنامج.',
+            },
         },
-    },
-    faculty: {
-        required: {
-            en: 'Please select a faculty.',
-            ar: 'يرجى اختيار الكلية.',
+        parentRelationship: {
+            required: {
+                en: 'Please select your relationship with the parent.',
+                ar: 'يرجى اختيار صلة القرابة.',
+            },
         },
-    },
-    program: {
-        required: {
-            en: 'Please select a program.',
-            ar: 'يرجى اختيار البرنامج.',
+        parentName: {
+            required: {
+                en: 'Please enter the parent’s name.',
+                ar: 'يرجى إدخال اسم ولي الأمر.',
+            },
+            minLength: {
+                en: 'Please enter your complete parent name.',
+                ar: 'يرجى إدخال اسم ولي الأمر كامل.',
+            },
         },
-    },
-    parentRelationship: {
-        required: {
-            en: 'Please select your relationship with the parent.',
-            ar: 'يرجى اختيار صلة القرابة.',
+        parentPhone: {
+            required: {
+                en: 'Please enter a valid phone number.',
+                ar: 'يرجى إدخال رقم هاتف صحيح.',
+            },
+            pattern: {
+                en: 'Please enter a valid phone number with the correct format.',
+                ar: 'يرجى إدخال رقم هاتف صحيح بالتنسيق المناسب.',
+            },
         },
-    },
-    parentName: {
-        required: {
-            en: 'Please enter the parent’s name.',
-            ar: 'يرجى إدخال اسم ولي الأمر.',
+        isParentAbroad: {
+            required: {
+                en: 'Please specify if the parent is abroad.',
+                ar: 'يرجى تحديد ما إذا كان ولي الأمر بالخارج.',
+            },
         },
-        minLength: {
-            en: 'Please enter your complete parent name.',
-            ar: 'يرجى إدخال اسم ولي الأمر كامل.',
+        abroadCountry: {
+            required: {
+                en: 'Please choose the abroad country.',
+                ar: 'يرجى اختيار البلد.',
+            },
         },
-    },
-    parentPhone: {
-        required: {
-            en: 'Please enter a valid phone number.',
-            ar: 'يرجى إدخال رقم هاتف صحيح.',
+        parentGovernorate: {
+            required: {
+                en: 'Please select a governorate.',
+                ar: 'يرجى اختيار المحافظة.',
+            },
         },
-        pattern: {
-            en: 'Please enter a valid phone number with the correct format.',
-            ar: 'يرجى إدخال رقم هاتف صحيح بالتنسيق المناسب.',
+        parentCity: {
+            required: {
+                en: 'Please select a city.',
+                ar: 'يرجى اختيار المدينة.',
+            },
         },
-    },
-    isParentAbroad: {
-        required: {
-            en: 'Please specify if the parent is abroad.',
-            ar: 'يرجى تحديد ما إذا كان ولي الأمر بالخارج.',
+        siblingGender: {
+            required: {
+                en: 'Please specify the gender of your sibling.',
+                ar: 'يرجى تحديد جنس الأخ/الأخت.',
+            },
         },
-    },
-    abroadCountry:{
-        required:{
-            en:"Please choose the abroad country.",
-            ar:"يرجى اختيار البلد",
+        siblingNationalId: {
+            required: {
+                en: 'Please enter the National ID of your sibling.',
+                ar: 'يرجى إدخال الرقم القومي للأخ/الأخت.',
+            },
         },
-    },
-    parentGovernorate: {
-        required: {
-            en: 'Please select a governorate.',
-            ar: 'يرجى اختيار المحافظة.',
+        siblingFaculty: {
+            required: {
+                en: 'Please select the faculty of your sibling.',
+                ar: 'يرجى اختيار كلية الأخ/الأخت.',
+            },
         },
-    },
-    parentCity: {
-        required: {
-            en: 'Please select a city.',
-            ar: 'يرجى اختيار المدينة.',
+        emergencyContactRelationship: {
+            required: {
+                en: 'Please specify your relationship with the emergency contact.',
+                ar: 'يرجى تحديد صلة القرابة بجهة الاتصال الطارئة.',
+            },
         },
-    },
-};
+        emergencyContactName: {
+            required: {
+                en: 'Please enter the name of the emergency contact.',
+                ar: 'يرجى إدخال اسم جهة الاتصال الطارئة.',
+            },
+        },
+        emergencyContactPhone: {
+            required: {
+                en: 'Please enter a valid phone number for the emergency contact.',
+                ar: 'يرجى إدخال رقم هاتف صحيح لجهة الاتصال الطارئة.',
+            },
+        },
+    };
+    
+    // Function to safely fetch translations with a fallback message
+    function translate(field, rule, lang) {
+        return translations[field] && translations[field][rule] && translations[field][rule][lang]
+            ? translations[field][rule][lang]
+            : `Validation error for ${field} (${rule})`; // Default fallback
+    }
 
-// Function to safely fetch translations with a fallback message
-function translate(field, rule, lang) {
-    return translations[field] && translations[field][rule] && translations[field][rule][lang]
-        ? translations[field][rule][lang]
-        : `Validation error for ${field} (${rule})`; // Default fallback
-}
-
-// Validation rules
-const validationRules = {
-    governorate: { required: true },
-    city: { required: true },
-    faculty: { required: true },
-    program: { required: true },
-    phone: {
-        required: true,
-        pattern: /^01[0-25]\d{8}$/, // Egyptian phone format
-    },
-    street: {
-        required: true,
-        minLength: 15,
-    },
-    parentRelationship: { required: true },
-    parentName: { required: true, minLength: 15 },
-    parentPhone: {
-        required: true,
-        pattern: /^(?:\+\d{1,3}\s?\d{6,14}|01[0-25]\d{8})$/,
-    },
-    isParentAbroad: {
-        required: true,
-    },
-    abroadCountry: {
-        required: function () {
-            return $("#isParentAbroad").val() === '1';
+    
+    const validationRules = {
+        governorate: { required: true },
+        city: { required: true },
+        faculty: { required: true },
+        program: { required: true },
+        phone: {
+            required: true,
+            pattern: /^01[0-25]\d{8}$/, // Egyptian phone format
         },
-    },
-    parentGovernorate: {
-        required: function () {
-            return $("#isParentAbroad").val() === '0' && $("#livingWithParent").val() === "0";
+        street: {
+            required: true,
+            minLength: 15,
         },
-    },
-    parentCity: {
-        required: function () {
-            return $("#isParentAbroad").val() === '0' && $("#livingWithParent").val() === "0";
+        parentRelationship: { required: true },
+        parentName: { required: true, minLength: 15 },
+        parentPhone: {
+            required: true,
+            pattern: /^(?:\+\d{1,3}\s?\d{6,14}|01[0-25]\d{8})$/,
         },
-    },
-};
-
-// Validation messages
-const validationMessages = {
-    governorate: {
-        required: translate('governorate', 'required', lang),
-    },
-    city: {
-        required: translate('city', 'required', lang),
-    },
-    faculty: {
-        required: translate('faculty', 'required', lang),
-    },
-    program: {
-        required: translate('program', 'required', lang),
-    },
-    phone: {
-        required: translate('phone', 'required', lang),
-        pattern: translate('phone', 'pattern', lang),
-    },
-    street: {
-        required: translate('street', 'required', lang),
-        minLength: translate('street', 'minLength', lang),
-    },
-    parentRelationship: {
-        required: translate('parentRelationship', 'required', lang),
-    },
-    parentName: {
-        required: translate('parentName', 'required', lang),
-        minLength: translate('parentName', 'minLength', lang),
-    },
-    parentPhone: {
-        required: translate('parentPhone', 'required', lang),
-        pattern: translate('parentPhone', 'pattern', lang),
-    },
-    isParentAbroad: {
-        required: translate('isParentAbroad', 'required', lang),
-    },
-    abroadCountry:{
-        required: translate('abroadCountry', 'required', lang),
-    }   ,
-    parentGovernorate: {
-        required: translate('parentGovernorate', 'required', lang),
-    },
-    parentCity: {
-        required: translate('parentCity', 'required', lang),
-    },
-};
-
-
+        isParentAbroad: { required: true },
+        abroadCountry: {
+            required: function () {
+                return Number($("#isParentAbroad").val()) === 1;
+            },
+        },
+        parentGovernorate: {
+            required: function () {
+                return Number($("#isParentAbroad").val()) === 0 && Number($("#livingWithParent").val()) === 0;
+            },
+        },
+        parentCity: {
+            required: function () {
+                return Number($("#isParentAbroad").val()) === 0 && Number($("#livingWithParent").val()) === 0;
+            },
+        },
+        siblingGender: {
+            required: function () {
+                return Number($("#hasSiblingInDorm").val()) === 1;
+            }
+        },
+        siblingNationalId: {
+            required: function () {
+                return Number($("#hasSiblingInDorm").val()) === 1;
+            }
+        },
+        siblingFaculty: {
+            required: function () {
+                return Number($("#hasSiblingInDorm").val()) === 1;
+            }
+        },
+        emergencyContactRelationship: {
+            required: function () {
+                return Number($("#isParentAbroad").val()) === 1;
+            }
+        },
+        emergencyContactName: {
+            required: function () {
+                return Number($("#isParentAbroad").val()) === 1;
+            }
+        },
+        emergencyContactPhone: {
+            required: function () {
+                return Number($("#isParentAbroad").val()) === 1;
+            }
+        }
+    };
+    
+    // Validation messages
+    const validationMessages = {
+        governorate: { required: translate('governorate', 'required', lang) },
+        city: { required: translate('city', 'required', lang) },
+        faculty: { required: translate('faculty', 'required', lang) },
+        program: { required: translate('program', 'required', lang) },
+        phone: {
+            required: translate('phone', 'required', lang),
+            pattern: translate('phone', 'pattern', lang),
+        },
+        street: {
+            required: translate('street', 'required', lang),
+            minLength: translate('street', 'minLength', lang),
+        },
+        parentRelationship: { required: translate('parentRelationship', 'required', lang) },
+        parentName: {
+            required: translate('parentName', 'required', lang),
+            minLength: translate('parentName', 'minLength', lang),
+        },
+        parentPhone: {
+            required: translate('parentPhone', 'required', lang),
+            pattern: translate('parentPhone', 'pattern', lang),
+        },
+        isParentAbroad: { required: translate('isParentAbroad', 'required', lang) },
+        abroadCountry: { required: translate('abroadCountry', 'required', lang) },
+        parentGovernorate: { required: translate('parentGovernorate', 'required', lang) },
+        parentCity: { required: translate('parentCity', 'required', lang) },
+        siblingGender: { required: translate('siblingGender', 'required', lang) },
+        siblingNationalId: { required: translate('siblingNationalId', 'required', lang) },
+        siblingFaculty: { required: translate('siblingFaculty', 'required', lang) },
+        emergencyContactRelationship: { required: translate('emergencyContactRelationship', 'required', lang) },
+        emergencyContactName: { required: translate('emergencyContactName', 'required', lang) },
+        emergencyContactPhone: { required: translate('emergencyContactPhone', 'required', lang) },
+    };
+    
     /**
      * Form Validation Functions
      */
@@ -508,7 +558,13 @@ const validationMessages = {
      */
     function submitForm() {
         const submitBtn = $('#submitBtn');
-        submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-2"></i>Submitting...');
+        if(lang === 'ar'){
+            submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-2"></i>جاري الحفظ...');
+
+        }else{
+            submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-2"></i>Submitting...');
+
+        }
 
         const formData = {};
         $('#multiStepForm').serializeArray().forEach(item => {
@@ -551,7 +607,7 @@ const validationMessages = {
         swal({
             type: 'error',
             title: 'Submission Failed',
-            text: 'There was an issue submitting your form. Please try again.',
+            text: error.responseJSON.message,
             confirmButtonColor: '#dc3545'
         });
     }
