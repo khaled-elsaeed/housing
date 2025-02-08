@@ -3,12 +3,12 @@ $(document).ready(function() {
     let currentStep = 1;
     let totalSteps = $('.form-step').length;
     const lang = document.documentElement.lang || 'en';
-    
-    const validatedSteps = new Set();
-      // Translate function
 
-  
-      const translations = {
+    const validatedSteps = new Set();
+    // Translate function
+
+
+    const translations = {
         phone: {
             required: {
                 en: 'Please enter a valid phone number (minimum 11 digits).',
@@ -140,20 +140,28 @@ $(document).ready(function() {
             },
         },
     };
-    
+
     // Function to safely fetch translations with a fallback message
     function translate(field, rule, lang) {
-        return translations[field] && translations[field][rule] && translations[field][rule][lang]
-            ? translations[field][rule][lang]
-            : `Validation error for ${field} (${rule})`; // Default fallback
+        return translations[field] && translations[field][rule] && translations[field][rule][lang] ?
+            translations[field][rule][lang] :
+            `Validation error for ${field} (${rule})`; // Default fallback
     }
 
-    
+
     const validationRules = {
-        governorate: { required: true },
-        city: { required: true },
-        faculty: { required: true },
-        program: { required: true },
+        governorate: {
+            required: true
+        },
+        city: {
+            required: true
+        },
+        faculty: {
+            required: true
+        },
+        program: {
+            required: true
+        },
         phone: {
             required: true,
             pattern: /^01[0-25]\d{8}$/, // Egyptian phone format
@@ -162,66 +170,81 @@ $(document).ready(function() {
             required: true,
             minLength: 15,
         },
-        parentRelationship: { required: true },
-        parentName: { required: true, minLength: 15 },
+        parentRelationship: {
+            required: true
+        },
+        parentName: {
+            required: true,
+            minLength: 15
+        },
         parentPhone: {
             required: true,
             pattern: /^(?:\+\d{1,3}\s?\d{6,14}|01[0-25]\d{8})$/,
         },
-        isParentAbroad: { required: true },
+        isParentAbroad: {
+            required: true
+        },
         abroadCountry: {
-            required: function () {
+            required: function() {
                 return Number($("#isParentAbroad").val()) === 1;
             },
         },
         parentGovernorate: {
-            required: function () {
+            required: function() {
                 return Number($("#isParentAbroad").val()) === 0 && Number($("#livingWithParent").val()) === 0;
             },
         },
         parentCity: {
-            required: function () {
+            required: function() {
                 return Number($("#isParentAbroad").val()) === 0 && Number($("#livingWithParent").val()) === 0;
             },
         },
         siblingGender: {
-            required: function () {
+            required: function() {
                 return Number($("#hasSiblingInDorm").val()) === 1;
             }
         },
         siblingNationalId: {
-            required: function () {
+            required: function() {
                 return Number($("#hasSiblingInDorm").val()) === 1;
             }
         },
         siblingFaculty: {
-            required: function () {
+            required: function() {
                 return Number($("#hasSiblingInDorm").val()) === 1;
             }
         },
         emergencyContactRelationship: {
-            required: function () {
+            required: function() {
                 return Number($("#isParentAbroad").val()) === 1;
             }
         },
         emergencyContactName: {
-            required: function () {
+            required: function() {
                 return Number($("#isParentAbroad").val()) === 1;
             }
         },
         emergencyContactPhone: {
-            required: function () {
+            required: function() {
                 return Number($("#isParentAbroad").val()) === 1;
             }
         }
     };
-    
+
     // Validation messages
     const validationMessages = {
-        governorate: { required: translate('governorate', 'required', lang) },
-        city: { required: translate('city', 'required', lang) },
-        faculty: { required: translate('faculty', 'required', lang) },
-        program: { required: translate('program', 'required', lang) },
+        governorate: {
+            required: translate('governorate', 'required', lang)
+        },
+        city: {
+            required: translate('city', 'required', lang)
+        },
+        faculty: {
+            required: translate('faculty', 'required', lang)
+        },
+        program: {
+            required: translate('program', 'required', lang)
+        },
         phone: {
             required: translate('phone', 'required', lang),
             pattern: translate('phone', 'pattern', lang),
@@ -230,7 +253,9 @@ $(document).ready(function() {
             required: translate('street', 'required', lang),
             minLength: translate('street', 'minLength', lang),
         },
-        parentRelationship: { required: translate('parentRelationship', 'required', lang) },
+        parentRelationship: {
+            required: translate('parentRelationship', 'required', lang)
+        },
         parentName: {
             required: translate('parentName', 'required', lang),
             minLength: translate('parentName', 'minLength', lang),
@@ -239,18 +264,38 @@ $(document).ready(function() {
             required: translate('parentPhone', 'required', lang),
             pattern: translate('parentPhone', 'pattern', lang),
         },
-        isParentAbroad: { required: translate('isParentAbroad', 'required', lang) },
-        abroadCountry: { required: translate('abroadCountry', 'required', lang) },
-        parentGovernorate: { required: translate('parentGovernorate', 'required', lang) },
-        parentCity: { required: translate('parentCity', 'required', lang) },
-        siblingGender: { required: translate('siblingGender', 'required', lang) },
-        siblingNationalId: { required: translate('siblingNationalId', 'required', lang) },
-        siblingFaculty: { required: translate('siblingFaculty', 'required', lang) },
-        emergencyContactRelationship: { required: translate('emergencyContactRelationship', 'required', lang) },
-        emergencyContactName: { required: translate('emergencyContactName', 'required', lang) },
-        emergencyContactPhone: { required: translate('emergencyContactPhone', 'required', lang) },
+        isParentAbroad: {
+            required: translate('isParentAbroad', 'required', lang)
+        },
+        abroadCountry: {
+            required: translate('abroadCountry', 'required', lang)
+        },
+        parentGovernorate: {
+            required: translate('parentGovernorate', 'required', lang)
+        },
+        parentCity: {
+            required: translate('parentCity', 'required', lang)
+        },
+        siblingGender: {
+            required: translate('siblingGender', 'required', lang)
+        },
+        siblingNationalId: {
+            required: translate('siblingNationalId', 'required', lang)
+        },
+        siblingFaculty: {
+            required: translate('siblingFaculty', 'required', lang)
+        },
+        emergencyContactRelationship: {
+            required: translate('emergencyContactRelationship', 'required', lang)
+        },
+        emergencyContactName: {
+            required: translate('emergencyContactName', 'required', lang)
+        },
+        emergencyContactPhone: {
+            required: translate('emergencyContactPhone', 'required', lang)
+        },
     };
-    
+
     /**
      * Form Validation Functions
      */
@@ -286,35 +331,35 @@ $(document).ready(function() {
         const name = field.name;
         const rules = validationRules[name];
         const messages = validationMessages[name];
-    
+
         if (!rules) return true;
-    
+
         clearError(field);
-    
+
         // Properly evaluate `required`
         const isRequired = typeof rules.required === 'function' ? rules.required() : rules.required;
-        console.log("field ",field," type ",typeof rules.required);
+        console.log("field ", field, " type ", typeof rules.required);
         // Check required
         if (isRequired && !value) {
             showError(field, messages.required);
             return false;
         }
-    
+
         // Check minLength
         if (rules.minLength && value.length < rules.minLength) {
             showError(field, messages.minLength);
             return false;
         }
-    
+
         // Check pattern
         if (rules.pattern && !rules.pattern.test(value)) {
             showError(field, messages.pattern);
             return false;
         }
-    
+
         return true;
     }
-    
+
 
     /**
      * Validate all fields in a step
@@ -378,7 +423,7 @@ $(document).ready(function() {
             }
         }
 
-        if (currentStep === 7 && direction === 'backward') { 
+        if (currentStep === 7 && direction === 'backward') {
             if (isParentAbroad !== '1') {
                 currentStep--;
             }
@@ -558,10 +603,10 @@ $(document).ready(function() {
      */
     function submitForm() {
         const submitBtn = $('#submitBtn');
-        if(lang === 'ar'){
+        if (lang === 'ar') {
             submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-2"></i>جاري الحفظ...');
 
-        }else{
+        } else {
             submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-2"></i>Submitting...');
 
         }
@@ -635,7 +680,9 @@ $(document).ready(function() {
      */
     function generateGenderAndBirthdate(nationalId) {
         if (typeof nationalId !== 'string' || nationalId.length !== 14 || !/^\d{14}$/.test(nationalId)) {
-            return { error: "Please enter a valid 14-digit national ID." };
+            return {
+                error: "Please enter a valid 14-digit national ID."
+            };
         }
 
         const yearPart = nationalId.substring(1, 3);
@@ -649,20 +696,27 @@ $(document).ready(function() {
         } else if (firstDigit === '3') {
             fullYear = `20${yearPart}`;
         } else {
-            return { error: "Invalid year identifier in national ID." };
+            return {
+                error: "Invalid year identifier in national ID."
+            };
         }
 
         const month = parseInt(monthPart, 10);
         const day = parseInt(dayPart, 10);
         if (month < 1 || month > 12 || day < 1 || day > 31) {
-            return { error: "Invalid date in national ID." };
+            return {
+                error: "Invalid date in national ID."
+            };
         }
 
         const birthdate = `${fullYear}-${monthPart}-${dayPart}`;
         const genderDigit = parseInt(nationalId.charAt(12), 10);
         const gender = genderDigit % 2 === 1 ? "Male" : "Female";
 
-        return { gender, birthdate };
+        return {
+            gender,
+            birthdate
+        };
     }
 
     /**
@@ -676,7 +730,7 @@ $(document).ready(function() {
     function handleGovernorateChange(e) {
 
         const selectedGovernorateId = e.target.value;
-        const citySelect = e.target.id === 'parentGovernorate' ? 
+        const citySelect = e.target.id === 'parentGovernorate' ?
             $('#parentCity') : $('#city');
         console.log(citySelect);
         updateCityOptions(citySelect, selectedGovernorateId);
@@ -689,9 +743,9 @@ $(document).ready(function() {
      */
     function updateCityOptions(citySelect, governorateId) {
 
-        if(lang == 'ar'){
+        if (lang == 'ar') {
             citySelect.prop('disabled', false).html('<option value="">أختر المدينة</option>');
-        }else{
+        } else {
             citySelect.prop('disabled', false).html('<option value="">Select City</option>');
         }
         const cityOptions = $('#city-list option').filter(function() {
@@ -721,11 +775,11 @@ $(document).ready(function() {
      * @param {string} facultyId - Selected faculty ID
      */
     function updateProgramOptions(programSelect, facultyId) {
-            if(lang == 'ar'){
-                programSelect.html('<option value="">أختر البرنامج</option>').prop('disabled', !facultyId);
-            }else{
-                programSelect.html('<option value="">Select Program</option>').prop('disabled', !facultyId);
-            }
+        if (lang == 'ar') {
+            programSelect.html('<option value="">أختر البرنامج</option>').prop('disabled', !facultyId);
+        } else {
+            programSelect.html('<option value="">Select Program</option>').prop('disabled', !facultyId);
+        }
         if (facultyId) {
             $('#faculty-programs option').filter(function() {
                 return $(this).data('faculty-id') == facultyId;
