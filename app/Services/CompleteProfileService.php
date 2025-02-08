@@ -498,7 +498,7 @@ public function storeProfileData(User $user, array $data)
 
         $livesWithValue = $data['isParentAbroad'] === '0' ? ($data['livingWithParent'] ?? null) : null;
 
-// Log the value
+        // Log the value
         $user->parent()->updateOrCreate(['user_id' => $user->id], $parentData);
 
         // Store emergency contact information if parent is abroad
