@@ -51,8 +51,8 @@
         <div class="col-md-6 p-4">
             <div class="text-center mb-3 mb-lg-5">
                 <div class="auth-logo">
-                    <a href="/">
-                        <img src="{{ asset('images/logo.png') }}" alt="@lang('Logo')">
+                <a href="{{route('login')}}">
+                <img src="{{ asset('images/logo.png') }}" alt="@lang('Logo')">
                     </a>
                 </div>
             </div>

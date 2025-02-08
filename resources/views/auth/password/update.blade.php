@@ -50,8 +50,8 @@
         <div class="col-md-6 p-4">
             <div class="text-center">
                 <div class="auth-logo">
-                    <a href="/">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo">
+                <a href="{{route('login')}}">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo">
                     </a>
                 </div>
                 <h4 class="text-primary mb-4">Update Password</h4>

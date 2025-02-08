@@ -61,7 +61,6 @@ class RegisterController extends Controller
             ]);
 
             Auth::login($user);
-            // Flash success message and redirect
             return redirect()->route('profile.complete');
 
         } catch (ValidationException $e) {
