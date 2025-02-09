@@ -75,7 +75,7 @@
         </div>
         
         <div class="content">
-            <h2 style="color:#1e293b;margin-top:0;">مرحباً {{ $user->name }}،</h2>
+            <h2 style="color:#1e293b;margin-top:0;">مرحباً {{ $user->first_name_ar .' '.$user->last_name_ar }}،</h2>
             <p>شكراً لاختيارك السكن الجامعي بجامعة المنصورة الجديدة. لقد تم استلام طلب حجزك بنجاح وهو الآن قيد المراجعة من قبل ادارة السكن.</p>
 
             <div class="reservation-details">

@@ -20,11 +20,21 @@ class Parents extends Model
         'living_with',
         'governorate_id',
         'city_id',
-    ];   
+    ];  
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    public function governorate()
+{
+    return $this->belongsTo(Governorate::class);
+}
+
+public function city()
+{
+    return $this->belongsTo(City::class);
+}
 
 }

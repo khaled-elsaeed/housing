@@ -355,12 +355,12 @@
                   <div class="col-md-6">
                      <label for="parent_city">{{ __('Parent City') }}</label>
                      <input type="text" class="form-control" id="parent_city" 
-                           value="{{ $user->parent->city }}" disabled>
+                           value="{{ $user->parent->city->name }}" disabled>
                   </div>
                   <div class="col-md-6">
                      <label for="parent_governorate">{{ __('Parent Governorate') }}</label>
                      <input type="text" class="form-control" id="parent_governorate" 
-                           value="{{ $user->parent->governorate }}" disabled>
+                           value="{{ $user->parent->governorate->name }}" disabled>
                   </div>
                   @endif
                 @endif
@@ -406,7 +406,7 @@
                 <div class="col-md-6">
                     <label for="sibling_faculty">{{ __('Sibling Faculty') }}</label>
                     <input type="text" class="form-control" id="sibling_faculty" 
-                        value="{{ optional($user->sibling->faculty)->name_en }}" disabled>
+                        value="{{ optional($user->sibling->faculty)->name }}" disabled>
                 </div>
             </div>
             @else
