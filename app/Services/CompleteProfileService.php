@@ -83,6 +83,7 @@ class CompleteProfileService
     private function getNoProfileData($user): array
 {
     try {
+        
         \Log::info('Fetching no-profile data for user', [
             'user_id'  => $user->id ?? 'Guest',
             'email'    => $user->email ?? 'No Email',
@@ -453,10 +454,8 @@ public function storeProfileData(User $user, array $data)
             'data'    => $data
         ]);
 
-        // Check if student record exists
         $existingStudent = $user->student()->first();
 
-        // Prepare student data
         $studentData = [
             'name_en'               => $data['nameEn'] ?? null,
             'name_ar'               => $data['nameAr'] ?? null,

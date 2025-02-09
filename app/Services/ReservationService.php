@@ -424,10 +424,10 @@ class ReservationService
         $roomAvailabilityStatus = $this->checkLastReservedRoomAvailability($reservationRequester, $academicTermId);
 
         if (!$roomAvailabilityStatus["available"]) {
-            // Create a reservation request if the room is not available
+            // Create a reservation request if the old room is not available
             $this->createReservationRequest(
                 $reservationRequester,
-                $academicTermId, // Fix typo from $resademicTermId to $academicTermId
+                $academicTermId, 
                 $reservationRequester->gender,
                 "long",
                 null,
@@ -441,7 +441,7 @@ class ReservationService
             ];
         }
 
-        // Create a reservation if the room is available
+        // Create a reservation if the old room is available
         $createdReservation = $this->createReservation(
             $reservationRequester,
             Room::find($roomAvailabilityStatus['roomId']),

@@ -9,6 +9,7 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Auth;
+use App\Events\AccountRegistered;
 
 
 class RegisterController extends Controller
@@ -61,6 +62,7 @@ class RegisterController extends Controller
             ]);
 
             Auth::login($user);
+            event(new AccountRegistered($user));
             return redirect()->route('profile.complete');
 
         } catch (ValidationException $e) {

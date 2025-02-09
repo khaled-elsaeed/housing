@@ -267,232 +267,191 @@
                </div>
             </div>
          </div>
-         <!-- Academic Info Tab -->
-         <div class="tab-pane fade" id="v-pills-academic-info" role="tabpanel" aria-labelledby="v-pills-academic-info-tab">
-            <div class="card m-b-30">
-               <!-- Header with image banner -->
-               <div class="card-header bg-primary p-4 position-relative">
-                  <div class="text-white position-relative z-2">
-                     <h4 class="card-title mb-0 fw-bold">
-                        <i class="fa fa-building me-2"></i>{{ __('Academic Info') }}
-                     </h4>
-                  </div>
-                  <!-- Decorative pattern overlay -->
-                  <div class="position-absolute top-0 end-0 p-3">
-                     <i class="fa fa-shapes text-white opacity-25 fa-3x"></i>
-                  </div>
-               </div>
-               <div class="card-body">
-                  <p class="text-muted">{{ __('Manage your academic details.') }}</p>
-                  <form class="row g-3" method="POST" action="{{ route('student.updateAcademicInfo') }}">
-                     @csrf
-                     @method('PUT')
-                     @if(!empty(optional($user->student)->faculty))
-                     <div class="col-md-6">
-                        <label for="faculty">{{ __('Faculty') }}</label>
-                        <input type="text" class="form-control" id="faculty" name="faculty" 
-                           value="{{ app()->getLocale() == 'en' ? optional($user->student)->faculty->name_en : optional($user->student)->faculty->name_ar }}" disabled>
-                        <input type="hidden" name="faculty_id" value="{{ optional($user->student)->faculty_id }}">
-                     </div>
-                     @endif
-                     @if(!empty(optional($user->student)->program))
-                     <div class="col-md-6">
-                        <label for="program">{{ __('Program') }}</label>
-                        <input type="text" class="form-control" id="program" name="program" 
-                           value="{{ app()->getLocale() == 'en' ? optional($user->student)->program->name_en : optional($user->student)->program->name_ar }}" disabled>
-                        <input type="hidden" name="program_id" value="{{ optional($user->student)->program_id }}">
-                     </div>
-                     @endif
-                  </form>
-               </div>
+     <!-- Academic Info Tab -->
+<div class="tab-pane fade" id="v-pills-academic-info" role="tabpanel" aria-labelledby="v-pills-academic-info-tab">
+    <div class="card m-b-30">
+        <div class="card-header bg-primary p-4 position-relative">
+            <div class="text-white position-relative z-2">
+                <h4 class="card-title mb-0 fw-bold">
+                    <i class="fa fa-building me-2"></i>{{ __('Academic Info') }}
+                </h4>
             </div>
-         </div>
-         <!-- Parent Info -->
-         <div class="tab-pane fade" id="v-pills-parent-info" role="tabpanel" aria-labelledby="v-pills-parent-info-tab">
-            <div class="card m-b-30">
-               <div class="card-header">
-                  <!-- Header with image banner -->
-                  <div class="card-header bg-primary p-4 position-relative">
-                     <div class="text-white position-relative z-2">
-                        <h4 class="card-title mb-0 fw-bold">
-                           <i class="fa fa-building me-2"></i>{{ __('Parent Information') }}
-                        </h4>
-                     </div>
-                     <!-- Decorative pattern overlay -->
-                     <div class="position-absolute top-0 end-0 p-3">
-                        <i class="fa fa-shapes text-white opacity-25 fa-3x"></i>
-                     </div>
-                  </div>
-                  <div class="card-body">
-                     @if($user->parent)  <!-- Check if parent record exists -->
-                     <form method="POST" action="{{ route('student.updateParentInfo') }}">
-                        @csrf
-                        @method('PUT')
-                        <div class="row">
-                           <!-- Parent Name -->
-                           <div class="col-md-6">
-                              <label for="parent_name">{{ __('Parent Name') }}</label>
-                              <input type="text" class="form-control" id="parent_name" name="parent_name" 
-                                 value="{{ old('parent_name', $user->parent->name) }}" disabled>
-                           </div>
-                           <!-- Parent Relation -->
-                           <div class="col-md-6">
-                              <label for="parent_relation">{{ __('Parent Relation') }}</label>
-                              <input type="text" class="form-control" id="parent_relation" name="parent_relation" 
-                                 value="{{ __($user->parent->relation) }}" disabled>
-                           </div>
-                           <!-- Parent Email -->
-                           <div class="col-md-6">
-                              <label for="parent_email">{{ __('Parent Email') }}</label>
-                              <input type="email" class="form-control" id="parent_email" name="parent_email" 
-                                 value="{{ old('parent_email', $user->parent->email) }}" disabled>
-                           </div>
-                           <!-- Parent Phone -->
-                           <div class="col-md-6">
-                              <label for="parent_phone">{{ __('Parent Phone') }}</label>
-                              <input type="text" class="form-control" id="parent_phone" name="parent_phone" 
-                                 value="{{ old('parent_phone', $user->parent->phone) }}" disabled>
-                           </div>
-                              <!-- Living Abroad -->
-                              <div class="col-md-6">
-                                <label for="parent_living_abroad">{{ __('Living Abroad') }}</label>
-                                <input type="text" class="form-control" id="parent_living_abroad" name="parent_living_abroad" 
-                                  value="{{ old('parent_living_abroad', $user->parent->living_abroad == 1 ? __('Yes') : __('No')) }}" disabled>
-                              </div>
-                              <!-- Living With parents -->
-                              <div class="col-md-6">
-                                <label for="parent_living_with">{{ __('Living With parents') }}</label>
-                                <input type="text" class="form-control" id="parent_living_with" name="parent_living_with" 
-                                  value="{{ old('parent_living_with', $user->parent->living_with == 1 ? __('Yes') : __('No')) }}" disabled>
-                              </div>
-                           @if($user->parent->living_with == 0) <!-- Only show if living_with is 0 (no) -->
-                           <div class="col-md-6">
-                              <label for="parent_city">{{ __('Parent City') }}</label>
-                              <input type="text" class="form-control" id="parent_city" name="parent_city" 
-                                 value="{{ old('parent_city', $user->parent->city ?? '') }}">
-                           </div>
-                           <div class="col-md-6">
-                              <label for="parent_governorate">{{ __('Parent Governorate') }}</label>
-                              <input type="text" class="form-control" id="parent_governorate" name="parent_governorate" 
-                                 value="{{ old('parent_governorate', $user->parent->governorate ?? '') }}">
-                           </div>
-                           @endif
-                        </div>
-                     </form>
-                     @else
-                     <p>{{ __('No parent information available') }}</p>
-                     @endif
-                  </div>
-               </div>
+            <div class="position-absolute top-0 end-0 p-3">
+                <i class="fa fa-shapes text-white opacity-25 fa-3x"></i>
             </div>
-         </div>
-         <!-- Sibling Info -->
-         <div class="tab-pane fade" id="v-pills-sibling-info" role="tabpanel" aria-labelledby="v-pills-sibling-info-tab">
-            <div class="card m-b-30">
-               <!-- Header with image banner -->
-               <div class="card-header bg-primary p-4 position-relative">
-                  <div class="text-white position-relative z-2">
-                     <h4 class="card-title mb-0 fw-bold">
-                        <i class="fa fa-building me-2"></i>{{ __('Sibling Information') }}
-                     </h4>
-                  </div>
-                  <!-- Decorative pattern overlay -->
-                  <div class="position-absolute top-0 end-0 p-3">
-                     <i class="fa fa-shapes text-white opacity-25 fa-3x"></i>
-                  </div>
-               </div>
-               <div class="card-body">
-                  @if($user->sibling)  <!-- Check if sibling record exists -->
-                  <form method="POST" action="{{ route('student.updateOrCreateSiblingInfo') }}">
-                     @csrf
-                     <div class="row">
-                        <!-- Sibling Gender -->
-                        <div class="col-md-6">
-                           <label for="sibling_gender">{{ __('Sibling Gender') }}</label>
-                           <select class="form-control" id="sibling_gender" name="sibling_gender">
-                           <option value="brother" {{ old('sibling_gender', $user->sibling->gender) == 'brother' ? 'selected' : '' }}>{{ __('Brother') }}</option>
-                           <option value="sister" {{ old('sibling_gender', $user->sibling->gender) == 'sister' ? 'selected' : '' }}>{{ __('Sister') }}</option>
-                           </select>
-                        </div>
-                        <!-- Sibling Name -->
-                        <div class="col-md-6">
-                           <label for="sibling_name">{{ __('Sibling Name') }}</label>
-                           <input type="text" class="form-control" id="sibling_name" name="sibling_name" value="{{ old('sibling_name', $user->sibling->name) }}">
-                        </div>
-                        <!-- Sibling National ID -->
-                        <div class="col-md-6">
-                           <label for="sibling_national_id">{{ __('Sibling National ID') }}</label>
-                           <input type="text" class="form-control" id="sibling_national_id" name="sibling_national_id" value="{{ old('sibling_national_id', $user->sibling->national_id) }}">
-                        </div>
-                        <!-- Sibling Faculty -->
-                        <div class="col-md-6">
-                           <label for="sibling_faculty">{{ __('Sibling Faculty') }}</label>
-                           <input type="text" class="form-control" id="sibling_faculty" name="sibling_faculty" value="{{ old('sibling_faculty', optional($user->sibling->faculty)->name_en) }}">
-                        </div>
-                     </div>
-                    
-                  </form>
-                  @else
-                  <p class="text-muted">{{ __('No sibling information available') }}</p>
-                  @endif
-               </div>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">{{ __('Manage your academic details.') }}</p>
+            <form class="row g-3">
+                @if(!empty(optional($user->student)->faculty))
+                <div class="col-md-6">
+                    <label for="faculty">{{ __('Faculty') }}</label>
+                    <input type="text" class="form-control" id="faculty" 
+                        value="{{ app()->getLocale() == 'en' ? optional($user->student)->faculty->name_en : optional($user->student)->faculty->name_ar }}" 
+                        disabled>
+                </div>
+                @endif
+                @if(!empty(optional($user->student)->program))
+                <div class="col-md-6">
+                    <label for="program">{{ __('Program') }}</label>
+                    <input type="text" class="form-control" id="program"
+                        value="{{ app()->getLocale() == 'en' ? optional($user->student)->program->name_en : optional($user->student)->program->name_ar }}" 
+                        disabled>
+                </div>
+                @endif
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Parent Info Tab -->
+<div class="tab-pane fade" id="v-pills-parent-info" role="tabpanel" aria-labelledby="v-pills-parent-info-tab">
+    <div class="card m-b-30">
+        <div class="card-header bg-primary p-4 position-relative">
+            <div class="text-white position-relative z-2">
+                <h4 class="card-title mb-0 fw-bold">
+                    <i class="fa fa-building me-2"></i>{{ __('Parent Information') }}
+                </h4>
             </div>
-         </div>
-         <!-- End Sibling Info Tab -->
-         <!-- Emergency Info -->
-         <div class="tab-pane fade" id="v-pills-emergency-info" role="tabpanel" aria-labelledby="v-pills-emergency-info-tab">
-            <div class="card m-b-30">
-               <!-- Header with image banner -->
-               <div class="card-header bg-primary p-4 position-relative">
-                  <div class="text-white position-relative z-2">
-                     <h4 class="card-title mb-0 fw-bold">
-                        <i class="fa fa-building me-2"></i>{{ __('Emergency Information') }}
-                     </h4>
-                  </div>
-                  <!-- Decorative pattern overlay -->
-                  <div class="position-absolute top-0 end-0 p-3">
-                     <i class="fa fa-shapes text-white opacity-25 fa-3x"></i>
-                  </div>
-               </div>
-               <div class="card-body">
-                  @if($user->emergencyContact)  <!-- Check if emergency contact data exists -->
-                  <form method="POST" action="{{ route('student.updateOrCreateEmergencyInfo') }}">
-                     @csrf
-                     <div class="row">
-                        <!-- Emergency Contact Name -->
-                        <div class="col-md-6">
-                           <label for="emergency_contact_name">{{ __('Emergency Contact Name') }}</label>
-                           <input type="text" class="form-control" id="emergency_contact_name"
-                              name="emergency_contact_name" value="{{ old('emergency_contact_name', $user->emergencyContact->name ?? '') }}">
-                        </div>
-                        <!-- Emergency Phone -->
-                        <div class="col-md-6">
-                           <label for="emergency_phone">{{ __('Emergency Phone') }}</label>
-                           <input type="text" class="form-control" id="emergency_phone" name="emergency_phone"
-                              value="{{ old('emergency_phone', $user->emergencyContact->phone ?? '') }}">
-                        </div>
-                        <!-- Relationship Dropdown -->
-                        <div class="col-md-6">
-                           <label for="relationship">{{ __('Relationship') }}</label>
-                           <select class="form-control" id="relationship" name="relationship">
-                           <option value="uncle" {{ old('relationship', $user->emergencyContact->relation ?? '') == 'uncle' ? 'selected' : '' }}>{{ __('Uncle') }}</option>
-                           <option value="aunt" {{ old('relationship', $user->emergencyContact->relation ?? '') == 'aunt' ? 'selected' : '' }}>{{ __('Aunt') }}</option>
-                           <option value="grandparent" {{ old('relationship', $user->emergencyContact->relation ?? '') == 'grandparent' ? 'selected' : '' }}>{{ __('Grandparent') }}</option>
-                           <option value="other" {{ old('relationship', $user->emergencyContact->relation ?? '') == 'other' ? 'selected' : '' }}>{{ __('Other') }}</option>
-                           <option value="spouse" {{ old('relationship', $user->emergencyContact->relation ?? '') == 'spouse' ? 'selected' : '' }}>{{ __('Spouse') }}</option>
-                           <option value="nephew" {{ old('relationship', $user->emergencyContact->relation ?? '') == 'nephew' ? 'selected' : '' }}>{{ __('Nephew') }}</option>
-                           <option value="cousin" {{ old('relationship', $user->emergencyContact->relation ?? '') == 'cousin' ? 'selected' : '' }}>{{ __('Cousin') }}</option>
-                           <option value="niece" {{ old('relationship', $user->emergencyContact->relation ?? '') == 'niece' ? 'selected' : '' }}>{{ __('Niece') }}</option>
-                           </select>
-                        </div>
-                     </div>
-                  </form>
-                  @else
-                  <p class="text-muted">{{ __('No emergency contact information available') }}</p>
-                  @endif
-               </div>
+            <div class="position-absolute top-0 end-0 p-3">
+                <i class="fa fa-shapes text-white opacity-25 fa-3x"></i>
             </div>
-         </div>
+        </div>
+        <div class="card-body">
+            @if($user->parent)
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="parent_name">{{ __('Parent Name') }}</label>
+                    <input type="text" class="form-control" id="parent_name" 
+                        value="{{ $user->parent->name }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label for="parent_relation">{{ __('Parent Relation') }}</label>
+                    <input type="text" class="form-control" id="parent_relation" 
+                        value="{{ __($user->parent->relation) }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label for="parent_email">{{ __('Parent Email') }}</label>
+                    <input type="email" class="form-control" id="parent_email" 
+                        value="{{ $user->parent->email }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label for="parent_phone">{{ __('Parent Phone') }}</label>
+                    <input type="text" class="form-control" id="parent_phone" 
+                        value="{{ $user->parent->phone }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label for="parent_living_abroad">{{ __('Living Abroad') }}</label>
+                    <input type="text" class="form-control" id="parent_living_abroad" 
+                        value="{{ $user->parent->living_abroad == 1 ? __('Yes') : __('No') }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label for="parent_living_with">{{ __('Living With parents') }}</label>
+                    <input type="text" class="form-control" id="parent_living_with" 
+                        value="{{ $user->parent->living_with == 1 ? __('Yes') : __('No') }}" disabled>
+                </div>
+                @if($user->parent->living_with == 0)
+                <div class="col-md-6">
+                    <label for="parent_city">{{ __('Parent City') }}</label>
+                    <input type="text" class="form-control" id="parent_city" 
+                        value="{{ $user->parent->city }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label for="parent_governorate">{{ __('Parent Governorate') }}</label>
+                    <input type="text" class="form-control" id="parent_governorate" 
+                        value="{{ $user->parent->governorate }}" disabled>
+                </div>
+                @endif
+            </div>
+            @else
+            <p>{{ __('No parent information available') }}</p>
+            @endif
+        </div>
+    </div>
+</div>
+
+<!-- Sibling Info Tab -->
+<div class="tab-pane fade" id="v-pills-sibling-info" role="tabpanel" aria-labelledby="v-pills-sibling-info-tab">
+    <div class="card m-b-30">
+        <div class="card-header bg-primary p-4 position-relative">
+            <div class="text-white position-relative z-2">
+                <h4 class="card-title mb-0 fw-bold">
+                    <i class="fa fa-building me-2"></i>{{ __('Sibling Information') }}
+                </h4>
+            </div>
+            <div class="position-absolute top-0 end-0 p-3">
+                <i class="fa fa-shapes text-white opacity-25 fa-3x"></i>
+            </div>
+        </div>
+        <div class="card-body">
+            @if($user->sibling)
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="sibling_gender">{{ __('Sibling Gender') }}</label>
+                    <input type="text" class="form-control" id="sibling_gender" 
+                        value="{{ __($user->sibling->gender) }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label for="sibling_name">{{ __('Sibling Name') }}</label>
+                    <input type="text" class="form-control" id="sibling_name" 
+                        value="{{ $user->sibling->name }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label for="sibling_national_id">{{ __('Sibling National ID') }}</label>
+                    <input type="text" class="form-control" id="sibling_national_id" 
+                        value="{{ $user->sibling->national_id }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label for="sibling_faculty">{{ __('Sibling Faculty') }}</label>
+                    <input type="text" class="form-control" id="sibling_faculty" 
+                        value="{{ optional($user->sibling->faculty)->name_en }}" disabled>
+                </div>
+            </div>
+            @else
+            <p class="text-muted">{{ __('No sibling information available') }}</p>
+            @endif
+        </div>
+    </div>
+</div>
+
+<!-- Emergency Info Tab -->
+<div class="tab-pane fade" id="v-pills-emergency-info" role="tabpanel" aria-labelledby="v-pills-emergency-info-tab">
+    <div class="card m-b-30">
+        <div class="card-header bg-primary p-4 position-relative">
+            <div class="text-white position-relative z-2">
+                <h4 class="card-title mb-0 fw-bold">
+                    <i class="fa fa-building me-2"></i>{{ __('Emergency Information') }}
+                </h4>
+            </div>
+            <div class="position-absolute top-0 end-0 p-3">
+                <i class="fa fa-shapes text-white opacity-25 fa-3x"></i>
+            </div>
+        </div>
+        <div class="card-body">
+            @if($user->emergencyContact)
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="emergency_contact_name">{{ __('Emergency Contact Name') }}</label>
+                    <input type="text" class="form-control" id="emergency_contact_name"
+                        value="{{ $user->emergencyContact->name }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label for="emergency_phone">{{ __('Emergency Phone') }}</label>
+                    <input type="text" class="form-control" id="emergency_phone"
+                        value="{{ $user->emergencyContact->phone }}" disabled>
+                </div>
+                <div class="col-md-6">
+                    <label for="relationship">{{ __('Relationship') }}</label>
+                    <input type="text" class="form-control" id="relationship"
+                        value="{{ __($user->emergencyContact->relation) }}" disabled>
+                </div>
+            </div>
+            @else
+            <p class="text-muted">{{ __('No emergency contact information available') }}</p>
+            @endif
+        </div>
+    </div>
+</div>
          <!-- End Emergency Info Tab -->
          <!-- Reservation Info -->
          <div class="tab-pane fade" id="v-pills-reservation-info" role="tabpanel" aria-labelledby="v-pills-reservation-info-tab">
