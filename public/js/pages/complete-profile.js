@@ -640,7 +640,9 @@ function handleSubmitSuccess(response) {
         title: lang === 'ar' ? 'تم بنجاح!' : 'Success!',
         text: response.message,
         confirmButtonText: lang === 'ar' ? 'موافق' : 'OK',
-        confirmButtonColor: '#198754'
+        confirmButtonColor: '#198754',
+        allowOutsideClick: false,     
+        allowEscapeKey: false,   
     }).then((result) => {
         if (response.success && response.redirect) {
             window.location.href = response.redirect;
@@ -654,9 +656,7 @@ function handleSubmitSuccess(response) {
  */
 function handleSubmitError(error) {
     console.error('Error:', error);
-    swal({
-        allowOutsideClick: false,     
-        allowEscapeKey: false,        
+    swal({     
         type: 'error',
         title: lang === 'ar' ? 'فشل الإرسال' : 'Submission Failed',
         text: error.responseJSON.message,

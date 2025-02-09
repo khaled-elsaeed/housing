@@ -201,15 +201,6 @@
                      @endforeach
                   </select>
                   @if(!$user->lastReservation(null))
-                  <!-- Room Type Selection -->
-                  <div class="mb-3 mt-3">
-                     <label for="roomType" class="form-label">{{ __('Room Type Preference') }}</label>
-                     <select name="room_type" id="roomType" class="form-select" required>
-                        <option value="" disabled selected>{{ __('Select Room Type') }}</option>
-                        <option value="single">{{ __('Single Room') }}</option>
-                        <option value="double">{{ __('Double Room') }}</option>
-                     </select>
-                  </div>
                   <!-- Sibling Option (Only shows if user has eligible siblings) -->
                   @if($sibling)
                   <div id="siblingOption" class="mb-3 d-none">

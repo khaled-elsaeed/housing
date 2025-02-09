@@ -95,7 +95,7 @@ class StudentProfileCompleteController extends Controller
 
             return response()->json([
                 'success'  => true,
-                'message'  => 'Your registration has been completed successfully.',
+                'message'  => trans('Your registration has been completed successfully.'),
                 'redirect' => route('student.home'),
             ]);
         } catch (\Exception $e) {

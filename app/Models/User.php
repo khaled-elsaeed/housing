@@ -185,16 +185,12 @@ class User extends Authenticatable
     
     public function getNameAttribute()
     {
-        if (!Auth::check()) {
-            return redirect()->route('login')->send(); // Redirects immediately to login
-        }
-    
+        
         $lang = app()->getLocale();
     
         if ($lang == 'ar') {
             return $this->first_name_ar . ' ' . $this->last_name_ar;
         }
-    
         return $this->first_name_en . ' ' . $this->last_name_en;
     }
     

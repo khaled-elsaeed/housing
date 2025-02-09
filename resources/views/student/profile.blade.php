@@ -598,7 +598,6 @@
             </div>
          </div>
          <!-- Payments Info Tab -->
-         <!-- Payments Info Tab -->
          <div class="tab-pane fade" id="v-pills-payments-info" role="tabpanel" aria-labelledby="v-pills-payments-info-tab">
             <div class="card shadow border-0 rounded-lg">
                <div class="card-header bg-primary text-white">

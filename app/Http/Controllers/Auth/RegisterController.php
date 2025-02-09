@@ -9,7 +9,6 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Auth;
-use App\Events\AccountRegistered;
 
 
 class RegisterController extends Controller
@@ -62,10 +61,6 @@ class RegisterController extends Controller
             ]);
 
             Auth::login($user);
-
-            Log::info('About to fire AccountRegistered event', ['user_id' => $user->id]);
-            event(new AccountRegistered($user));
-            Log::info('AccountRegistered event fired', ['user_id' => $user->id]);
             
             return redirect()->route('profile.complete');
 

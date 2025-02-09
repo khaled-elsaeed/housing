@@ -80,9 +80,7 @@
 
             <div class="reservation-details">
                 <h3 style="color:#8C2F39;margin-top:0;">تفاصيل الطلب</h3>
-                <p>
-                نوع الغرفة: {{ $reservationRequest->room->type }}<br>
-                
+                <p>                
                 @if($reservationRequest->period_type == 'long')
                     المدة: فصل دراسي كامل 
                     @if($reservationRequest->academicTerm->semester == 'second')

@@ -292,7 +292,7 @@
                            <!-- Governorate and City (only shown if not living with them) -->
                            <div class="row d-none" id="parentGovernorateCityDiv">
                               <div class="col-md-6 mb-2">
-                                 <label for="parentGovernorate" class="form-label">{{ __('Governorate') }}</label>
+                                 <label for="parentGovernorate" class="form-label">{{ __('Parent Governorate') }}</label>
                                  <select class="form-control" id="parentGovernorate" name="parentGovernorate" >
                                     <option value="">{{ __('Select Governorate') }}</option>
                                     @foreach ($formData['governorates'] as $governorate)
@@ -305,7 +305,7 @@
                               </div>
                               <!-- City (Dropdown) -->
                               <div class="col-md-6 mb-2">
-                                 <label for="parentCity" class="form-label">{{ __('City') }}</label>
+                                 <label for="parentCity" class="form-label">{{ __('Parent City') }}</label>
                                  <select class="form-control" id="parentCity" name="parentCity"  disabled>
                                     <option value="">{{ __('Select Governorate First') }}</option>
                                  </select>

@@ -535,6 +535,8 @@
     "Optional":"Optional",
     "father":"father",
     "mother":"mother",
+    "Your registration has been completed successfully.":"Your registration has been completed successfully.",
+    "No payments found.":"No payments found.",
     "Payments Info":"Payments Info",
     "Parent Phone":"Parent Phone",
     "We could not find a user with that email address.": "We could not find a user with that email address.",
