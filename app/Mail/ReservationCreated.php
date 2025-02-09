@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\User;
+use App\Models\Reservation;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -10,16 +10,19 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class AccountRegistered extends Mailable
+class ReservationCreated extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $reservation;
     public $user;
 
-    public function __construct(User $user)
+    public function __construct(Reservation $reservation)
     {
-        $this->user = $user;
+        $this->reservation = $reservation;
+        $this->user = $reservation->user; 
     }
+
 
     /**
      * Get the message envelope.
@@ -27,7 +30,7 @@ class AccountRegistered extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'مرحبًا بك في سكن جامعة المنصورة الجديدة',
+            subject: 'تأكيد الحجز الخاص بك',
         );
     }
 
@@ -37,9 +40,10 @@ class AccountRegistered extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.account_registered',
+            view: 'emails.reservation_creation',
         );
     }
+
 
     /**
      * Get the attachments for the message.

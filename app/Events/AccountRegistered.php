@@ -14,14 +14,12 @@ use App\Models\User;
 class AccountRegistered
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
-    /**
+/**
      * Create a new event instance.
      */
-    public function __construct(public User $user)
-    {
-        //
-    }
+    public function __construct(
+        public User $user
+    ) {}
 
     public function getUser():User{
         return $this->user;

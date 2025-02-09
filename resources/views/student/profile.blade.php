@@ -345,22 +345,24 @@
                     <input type="text" class="form-control" id="parent_living_abroad" 
                         value="{{ $user->parent->living_abroad == 1 ? __('Yes') : __('No') }}" disabled>
                 </div>
-                <div class="col-md-6">
-                    <label for="parent_living_with">{{ __('Living With parents') }}</label>
-                    <input type="text" class="form-control" id="parent_living_with" 
-                        value="{{ $user->parent->living_with == 1 ? __('Yes') : __('No') }}" disabled>
-                </div>
-                @if($user->parent->living_with == 0)
-                <div class="col-md-6">
-                    <label for="parent_city">{{ __('Parent City') }}</label>
-                    <input type="text" class="form-control" id="parent_city" 
-                        value="{{ $user->parent->city }}" disabled>
-                </div>
-                <div class="col-md-6">
-                    <label for="parent_governorate">{{ __('Parent Governorate') }}</label>
-                    <input type="text" class="form-control" id="parent_governorate" 
-                        value="{{ $user->parent->governorate }}" disabled>
-                </div>
+                @if($user->parent->living_abroad === 0)
+                  <div class="col-md-6">
+                     <label for="parent_living_with">{{ __('Living With parents') }}</label>
+                     <input type="text" class="form-control" id="parent_living_with" 
+                           value="{{ $user->parent->living_with == 1 ? __('Yes') : __('No') }}" disabled>
+                  </div>
+                  @if($user->parent->living_with == 0)
+                  <div class="col-md-6">
+                     <label for="parent_city">{{ __('Parent City') }}</label>
+                     <input type="text" class="form-control" id="parent_city" 
+                           value="{{ $user->parent->city }}" disabled>
+                  </div>
+                  <div class="col-md-6">
+                     <label for="parent_governorate">{{ __('Parent Governorate') }}</label>
+                     <input type="text" class="form-control" id="parent_governorate" 
+                           value="{{ $user->parent->governorate }}" disabled>
+                  </div>
+                  @endif
                 @endif
             </div>
             @else
@@ -604,6 +606,7 @@
                </div>
                <div class="card-body">
                   <div class="row">
+                  @if($invoices && $invoices->count() > 0)
                      <!-- Existing Invoice Cards -->
                      @foreach($invoices as $invoice)
                        <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
@@ -619,7 +622,7 @@
                             @if($invoice->reservation->period_type === 'long')
                             <h6 class="text">
                               @if(app()->getLocale() == 'ar')
-                            {{ __('Term') }} {{ $invoice->reservation->academicTerm->term }}
+                                 {{ __('Term') }} {{ $invoice->reservation->academicTerm->term }}
 
                                 {{ __($invoice->reservation->academicTerm->semester) }}  
                                 @else
@@ -629,7 +632,7 @@
 
                                 @endif
 
-</h6>
+                              </h6>
                               <div class="d-flex align-items-center gap-2">
                                
                                <span>{{ __(optional($invoice->reservation->academicTerm)->name). ' - '.optional($invoice->reservation->academicTerm)->academic_year ?? __('Not specified') }}</span>
@@ -678,6 +681,14 @@
                         </div>
                        </div>
                      @endforeach
+                     @else
+                     <div class="col-12">
+                        <div class="alert alert-info border-0 shadow-sm d-flex align-items-center m-0" role="alert">
+                           <i class="feather icon-info mr-2" style="font-size: 1.25rem;"></i>
+                           <span>{{ __('No payments found.') }}</span>
+                        </div>
+                     </div>
+                     @endif
                   </div>
                </div>
             </div>

@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -13,13 +14,13 @@ class AccountRegistered extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct()
+    public $user;
+
+    public function __construct(User $user)
     {
-        //
+        $this->user = $user; 
     }
+
 
     /**
      * Get the message envelope.
@@ -27,7 +28,7 @@ class AccountRegistered extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Account Registered',
+            subject: 'مرحبًا بك في سكن جامعة المنصورة الجديدة',
         );
     }
 
@@ -37,9 +38,10 @@ class AccountRegistered extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.account_registered',
         );
     }
+
 
     /**
      * Get the attachments for the message.

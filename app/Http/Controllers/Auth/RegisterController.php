@@ -62,7 +62,11 @@ class RegisterController extends Controller
             ]);
 
             Auth::login($user);
+
+            Log::info('About to fire AccountRegistered event', ['user_id' => $user->id]);
             event(new AccountRegistered($user));
+            Log::info('AccountRegistered event fired', ['user_id' => $user->id]);
+            
             return redirect()->route('profile.complete');
 
         } catch (ValidationException $e) {

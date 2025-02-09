@@ -599,75 +599,86 @@ $(document).ready(function() {
     }
 
     /**
-     * Submit form data
-     */
-    function submitForm() {
-        const submitBtn = $('#submitBtn');
-        if (lang === 'ar') {
-            submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-2"></i>جاري الحفظ...');
-
-        } else {
-            submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-2"></i>Submitting...');
-
-        }
-
-        const formData = {};
-        $('#multiStepForm').serializeArray().forEach(item => {
-            formData[item.name] = item.value;
-        });
-
-        $.ajax({
-            method: 'POST',
-            url: $('#multiStepForm').attr('action'),
-            data: formData,
-            success: handleSubmitSuccess,
-            error: handleSubmitError,
-            complete: () => submitBtn.prop('disabled', false).html('Submit')
-        });
+ * Submit form data
+ */
+function submitForm() {
+    const submitBtn = $('#submitBtn');
+    if (lang === 'ar') {
+        submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-2"></i>جاري الحفظ...');
+    } else {
+        submitBtn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin me-2"></i>Submitting...');
     }
 
-    /**
-     * Handle successful form submission
-     * @param {Object} response - Server response
-     */
-    function handleSubmitSuccess(response) {
-        swal({
-            type: 'success',
-            title: 'Success!',
-            text: response.message,
-            confirmButtonColor: '#198754'
-        }).then((result) => {
-            if (response.success && response.redirect) {
-                window.location.href = response.redirect;
+    const formData = {};
+    $('#multiStepForm').serializeArray().forEach(item => {
+        formData[item.name] = item.value;
+    });
+
+    $.ajax({
+        method: 'POST',
+        url: $('#multiStepForm').attr('action'),
+        data: formData,
+        success: handleSubmitSuccess,
+        error: handleSubmitError,
+        complete: () => {
+            if (lang === 'ar') {
+                submitBtn.prop('disabled', false).html('حفظ');
+            } else {
+                submitBtn.prop('disabled', false).html('Submit');
             }
-        });
-    }
+        }
+    });
+}
 
-    /**
-     * Handle form submission error
-     * @param {Object} error - Error object
-     */
-    function handleSubmitError(error) {
-        console.error('Error:', error);
-        swal({
-            type: 'error',
-            title: 'Submission Failed',
-            text: error.responseJSON.message,
-            confirmButtonColor: '#dc3545'
-        });
-    }
+/**
+ * Handle successful form submission
+ * @param {Object} response - Server response
+ */
+function handleSubmitSuccess(response) {
+    swal({
+        type: 'success',
+        title: lang === 'ar' ? 'تم بنجاح!' : 'Success!',
+        text: response.message,
+        confirmButtonText: lang === 'ar' ? 'موافق' : 'OK',
+        confirmButtonColor: '#198754'
+    }).then((result) => {
+        if (response.success && response.redirect) {
+            window.location.href = response.redirect;
+        }
+    });
+}
 
-    /**
-     * Show submission validation error
-     */
-    function showSubmissionError() {
-        swal({
-            type: 'error',
-            title: 'Oops...',
-            text: 'Please complete all required fields correctly before submitting.',
-            confirmButtonColor: '#dc3545'
-        });
-    }
+/**
+ * Handle form submission error
+ * @param {Object} error - Error object
+ */
+function handleSubmitError(error) {
+    console.error('Error:', error);
+    swal({
+        allowOutsideClick: false,     
+        allowEscapeKey: false,        
+        type: 'error',
+        title: lang === 'ar' ? 'فشل الإرسال' : 'Submission Failed',
+        text: error.responseJSON.message,
+        confirmButtonText: lang === 'ar' ? 'موافق' : 'OK',
+        confirmButtonColor: '#dc3545'
+    });
+}
+
+/**
+ * Show submission validation error
+ */
+function showSubmissionError() {
+    swal({
+        type: 'error',
+        title: lang === 'ar' ? 'عذراً...' : 'Oops...',
+        text: lang === 'ar' 
+            ? 'يرجى إكمال جميع الحقول المطلوبة بشكل صحيح قبل الإرسال.' 
+            : 'Please complete all required fields correctly before submitting.',
+        confirmButtonText: lang === 'ar' ? 'موافق' : 'OK',
+        confirmButtonColor: '#dc3545'
+    });
+}
 
     /**
      * National ID Processing
