@@ -7,17 +7,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <title>@lang('Register')</title>
     
+    <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16x16.png') }}">
+    
+    <!-- Bootstrap CSS -->
     @if(app()->isLocale('en'))
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
     @else
     <link href="{{ asset('css/bootstrap.rtl.min.css') }}" rel="stylesheet" type="text/css">
     @endif
-    <!-- Load SweetAlert2 -->
+    
+    <!-- SweetAlert2 -->
     <script src="{{ asset('plugins/sweet-alert2/sweetalert2.all.min.js') }}"></script>
 
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
     <link href="{{ asset('css/authenication.css') }}" rel="stylesheet" type="text/css">
 </head>
 
@@ -33,8 +41,9 @@
         </span>
     </div>
 </div>
+
 <div class="auth-box">
-    <div class="row g-0">
+    <div class="row g-1">
         <!-- Left Side Image -->
         <div class="col-md-6 d-none d-md-flex align-items-center justify-content-center">
             <img src="{{ asset('images/authentication/sgin-up-hero.svg') }}" class="img-fluid" alt="@lang('Register Image')">
@@ -50,7 +59,7 @@
                 </div>
                 <h4 class="text-primary mb-4">@lang('Create Account') 👋</h4>
             </div>
-            <form method="POST" action="{{ route('register') }}">
+            <form method="POST" action="{{ route('register') }}" id="registerForm">
                 @csrf
                 <!-- Validation Errors -->
                 @if ($errors->any())
@@ -75,20 +84,25 @@
                 </div>
 
                 <!-- Password -->
-                <div class="form-floating mb-3">
+                <div class="form-floating mb-3 position-relative">
                     <input type="password" class="form-control" id="password" name="password" placeholder="@lang('Password')" required>
                     <label for="password">@lang('Password')</label>
+                    <i class="bi bi-eye-slash password-toggle-icon" id="togglePassword"></i>
                 </div>
 
                 <!-- Confirm Password -->
-                <div class="form-floating mb-3">
+                <div class="form-floating mb-3 position-relative">
                     <input type="password" class="form-control" id="confirmPassword" name="password_confirmation" placeholder="@lang('Confirm Password')" required>
                     <label for="confirmPassword">@lang('Confirm Password')</label>
+                    <i class="bi bi-eye-slash password-toggle-icon" id="toggleConfirmPassword"></i>
                 </div>
 
                 <!-- Submit Button -->
                 <div class="d-grid mb-4">
-                    <button class="btn btn-primary btn-lg">@lang('Register')</button>
+                    <button type="submit" class="btn btn-primary btn-lg" id="submitButton">
+                        <span id="buttonText">@lang('Register')</span>
+                        <span id="loadingSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
                 </div>
             </form>
             <p class="text-center text-secondary">@lang('Already have an account?') <a href="{{ route('login') }}" class="text-primary">@lang('Login')</a></p>
@@ -103,6 +117,7 @@
     </div>
 </footer>
 
+<!-- Scripts -->
 <script src="{{ asset('js/bootstrap.bundle.js') }}"></script>
 <script>
     // Language Switcher
@@ -112,6 +127,38 @@
             const routeUrl = `{{ route('localization', ':lang') }}`.replace(':lang', selectedLang);
             window.location.href = routeUrl;
         });
+    });
+
+    // Toggle Password Visibility
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    togglePassword.addEventListener('click', function () {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.classList.toggle('bi-eye');
+        this.classList.toggle('bi-eye-slash');
+    });
+
+    // Toggle Confirm Password Visibility
+    const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    toggleConfirmPassword.addEventListener('click', function () {
+        const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        confirmPasswordInput.setAttribute('type', type);
+        this.classList.toggle('bi-eye');
+        this.classList.toggle('bi-eye-slash');
+    });
+
+    // Loading Spinner on Form Submit
+    const registerForm = document.getElementById('registerForm');
+    const submitButton = document.getElementById('submitButton');
+    const buttonText = document.getElementById('buttonText');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+
+    registerForm.addEventListener('submit', function () {
+        submitButton.disabled = true;
+        buttonText.classList.add('d-none');
+        loadingSpinner.classList.remove('d-none');
     });
 </script>
 

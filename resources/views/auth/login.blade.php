@@ -23,7 +23,11 @@
     <link href="{{ asset('plugins/sweet-alert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
     <script src="{{ asset('plugins/sweet-alert2/sweetalert2.all.min.js') }}"></script>
 
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
     <link href="{{ asset('css/authenication.css') }}" rel="stylesheet" type="text/css">
+   
 </head>
 
 <body>
@@ -56,7 +60,7 @@
                     </a>
                 </div>
             </div>
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST" action="{{ route('login') }}" id="loginForm">
                 @csrf
                 <!-- Success Message -->
                 @if (session('success'))
@@ -88,7 +92,6 @@
                 </script>
                 @endif
 
-
                 <!-- Email Input -->
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control" id="floatingInput" name="identifier" placeholder="@lang('Email')" required>
@@ -96,9 +99,10 @@
                 </div>
 
                 <!-- Password Input -->
-                <div class="form-floating mb-3">
+                <div class="form-floating mb-3 position-relative">
                     <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="@lang('Password')" required>
                     <label for="floatingPassword">@lang('Password')</label>
+                    <i class="bi bi-eye-slash password-toggle-icon" id="togglePassword"></i>
                 </div>
 
                 <!-- Forgot Password -->
@@ -108,7 +112,10 @@
 
                 <!-- Submit Button -->
                 <div class="d-grid mb-4">
-                    <button class="btn btn-primary btn-lg">@lang('Login')</button>
+                    <button type="submit" class="btn btn-primary btn-lg" id="submitButton">
+                        <span id="buttonText">@lang('Login')</span>
+                        <span id="loadingSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
                 </div>
             </form>
             <p class="text-center text-secondary">@lang("Don't have an account?") <a href="{{ route('register') }}" class="text-primary">@lang('Create one')</a></p>
@@ -133,6 +140,28 @@
             const routeUrl = `{{ route('localization', ':lang') }}`.replace(':lang', selectedLang);
             window.location.href = routeUrl;
         });
+    });
+
+    // Toggle Password Visibility
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('floatingPassword');
+    togglePassword.addEventListener('click', function () {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.classList.toggle('bi-eye');
+        this.classList.toggle('bi-eye-slash');
+    });
+
+    // Loading Spinner on Form Submit
+    const loginForm = document.getElementById('loginForm');
+    const submitButton = document.getElementById('submitButton');
+    const buttonText = document.getElementById('buttonText');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+
+    loginForm.addEventListener('submit', function () {
+        submitButton.disabled = true;
+        buttonText.classList.add('d-none');
+        loadingSpinner.classList.remove('d-none');
     });
 </script>
 

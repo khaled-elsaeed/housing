@@ -75,12 +75,12 @@ html[dir="ltr"] .language-switcher-container {
 }
 
 .auth-box {
-    max-width: 75%;
+    max-width: 80%;
     margin: 2rem auto;
     background: #fff;
     border-radius: 15px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    margin-top: 60px;
+    margin-top: 75px;
 }
 
 .auth-logo img {
@@ -118,3 +118,19 @@ body[dir="rtl"] .form-floating>label {
 }
 
 
+/* Password Toggle Icon Positioning */
+.password-toggle-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 2;
+}
+
+[dir="ltr"] .password-toggle-icon {
+    right: 15px;
+}
+
+[dir="rtl"] .password-toggle-icon {
+    left: 15px;
+}
