@@ -549,6 +549,7 @@
     "User not found": "User not found",
     "too_many_attempts" : "Too many login attempts. Please try again later.",
     "user_not_found" : "User not found.",
+    "Reset All Passwords":"Reset All Passwords",
     "invalid_credentials" : "Invalid credentials.",
     "resident_unavailable" : "The resident login is currently unavailable. It will be available later.",
     "account_deleted" : "Your account has been deleted.",
@@ -560,5 +561,7 @@
     "Your account has been activated successfully": "Your account has been activated successfully",
     "Please login first": "Please login first",
     "Profile updated successfully": "Profile updated successfully",
-    "Error updating profile": "Error updating profile"
+    "Error updating profile": "Error updating profile",
+    "Are you sure you want to reset the password? A new password will be generated and sent to the user via email.": "Are you sure you want to reset the password? A new password will be generated and sent to the user via email.",
+    "Confirm Reset": "Confirm Reset"
 }

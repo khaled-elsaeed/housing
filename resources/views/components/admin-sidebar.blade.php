@@ -67,12 +67,12 @@
             </a>
          </li>
          <!-- Accounts Management Section -->
-         <li>
-            <a href="{{ route('admin.account.user.index') }}">
-               <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="accounts">
-               <span>@lang('Accounts Management')</span>
-            </a>
-         </li>
+         <li class="{{ request()->routeIs('admin.account.user.index*') ? 'active' : '' }}">
+    <a href="{{ route('admin.account.user.index') }}">
+        <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="Users">
+        <span>@lang('Accounts Management')</span>
+    </a>
+</li>
         
          <!-- Settings Section -->
          <li>

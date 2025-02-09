@@ -66,6 +66,7 @@
     "Your registration has been completed successfully.":"تم إكمال عملية التسجيل بنجاح.",
     "Change Password": "تغيير كلمة المرور",
     "Change Picture": "تغيير الصورة",
+    "Reset All Passwords" : "اعادة تعين كلمة المرور لجميع الحسابات",
     "Change Profile Picture": "تغيير صورة الملف الشخصي",
     "Choose an available period (e.g., Spring Term 2024)": "اختر فترة متاحة (مثل فصل الربيع 2024)",
     "Choose File": "اختر ملف",
@@ -566,6 +567,8 @@
     "Password has been reset successfully": "تم إعادة تعيين كلمة المرور بنجاح",
     "This activation token is not valid": "رمز التفعيل هذا غير صالح",
     "This activation link has expired": "انتهت صلاحية رابط التفعيل هذا",
-    "Your account has been activated successfully": "تم تفعيل حسابك بنجاح"
+    "Your account has been activated successfully": "تم تفعيل حسابك بنجاح",
+    "Are you sure you want to reset the password? A new password will be generated and sent to the user via email.": "هل أنت متأكد أنك تريد إعادة تعيين كلمة المرور؟ سيتم إنشاء كلمة مرور جديدة وإرسالها إلى المستخدم عبر البريد الإلكتروني.",
+    "Confirm Reset": "تأكيد إعادة التعيين"
  
 }

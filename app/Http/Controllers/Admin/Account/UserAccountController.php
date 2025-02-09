@@ -44,7 +44,7 @@ class UserAccountController extends Controller
                 'new_email' => 'required|email|unique:users,email',
             ]);
 
-            $User = User::findOrFail($request->User_id);
+            $User = User::findOrFail($request->user_id);
 
             $User->email = $request->new_email;
             $User->save();
@@ -65,14 +65,13 @@ class UserAccountController extends Controller
     public function resetPassword(Request $request)
     {
         try {
-            $request->validate([
-                'new_password' => 'required|min:8|confirmed',
-            ]);
+           
+            $user = User::findOrFail($request->user_id);
 
-            $User = User::findOrFail($request->User_id);
+            // Ensure it's an Eloquent Collection
+            $users = User::where('id', $user->id)->get();
 
-            $User->password = bcrypt($request->new_password);
-            $User->save();
+            ResetAccountCredentials::dispatch($users);
 
             return redirect()->route('admin.account.index')->with('success', trans('messages.password_reset_successfully'));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
