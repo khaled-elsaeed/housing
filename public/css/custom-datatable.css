@@ -120,3 +120,14 @@
     /* For full width within the container, use width: 100%; */
  }
  
+ .loading {
+    pointer-events: none; 
+    }
+    .search-box {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-start;
+    }
+    .search-box input {
+    width: 300px;
+    }

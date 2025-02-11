@@ -66,13 +66,19 @@
                <span>@lang('Maintenance')</span>
             </a>
          </li>
-         <!-- Accounts Management Section -->
-         <li class="{{ request()->routeIs('admin.account.user.index*') ? 'active' : '' }}">
-    <a href="{{ route('admin.account.user.index') }}">
-        <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="Users">
-        <span>@lang('Accounts Management')</span>
-    </a>
-</li>
+
+
+<li>
+            <a href="javascript:void(0);">
+               <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="housing">
+               <span>@lang('Accounts')</span>
+               <i class="feather icon-chevron-right pull-right"></i>
+            </a>
+            <ul class="vertical-submenu">
+               <li><a href="{{ route('admin.account.resident.index') }}">@lang('Residents')</a></li>
+               <li><a href="{{ route('admin.account.staff.index') }}">@lang('Staff')</a></li>
+            </ul>
+         </li>
         
          <!-- Settings Section -->
          <li>

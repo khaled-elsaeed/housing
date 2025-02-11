@@ -6,19 +6,7 @@
 <link href="{{ asset('plugins/datatables/buttons.bootstrap4.min.css') }}?v={{ config('app.version') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}?v={{ config('app.version') }}" rel="stylesheet" type="text/css" />
 <link href="{{ asset('css/custom-datatable.css') }}?v={{ config('app.version') }}" rel="stylesheet" type="text/css" />
-<style>
-   .loading {
-   pointer-events: none; 
-   }
-   .search-box {
-   margin-bottom: 20px;
-   display: flex;
-   justify-content: flex-start;
-   }
-   .search-box input {
-   width: 300px;
-   }
-</style>
+
 @endsection
 @section('content')
 <!-- Start row -->
@@ -32,12 +20,13 @@
             <div class="card m-b-30">
                <div class="card-body">
                   <div class="row align-items-center">
-                     <div class="col-5">
-                        <span class="action-icon badge badge-primary-inverse me-0"><i class="feather icon-user"></i></span>
-                     </div>
-                     <div class="col-7 text-end mt-2 mb-2">
+                     
+                     <div class="col-7 text-start mt-2 mb-2">
                         <h5 class="card-title font-14">{{ __('Total Users') }}</h5>
                         <h4 class="mb-0">{{ $totalUsersCount }}</h4>
+                     </div>
+                     <div class="col-5 text-end">
+                        <span class="action-icon badge badge-primary-inverse me-0"><i class="feather icon-user"></i></span>
                      </div>
                   </div>
                </div>
@@ -110,7 +99,6 @@
                <table id="default-datatable" class="display table table-bordered">
                   <thead>
                      <tr>
-                        <th>{{ __('No') }}</th>
                         <th>{{ __('User Name') }}</th>
                         <th>{{ __('National ID') }}</th>
                         <th>{{ __('Email') }}</th>
@@ -121,7 +109,6 @@
                   <tbody>
                      @foreach($users as $user)
                      <tr>
-                        <td>{{ $loop->iteration }}</td>
                         <td>{{ $user->getUsername() ?? 'N/A' }}</td>
                         <td>{{ $user->student?->national_id ?? 'N/A' }}</td>
                         <td>{{ $user->email ?? 'N/A' }}</td>
@@ -156,7 +143,7 @@
 </div>
 <!-- End row -->
 <!-- Modal for Reset Email -->
-<div class="modal fade" id="resetEmailModal" tabindex="-1" aria-labelledby="resetEmailModalLabel" aria-hidden="true">
+<div class="modal fade" id="resetEmailModal" tabindex="-1" aria-labelledby="resetEmailModalLabel" >
    <div class="modal-dialog">
       <div class="modal-content">
          <div class="modal-header">
@@ -164,7 +151,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
          <div class="modal-body">
-            <form action="{{ route('admin.account.user.editEmail') }}" method="POST">
+            <form action="{{ route('admin.account.resident.editEmail') }}" method="POST">
                @csrf
                <input type="hidden" id="userIdEmail" name="user_id" />
                <div class="mb-3">
@@ -178,7 +165,7 @@
    </div>
 </div>
 <!-- Modal for Reset Password -->
-<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" >
    <div class="modal-dialog">
       <div class="modal-content">
          <div class="modal-header">
@@ -187,7 +174,7 @@
          </div>
          <div class="modal-body">
             <p>{{ __('Are you sure you want to reset the password? A new password will be generated and sent to the user via email.') }}</p>
-            <form action="{{ route('admin.account.user.resetPassword') }}" method="POST">
+            <form action="{{ route('admin.account.resident.resetPassword') }}" method="POST">
                @csrf
                <input type="hidden" id="userIdPassword" name="user_id" />
                <div class="text-end">
@@ -200,7 +187,7 @@
    </div>
 </div>
 <!-- Modal for Reset All Passwords -->
-<div class="modal fade" id="resetAllPasswordsModal" tabindex="-1" aria-labelledby="resetAllPasswordsModalLabel" aria-hidden="true">
+<div class="modal fade" id="resetAllPasswordsModal" tabindex="-1" aria-labelledby="resetAllPasswordsModalLabel" >
    <div class="modal-dialog">
       <div class="modal-content">
          <div class="modal-header">
@@ -212,7 +199,7 @@
                <i class="feather icon-alert-triangle"></i>
                {{ __('This action will reset passwords for all users to their default values. Are you sure you want to continue?') }}
             </div>
-            <form action="{{ route('admin.account.user.resetAllPasswords') }}" method="POST">
+            <form action="{{ route('admin.account.resident.resetAllPasswords') }}" method="POST">
                @csrf
                <div class="d-flex justify-content-end gap-2">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Cancel') }}</button>

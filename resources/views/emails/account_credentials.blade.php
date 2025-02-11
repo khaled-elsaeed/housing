@@ -107,14 +107,12 @@
                         <span style="color:#234E70;" >اسم المستخدم:</span>
                         <strong id="username">{{ $user->email}}</strong>
                     </div>
-                    <a class="copy-link" onclick="copyToClipboard('username')">نسخ</a>
                 </div>
                 <div class="credentials-item">
                     <div>
                         <span style="color:#234E70;">كلمة المرور:</span>
                         <strong id="password">{{ $password }}</strong>
                     </div>
-                    <a class="copy-link" onclick="copyToClipboard('password')">نسخ</a>
                 </div>
             </div>
 
@@ -129,30 +127,5 @@
             <p>&copy; {{ date('Y') }} بوابة الإسكان الجامعي - جامعة المنصورة الجديدة. جميع الحقوق محفوظة.</p>
         </div>
     </div>
-
-    <script>
-        function copyToClipboard(elementId) {
-            const element = document.getElementById(elementId);
-            const text = element.textContent;
-            
-            // Create a temporary textarea element
-            const tempTextArea = document.createElement('textarea');
-            tempTextArea.value = text;
-            document.body.appendChild(tempTextArea);
-            
-            // Select the text
-            tempTextArea.select();
-            tempTextArea.setSelectionRange(0, 99999); // For mobile devices
-            
-            // Copy the text
-            document.execCommand('copy');
-            
-            // Remove the temporary element
-            document.body.removeChild(tempTextArea);
-            
-            // Optional: Provide visual feedback (you could enhance this)
-            alert('تم النسخ: ' + text);
-        }
-    </script>
 </body>
 </html>

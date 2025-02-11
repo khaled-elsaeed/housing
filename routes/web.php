@@ -46,7 +46,7 @@ use App\Http\Controllers\App\LocalizationController;
 use App\Http\Controllers\Student\StudentProfileCompleteController; 
 
 use App\Http\Controllers\DataTableController;
-use App\Http\Controllers\Admin\Account\UserAccountController;
+use App\Http\Controllers\Admin\Account\{ResidentAccountController,StaffAccountController};
 use App\Http\Middleware\Localization;
 use App\Http\Controllers\AcademicTermController;
 
@@ -113,15 +113,37 @@ Route::middleware(Localization::class)
 
             Route::prefix('account')->name('account.')->group(function () {
                 // Show the student account page
-                Route::get('users', [UserAccountController::class, 'showUserPage'])->name('user.index');
-
+                Route::get('users', [ResidentAccountController::class, 'showUserPage'])->name('resident.index');
+            
                 // Edit student email
-                Route::post('users/edit-email', [UserAccountController::class, 'editEmail'])->name('user.editEmail');
-                Route::post('users/all-users/reset-password', [UserAccountController::class, 'resetAllUsersPasswords'])->name('user.resetAllPasswords');
-
-                // Reset student password
-                Route::post('users/reset-password', [UserAccountController::class, 'resetPassword'])->name('user.resetPassword');
+                Route::post('users/edit-email', [ResidentAccountController::class, 'editEmail'])->name('resident.editEmail');
+            
+                // Reset passwords
+                Route::post('users/all-users/reset-password', [ResidentAccountController::class, 'resetAllUsersPasswords'])->name('resident.resetAllPasswords');
+                Route::post('users/reset-password', [ResidentAccountController::class, 'resetPassword'])->name('resident.resetPassword');
+            
+                // ========================== STAFF ROUTES ========================== //
+                Route::prefix('staff')->name('staff.')->group(function () {
+                    // Show the staff account page
+                    Route::get('/', [StaffAccountController::class, 'index'])->name('index');
+            
+                    // Add a new staff member
+                    Route::post('add', [StaffAccountController::class, 'store'])->name('store');
+            
+                    // Edit staff member details
+                    Route::post('edit', [StaffAccountController::class, 'update'])->name('update');
+            
+                    // Delete a staff member
+                    Route::post('delete', [StaffAccountController::class, 'destroy'])->name('destroy');
+            
+                    // Reset staff email
+                    Route::post('edit-email', [StaffAccountController::class, 'editEmail'])->name('editEmail');
+            
+                    // Reset staff password
+                    Route::post('reset-password', [StaffAccountController::class, 'resetPassword'])->name('resetPassword');
+                });
             });
+            
 
             
 

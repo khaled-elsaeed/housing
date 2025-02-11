@@ -564,6 +564,7 @@
     "Invalid or expired password reset token": "رمز إعادة تعيين كلمة المرور غير صالح أو منتهي الصلاحية",
     "Password reset token has expired": "انتهت صلاحية رمز إعادة تعيين كلمة المرور",
     "User not found": "لم يتم العثور على المستخدم",
+    "Accounts" : "الحسابات",
     "Password has been reset successfully": "تم إعادة تعيين كلمة المرور بنجاح",
     "This activation token is not valid": "رمز التفعيل هذا غير صالح",
     "This activation link has expired": "انتهت صلاحية رابط التفعيل هذا",

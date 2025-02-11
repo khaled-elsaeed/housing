@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\ResetAccountCredentials;
 
-class UserAccountController extends Controller
+class ResidentAccountController extends Controller
 {
     /**
      * Display the list of Users.
@@ -25,7 +25,7 @@ class UserAccountController extends Controller
         $femaleTotalCount = $users->where('gender', 'female')->count();
 
         // Pass the data to the view
-        return view('admin.account.index', compact('users', 'totalUsersCount', 'maleTotalCount', 'femaleTotalCount'));
+        return view('admin.account.resident', compact('users', 'totalUsersCount', 'maleTotalCount', 'femaleTotalCount'));
     } catch (\Exception $e) {
         // Log the error and return a 500 error page
         Log::error('Error loading User page: ' . $e->getMessage());
