@@ -82,10 +82,13 @@ class RegisterService
      *
      * @param array $data
      * @param array $names
+     * @param object $studentRecord
      * @return User
      */
-    private function createUser(array $data, array $names,$studentRecord): User
+    private function createUser(array $data, array $names, $studentRecord): User
     {
+        $gender = $this->getGenderFromNationalId($studentRecord?->national_id);
+
         return User::create([
             'first_name_en' => $names['en']['first_name'] ?? null,
             'last_name_en' => $names['en']['last_name'] ?? null,
@@ -93,10 +96,27 @@ class RegisterService
             'last_name_ar' => $names['ar']['last_name'] ?? null,
             'password' => Hash::make($data['password']),
             'email' => $studentRecord->academic_email,
+            'gender' => $gender,
             'status' => 'active',
-            'profile_completed' => 0 ,
-            'is_verified' => 1 ,
+            'profile_completed' => 0,
+            'is_verified' => 1,
         ]);
+    }
+
+    /**
+     * Extract gender from National ID.
+     *
+     * @param string $nationalId
+     * @return string
+     */
+    private function getGenderFromNationalId($nationalId): string
+    {
+        if (strlen($nationalId) >= 13) {
+            $genderDigit = (int) $nationalId[12]; // 13th digit (index 12)
+            return $genderDigit % 2 === 0 ? 'female' : 'male';
+        }
+
+        return 'male'; // Return 'unknown' if the format is incorrect
     }
 
     /**

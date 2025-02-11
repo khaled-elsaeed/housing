@@ -23,9 +23,6 @@
     <link href="{{ asset('plugins/sweet-alert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
     <script src="{{ asset('plugins/sweet-alert2/sweetalert2.all.min.js') }}"></script>
 
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-
     <link href="{{ asset('css/authenication.css') }}" rel="stylesheet" type="text/css">
    
 </head>
