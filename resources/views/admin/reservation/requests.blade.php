@@ -104,7 +104,7 @@
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
          <h2 class="page-title text-primary mb-2 mb-md-0">@lang('Reservation Requests')</h2>
          <div>
-            <button class="btn btn-primary me-2" id="autoReserveBtn">
+            <button class="btn btn-primary me-3" id="autoReserveBtn">
                <i class="feather icon-zap"></i> @lang('Auto-Reserve All')
             </button>
             <button class="btn btn-outline-primary btn-sm toggle-btn" id="toggleButton" type="button" data-bs-toggle="collapse"

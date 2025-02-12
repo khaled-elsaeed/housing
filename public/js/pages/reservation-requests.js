@@ -6,7 +6,6 @@ $(document).ready(function() {
             approve: "Approve",
             reject: "Reject",
             acceptedAt: "Accepted At",
-            autoReserve: "Auto Reserve",
             accepted:"Accepted",
         },
         ar: {
@@ -15,7 +14,6 @@ $(document).ready(function() {
             approve: "موافقة",
             reject: "رفض",
             acceptedAt: "تم القبول في",
-            autoReserve: "حجز تلقائي",
             accepted:"مقبول",
 
         }
@@ -149,39 +147,43 @@ $(document).ready(function() {
     // Load summary on page load
     fetchSummaryData();
 
-    // Handle Auto-Reserve button
-    $('#autoReserveBtn').text(messages[lang].autoReserve).on('click', function() {
-        const btn = $(this);
-        toggleButtonLoading(btn, true);
+// Handle Auto-Reserve button
+$('#autoReserveBtn').on('click', function() {
+    const btn = $(this);
+    toggleButtonLoading(btn, true);
 
-        $.ajax({
-            url: window.routes.autoReserve,
-            method: 'POST',
-            success: function(response) {
-                swal({
-                    title: messages[lang].success,
-                    text: response.message,
-                    type: "success",
-                    showConfirmButton: true
-                });
-                table.ajax.reload();
-                fetchSummaryData();
-            },
-            error: function(xhr) {
-                let errorMessage = xhr.responseJSON?.message || messages[lang].error;
+    $.ajax({
+        url: window.routes.autoReserve,
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Add CSRF Token
+        },
+        success: function(response) {
+            swal({
+                title: messages[lang].success,
+                text: response.message,
+                type: "success",
+                showConfirmButton: true
+            });
+            table.ajax.reload();
+            fetchSummaryData();
+        },
+        error: function(xhr) {
+            let errorMessage = xhr.responseJSON?.message || messages[lang].error;
 
-                swal({
-                    title: messages[lang].error,
-                    text: errorMessage,
-                    type: "error",
-                    showConfirmButton: true
-                });
-            },
-            complete: function() {
-                toggleButtonLoading(btn, false);
-            }
-        });
+            swal({
+                title: messages[lang].error,
+                text: errorMessage,
+                type: "error",
+                showConfirmButton: true
+            });
+        },
+        complete: function() {
+            toggleButtonLoading(btn, false);
+        }
     });
+});
+
 
     // Handle Accept Request button
     $(document).on('click', '.accept-btn', function() {
@@ -352,12 +354,15 @@ $(document).ready(function() {
     // Utility function for button loading state
     function toggleButtonLoading(button, isLoading) {
         if (isLoading) {
-            button.data('original-text', button.html())
-                .html('<i class="fa fa-spinner fa-spin"></i>')
+            // Store the full button HTML (including the icon) before changing it
+            button.data('original-html', button.html())
+                .html('<i class="fa fa-spinner fa-spin"></i> Loading...')
                 .prop('disabled', true);
         } else {
-            button.html(button.data('original-text'))
+            // Restore the full original HTML (with the icon)
+            button.html(button.data('original-html'))
                 .prop('disabled', false);
         }
     }
+    
 });

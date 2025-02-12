@@ -254,33 +254,24 @@ class ReservationRequestsController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function autoReserve()
-    {
-        try {
-            DB::beginTransaction();
+{
+    try {
+        Log::info("Starting auto reservation process");
+        
+        // Process synchronously for immediate feedback
+        $this->reservationService->automateReservationProcess(false);
 
-            $pendingRequests = ReservationRequest::where('status', 'pending')->get();
-            
-            // Process each pending request
-            foreach ($pendingRequests as $request) {
-                // Add your auto-reservation logic here
-                $request->status = 'accepted';
-                $request->save();
-            }
+        return response()->json([
+            'success' => true,
+            'message' => 'Auto reservation completed successfully'
+        ]);
 
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Auto reservation completed successfully'
-            ]);
-
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::error('Error in auto reservation: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to process auto reservation'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+    } catch (Exception $e) {
+        Log::error('Auto reservation failed: ' . $e->getMessage());
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to process auto reservation: ' . $e->getMessage()
+        ], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
+}
 }

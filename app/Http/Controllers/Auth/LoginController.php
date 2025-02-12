@@ -82,14 +82,15 @@ class LoginController extends Controller
             }
 
             if ($this->loginService->isResident($user)) {
+                if ($user->profile_completed === 0) {
+                    return redirect()->route('profile.complete');
+                }
+            
+                // Then perform other checks
                 $result = $this->loginService->handleStudentAfterLogin($user);
                 
                 if ($result['status'] === 'error') {
                     return back()->withErrors($result['checks']);
-                }
-                
-                if ($user->profile_completed === '0') {
-                    return redirect()->route('profile.complete');
                 }
                 
                 return redirect()->route('student.home');

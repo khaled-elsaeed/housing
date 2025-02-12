@@ -13,10 +13,9 @@ class Reservation extends Model
     protected $fillable = [
         'user_id',
         'room_id',
-        'year',
-        'term',
         'status',
-        'period_type'
+        'period_type',
+        'academic_term_id',
     ];
 
     protected $dates = [
