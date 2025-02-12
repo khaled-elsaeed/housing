@@ -99,7 +99,7 @@
                 <div class="form-floating mb-3 position-relative">
                     <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="@lang('Password')" required>
                     <label for="floatingPassword">@lang('Password')</label>
-                    <i class="bi bi-eye-slash password-toggle-icon" id="togglePassword"></i>
+                    <i class="fa fa-eye-slash password-toggle-icon" id="togglePassword"></i>
                 </div>
 
                 <!-- Forgot Password -->
@@ -145,8 +145,8 @@
     togglePassword.addEventListener('click', function () {
         const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
         passwordInput.setAttribute('type', type);
-        this.classList.toggle('bi-eye');
-        this.classList.toggle('bi-eye-slash');
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
     });
 
     // Loading Spinner on Form Submit

@@ -11,19 +11,17 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16x16.png') }}">
-    
-    <!-- Bootstrap CSS -->
+    <link href="{{ asset('css/icons.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('css/flag-icon.min.css') }}" rel="stylesheet" type="text/css">
     @if(app()->isLocale('en'))
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
     @else
     <link href="{{ asset('css/bootstrap.rtl.min.css') }}" rel="stylesheet" type="text/css">
     @endif
-    
-    <!-- SweetAlert2 -->
+    <!-- Load SweetAlert2 -->
+    <link href="{{ asset('plugins/sweet-alert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
     <script src="{{ asset('plugins/sweet-alert2/sweetalert2.all.min.js') }}"></script>
 
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Custom CSS -->
     <link href="{{ asset('css/authenication.css') }}" rel="stylesheet" type="text/css">
@@ -87,14 +85,14 @@
                 <div class="form-floating mb-3 position-relative">
                     <input type="password" class="form-control" id="password" name="password" placeholder="@lang('Password')" required>
                     <label for="password">@lang('Password')</label>
-                    <i class="bi bi-eye-slash password-toggle-icon" id="togglePassword"></i>
+                    <i class="fa fa-eye-slash password-toggle-icon" id="togglePassword"></i>
                 </div>
 
                 <!-- Confirm Password -->
                 <div class="form-floating mb-3 position-relative">
                     <input type="password" class="form-control" id="confirmPassword" name="password_confirmation" placeholder="@lang('Confirm Password')" required>
                     <label for="confirmPassword">@lang('Confirm Password')</label>
-                    <i class="bi bi-eye-slash password-toggle-icon" id="toggleConfirmPassword"></i>
+                    <i class="fa fa-eye-slash password-toggle-icon" id="toggleConfirmPassword"></i>
                 </div>
 
                 <!-- Submit Button -->
@@ -135,19 +133,10 @@
     togglePassword.addEventListener('click', function () {
         const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
         passwordInput.setAttribute('type', type);
-        this.classList.toggle('bi-eye');
-        this.classList.toggle('bi-eye-slash');
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
     });
 
-    // Toggle Confirm Password Visibility
-    const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
-    const confirmPasswordInput = document.getElementById('confirmPassword');
-    toggleConfirmPassword.addEventListener('click', function () {
-        const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        confirmPasswordInput.setAttribute('type', type);
-        this.classList.toggle('bi-eye');
-        this.classList.toggle('bi-eye-slash');
-    });
 
     // Loading Spinner on Form Submit
     const registerForm = document.getElementById('registerForm');
