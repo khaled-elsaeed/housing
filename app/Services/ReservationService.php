@@ -170,11 +170,11 @@ class ReservationService
      * @return Reservation|null
      * @throws \Exception
      */
-    private function createReservation(
+    public function createReservation(
         User $reservationRequester,
         ?Room $selectedRoom,
         string $reservationPeriodType,
-        ?int $academicTermId,
+        ?int $academicTermId = null,
         ?string $shortTermDuration = null,
         ?string $startDate = null,
         ?string $endDate = null,
@@ -428,7 +428,6 @@ class ReservationService
             $this->createReservationRequest(
                 $reservationRequester,
                 $academicTermId, 
-                $reservationRequester->gender,
                 "long",
                 null,
                 null,
@@ -476,7 +475,6 @@ class ReservationService
         $this->createReservationRequest(
             $reservationRequester,
             $academicTermId,
-            $reservationRequester->gender,
             "short",
             $shortTermDuration,
             $startDate,
@@ -494,7 +492,6 @@ class ReservationService
      *
      * @param User $user
      * @param int|null $academicTermId
-     * @param string $gender
      * @param string $periodType
      * @param string|null $shortTermDuration
      * @param string|null $startDate
@@ -504,7 +501,6 @@ class ReservationService
     private function createReservationRequest(
         User $user,
         ?int $academicTermId,
-        string $gender,
         string $periodType,
         ?string $shortTermDuration,
         ?string $startDate = null,
@@ -515,7 +511,6 @@ class ReservationService
             $ReservationRequest = ReservationRequest::create([
                 'user_id' => $user->id,
                 'academic_term_id' => $academicTermId,
-                'gender' => $gender,
                 'period_type' => $periodType,
                 'period_duration' => $shortTermDuration,
                 'start_date' => $startDate,

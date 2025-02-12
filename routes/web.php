@@ -21,7 +21,7 @@ use App\Http\Controllers\Admin\Applicant\{
 };
 
 
-use App\Http\Controllers\Admin\Reservation\ReservationController;
+use App\Http\Controllers\Admin\Reservation\{ReservationController,ReservationRequestsController};
 use App\Http\Controllers\App\UploadController;
 
 use App\Http\Controllers\Student\StudentHomeController;
@@ -205,6 +205,20 @@ Route::middleware(Localization::class)
                     Route::post('/swap', [ReservationController::class, 'swapReservationLocation'])->name('swap');
                     Route::post('/reallocate', [ReservationController::class, 'reallocateReservation'])->name('reallocate');
                 });
+            });
+
+            Route::prefix('reservation-requests')->name('reservation-requests.')->group(function () {
+                // Main views
+                Route::get('/', [ReservationRequestsController::class, 'index'])->name('index');
+                
+                // Data fetching routes
+                Route::get('/fetch', [ReservationRequestsController::class, 'fetch'])->name('fetch');
+                Route::get('/get-summary', [ReservationRequestsController::class, 'getSummary'])->name('get-summary');
+                
+                // Action routes
+                Route::post('/auto-reserve', [ReservationRequestsController::class, 'autoReserve'])->name('auto-reserve');
+                Route::post('/{id}/accept', [ReservationRequestsController::class, 'accept'])->name('accept');
+                Route::post('/{id}/reject', [ReservationRequestsController::class, 'reject'])->name('reject');
             });
             
 

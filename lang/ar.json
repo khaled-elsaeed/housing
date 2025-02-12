@@ -565,11 +565,18 @@
     "Password reset token has expired": "انتهت صلاحية رمز إعادة تعيين كلمة المرور",
     "User not found": "لم يتم العثور على المستخدم",
     "Accounts" : "الحسابات",
+    "Reservation Requests": "طلبات التسكين",
+    "Requests" :"التقديمات",
     "Password has been reset successfully": "تم إعادة تعيين كلمة المرور بنجاح",
     "This activation token is not valid": "رمز التفعيل هذا غير صالح",
     "This activation link has expired": "انتهت صلاحية رابط التفعيل هذا",
     "Your account has been activated successfully": "تم تفعيل حسابك بنجاح",
     "Are you sure you want to reset the password? A new password will be generated and sent to the user via email.": "هل أنت متأكد أنك تريد إعادة تعيين كلمة المرور؟ سيتم إنشاء كلمة مرور جديدة وإرسالها إلى المستخدم عبر البريد الإلكتروني.",
-    "Confirm Reset": "تأكيد إعادة التعيين"
+    "Confirm Reset": "تأكيد إعادة التعيين",
+    "long" : "فترة طويلة",
+    "second Term ( spring 2024-2025 )":"الترم الثاني (ربيع 2024-2025)",
+    "accepted": "مقبول",
+    "Accepted Requests" :"الطلبات المقبولة"
+
  
 }

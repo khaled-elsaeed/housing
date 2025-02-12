@@ -34,6 +34,8 @@
             </a>
             <ul class="vertical-submenu">
                <li><a href="{{ route('admin.reservation.index') }}">@lang('View Reservations')</a></li>
+               <li><a href="{{ route('admin.reservation-requests.index') }}">@lang('Requests')</a></li>
+
                <li><a href="{{ route('admin.reservation.relocation.index') }}">@lang('Relocation')</a></li>
             </ul>
          </li>

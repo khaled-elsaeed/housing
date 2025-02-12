@@ -9,11 +9,6 @@
 <link href="{{ asset('plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 
 <link href="{{ asset('css/custom-datatable.css') }}" rel="stylesheet" type="text/css" />
-<style>
-   .loading {
-   pointer-events: none; /* Disable button interactions */
-   }
-</style>
 @endsection
 
 @section('content')

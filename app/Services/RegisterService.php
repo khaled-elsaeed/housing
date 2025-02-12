@@ -109,15 +109,17 @@ class RegisterService
      * @param string $nationalId
      * @return string
      */
-    private function getGenderFromNationalId($nationalId): string
-    {
-        if (strlen($nationalId) >= 13) {
-            $genderDigit = (int) $nationalId[12]; // 13th digit (index 12)
-            return $genderDigit % 2 === 0 ? 'female' : 'male';
-        }
+    private function getGenderFromNationalId(int $nationalId): string
+{
+    if ($nationalId >= 10**12) { 
+        $genderDigit = $nationalId % 10; 
 
-        return 'male'; // Return 'unknown' if the format is incorrect
+        return ($genderDigit % 2 === 0) ? 'female' : 'male';
     }
+
+    return 'unknown'; // Return 'unknown' if the format is incorrect
+}
+
 
     /**
      * Assign role to user.
