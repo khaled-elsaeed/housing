@@ -169,7 +169,7 @@ class CompleteProfileRequest extends FormRequest
                 'string',
                 'regex:/^01[0125][0-9]{8}$/'  // Egyptian phone number format
             ],
-'termsCheckbox' => ['required', 'in:accepted'],
+                'termsCheckbox' => ['required', 'in:accepted'],
         ];
     }
 

@@ -88,7 +88,7 @@ class LoginController extends Controller
                     return back()->withErrors($result['checks']);
                 }
                 
-                if (!$user->profile_completed) {
+                if ($user->profile_completed === '0') {
                     return redirect()->route('profile.complete');
                 }
                 
