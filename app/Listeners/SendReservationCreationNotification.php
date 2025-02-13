@@ -12,6 +12,13 @@ class SendReservationCreationNotification implements ShouldQueue
 {
     use InteractsWithQueue;
 
+      /**
+     * The name of the queue the job should be sent to.
+     *
+     * @var string|null
+     */
+    public $queue = 'reservation_create_notification'; 
+
 
     /**
      * Create the event listener.

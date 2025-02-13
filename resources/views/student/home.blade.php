@@ -177,7 +177,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('Close') }}"></button>
          </div>
          <div class="modal-body">
-            <form id="addReservationForm" method="POST" action="{{ route('student.reservation.request') }}">
+            <form id="addReservationForm" method="POST" action="{{ route('student.reservation.store') }}">
                @csrf
                <!-- Reservation Period Type -->
                <div class="mb-3">
@@ -204,31 +204,32 @@
 
                   <!-- Option to Stay in Old Room -->
                   @if($user->lastReservation())
-<div id="oldRoomOption" class="mb-3 mt-3">
-   <div class="alert alert-info d-flex align-items-center">
-      <i class="fa fa-info-circle me-2"></i>
-      <span>{{ __('You had a reservation in the previous academic term. Would you like to stay in your old room?') }}</span>
-   </div>
-   <div class="form-check">
-      <input class="form-check-input" type="checkbox" id="stayInOldRoom" name="stay_in_old_room">
-      <label class="form-check-label d-flex align-items-center" for="stayInOldRoom">
-         <span class="me-2">{{ __('Yes, I want to stay in my old room') }}</span>
-         <span class="badge bg-secondary d-flex align-items-center">
-            <i class="fa fa-bed me-1"></i>
-            <span>{{ __('Room') }}: {{ $user->lastReservation()->room->number }}</span>
-         </span>
-         <span class="badge bg-secondary ms-2 d-flex align-items-center">
-            <i class="fa fa-home me-1"></i>
-            <span>{{ __('Apartment') }}: {{ $user->lastReservation()->room->apartment->number }}</span>
-         </span>
-         <span class="badge bg-secondary ms-2 d-flex align-items-center">
-            <i class="fa fa-hotel me-1"></i>
-            <span>{{ __('Building') }}: {{ $user->lastReservation()->room->apartment->building->number }}</span>
-         </span>
-      </label>
-   </div>
-</div>
-@endif
+                  <div id="oldRoomOption" class="mb-3 mt-3">
+                     <div class="alert alert-info d-flex align-items-center">
+                        <i class="fa fa-info-circle me-2"></i>
+                        <span>{{ __('You had a reservation in the previous academic term. Would you like to stay in your old room?') }}</span>
+                     </div>
+                     <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="stayInOldRoom" name="stay_in_last_old_room">
+                        <label class="form-check-label d-flex align-items-center" for="stayInOldRoom">
+                           <span class="me-2">{{ __('Yes, I want to stay in my old room') }}</span>
+                           <input type="hidden" name="old_room_id" value="{{ $user->lastReservation()->room->id }}">
+                           <span class="badge bg-secondary d-flex align-items-center">
+                              <i class="fa fa-bed me-1"></i>
+                              <span>{{ __('Room') }}: {{ $user->lastReservation()->room->number }}</span>
+                           </span>
+                           <span class="badge bg-secondary ms-2 d-flex align-items-center">
+                              <i class="fa fa-home me-1"></i>
+                              <span>{{ __('Apartment') }}: {{ $user->lastReservation()->room->apartment->number }}</span>
+                           </span>
+                           <span class="badge bg-secondary ms-2 d-flex align-items-center">
+                              <i class="fa fa-hotel me-1"></i>
+                              <span>{{ __('Building') }}: {{ $user->lastReservation()->room->apartment->building->number }}</span>
+                           </span>
+                        </label>
+                     </div>
+                  </div>
+                  @endif
 
                   <!-- Sibling Option (Only shows if user has eligible siblings) -->
                   @if($sibling)
@@ -239,6 +240,7 @@
                      </div>
                      <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="shareWithSibling" name="share_with_sibling">
+                        <input type="hidden" name="sibling_id" value="{{ $sibling->id }}">
                         <label class="form-check-label" for="shareWithSibling">
                            {{ __('Yes, I want to share a double room with my sibling') }}
                            <strong>({{ $sibling->name }})</strong>

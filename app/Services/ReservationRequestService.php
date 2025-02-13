@@ -2,351 +2,228 @@
 
 namespace App\Services;
 
-use App\Models\{User, Room, Reservation,ReservationRequest};
-use Illuminate\Support\Facades\{DB, Log, Cache};
-use Illuminate\Support\Carbon;
-use Exception;
-use Illuminate\Support\Collection;
-use App\Jobs\CreateReservationJob;
+use App\Models\{ReservationRequest, User, AcademicTerm};
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class ReservationService
+class ReservationRequestService
 {
-    private $availableRoomsCache = null;
+    private const VALID_STATUSES = ['pending', 'accepted', 'upcoming', 'complete'];
+    private const PERIOD_TYPES = ['short', 'long'];
 
     /**
-     * Get pending reservation requests filtered by gender and preferences.
+     * Create a reservation request for a user.
      *
-     * @return Collection
+     * @param User $user The user making the reservation request.
+     * @param array $data The data for the reservation request.
+     * @return ReservationRequest The created reservation request.
+     * @throws \Exception If an error occurs during creation.
      */
-    public function getReservationRequests(): Collection
-    {
-        return ReservationRequest::with(['user.student.faculty:id,name'])
-            ->where('status', 'pending')
-            ->orderBy('created_at', 'desc')
-            ->select(['id', 'user_id', 'stay_in_last_old_room', 'stay_with_sibling', 'last_old_room_id', 'sibling_id', 'created_at'])
-            ->get();
-    }
-
-    /**
-     * Get available rooms filtered by gender and type.
-     *
-     * @return array
-     */
-    public function getAvailableRooms(): array
-    {
-        if ($this->availableRoomsCache === null) {
-            $rooms = Room::with(['apartment.building'])
-                ->where('status', 'active')
-                ->where('full_occupied', false)
-                ->where('purpose', 'accommodation')
-                ->get();
-
-            $this->availableRoomsCache = $this->filterRoomsByGender($rooms);
-        }
-
-        return $this->availableRoomsCache;
-    }
-
-    /**
-     * Automate the reservation process with background processing support.
-     *
-     * @return void
-     */
-    public function automateReservationProcess(): void
+    public function createReservationRequest(User $user, array $data): ReservationRequest
     {
         try {
-            $facultyRankings = [
-                'Medicine' => 1,
-                'Dentistry' => 2,
-                'Pharmacy' => 3,
-                'Applied Health Sciences Technology' => 4,
-                'Nursing' => 5,
-                'Engineering' => 6,
-                'Computer Science & Engineering' => 7,
-                'Textile Science Engineering' => 8,
-                'Business' => 9,
-                'Law' => 10,
-                'Science' => 11,
-                'Social & Human Sciences' => 12,
-                'Mass Media & Communication' => 13,
-            ];
-            
-            // Fetch pending requests with relationships loaded , sort by old requested first
-            $reservations = ReservationRequest::where('status', 'pending')
-                ->with(['user.student.faculty']) 
-                ->orderBy('created_at', 'desc')  
-                ->get(); 
-            
-            // Sort faculty priority 
-            $sortedReservations = $reservations->sortBy(fn($request) =>
-                $facultyRankings[$request->user->student->faculty->name] ?? 99 // Default to 99 if not ranked
-            );
-            
-            // Process in chunks
-            $sortedReservations->chunk(500)->each(function ($reservationRequests) {
-                    DB::transaction(function () use ($reservationRequests) {
-                        $filteredRequests = $this->filterRequests($reservationRequests);
-                        $availableRooms = $this->getAvailableRooms();
-
-                        foreach (['male', 'female'] as $gender) {
-                            $this->processGenderRequests(
-                                $gender,
-                                $filteredRequests[$gender],
-                                $availableRooms[$gender]
-                            );
-                        }
-                    });
-
-                    Log::info('Processed batch of reservation requests', [
-                        'batch_size' => $reservationRequests->count(),
-                    ]);
-                });
-        } catch (Exception $e) {
-            Log::error('Error processing reservation requests: ' . $e->getMessage());
+            return DB::transaction(function () use ($user, $data) {
+                $this->validateReservationPeriod($user->id, $data['reservation_period_type'], $data);
+                return $this->newReservationRequest($user->id, $data);
+            });
+        } catch (\Exception $e) {
+            Log::error('Error creating reservation request', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             throw $e;
         }
     }
 
     /**
-     * Filter reservation requests by gender and room preferences.
+     * Validate reservation period based on type (short or long).
      *
-     * @param Collection $reservationRequests
-     * @return array
-     */
-    private function filterRequests(Collection $reservationRequests): array
-    {
-
-        $filtered = [
-            'male' => ['stayInOldLastRoom' => [], 'stayWithSibling' => [], 'regular' => []],
-            'female' => ['stayInOldLastRoom' => [], 'stayWithSibling' => [], 'regular' => []],
-        ];
-
-        foreach ($reservationRequests as $request) {
-            $gender = $request->user?->gender;
-            if (!$gender) {
-                continue;
-            }
-
-            if ($request->stay_in_last_old_room) {
-                $filtered[$gender]['stayInOldLastRoom'][] = $request;
-            } elseif ($request->stay_with_sibling) {
-                $filtered[$gender]['stayWithSibling'][] = $request;
-            } else {
-                $filtered[$gender]['regular'][] = $request;
-            }
-        }
-
-        return $filtered;
-    }
-
-    /**
-     * Filter rooms by gender and type.
-     *
-     * @param Collection $rooms
-     * @return array
-     */
-    private function filterRoomsByGender(Collection $rooms): array
-    {
-        $filtered = [
-            'male' => ['single' => [], 'double' => []],
-            'female' => ['single' => [], 'double' => []],
-        ];
-
-        foreach ($rooms as $room) {
-            $gender = $room->apartment?->building?->gender;
-            if (!$gender || !isset($filtered[$gender][$room->type])) {
-                continue;
-            }
-
-            $filtered[$gender][$room->type][] = $room;
-        }
-
-        return $filtered;
-    }
-
-    /**
-     * Process requests for a specific gender.
-     *
-     * @param string $gender
-     * @param array $reservationRequests
-     * @param array $availableRooms
+     * @param int $userId The ID of the user making the request.
+     * @param string $periodType The type of reservation period (short or long).
+     * @param array $data The reservation data.
      * @return void
      */
-    private function processGenderRequests(string $gender, array $reservationRequests, array $availableRooms): void
+    private function validateReservationPeriod(int $userId, string $periodType, array $data): void
     {
-        $results = [
-            'old_room' => $this->processOldRoomReservations(collect($reservationRequests['stayInOldLastRoom'])),
-            'sibling' => $this->processSiblingReservations(collect($reservationRequests['stayWithSibling']), collect($availableRooms['double'] ?? [])),
-            'regular' => $this->processRegularReservations(collect($reservationRequests['regular']), $availableRooms),
-        ];
-
-        Log::info("Processed gender requests: $gender", $results);
+        if ($periodType === 'short') {
+            $this->validateShortTermReservation($userId, $data['start_date'], $data['end_date']);
+        } else {
+            $this->validateLongTermReservation($userId, $data['reservation_academic_term_id']);
+        }
     }
 
     /**
-     * Process old room reservations.
+     * Validate short-term reservation dates and check for conflicts.
      *
-     * @param Collection $requests
-     * @return array
+     * @param int $userId The ID of the user making the request.
+     * @param string $startDate The start date of the reservation.
+     * @param string $endDate The end date of the reservation.
+     * @return void
+     * @throws \Exception If there is a conflict or validation fails.
      */
-    private function processOldRoomReservations(Collection $requests): array
+    private function validateShortTermReservation(int $userId, string $startDate, string $endDate): void
     {
-        $results = ['success' => [], 'failed' => []];
+        $startDate = Carbon::parse($startDate);
+        $endDate = Carbon::parse($endDate);
 
-        foreach ($requests as $request) {
-            try {
-                if (!$request->last_old_room_id) {
-                    throw new Exception('Old room ID not provided');
-                }
+        $this->validateDateRange($startDate, $endDate);
 
-                $oldRoom = Room::lockForUpdate()->findOrFail($request->last_old_room_id);
-
-                if (!$oldRoom->full_occupied) {
-                    CreateReservationJob::dispatch($request, $oldRoom)->onQueue('reservations');
-                    $results['success'][] = [
-                        'request_id' => $request->id,
-                        'room_id' => $oldRoom->id,
-                    ];
-                } else {
-                    $results['failed'][] = [
-                        'request_id' => $request->id,
-                        'reason' => 'Room is fully occupied',
-                    ];
-                }
-            } catch (Exception $e) {
-                $results['failed'][] = [
-                    'request_id' => $request->id,
-                    'reason' => $e->getMessage(),
-                ];
-            }
+        if ($this->hasConflictingShortTermReservation($userId, $startDate, $endDate)) {
+            throw new \Exception('You have an overlapping short-term reservation.');
         }
 
-        return $results;
+        if ($this->hasConflictingLongTermReservation($userId, $startDate, $endDate)) {
+            throw new \Exception('You have an overlapping long-term reservation.');
+        }
     }
 
     /**
-     * Process sibling reservations.
+     * Check for conflicting short-term reservations.
      *
-     * @param Collection $requests
-     * @param Collection $doubleRooms
-     * @return array
+     * @param int $userId The ID of the user making the request.
+     * @param Carbon $startDate The start date of the reservation.
+     * @param Carbon $endDate The end date of the reservation.
+     * @return bool True if a conflict exists, otherwise false.
      */
-    private function processSiblingReservations(Collection $requests, Collection $doubleRooms): array
+    private function hasConflictingShortTermReservation(int $userId, Carbon $startDate, Carbon $endDate): bool
     {
-        $results = ['success' => [], 'failed' => []];
-        $processedIds = [];
+        return ReservationRequest::query()
+            ->where('user_id', $userId)
+            ->where('period_type', 'short')
+            ->whereIn('status', self::VALID_STATUSES)
+            ->where(function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('start_date', [$startDate, $endDate])
+                    ->orWhereBetween('end_date', [$startDate, $endDate])
+                    ->orWhere(function ($q) use ($startDate, $endDate) {
+                        $q->where('start_date', '<=', $startDate)
+                            ->where('end_date', '>=', $endDate);
+                    });
+            })
+            ->exists();
+    }
 
-        foreach ($requests as $request) {
-            if (in_array($request->id, $processedIds)) {
-                continue;
-            }
-
-            try {
-                if (!$request->sibling_id) {
-                    throw new Exception('Sibling ID not provided');
-                }
-
-                $siblingRequest = $requests->firstWhere('user_id', $request->sibling_id);
-
-                if (!$siblingRequest) {
-                    throw new Exception('Sibling request not found');
-                }
-
-                if ($request->user?->gender !== $siblingRequest->user?->gender) {
-                    throw new Exception('Siblings must be of the same gender');
-                }
-
-                $room = $doubleRooms->first(function ($room) {
-                    return $room->current_occupancy === 0;
+    /**
+     * Check for conflicting long-term reservations.
+     *
+     * @param int $userId The ID of the user making the request.
+     * @param Carbon $startDate The start date of the reservation.
+     * @param Carbon $endDate The end date of the reservation.
+     * @return bool True if a conflict exists, otherwise false.
+     */
+    private function hasConflictingLongTermReservation(int $userId, Carbon $startDate, Carbon $endDate): bool
+    {
+        return ReservationRequest::query()
+            ->where('user_id', $userId)
+            ->where('period_type', 'long')
+            ->whereIn('status', self::VALID_STATUSES)
+            ->whereHas('academicTerm', function ($query) use ($startDate, $endDate) {
+                $query->where(function ($q) use ($startDate, $endDate) {
+                    $q->whereBetween('start_date', [$startDate, $endDate])
+                        ->orWhereBetween('end_date', [$startDate, $endDate])
+                        ->orWhere(function ($inner) use ($startDate, $endDate) {
+                            $inner->where('start_date', '<=', $startDate)
+                                ->where('end_date', '>=', $endDate);
+                        });
                 });
-
-                if (!$room) {
-                    throw new Exception('No suitable double room available');
-                }
-
-                DB::transaction(function () use ($request, $siblingRequest, $room) {
-                    CreateReservationJob::dispatch($request, $room)->onQueue('reservations');
-                    CreateReservationJob::dispatch($siblingRequest, $room)->onQueue('reservations');
-                });
-
-                $processedIds[] = $request->id;
-                $processedIds[] = $siblingRequest->id;
-
-                $results['success'][] = [
-                    'request_id' => $request->id,
-                    'sibling_request_id' => $siblingRequest->id,
-                    'room_id' => $room->id,
-                ];
-            } catch (Exception $e) {
-                $results['failed'][] = [
-                    'request_id' => $request->id,
-                    'reason' => $e->getMessage(),
-                ];
-            }
-        }
-
-        return $results;
+            })
+            ->exists();
     }
 
     /**
-     * Process regular reservations.
+     * Validate date range for short-term reservations.
      *
-     * @param Collection $requests
-     * @param array $availableRooms
-     * @return array
+     * @param Carbon $startDate The start date of the reservation.
+     * @param Carbon $endDate The end date of the reservation.
+     * @return void
+     * @throws \Exception If the date range is invalid.
      */
-    private function processRegularReservations(Collection $requests, array $availableRooms): array
+    private function validateDateRange(Carbon $startDate, Carbon $endDate): void
     {
-        $results = ['success' => [], 'failed' => []];
-
-        foreach ($requests as $request) {
-            try {
-                $roomType = 'single';
-
-                if (!isset($availableRooms[$roomType])) {
-                    throw new Exception("Invalid room type: {$roomType}");
-                }
-
-                $room = $this->findAvailableRoom(collect($availableRooms[$roomType]));
-
-                if (!$room) {
-                    throw new Exception('No suitable room available');
-                }
-
-                CreateReservationJob::dispatch($request, $room)->onQueue('reservations');
-
-                $results['success'][] = [
-                    'request_id' => $request->id,
-                    'room_id' => $room->id,
-                ];
-            } catch (Exception $e) {
-                $results['failed'][] = [
-                    'request_id' => $request->id,
-                    'reason' => $e->getMessage(),
-                ];
-            }
+        if ($startDate->isAfter($endDate)) {
+            throw new \Exception('Start date must be before end date.');
         }
 
-        return $results;
+        if ($startDate->isPast()) {
+            throw new \Exception('Start date cannot be in the past.');
+        }
     }
 
     /**
-     * Find an available room with lock.
+     * Validate long-term reservation for academic term.
      *
-     * @param Collection $rooms
-     * @return Room|null
+     * @param int $userId The ID of the user making the request.
+     * @param int $academicTermId The ID of the academic term.
+     * @return void
+     * @throws \Exception If the academic term is invalid or a conflict exists.
      */
-    private function findAvailableRoom(Collection $rooms): ?Room
+    private function validateLongTermReservation(int $userId, int $academicTermId): void
     {
-        foreach ($rooms as $room) {
-            $freshRoom = Room::lockForUpdate()->find($room->id);
+        $academicTerm = AcademicTerm::findOrFail($academicTermId);
 
-            if ($freshRoom && $freshRoom->current_occupancy < $freshRoom->max_occupancy) {
-                return $freshRoom;
-            }
+        if (Carbon::parse($academicTerm->end_date)->isPast()) {
+            throw new \Exception('Cannot make reservations for past academic terms.');
         }
 
-        return null;
+        if ($this->hasExistingTermReservation($userId, $academicTermId)) {
+            throw new \Exception('You already have a reservation for this academic term.');
+        }
     }
 
+    /**
+     * Check for existing long-term reservation for the academic term.
+     *
+     * @param int $userId The ID of the user making the request.
+     * @param int $academicTermId The ID of the academic term.
+     * @return bool True if a reservation exists, otherwise false.
+     */
+    private function hasExistingTermReservation(int $userId, int $academicTermId): bool
+    {
+        return ReservationRequest::where('user_id', $userId)
+            ->where('period_type', 'long')
+            ->where('academic_term_id', $academicTermId)
+            ->whereIn('status', ['pending', 'accepted'])
+            ->exists();
+    }
+
+    /**
+     * Create a new base reservation request.
+     *
+     * @param int $userId The ID of the user making the request.
+     * @param array $data The reservation data.
+     * @return ReservationRequest The created reservation request.
+     */
+    public function newReservationRequest(int $userId, array $data): ReservationRequest
+    {
+        $reservation = ReservationRequest::create([
+            'user_id' => $userId,
+            'period_type' => $data['reservation_period_type'],
+            'stay_in_last_old_room' => $data['stay_in_last_old_room'] ?? null,
+            'old_room_id' => $data['old_room_id'] ?? null,
+            'sibling_id' => $data['sibling_id'] ?? null,
+            'share_with_sibling' => $data['share_with_sibling'] ?? null,
+            'status' => 'pending',
+        ]);
+
+        $this->addPeriodSpecificData($reservation, $data);
+        return $reservation;
+    }
+
+    /**
+     * Add period-specific data to the reservation.
+     *
+     * @param ReservationRequest $reservation The reservation to update.
+     * @param array $data The reservation data.
+     * @return void
+     */
+    private function addPeriodSpecificData(ReservationRequest $reservation, array $data): void
+    {
+        $updateData = $data['reservation_period_type'] === 'long'
+            ? ['academic_term_id' => $data['reservation_academic_term_id']]
+            : ['start_date' => $data['start_date'], 'end_date' => $data['end_date']];
+
+        $reservation->update($updateData);
+    }
 }

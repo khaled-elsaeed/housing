@@ -12,6 +12,14 @@ class SendReservationRequestedNotification
 {
     use InteractsWithQueue;
 
+
+    /**
+     * The name of the queue the job should be sent to.
+     *
+     * @var string|null
+     */
+    public $queue = 'reservation_request_notification'; 
+
     /**
      * Create the event listener.
      */

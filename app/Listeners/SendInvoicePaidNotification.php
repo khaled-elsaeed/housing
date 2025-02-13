@@ -12,6 +12,15 @@ class SendInvoicePaidNotification implements ShouldQueue
 {
     use InteractsWithQueue;
 
+
+    /**
+     * The name of the queue the job should be sent to.
+     *
+     * @var string|null
+     */
+    public $queue = 'invoice_notification'; // Example: 'invoices', 'notifications', etc.
+
+
     /**
      * Create the event listener.
      */

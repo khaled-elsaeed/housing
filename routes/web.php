@@ -25,7 +25,7 @@ use App\Http\Controllers\Admin\Reservation\{ReservationController,ReservationReq
 use App\Http\Controllers\App\UploadController;
 
 use App\Http\Controllers\Student\StudentHomeController;
-use App\Http\Controllers\Student\StudentReservationController;
+use App\Http\Controllers\Student\StudentReservationRequestController;
 use App\Http\Controllers\Student\StudentPaymentController;
 
 
@@ -264,7 +264,7 @@ Route::middleware(Localization::class)
             Route::get('maintenance', [StudentMaintenanceController::class, 'showForm'])->name('maintenance.form');
             Route::post('maintenance/store', [StudentMaintenanceController::class, 'store'])->name('maintenance.store');
 
-            Route::post('/reservation',[StudentReservationController::class,'requestReservation'])->name('reservation.request');
+            Route::post('/reservation',[StudentReservationRequestController::class,'store'])->name('reservation.store');
 
             Route::get('permission', [StudentPermissionController::class, 'showForm'])->name('permission.form');
             Route::post('permission/store', [StudentPermissionController::class, 'store'])->name('permission.store');
