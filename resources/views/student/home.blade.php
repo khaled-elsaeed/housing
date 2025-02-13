@@ -188,6 +188,7 @@
                      <option value="short">{{ __('Short Period') }}</option>
                   </select>
                </div>
+
                <!-- Long Term Details (Academic Terms) -->
                <div id="longPeriodDetails" class="mb-3 d-none">
                   <label for="reservationTerm" class="form-label">{{ __('Select Academic Term') }}</label>
@@ -200,7 +201,35 @@
                      </option>
                      @endforeach
                   </select>
-                  @if(!$user->lastReservation(null))
+
+                  <!-- Option to Stay in Old Room -->
+                  @if($user->lastReservation())
+<div id="oldRoomOption" class="mb-3 mt-3">
+   <div class="alert alert-info d-flex align-items-center">
+      <i class="fa fa-info-circle me-2"></i>
+      <span>{{ __('You had a reservation in the previous academic term. Would you like to stay in your old room?') }}</span>
+   </div>
+   <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="stayInOldRoom" name="stay_in_old_room">
+      <label class="form-check-label d-flex align-items-center" for="stayInOldRoom">
+         <span class="me-2">{{ __('Yes, I want to stay in my old room') }}</span>
+         <span class="badge bg-secondary d-flex align-items-center">
+            <i class="fa fa-bed me-1"></i>
+            <span>{{ __('Room') }}: {{ $user->lastReservation()->room->number }}</span>
+         </span>
+         <span class="badge bg-secondary ms-2 d-flex align-items-center">
+            <i class="fa fa-home me-1"></i>
+            <span>{{ __('Apartment') }}: {{ $user->lastReservation()->room->apartment->number }}</span>
+         </span>
+         <span class="badge bg-secondary ms-2 d-flex align-items-center">
+            <i class="fa fa-hotel me-1"></i>
+            <span>{{ __('Building') }}: {{ $user->lastReservation()->room->apartment->building->number }}</span>
+         </span>
+      </label>
+   </div>
+</div>
+@endif
+
                   <!-- Sibling Option (Only shows if user has eligible siblings) -->
                   @if($sibling)
                   <div id="siblingOption" class="mb-3 d-none">
@@ -211,14 +240,14 @@
                      <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="shareWithSibling" name="share_with_sibling">
                         <label class="form-check-label" for="shareWithSibling">
-                        {{ __('Yes, I want to share a double room with my sibling') }}
+                           {{ __('Yes, I want to share a double room with my sibling') }}
+                           <strong>({{ $sibling->name }})</strong>
                         </label>
                      </div>
                   </div>
                   @endif
-                  @endif
                </div>
-               <!-- Room type prefer single or double -->
+
                <!-- Short Term Details (Day/Week/Month) -->
                <div id="shortPeriodDetails" class="d-none">
                   <label for="shortPeriodDuration" class="form-label">{{ __('Select Duration') }}</label>
@@ -240,11 +269,12 @@
                      </div>
                   </div>
                </div>
+
                <!-- Submit Button -->
                <div class="mt-3">
                   <button type="submit" class="btn btn-primary w-100" id="submitReservation" disabled>
-                  <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true" id="submitSpinner"></span>
-                  <span id="submitText">{{ __('Add Reservation') }}</span>
+                     <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true" id="submitSpinner"></span>
+                     <span id="submitText">{{ __('Add Reservation') }}</span>
                   </button>
                </div>
             </form>

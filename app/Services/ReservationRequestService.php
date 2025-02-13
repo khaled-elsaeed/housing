@@ -2,11 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\{User, Room, Reservation, Invoice, InvoiceDetail, ReservationRequest};
+use App\Models\{User, Room, Reservation,ReservationRequest};
 use Illuminate\Support\Facades\{DB, Log, Cache};
 use Illuminate\Support\Carbon;
-use App\Events\{ReservationCreated, ReservationRequested};
-use App\Jobs\ProcessReservationRequests;
 use Exception;
 use Illuminate\Support\Collection;
 use App\Jobs\CreateReservationJob;

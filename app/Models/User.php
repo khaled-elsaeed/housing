@@ -196,7 +196,7 @@ class User extends Authenticatable
     
 
 
-    public function lastReservation($academicTermId)
+    public function lastReservation($academicTermId = NULL)
 {
     // Validate input
     if ($academicTermId && (!is_int($academicTermId) || $academicTermId <= 0)) {

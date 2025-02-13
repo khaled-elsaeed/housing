@@ -259,7 +259,7 @@ class ReservationRequestsController extends Controller
         Log::info("Starting auto reservation process");
         
         // Process synchronously for immediate feedback
-        $this->reservationService->automateReservationProcess(false);
+        $this->reservationService->automateReservationProcess();
 
         return response()->json([
             'success' => true,
