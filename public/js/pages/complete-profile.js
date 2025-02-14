@@ -643,7 +643,8 @@ function handleSubmitSuccess(response) {
         confirmButtonColor: '#198754',
         allowOutsideClick: false,     
         allowEscapeKey: false,   
-    }).then((result) => {
+    }).then(() => {
+        console.log(response);
         if (response.success && response.redirect) {
             window.location.href = response.redirect;
         }
@@ -655,7 +656,6 @@ function handleSubmitSuccess(response) {
  * @param {Object} error - Error object
  */
 function handleSubmitError(error) {
-    console.error('Error:', error);
     swal({     
         type: 'error',
         title: lang === 'ar' ? 'فشل الإرسال' : 'Submission Failed',

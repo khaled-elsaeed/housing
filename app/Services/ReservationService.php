@@ -6,14 +6,11 @@ use App\Models\{User, Room, Reservation, Invoice, InvoiceDetail, ReservationRequ
 use Illuminate\Support\Facades\{DB, Log, Cache};
 use Illuminate\Support\Carbon;
 use App\Events\{ReservationCreated, ReservationRequested};
-use App\Jobs\ProcessReservationRequests;
 use Exception;
 use Illuminate\Support\Collection;
-use App\Jobs\CreateReservationJob;
 
 class ReservationService
 {
-    private $availableRoomsCache = null;
 
     /**
      * Get pending reservation requests filtered by gender and preferences.
@@ -34,20 +31,35 @@ class ReservationService
      *
      * @return array
      */
-    public function getAvailableRooms(): array
+    private function getAvailableRooms(): array
     {
-        if ($this->availableRoomsCache === null) {
-            $rooms = Room::with(['apartment.building'])
-                ->where('status', 'active')
-                ->where('full_occupied', false)
-                ->where('purpose', 'accommodation')
-                ->get();
-
-            $this->availableRoomsCache = $this->filterRoomsByGender($rooms);
-        }
-
-        return $this->availableRoomsCache;
+        $rooms = Room::select('rooms.*')
+            ->join('apartments', 'rooms.apartment_id', '=', 'apartments.id')
+            ->join('buildings', 'apartments.building_id', '=', 'buildings.id')
+            ->whereNotNull('buildings.gender') // Ensures gender is set
+            ->whereIn('rooms.type', ['single', 'double']) // Ensures valid types
+            ->get()
+            ->groupBy([
+                fn($room) => $room->apartment->building->gender,
+                'type'
+            ]);
+    
+        // Ensure empty structure even if no data is found
+        return [
+            'male' => [
+                'single' => $rooms['male']['single'] ?? [],
+                'double' => $rooms['male']['double'] ?? [],
+            ],
+            'female' => [
+                'single' => $rooms['female']['single'] ?? [],
+                'double' => $rooms['female']['double'] ?? [],
+            ],
+        ];
     }
+    
+    
+
+    
 
     /**
      * Automate the reservation process with background processing support.
@@ -274,7 +286,7 @@ class ReservationService
                 }
 
                 $room = $doubleRooms->first(function ($room) {
-                    return $room->current_occupancy === 0;
+                    return $room->current_occupancy + 2 <= $room->max_occupancy;
                 });
 
                 if (!$room) {
@@ -282,8 +294,8 @@ class ReservationService
                 }
 
                 DB::transaction(function () use ($request, $siblingRequest, $room) {
-                    $this->newReservation($request, $room);
-                    $this->newReservation($siblingRequest, $room);
+                    $this->createReservationAndInvoice($request, $room);
+                    $this->createReservationAndInvoice($siblingRequest, $room);
                 });
 
                 $processedIds[] = $request->id;
@@ -391,26 +403,20 @@ class ReservationService
             $reservationData['end_date'] = $request->end_date;
         }
 
-        Log::info('Creating reservation', $reservationData);
-
         return DB::transaction(function () use ($room, &$reservationData, $request) {
-            // Lock the room to prevent race conditions
             $room = Room::where('id', $room->id)->lockForUpdate()->first();
 
-            
             if ($room->current_occupancy >= $room->max_occupancy) {
-                $room->increment('current_occupancy');
-                
+                throw new Exception('Room is already full');
             }
 
+            $room->increment('current_occupancy');
             if ($room->current_occupancy >= $room->max_occupancy) {
                 $room->update(['full_occupied' => true]);
             }
 
             $reservation = Reservation::create($reservationData);
-
             $this->createInvoice($reservation);
-
             $request->update(['status' => 'accepted']);
 
             event(new ReservationCreated($reservation));
@@ -535,7 +541,7 @@ class ReservationService
                 $days <= 1 => 300, // Daily rate
                 $days <= 7 => 2000, // Weekly rate
                 $days <= 30 => 2500, // Monthly rate
-                default => $days * 300, // Fallback daily rate
+                default => $days * 300, 
             };
         } catch (\Exception $e) {
             Log::error('Failed to calculate fee price', [

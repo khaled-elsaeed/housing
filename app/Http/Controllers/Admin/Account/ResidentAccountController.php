@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Account;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\AdminAction; // Assuming you have a model for admin action logs
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\ResetAccountCredentials;
@@ -11,31 +12,36 @@ use App\Jobs\ResetAccountCredentials;
 class ResidentAccountController extends Controller
 {
     /**
-     * Display the list of Users.
+     * Display the list of resident users.
+     *
+     * @return \Illuminate\View\View
      */
     public function showUserPage()
-{
-    try {
-        // Retrieve all Users with the 'resident' role
-        $users = User::with('student')->role('resident')->get();
+    {
+        try {
+            $users = User::with('student')->role('resident')->get();
 
-        // Count total, male, and female Users
-        $totalUsersCount = $users->count();
-        $maleTotalCount = $users->where('gender', 'male')->count();
-        $femaleTotalCount = $users->where('gender', 'female')->count();
-
-        // Pass the data to the view
-        return view('admin.account.resident', compact('users', 'totalUsersCount', 'maleTotalCount', 'femaleTotalCount'));
-    } catch (\Exception $e) {
-        // Log the error and return a 500 error page
-        Log::error('Error loading User page: ' . $e->getMessage());
-        return response()->view('errors.500');
+            return view('admin.account.resident', [
+                'users' => $users,
+                'totalUsersCount' => $users->count(),
+                'maleTotalCount' => $users->where('gender', 'male')->count(),
+                'femaleTotalCount' => $users->where('gender', 'female')->count(),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to load resident user page', [
+                'error' => $e->getMessage(),
+                'action' => 'show_user_page',
+                'admin_id' => auth()->id(), // Log the admin performing the action
+            ]);
+            return response()->view('errors.500');
+        }
     }
-}
-
 
     /**
-     * Edit User email.
+     * Edit a resident user's email.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function editEmail(Request $request)
     {
@@ -44,58 +50,137 @@ class ResidentAccountController extends Controller
                 'new_email' => 'required|email|unique:users,email',
             ]);
 
-            $User = User::findOrFail($request->user_id);
+            $user = User::findOrFail($request->user_id);
+            $oldEmail = $user->email;
+            $user->update(['email' => $request->new_email]);
 
-            $User->email = $request->new_email;
-            $User->save();
+            // Log admin action
+            AdminAction::create([
+                'admin_id' => auth()->id(),
+                'action' => 'update_email',
+                'description' => 'Updated resident user email',
+                'changes' => json_encode([
+                    'user_id' => $user->id,
+                    'old_email' => $oldEmail,
+                    'new_email' => $request->new_email,
+                ]),
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
 
-            return redirect()->route('admin.account.index')->with('success', trans('messages.email_updated_successfully'));
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            Log::error('User not found for email update: ' . $e->getMessage());
-            return redirect()->back()->with('error', trans('messages.User_not_found'));
+            return response()->json([
+                'success' => true,
+                'message' => trans('messages.email_updated_successfully'),
+                'data' => [
+                    'user_id' => $user->id,
+                    'new_email' => $request->new_email,
+                ],
+            ]);
         } catch (\Exception $e) {
-            Log::error('Error updating email: ' . $e->getMessage());
-            return redirect()->back()->with('error', trans('messages.unable_to_update_email'));
+            Log::error('Failed to update resident email', [
+                'error' => $e->getMessage(),
+                'action' => 'edit_email',
+                'user_id' => $request->user_id,
+                'admin_id' => auth()->id(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => trans('messages.unable_to_update_email'),
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
     /**
-     * Reset User password.
+     * Reset a resident user's password.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function resetPassword(Request $request)
     {
         try {
-           
             $user = User::findOrFail($request->user_id);
+            ResetAccountCredentials::dispatch(collect([$user]));
 
-            // Ensure it's an Eloquent Collection
-            $users = User::where('id', $user->id)->get();
+            // Log admin action
+            AdminAction::create([
+                'admin_id' => auth()->id(),
+                'action' => 'reset_password',
+                'description' => 'Reset resident user password',
+                'changes' => json_encode([
+                    'user_id' => $user->id,
+                ]),
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
 
-            ResetAccountCredentials::dispatch($users);
-
-            return redirect()->route('admin.account.index')->with('success', trans('messages.password_reset_successfully'));
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            Log::error('User not found for password reset: ' . $e->getMessage());
-            return redirect()->back()->with('error', trans('messages.User_not_found'));
+            return response()->json([
+                'success' => true,
+                'message' => trans('messages.password_reset_successfully'),
+                'data' => [
+                    'user_id' => $user->id,
+                ],
+            ]);
         } catch (\Exception $e) {
-            Log::error('Error resetting password: ' . $e->getMessage());
-            return redirect()->back()->with('error', trans('messages.unable_to_reset_password'));
+            Log::error('Failed to reset resident password', [
+                'error' => $e->getMessage(),
+                'action' => 'reset_password',
+                'user_id' => $request->user_id,
+                'admin_id' => auth()->id(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => trans('messages.unable_to_reset_password'),
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 
+    /**
+     * Reset passwords for all resident users.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function resetAllUsersPasswords()
-{
-    try{
-    // Find all resident users
-    $residents = User::role('resident')->get();
+    {
+        try {
+            $residents = User::role('resident')->get();
+            ResetAccountCredentials::dispatch($residents);
 
-    // Use a job to process password resets
-    ResetAccountCredentials::dispatch($residents);
+            // Log admin action
+            AdminAction::create([
+                'admin_id' => auth()->id(),
+                'action' => 'reset_all_users_password',
+                'description' => 'Reset all resident user passwords',
+                'changes' => json_encode([
+                    'total_residents' => $residents->count(),
+                ]),
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
 
-    return redirect()->back()->with('success', __('All resident passwords have been reset.'));
-    } catch (\Exception $e) {
-        Log::error('Error resetting for all users: ' . $e->getMessage());
-        return redirect()->back()->with('error', trans('messages.unable_to_reset_password'));
+            return response()->json([
+                'success' => true,
+                'message' => __('All resident passwords have been reset.'),
+                'data' => [
+                    'total_residents' => $residents->count(),
+                ],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to reset all resident passwords', [
+                'error' => $e->getMessage(),
+                'action' => 'reset_all_users_password',
+                'admin_id' => auth()->id(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => trans('messages.unable_to_reset_password'),
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
-}
 }

@@ -238,6 +238,7 @@
          </div>
          <div class="modal-body">
             <form id="rejectRequestForm">
+               @CSRF
                <input type="hidden" id="rejectRequestId" name="request_id">
                <div class="mb-3">
                   <label for="rejectReason" class="form-label">@lang('Rejection Reason')</label>

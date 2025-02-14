@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Exceptions\BusinessRuleException;
 
 class ReservationRequestService
 {
@@ -38,22 +39,44 @@ class ReservationRequestService
         }
     }
 
-    /**
-     * Validate reservation period based on type (short or long).
-     *
-     * @param int $userId The ID of the user making the request.
-     * @param string $periodType The type of reservation period (short or long).
-     * @param array $data The reservation data.
-     * @return void
-     */
     private function validateReservationPeriod(int $userId, string $periodType, array $data): void
     {
         if ($periodType === 'short') {
-            $this->validateShortTermReservation($userId, $data['start_date'], $data['end_date']);
+            if ($data['short_period_duration'] === 'day') {
+                $this->validateSingleDayReservation($userId, $data['start_date']);
+            } else {
+                $this->validateShortTermReservation($userId, $data['start_date'], $data['end_date']);
+            }
         } else {
             $this->validateLongTermReservation($userId, $data['reservation_academic_term_id']);
         }
     }
+
+    /**
+ * Validate single-day reservations and check for conflicts.
+ *
+ * @param int $userId The ID of the user making the request.
+ * @param string $startDate The start date of the reservation.
+ * @return void
+ * @throws BusinessRuleException If there is a conflict.
+ */
+private function validateSingleDayReservation(int $userId, string $startDate): void
+{
+    $startDate = Carbon::parse($startDate);
+
+    if ($startDate->isPast()) {
+        throw new BusinessRuleException('Start date cannot be in the past.');
+    }
+
+    if ($this->hasConflictingShortTermReservation($userId, $startDate, $startDate)) {
+        throw new BusinessRuleException('You have an overlapping short-term reservation.');
+    }
+
+    if ($this->hasConflictingLongTermReservation($userId, $startDate, $startDate)) {
+        throw new BusinessRuleException('You have an overlapping long-term reservation.');
+    }
+}
+    
 
     /**
      * Validate short-term reservation dates and check for conflicts.
@@ -62,7 +85,7 @@ class ReservationRequestService
      * @param string $startDate The start date of the reservation.
      * @param string $endDate The end date of the reservation.
      * @return void
-     * @throws \Exception If there is a conflict or validation fails.
+     * @throws BusinessRuleException If there is a conflict or validation fails.
      */
     private function validateShortTermReservation(int $userId, string $startDate, string $endDate): void
     {
@@ -72,21 +95,56 @@ class ReservationRequestService
         $this->validateDateRange($startDate, $endDate);
 
         if ($this->hasConflictingShortTermReservation($userId, $startDate, $endDate)) {
-            throw new \Exception('You have an overlapping short-term reservation.');
+            throw new BusinessRuleException('You have an overlapping short-term reservation.');
         }
 
         if ($this->hasConflictingLongTermReservation($userId, $startDate, $endDate)) {
-            throw new \Exception('You have an overlapping long-term reservation.');
+            throw new BusinessRuleException('You have an overlapping long-term reservation.');
+        }
+    }
+
+    /**
+     * Validate date range for short-term reservations.
+     *
+     * @param Carbon $startDate The start date of the reservation.
+     * @param Carbon $endDate The end date of the reservation.
+     * @return void
+     * @throws BusinessRuleException If the date range is invalid.
+     */
+    private function validateDateRange(Carbon $startDate, Carbon $endDate): void
+    {
+        if ($startDate->isAfter($endDate)) {
+            throw new BusinessRuleException('Start date must be before end date.');
+        }
+
+        if ($startDate->isPast()) {
+            throw new BusinessRuleException('Start date cannot be in the past.');
+        }
+    }
+
+    /**
+     * Validate long-term reservation for academic term.
+     *
+     * @param int $userId The ID of the user making the request.
+     * @param int $academicTermId The ID of the academic term.
+     * @return void
+     * @throws BusinessRuleException If the academic term is invalid or a conflict exists.
+     */
+    private function validateLongTermReservation(int $userId, int $academicTermId): void
+    {
+        $academicTerm = AcademicTerm::findOrFail($academicTermId);
+
+        if (Carbon::parse($academicTerm->end_date)->isPast()) {
+            throw new BusinessRuleException('Cannot make reservations for past academic terms.');
+        }
+
+        if ($this->hasExistingTermReservationRequest($userId, $academicTermId)) {
+            throw new BusinessRuleException('You already have request reservation for this academic term.');
         }
     }
 
     /**
      * Check for conflicting short-term reservations.
-     *
-     * @param int $userId The ID of the user making the request.
-     * @param Carbon $startDate The start date of the reservation.
-     * @param Carbon $endDate The end date of the reservation.
-     * @return bool True if a conflict exists, otherwise false.
      */
     private function hasConflictingShortTermReservation(int $userId, Carbon $startDate, Carbon $endDate): bool
     {
@@ -107,11 +165,6 @@ class ReservationRequestService
 
     /**
      * Check for conflicting long-term reservations.
-     *
-     * @param int $userId The ID of the user making the request.
-     * @param Carbon $startDate The start date of the reservation.
-     * @param Carbon $endDate The end date of the reservation.
-     * @return bool True if a conflict exists, otherwise false.
      */
     private function hasConflictingLongTermReservation(int $userId, Carbon $startDate, Carbon $endDate): bool
     {
@@ -133,53 +186,9 @@ class ReservationRequestService
     }
 
     /**
-     * Validate date range for short-term reservations.
-     *
-     * @param Carbon $startDate The start date of the reservation.
-     * @param Carbon $endDate The end date of the reservation.
-     * @return void
-     * @throws \Exception If the date range is invalid.
-     */
-    private function validateDateRange(Carbon $startDate, Carbon $endDate): void
-    {
-        if ($startDate->isAfter($endDate)) {
-            throw new \Exception('Start date must be before end date.');
-        }
-
-        if ($startDate->isPast()) {
-            throw new \Exception('Start date cannot be in the past.');
-        }
-    }
-
-    /**
-     * Validate long-term reservation for academic term.
-     *
-     * @param int $userId The ID of the user making the request.
-     * @param int $academicTermId The ID of the academic term.
-     * @return void
-     * @throws \Exception If the academic term is invalid or a conflict exists.
-     */
-    private function validateLongTermReservation(int $userId, int $academicTermId): void
-    {
-        $academicTerm = AcademicTerm::findOrFail($academicTermId);
-
-        if (Carbon::parse($academicTerm->end_date)->isPast()) {
-            throw new \Exception('Cannot make reservations for past academic terms.');
-        }
-
-        if ($this->hasExistingTermReservation($userId, $academicTermId)) {
-            throw new \Exception('You already have a reservation for this academic term.');
-        }
-    }
-
-    /**
      * Check for existing long-term reservation for the academic term.
-     *
-     * @param int $userId The ID of the user making the request.
-     * @param int $academicTermId The ID of the academic term.
-     * @return bool True if a reservation exists, otherwise false.
      */
-    private function hasExistingTermReservation(int $userId, int $academicTermId): bool
+    private function hasExistingTermReservationRequest(int $userId, int $academicTermId): bool
     {
         return ReservationRequest::where('user_id', $userId)
             ->where('period_type', 'long')
@@ -189,11 +198,7 @@ class ReservationRequestService
     }
 
     /**
-     * Create a new base reservation request.
-     *
-     * @param int $userId The ID of the user making the request.
-     * @param array $data The reservation data.
-     * @return ReservationRequest The created reservation request.
+     * Create a new reservation request.
      */
     public function newReservationRequest(int $userId, array $data): ReservationRequest
     {
@@ -213,10 +218,6 @@ class ReservationRequestService
 
     /**
      * Add period-specific data to the reservation.
-     *
-     * @param ReservationRequest $reservation The reservation to update.
-     * @param array $data The reservation data.
-     * @return void
      */
     private function addPeriodSpecificData(ReservationRequest $reservation, array $data): void
     {

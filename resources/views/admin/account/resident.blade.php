@@ -151,7 +151,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
          </div>
          <div class="modal-body">
-            <form action="{{ route('admin.account.resident.editEmail') }}" method="POST">
+            <form id="reset-email-form" action="{{ route('admin.account.resident.editEmail') }}" method="POST">
                @csrf
                <input type="hidden" id="userIdEmail" name="user_id" />
                <div class="mb-3">
@@ -174,7 +174,7 @@
          </div>
          <div class="modal-body">
             <p>{{ __('Are you sure you want to reset the password? A new password will be generated and sent to the user via email.') }}</p>
-            <form action="{{ route('admin.account.resident.resetPassword') }}" method="POST">
+            <form id="reset-password-form" action="{{ route('admin.account.resident.resetPassword') }}" method="POST">
                @csrf
                <input type="hidden" id="userIdPassword" name="user_id" />
                <div class="text-end">
@@ -220,38 +220,121 @@
 <script src="{{ asset('plugins/datatables/dataTables.responsive.min.js') }}"></script>
 <script src="{{ asset('plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
 <script>
-   
    const isArabic = $('html').attr('dir') === 'rtl';
 
    // Initialize DataTable
    const table = $('#default-datatable').DataTable({
-    "order": [[0, "asc"]],
-    "responsive": true,
-    language: isArabic ? {
-                url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json",
-            } : {},
-});
+      "order": [[0, "asc"]],
+      "responsive": true,
+      language: isArabic ? {
+         url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json",
+      } : {},
+   });
 
-   
-    // Search functionality on keyup event
-    $('#searchBox').on('keyup', function() {
-        table.search(this.value).draw();
-    });
-   
-    // Modal to reset email
-    $('#resetEmailModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-        var userId = button.data('user-id');
-        var modal = $(this);
-        modal.find('#userIdEmail').val(userId);
-    });
-   
-    // Modal to reset password
-    $('#resetPasswordModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-        var userId = button.data('user-id');
-        var modal = $(this);
-        modal.find('#userIdPassword').val(userId);
-    });
+   // Search functionality on keyup event
+   $('#searchBox').on('keyup', function () {
+      table.search(this.value).draw();
+   });
+
+   // Modal to reset email
+   $('#resetEmailModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget);
+      var userId = button.data('user-id');
+      $(this).find('#userIdEmail').val(userId);
+   });
+
+   // Modal to reset password
+   $('#resetPasswordModal').on('show.bs.modal', function (event) {
+      var button = $(event.relatedTarget);
+      var userId = button.data('user-id');
+      $(this).find('#userIdPassword').val(userId);
+   });
+
+   // AJAX for Reset Email
+   $('#reset-email-form').on('submit', function (e) {
+      e.preventDefault();
+      const formData = $(this).serialize();
+      $.ajax({
+         url: "{{ route('admin.account.resident.editEmail') }}",
+         type: "POST",
+         data: formData,
+         success: function (response) {
+            swal({
+                    type: "success",
+                    title:"success",
+                    text: response.message,
+                }).then(() => {
+                    table.ajax.reload();
+                    $('#resetEmailModal').modal('hide');
+
+                });
+         },
+         error: function (xhr) {
+            swal({
+               type: "error",
+               text: xhr.responseText || "An error occurred. Please try again.",
+               title: "error",
+               confirmButtonText: "OK"
+            });
+         }
+      });
+   });
+
+   // AJAX for Reset Password
+   $('#reset-password-form').on('submit', function (e) {
+      e.preventDefault();
+      const formData = $(this).serialize();
+      $.ajax({
+         url: "{{ route('admin.account.resident.resetPassword') }}",
+         type: "POST",
+         data: formData,
+         success: function (response) {
+            swal({
+               type: "success",
+               text: response.message,
+               title: "success",
+               confirmButtonText: "OK"
+            });
+            $('#resetPasswordModal').modal('hide');
+         },
+         error: function (xhr) {
+            swal({
+               type: "error",
+               text: xhr.responseText || "An error occurred. Please try again.",
+               title: "error",
+               confirmButtonText: "OK"
+            });
+         }
+      });
+   });
+
+   // AJAX for Reset All Passwords
+   $('#resetAllPasswordsForm').on('submit', function (e) {
+      e.preventDefault();
+      const formData = $(this).serialize();
+      $.ajax({
+         url: "{{ route('admin.account.resident.resetAllPasswords') }}",
+         type: "POST",
+         data: formData,
+         success: function (response) {
+            swal({
+               type: "success",
+               text: response.message,
+               title: "success",
+               confirmButtonText: "OK"
+            });
+            $('#resetAllPasswordsModal').modal('hide');
+         },
+         error: function (xhr) {
+            swal({
+               type: "error",
+               text: xhr.responseText || "An error occurred. Please try again.",
+               title: "error",
+               confirmButtonText: "OK"
+            });
+         }
+      });
+   });
 </script>
+
 @endsection

@@ -73,37 +73,45 @@ class StudentProfileCompleteController extends Controller
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function store(CompleteProfileRequest $request)
-    {
-        try {
-            // Get validated data
-            $validatedData = $request->validated();
+{
+    try {
+        // Get validated data
+        $validatedData = $request->validated();
 
-            // Get authenticated user
-            $user = auth()->user();
+        // Get authenticated user
+        $user = auth()->user();
 
-            // Store profile data using the service
-            $result = $this->completeProfileService->storeProfileData($user, $validatedData);
+        // Store profile data using the service
+        $result = $this->completeProfileService->storeProfileData($user, $validatedData);
 
-            if (!$result['success']) {
-                return back()
-                    ->withInput()
-                    ->withErrors(['error' => $result['message']]);
-            }
-
-            // Mark profile as completed
-            $user->update(['profile_completed' => true]);
+        if (!$result['success']) {
+            \Log::error('Profile completion failed for user ID ' . $user->id . ': ' . $result['message']);
 
             return response()->json([
-                'success'  => true,
-                'message'  => trans('Your registration has been completed successfully.'),
-                'redirect' => route('student.home'),
-            ]);
-        } catch (\Exception $e) {
-            \Log::error('Profile completion error: ' . $e->getMessage());
-            
-            return back()
-                ->withInput()
-                ->withErrors(['error' => __('An error occurred while completing your profile')]);
+                'success' => false,
+                'message' => __('An error occurred while completing your profile.'),
+                'error'   => $result['message'],
+            ], 400);
         }
+
+        // Mark profile as completed
+        $user->update(['profile_completed' => true]);
+
+        return response()->json([
+            'success'  => true,
+            'message'  => __('Your registration has been completed successfully.'),
+            'redirect' => route('student.home'),
+        ], 200);
+
+    } catch (\Throwable $e) {
+        \Log::error('Profile completion error for user ID ' . ($user->id ?? 'N/A') . ': ' . $e->getMessage());
+
+        return response()->json([
+            'success' => false,
+            'message' => __('An error occurred while completing your profile.'),
+            'error'   => $e->getMessage(),
+        ], 500);
     }
+}
+
 }

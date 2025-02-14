@@ -3,26 +3,25 @@
 namespace App\Http\Controllers\Admin\Invoice;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Insurance;
 use App\Models\InvoiceDetail;
+use App\Models\AdminAction; // Assuming you have a model for admin action logs
 use Yajra\DataTables\DataTables;
 use App\Exports\Invoices\InvoicesExport;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class InvoiceController extends Controller
 {
     /**
      * Display the invoices page.
-     *
-     * This method loads the view for the invoices page in the admin panel.
-     * Logs any exceptions that occur during the process.
      *
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
@@ -31,9 +30,10 @@ class InvoiceController extends Controller
         try {
             return view("admin.invoices.index");
         } catch (\Exception $e) {
-            Log::error("Error displaying Invoice page", [
-                "exception" => $e->getMessage(),
-                "stack_trace" => $e->getTraceAsString(),
+            Log::error('Failed to load invoices page', [
+                'error' => $e->getMessage(),
+                'action' => 'show_invoices_page',
+                'admin_id' => auth()->id(), // Log the admin performing the action
             ]);
             return response()->view("errors.500");
         }
@@ -42,88 +42,91 @@ class InvoiceController extends Controller
     /**
      * Fetch statistical data related to invoices.
      *
-     * This method computes statistics for invoices such as total invoices,
-     * invoices by gender, paid/unpaid invoices, and accepted payments.
-     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function fetchStats()
     {
-        // Total invoices
-        $totalInvoice = Invoice::count();
+        try {
+            // Total invoices
+            $totalInvoice = Invoice::count();
 
-        // Total male and female invoices
-        $totalMaleInvoice = Invoice::whereHas("reservation.user", function ($query) {
-            $query->where("gender", "male");
-        })->count();
-
-        $totalFemaleInvoice = Invoice::whereHas("reservation.user", function ($query) {
-            $query->where("gender", "female");
-        })->count();
-
-        // Paid invoices
-        $totalPaidInvoice = Invoice::where("status", "paid")->count();
-        $totalPaidMaleInvoice = Invoice::where("status", "paid")
-            ->whereHas("reservation.user", function ($query) {
+            // Total male and female invoices
+            $totalMaleInvoice = Invoice::whereHas("reservation.user", function ($query) {
                 $query->where("gender", "male");
-            })
-            ->count();
-        $totalPaidFemaleInvoice = Invoice::where("status", "paid")
-            ->whereHas("reservation.user", function ($query) {
-                $query->where("gender", "female");
-            })
-            ->count();
+            })->count();
 
-        // Unpaid invoices
-        $totalUnpaidInvoice = Invoice::where("status", "unpaid")->count();
-        $totalUnpaidMaleInvoice = Invoice::where("status", "unpaid")
-            ->whereHas("reservation.user", function ($query) {
-                $query->where("gender", "male");
-            })
-            ->count();
-        $totalUnpaidFemaleInvoice = Invoice::where("status", "unpaid")
-            ->whereHas("reservation.user", function ($query) {
+            $totalFemaleInvoice = Invoice::whereHas("reservation.user", function ($query) {
                 $query->where("gender", "female");
-            })
-            ->count();
+            })->count();
 
-        // Accepted payments
-        $totalAcceptedPayments = Invoice::where("admin_approval", "accepted")->count();
-        $totalAcceptedMalePayments = Invoice::where("admin_approval", "accepted")
-            ->whereHas("reservation.user", function ($query) {
-                $query->where("gender", "male");
-            })
-            ->count();
-        $totalAcceptedFemalePayments = Invoice::where("admin_approval", "accepted")
-            ->whereHas("reservation.user", function ($query) {
-                $query->where("gender", "female");
-            })
-            ->count();
+            // Paid invoices
+            $totalPaidInvoice = Invoice::where("status", "paid")->count();
+            $totalPaidMaleInvoice = Invoice::where("status", "paid")
+                ->whereHas("reservation.user", function ($query) {
+                    $query->where("gender", "male");
+                })
+                ->count();
+            $totalPaidFemaleInvoice = Invoice::where("status", "paid")
+                ->whereHas("reservation.user", function ($query) {
+                    $query->where("gender", "female");
+                })
+                ->count();
 
-        // Return the response
-        return response()->json([
-            "totalInvoice" => $totalInvoice,
-            "totalMaleInvoice" => $totalMaleInvoice,
-            "totalFemaleInvoice" => $totalFemaleInvoice,
-            "totalPaidInvoice" => $totalPaidInvoice,
-            "totalPaidMaleInvoice" => $totalPaidMaleInvoice,
-            "totalPaidFemaleInvoice" => $totalPaidFemaleInvoice,
-            "totalUnpaidInvoice" => $totalUnpaidInvoice,
-            "totalUnpaidMaleInvoice" => $totalUnpaidMaleInvoice,
-            "totalUnpaidFemaleInvoice" => $totalUnpaidFemaleInvoice,
-            "totalAcceptedPayments" => $totalAcceptedPayments,
-            "totalAcceptedMalePayments" => $totalAcceptedMalePayments,
-            "totalAcceptedFemalePayments" => $totalAcceptedFemalePayments,
-        ]);
+            // Unpaid invoices
+            $totalUnpaidInvoice = Invoice::where("status", "unpaid")->count();
+            $totalUnpaidMaleInvoice = Invoice::where("status", "unpaid")
+                ->whereHas("reservation.user", function ($query) {
+                    $query->where("gender", "male");
+                })
+                ->count();
+            $totalUnpaidFemaleInvoice = Invoice::where("status", "unpaid")
+                ->whereHas("reservation.user", function ($query) {
+                    $query->where("gender", "female");
+                })
+                ->count();
+
+            // Accepted payments
+            $totalAcceptedPayments = Invoice::where("admin_approval", "accepted")->count();
+            $totalAcceptedMalePayments = Invoice::where("admin_approval", "accepted")
+                ->whereHas("reservation.user", function ($query) {
+                    $query->where("gender", "male");
+                })
+                ->count();
+            $totalAcceptedFemalePayments = Invoice::where("admin_approval", "accepted")
+                ->whereHas("reservation.user", function ($query) {
+                    $query->where("gender", "female");
+                })
+                ->count();
+
+            // Return the response
+            return response()->json([
+                "totalInvoice" => $totalInvoice,
+                "totalMaleInvoice" => $totalMaleInvoice,
+                "totalFemaleInvoice" => $totalFemaleInvoice,
+                "totalPaidInvoice" => $totalPaidInvoice,
+                "totalPaidMaleInvoice" => $totalPaidMaleInvoice,
+                "totalPaidFemaleInvoice" => $totalPaidFemaleInvoice,
+                "totalUnpaidInvoice" => $totalUnpaidInvoice,
+                "totalUnpaidMaleInvoice" => $totalUnpaidMaleInvoice,
+                "totalUnpaidFemaleInvoice" => $totalUnpaidFemaleInvoice,
+                "totalAcceptedPayments" => $totalAcceptedPayments,
+                "totalAcceptedMalePayments" => $totalAcceptedMalePayments,
+                "totalAcceptedFemalePayments" => $totalAcceptedFemalePayments,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch invoice statistics', [
+                'error' => $e->getMessage(),
+                'action' => 'fetch_invoice_stats',
+                'admin_id' => auth()->id(),
+            ]);
+            return response()->json(["error" => "Failed to fetch invoice statistics."], 500);
+        }
     }
 
     /**
      * Fetch and filter a list of invoices with optional criteria.
      *
-     * This method retrieves invoices and applies optional filters for gender and a custom search term.
-     * The results are paginated, and relevant data is returned as a JSON response.
-     *
-     * @param \Illuminate\Http\Request $request The HTTP request containing filter parameters.
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function fetchInvoices(Request $request)
@@ -210,24 +213,24 @@ class InvoiceController extends Controller
                 }),
             ]);
         } catch (\Exception $e) {
-            Log::error("Error fetching invoices data: " . $e->getMessage(), [
-                "exception" => $e,
+            Log::error('Failed to fetch invoices', [
+                'error' => $e->getMessage(),
+                'action' => 'fetch_invoices',
+                'request_data' => $request->all(),
+                'admin_id' => auth()->id(),
             ]);
             return response()->json(["error" => "Failed to fetch invoices data."], 500);
         }
     }
 
     /**
-     * Fetch detailed information about a specific invoice by payment ID.
+     * Fetch detailed information about a specific invoice by invoice ID.
      *
-     * This method retrieves payment details, associated user information, and student location
-     * details, and returns them as a JSON response. If the payment or user is not found,
-     * an appropriate error message is returned.
-     *
-     * @param int $paymentId The ID of the payment to fetch.
+     * @param int $invoiceId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function fetchInvoice($invoiceId){
+    public function fetchInvoice($invoiceId)
+    {
         try {
             // Fetch invoice with all necessary relationships
             $invoice = Invoice::with(["reservation.user.student.faculty", "reservation.room.apartment.building", "reservation.room.apartment", "media", "details"])->findOrFail($invoiceId);
@@ -277,18 +280,16 @@ class InvoiceController extends Controller
             return response()->json([
                 "studentDetails" => $studentDetails,
                 "invoiceDetails" => $invoiceDetails,
-                "media" => $mediaArray, // Now it's an array as expected by frontend
-                "invoice_id" => $invoice->id, // Added for the status buttons
+                "media" => $mediaArray,
+                "invoice_id" => $invoice->id,
                 "status" => $invoice->admin_approval,
             ]);
-        } catch (ModelNotFoundException $e) {
-            Log::error("Invoice not found:", ["invoice_id" => $invoiceId]);
-            return response()->json(["error" => "Invoice not found"], 404);
         } catch (\Exception $e) {
-            Log::error("Error fetching invoice details:", [
-                "invoice_id" => $invoiceId,
-                "error" => $e->getMessage(),
-                "trace" => $e->getTraceAsString(),
+            Log::error('Failed to fetch invoice details', [
+                'error' => $e->getMessage(),
+                'action' => 'fetch_invoice_details',
+                'invoice_id' => $invoiceId,
+                'admin_id' => auth()->id(),
             ]);
             return response()->json(["error" => "Failed to fetch invoice details"], 500);
         }
@@ -298,18 +299,19 @@ class InvoiceController extends Controller
      * Update the status of a payment to either 'accepted' or 'rejected'.
      *
      * @param Request $request
-     * @param int $paymentId
+     * @param int $invoiceId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updatePaymentStatus(Request $request, $invoiceId){
+    public function updatePaymentStatus(Request $request, $invoiceId)
+    {
         try {
             // Validate the request
             $validated = $request->validate([
-                "status" => "required|in:accepted,rejected", // Ensure status is valid
-                "paidDetails" => "required_if:status,accepted|array|min:1", // Ensure paidDetails is provided if status is 'accepted'
-                "paidDetails.*" => "required_if:status,accepted|exists:invoice_details,id", // Ensure each paid detail exists in the database
+                "status" => "required|in:accepted,rejected",
+                "paidDetails" => "required_if:status,accepted|array|min:1",
+                "paidDetails.*" => "required_if:status,accepted|exists:invoice_details,id",
                 "overPaymentAmount" => "nullable",
-                "notes" => "nullable|string|max:500", // Add validation for notes
+                "notes" => "nullable|string|max:500",
             ]);
 
             // Start a database transaction
@@ -326,7 +328,7 @@ class InvoiceController extends Controller
             // Update the invoice status and notes
             $status = $validated["status"];
             $invoice->admin_approval = $status;
-            $invoice->notes = $validated["notes"] ?? null; // Save the notes
+            $invoice->notes = $validated["notes"] ?? null;
             $invoice->save();
 
             // Handle additional logic for 'accepted' status
@@ -337,11 +339,27 @@ class InvoiceController extends Controller
             $overPaymentAmount = $validated["overPaymentAmount"];
             if ($overPaymentAmount != null && $overPaymentAmount > 0) {
                 $invoice->reservation->user->balance += $overPaymentAmount;
-                $invoice->reservation->user->save(); // Also need to save the change
+                $invoice->reservation->user->save();
             }
 
             // Commit the transaction
             DB::commit();
+
+            // Log admin action
+            AdminAction::create([
+                'admin_id' => auth()->id(),
+                'action' => 'update_payment_status',
+                'description' => 'Updated payment status for invoice',
+                'changes' => json_encode([
+                    'invoice_id' => $invoiceId,
+                    'status' => $status,
+                    'paid_details' => $validated["paidDetails"],
+                    'over_payment_amount' => $overPaymentAmount,
+                    'notes' => $validated["notes"] ?? null,
+                ]),
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
 
             // Return success response
             return response()->json([
@@ -353,10 +371,15 @@ class InvoiceController extends Controller
             // Rollback the transaction in case of an error
             DB::rollBack();
 
-            // Log the error and return a failure response
-            Log::error("Error updating payment status: " . $e->getMessage(), [
-                "exception" => $e,
+            // Log the error
+            Log::error('Failed to update payment status', [
+                'error' => $e->getMessage(),
+                'action' => 'update_payment_status',
+                'invoice_id' => $invoiceId,
+                'request_data' => $request->all(),
+                'admin_id' => auth()->id(),
             ]);
+
             return response()->json(["error" => "Failed to update payment status."], 500);
         }
     }
@@ -367,7 +390,8 @@ class InvoiceController extends Controller
      * @param array $paidDetails
      * @param Invoice $invoice
      */
-    private function markInvoiceDetailsAsPaid(array $paidDetails, Invoice $invoice){
+    private function markInvoiceDetailsAsPaid(array $paidDetails, Invoice $invoice)
+    {
         foreach ($paidDetails as $detailId) {
             $invoiceDetail = InvoiceDetail::find($detailId);
             if ($invoiceDetail) {
@@ -398,7 +422,8 @@ class InvoiceController extends Controller
      *
      * @param Invoice $invoice
      */
-    private function updateInvoicePaidStatus(Invoice $invoice){
+    private function updateInvoicePaidStatus(Invoice $invoice)
+    {
         $totalInvoiceDetails = $invoice->details->count();
         $paidInvoiceDetails = $invoice->details->where("status", "paid")->count();
 
@@ -416,7 +441,8 @@ class InvoiceController extends Controller
      *
      * @param Invoice $invoice
      */
-    private function updateReservationStatus(Invoice $invoice){
+    private function updateReservationStatus(Invoice $invoice)
+    {
         if ($invoice->reservation && $invoice->reservation->status == "pending") {
             $invoice->reservation->status = "active";
             $invoice->reservation->save();
