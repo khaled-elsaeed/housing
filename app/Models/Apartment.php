@@ -29,3 +29,4 @@ class Apartment extends Model
         return $this->hasMany(Room::class);
     }
 }
+

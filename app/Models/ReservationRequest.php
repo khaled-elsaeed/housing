@@ -16,6 +16,7 @@ class ReservationRequest extends Model
         return $this->belongsTo(user::class);
     }
 
+
     public function academicTerm()
     {
         return $this->belongsTo(AcademicTerm::class);

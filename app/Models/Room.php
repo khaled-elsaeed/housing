@@ -31,7 +31,6 @@ class Room extends Model
         return $this->belongsTo(Apartment::class);
     }
 
-
     public function reservations()
     {
         return $this->hasMany(Reservation::class);
@@ -39,15 +38,15 @@ class Room extends Model
 
     public function getLocation()
     {
-        $apartment = $this->apartment; // Assuming the Room model has an apartment relationship
-        $building = $apartment ? $apartment->building : null; // Access the building through apartment
-    
+        $apartment = $this->apartment;
+        $building = $apartment ? $apartment->building : null;
+
         return [
-            'building' => $building ? $building->number : 'N/A', // Safely access building number
-            'apartment' => $apartment ? $apartment->number : 'N/A', // Safely access apartment number
-            'room' => $this->number ?? 'N/A', // Room number directly from the current model
+            'building' => optional($building)->number ?? 'N/A',
+            'apartment' => optional($apartment)->number ?? 'N/A',
+            'room' => $this->number ?? 'N/A',
         ];
     }
-    
-
 }
+
+

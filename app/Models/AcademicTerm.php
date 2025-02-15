@@ -11,7 +11,7 @@ class AcademicTerm extends Model
 
     protected $fillable = [
         'name', 
-        'academic_year', 
+        'academic_year',
         'semester',
         'start_date', 
         'end_date', 
@@ -50,5 +50,10 @@ class AcademicTerm extends Model
     public function reservations()
     {
         return $this->hasMany(Reservation::class);
+    }
+
+    public function reservationRequests()
+    {
+        return $this->hasMany(ReservationRequest::class);
     }
 }

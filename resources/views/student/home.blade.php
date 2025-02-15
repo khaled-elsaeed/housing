@@ -85,27 +85,28 @@
             <div class="card-body p-0">
                @if($activities->isNotEmpty())
                <ul class="list-group list-group-flush">
-                  @foreach($activities as $activity)
-                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                     <div class="d-flex align-items-center">
-                        <div class="me-3">
+               @foreach($activities as $activity)
+               <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center">
+                     <div class="me-3">
                            @if($activity->activity_type === 'update_profile')
-                           <i class="fa fa-check-circle text-success"></i>
-                           @if($activity->activity_type === 'update_profile_picture')
-                           <i class="fa fa-check-circle text-success"></i>
-                           @if($activity->activity_type === 'delete_profile_picture')
-                           <i class="fa fa-check-circle text-success"></i>
-                           @if($activity->activity_type === 'Reservation Created')
-                           <i class="fa fa-check-circle text-success"></i>
+                              <i class="fa fa-check-circle text-success"></i>
+                           @elseif($activity->activity_type === 'update_profile_picture')
+                              <i class="fa fa-check-circle text-success"></i>
+                           @elseif($activity->activity_type === 'delete_profile_picture')
+                              <i class="fa fa-check-circle text-success"></i>
+                           @elseif($activity->activity_type === 'Reservation Created')
+                              <i class="fa fa-check-circle text-success"></i>
                            @elseif($activity->activity_type === 'Invoice Upload')
-                           <i class="fa fa-upload text-primary"></i>
+                              <i class="fa fa-upload text-primary"></i>
                            @elseif($activity->activity_type === 'Room Assignment')
-                           <i class="fa fa-building text-info"></i>
+                              <i class="fa fa-building text-info"></i>
                            @elseif($activity->activity_type === 'Term Registration')
-                           <i class="fa fa-calendar text-warning"></i>
+                              <i class="fa fa-calendar text-warning"></i>
                            @else
-                           <i class="fa fa-circle text-secondary"></i>
+                              <i class="fa fa-circle text-secondary"></i>
                            @endif
+
                         </div>
                         <div>
                            <h6 class="mb-1">{{ __($activity->activity_type) }}</h6>
@@ -126,52 +127,89 @@
       </div>
       <!-- Reservation Details and Quick Actions -->
       <div class="col-lg-4 mt-4 mt-md-0">
-         @if($reservation)
-         <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-white border-0 py-3">
-               <h4 class="card-title mb-0"><i class="fa fa-info-circle text-primary me-2"></i>{{ __('Reservation Details') }}</h4>
-            </div>
-            <div class="card-body">
-               <div class="mb-3">
-                  <h6 class="text-muted">{{ __('Status') }}</h6>
-                  <span
-                     class="badge 
-                     {{ $reservation->status === 'pending' ? 'bg-warning' : 
-                     ($reservation->status === 'active' ? 'bg-success' : 'bg-danger') }}"
-                     >
-                  {{ __($reservation->status) }}
-                  </span>
-               </div>
-               <div class="mb-3">
-                  <h6 class="text-muted">{{ __('Term') }}</h6>
-                  <p class="mb-0">{{ __($reservation->academicTerm->semester) }}</p>
+    @if($reservation)
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-0">
+                    <div class="card-header bg-white border-0 py-3">
+                        <h4 class="card-title mb-0 fs-5 fw-semibold">
+                            <i class="fa fa-users text-primary me-2"></i>{{ __('Apartment Roommates') }}
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        @if(isset($roommates) && $roommates->count() > 0)
+                            <div class="row g-3">
+                            @foreach($roommates as $roommate)
+    <div class="col-md-6 mb-4">
+        <div class="card border-0 shadow-sm h-100 hover-scale transition-all">
+            <div class="card-body p-4">
+                <!-- Profile Icon -->
+                <div class="d-flex justify-content-center mb-3">
+                    <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm border" style="width: 40px; height: 40px;">
+                        <i class="fa fa-user text-primary fs-3"></i>
+                    </div>
+                </div>
 
-               </div>
-               <div>
-                  <h6 class="text-muted">{{ __('Academic Year') }}</h6>
-                  @if(app()->getLocale() == 'ar')
-                     <p class="mb-0">{{ __($reservation->academicTerm->name)}}  {{ arabicNumbers($reservation->academicTerm->academic_year) }}</p>
-                  @else
-                  <p class="mb-0">{{  __($reservation->academicTerm->name) }}  {{ $reservation->academicTerm->academic_year }}</p>
-                  @endif
-               </div>
+                <!-- Roommate Info -->
+                <div class="text-center">
+                    <h6 class="mb-2 fw-bold text-dark">
+                        {{ optional($roommate->user)->name ?? __('Unknown') }}
+                    </h6>
+
+                    <!-- Room Number -->
+                    <p class="text-muted mb-2 small">
+                        <i class="fa fa-bed me-1"></i> {{ __('Room') }} {{ optional($roommate->room)->number ?? 'N/A' }}
+                    </p>
+
+                    <!-- Phone Number -->
+                    <p class="text-muted mb-2 small">
+                        <i class="fa fa-phone me-1"></i> {{ __('Phone') }} {{ optional($roommate->user->student)->phone ?? 'N/A' }}
+                    </p>
+
+                    <!-- faculty (Optional) -->
+                    <p class="text-muted mb-0 small">
+    <i class="fa fa-university me-1"></i> 
+    {{ optional($roommate->user->student->faculty)->name ?? 'N/A' }}
+</p>
+
+                </div>
+            </div>            
+        </div>
+    </div>
+@endforeach
+                            </div>
+                        @else
+                            <div class="text-center text-muted py-3">
+                                <i class="fa fa-info-circle mb-2 d-block fs-4"></i>
+                                {{ __('No roommates found in your apartment.') }}
+                            </div>
+                        @endif
+                    </div>
+                </div>
             </div>
-         </div>
-         @endif
-         <!-- Quick Actions -->
-         <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white border-0 py-3">
-               <h4 class="card-title mb-0"><i class="fa fa-bolt text-primary me-2"></i>{{ __('Quick Actions') }}</h4>
+        </div>
+    @endif
+
+    <!-- Quick Actions -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-0 py-3">
+            <h4 class="card-title mb-0"><i class="fa fa-bolt text-primary me-2"></i>{{ __('Quick Actions') }}</h4>
+        </div>
+        <div class="card-body">
+            <div class="d-grid gap-3">
+                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addReservationModal">
+                    <i class="fa fa-plus-circle me-2"></i>{{ __('New Reservation') }}
+                </button>
+                <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#guideModal">
+                    <i class="fa fa-file-text-o me-2"></i>{{ __('View Guide') }}
+                </button>
+                <button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#helpSupportModal">
+                    <i class="fa fa-support me-2"></i>{{ __('Help & Support') }}
+                </button>
             </div>
-            <div class="card-body">
-               <div class="d-grid gap-3">
-                  <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addReservationModal"><i class="fa fa-plus-circle me-2"></i>{{ __('New Reservation') }}</button>
-                  <button class="btn btn-outline-secondary"data-bs-toggle="modal" data-bs-target="#guideModal"><i class="fa fa-file-text-o me-2"></i>{{ __('View Guide') }}</button>
-                  <button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#helpSupportModal"><i class="fa fa-support me-2"></i>{{ __('Help & Support') }}</button>
-               </div>
-            </div>
-         </div>
-      </div>
+        </div>
+    </div>
+</div>
    </div>
 </div>
 <!-- Add Reservation Modal -->

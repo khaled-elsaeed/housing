@@ -164,14 +164,7 @@ class ReservationRequestsController extends Controller
                 ], Response::HTTP_BAD_REQUEST);
             }
 
-            // Create reservation using the reservation service
-            $reservation = $this->reservationService->createReservation(
-                reservationRequester: $reservationRequest->user,
-                selectedRoom: $room,
-                reservationPeriodType: $reservationRequest->period_type,
-                academicTermId: $reservationRequest->academic_term_id,
-                status: "pending"
-            );
+            $reservation = $this->reservationService->newReservation($reservationRequest,$room);
 
             if (!$reservation) {
                 DB::rollBack();

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Services\ReservationRequestService;
 use App\Models\{ReservationRequest, User};
 use Illuminate\Support\Facades\Log;
+use App\Events\ReservationRequested;
 use App\Exceptions\BusinessRuleException;
 use App\Http\Requests\ReservationRequest as ReservationRequestValidation; // Import the custom Request
 
@@ -44,8 +45,8 @@ class StudentReservationRequestController extends Controller
                 : null;
 
             // Create reservation request
-            $this->reservationRequestService->createReservationRequest($student, $validatedData);
-
+            $reservationRequest = $this->reservationRequestService->createReservationRequest($student, $validatedData);
+            event(new ReservationRequested($reservationRequest));
             // Log successful reservation request
             Log::info('Reservation request submitted successfully', [
                 'user_id' => $student->id,

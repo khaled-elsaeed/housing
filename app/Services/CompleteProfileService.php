@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Exception;
+use App\Exceptions\BusinessRuleException;
+
 use Carbon\Carbon;
 
 class CompleteProfileService
@@ -24,10 +26,9 @@ class CompleteProfileService
      */
     public function getUserProfileData($user): array
     {
-        try {          
-            
+        try {
             if (!$user) {
-                throw new Exception('User not authenticated');
+                throw new Exception("User not authenticated");
             }
 
             // Check if user has 0 profile
@@ -39,16 +40,11 @@ class CompleteProfileService
             if (!$user->profile_completed) {
                 return $this->getIncompleteProfileData($user->id);
             }
-            
-
-
-            return [];
         } catch (Exception $e) {
-            Log::error('Error getting profile data', [
-                'error' => $e->getMessage(),
-                'user_id' => Auth::id(),
-                'action' => 'get_user_profile_data',
-
+            Log::error("Failed to get user profile data", [
+                "error" => $e->getMessage(),
+                "action" => "get_user_profile_data",
+                "user_id" => Auth::id(),
             ]);
             throw $e;
         }
@@ -65,15 +61,19 @@ class CompleteProfileService
     {
         try {
             return [
-                'personalInformation' => $this->getPersonalInformation($userId),
-                'contactInformation' => $this->getContactInformation($userId),
-                'academicInformation' => $this->getAcademicInformation($userId),
-                'parentInformation' => $this->getParentInformation($userId),
-                'siblingInformation' => $this->getSiblingInformation($userId),
-                'emergencyContact' => $this->getEmergencyContact($userId)
+                "personalInformation" => $this->getPersonalInformation($userId),
+                "contactInformation" => $this->getContactInformation($userId),
+                "academicInformation" => $this->getAcademicInformation($userId),
+                "parentInformation" => $this->getParentInformation($userId),
+                "siblingInformation" => $this->getSiblingInformation($userId),
+                "emergencyContact" => $this->getEmergencyContact($userId),
             ];
         } catch (Exception $e) {
-            $this->logError('getIncompleteProfileData', $e, ['user_id' => $userId]);
+            Log::error("Failed to get incomplete profile data", [
+                "error" => $e->getMessage(),
+                "action" => "get_incomplete_profile_data",
+                "user_id" => $userId,
+            ]);
             throw $e;
         }
     }
@@ -86,31 +86,27 @@ class CompleteProfileService
      * @throws Exception
      */
     private function getNoProfileData($user): array
-{
-    try {
-        
+    {
+        try {
+            $archiveData = $user->UniversityArchive;
 
-        $archiveData = $user->UniversityArchive;
+            if (!$archiveData) {
+                Log::warning("User has no archive data", [
+                    "user_id" => $user->id,
+                ]);
+                return $this->getEmptyProfileData();
+            }
 
-
-        if (!$archiveData) {
-            \Log::warning('User has no archive data', ['user_id' => $user->id]);
-            return $this->getEmptyProfileData();
+            return $this->formatArchiveData($archiveData);
+        } catch (Exception $e) {
+            Log::error("Failed to get no profile data", [
+                "error" => $e->getMessage(),
+                "action" => "get_no_profile_data",
+                "user_id" => $user->id ?? "Guest",
+            ]);
+            throw $e;
         }
-
-        return $this->formatArchiveData($archiveData);
-    } catch (\Exception $e) {
-        \Log::error('Error in getNoProfileData', [
-            'message'  => $e->getMessage(),
-            'user_id'  => $user->id ?? 'Guest',
-            'email'    => $user->email ?? 'No Email',
-            'name'     => $user->name ?? 'No Name',
-            'trace'    => $e->getTraceAsString(),
-        ]);
-        throw $e;
     }
-}
-
 
     /**
      * Get empty profile data structure
@@ -120,29 +116,29 @@ class CompleteProfileService
     private function getEmptyProfileData(): array
     {
         return [
-            'personalInformation' => [
-                'nameEn' => null,
-                'nameAr' => null,
-                'nationalId' => null,
-                'birthDate' => null,
-                'gender' => null,
+            "personalInformation" => [
+                "nameEn" => null,
+                "nameAr" => null,
+                "nationalId" => null,
+                "birthDate" => null,
+                "gender" => null,
             ],
-            'contactDetails' => [
-                'governorate' => null,
-                'city' => null,
-                'street' => null,
-                'phone' => null,
+            "contactDetails" => [
+                "governorate" => null,
+                "city" => null,
+                "street" => null,
+                "phone" => null,
             ],
-            'academicInformation' => [
-                'faculty' => null,
-                'program' => null,
-                'academicId' => null,
-                'academicEmail' => null,
-                'score' => null,
+            "academicInformation" => [
+                "faculty" => null,
+                "program" => null,
+                "academicId" => null,
+                "academicEmail" => null,
+                "score" => null,
             ],
-            'parentInformation' => $this->getEmptyParentData(),
-            'siblingInformation' => $this->getEmptySiblingData(),
-            'emergencyContact' => $this->getEmptyEmergencyContactData(),
+            "parentInformation" => $this->getEmptyParentData(),
+            "siblingInformation" => $this->getEmptySiblingData(),
+            "emergencyContact" => $this->getEmptyEmergencyContactData(),
         ];
     }
 
@@ -154,15 +150,15 @@ class CompleteProfileService
     private function getEmptyParentData(): array
     {
         return [
-            'parentRelationship' => null,
-            'parentName' => null,
-            'parentPhone' => null,
-            'parentEmail' => null,
-            'isParentAbroad' => null,
-            'abroadCountry' => null,
-            'livingWithParent' => null,
-            'parentGovernorate' => null,
-            'parentCity' => null,
+            "parentRelationship" => null,
+            "parentName" => null,
+            "parentPhone" => null,
+            "parentEmail" => null,
+            "isParentAbroad" => null,
+            "abroadCountry" => null,
+            "livingWithParent" => null,
+            "parentGovernorate" => null,
+            "parentCity" => null,
         ];
     }
 
@@ -174,11 +170,11 @@ class CompleteProfileService
     private function getEmptySiblingData(): array
     {
         return [
-            'siblingGender' => null,
-            'siblingName' => null,
-            'siblingFaculty' => null,
-            'siblingNationalId' => null,
-            'siblingGender' => null,
+            "siblingGender" => null,
+            "siblingName" => null,
+            "siblingFaculty" => null,
+            "siblingNationalId" => null,
+            "siblingGender" => null,
         ];
     }
 
@@ -190,9 +186,9 @@ class CompleteProfileService
     private function getEmptyEmergencyContactData(): array
     {
         return [
-            'emergencyContactRelationship' => null,
-            'emergencyContactName' => null,
-            'emergencyContactPhone' => null,
+            "emergencyContactRelationship" => null,
+            "emergencyContactName" => null,
+            "emergencyContactPhone" => null,
         ];
     }
 
@@ -204,46 +200,49 @@ class CompleteProfileService
      */
     private function formatArchiveData(UniversityArchive $archiveData): array
     {
-        $city = City::where('name_ar', $archiveData->city)->first();
-        $governorate = Governorate::where('name_ar', $archiveData->governorate)->first();
-        $faculty = Faculty::where('name_ar', $archiveData->faculty)->first();
-        $program = Program::where('name_ar', $archiveData->program)->first();
+        $city = City::where("name_ar", $archiveData->city)->first();
+        $governorate = Governorate::where(
+            "name_ar",
+            $archiveData->governorate
+        )->first();
+        $faculty = Faculty::where("name_ar", $archiveData->faculty)->first();
+        $program = Program::where("name_ar", $archiveData->program)->first();
 
         return [
-            'personalInformation' => [
-                'nameEn' => $archiveData->name_en,
-                'nameAr' => $archiveData->name_ar,
-                'nationalId' => $archiveData->national_id,
-                'birthDate' => $archiveData->birthDate,
-                'gender' => $archiveData->gender,
+            "personalInformation" => [
+                "nameEn" => $archiveData->name_en,
+                "nameAr" => $archiveData->name_ar,
+                "nationalId" => $archiveData->national_id,
+                "birthDate" => $archiveData->birthDate,
+                "gender" => $archiveData->gender,
             ],
-            'contactInformation' => [
-                'governorate' => $governorate,
-                'city' => $city,
-                'street' => $archiveData->street,
-                'phone' => $archiveData->phone,
+            "contactInformation" => [
+                "governorate" => $governorate,
+                "city" => $city,
+                "street" => $archiveData->street,
+                "phone" => $archiveData->phone,
             ],
-            'academicInformation' => [
-                'faculty' => $faculty,
-                'program' => $program,
-                'academicId' => $archiveData->academic_id,
-                'academicEmail' => $archiveData->academic_email,
-                'score' => $archiveData->score,
+            "academicInformation" => [
+                "faculty" => $faculty,
+                "program" => $program,
+                "academicId" => $archiveData->academic_id,
+                "academicEmail" => $archiveData->academic_email,
+                "score" => $archiveData->score,
             ],
-            'parentInformation' => [
-                'parentRelationship' => $archiveData->parentRelationship,
-                'parentName' => $archiveData->parent_name,
-                'parentPhone' => $archiveData->parent_phone,
-                'parentEmail' => $archiveData->parent_email,
-                'isParentAbroad' => $archiveData->parent_is_abroad,
-                'abroadCountry' => $archiveData->parent_abroad_country,
+            "parentInformation" => [
+                "parentRelationship" => $archiveData->parentRelationship,
+                "parentName" => $archiveData->parent_name,
+                "parentPhone" => $archiveData->parent_phone,
+                "parentEmail" => $archiveData->parent_email,
+                "isParentAbroad" => $archiveData->parent_is_abroad,
+                "abroadCountry" => $archiveData->parent_abroad_country,
             ],
-            'siblingInformation' => [
-                'hasSibling' => $archiveData->has_sibling,
-                'siblingName' => $archiveData->sibling_name,
-                'siblingFaculty' => $archiveData->sibling_faculty,
+            "siblingInformation" => [
+                "hasSibling" => $archiveData->has_sibling,
+                "siblingName" => $archiveData->sibling_name,
+                "siblingFaculty" => $archiveData->sibling_faculty,
             ],
-            'emergencyContact' => $this->getEmptyEmergencyContactData(),
+            "emergencyContact" => $this->getEmptyEmergencyContactData(),
         ];
     }
 
@@ -259,13 +258,18 @@ class CompleteProfileService
         try {
             $user = User::findOrFail($userId);
             return [
-                'nameEn' => $user->student->name_en,
-                'nameAr' => $user->student->name_ar,
-                'nationalId' => $user->student->national_id,
-                'birthDate' => $user->student->birth_date,
-                'gender' => $user->student->gender,
+                "nameEn" => $user->student->name_en,
+                "nameAr" => $user->student->name_ar,
+                "nationalId" => $user->student->national_id,
+                "birthDate" => $user->student->birth_date,
+                "gender" => $user->student->gender,
             ];
         } catch (Exception $e) {
+            Log::error("Failed to get personal information", [
+                "error" => $e->getMessage(),
+                "action" => "get_personal_information",
+                "user_id" => $userId,
+            ]);
             throw $e;
         }
     }
@@ -284,19 +288,18 @@ class CompleteProfileService
             $student = $user->student;
 
             return [
-                'governorate' => $student?->governorate->id,
-                'city' => $student?->city->id,
-                'street' => $student?->street,
-                'phone' => $student?->phone,
+                "governorate" => $student?->governorate->id,
+                "city" => $student?->city->id,
+                "street" => $student?->street,
+                "phone" => $student?->phone,
             ];
         } catch (Exception $e) {
-            Log::error('Error getting profile data', [
-                'error' => $e->getMessage(),
-                'user_id' => Auth::id(),
-                'action' => 'get_user_profile_data',
-
+            Log::error("Failed to get contact information", [
+                "error" => $e->getMessage(),
+                "action" => "get_contact_information",
+                "user_id" => $userId,
             ]);
-                        throw $e;
+            throw $e;
         }
     }
 
@@ -314,15 +317,19 @@ class CompleteProfileService
             $student = $user->student;
 
             return [
-                'faculty' => $student?->faculty->id,
-                'program' => $student?->program->id,
-                'level' => $student?->level,
-                'academicId' => $student?->academic_id,
-                'academicEmail' => $user->universityArchive?->academic_email,
-                'score' => $user->universityArchive?->score,
+                "faculty" => $student?->faculty->id,
+                "program" => $student?->program->id,
+                "level" => $student?->level,
+                "academicId" => $student?->academic_id,
+                "academicEmail" => $user->universityArchive?->academic_email,
+                "score" => $user->universityArchive?->score,
             ];
         } catch (Exception $e) {
-            $this->logError('getAcademicInformation', $e, ['user_id' => $userId]);
+            Log::error("Failed to get academic information", [
+                "error" => $e->getMessage(),
+                "action" => "get_academic_information",
+                "user_id" => $userId,
+            ]);
             throw $e;
         }
     }
@@ -345,18 +352,22 @@ class CompleteProfileService
             }
 
             return [
-                'parentRelationship' => $parent->relation,
-                'parentName' => $parent->name,
-                'parentPhone' => $parent->phone,
-                'parentEmail' => $parent->email,
-                'isParentAbroad' => $parent->living_abroad,
-                'abroadCountry' => $parent->abroad_country_id,
-                'livingWithParent' => $parent->living_with,
-                'parentGovernorate' => $parent->governorate,
-                'parentCity' => $parent->city,
+                "parentRelationship" => $parent->relation,
+                "parentName" => $parent->name,
+                "parentPhone" => $parent->phone,
+                "parentEmail" => $parent->email,
+                "isParentAbroad" => $parent->living_abroad,
+                "abroadCountry" => $parent->abroad_country_id,
+                "livingWithParent" => $parent->living_with,
+                "parentGovernorate" => $parent->governorate,
+                "parentCity" => $parent->city,
             ];
         } catch (Exception $e) {
-            $this->logError('getParentInformation', $e, ['user_id' => $userId]);
+            Log::error("Failed to get parent information", [
+                "error" => $e->getMessage(),
+                "action" => "get_parent_information",
+                "user_id" => $userId,
+            ]);
             throw $e;
         }
     }
@@ -369,31 +380,34 @@ class CompleteProfileService
      * @throws Exception
      */
     private function getSiblingInformation(int $userId): array
-{
-    try {
-        $user = User::findOrFail($userId);
-        $sibling = $user->sibling;
+    {
+        try {
+            $user = User::findOrFail($userId);
+            $sibling = $user->sibling;
 
-        // Check if sibling exists and return sibling data or empty data
-        if (!$sibling) {
-            return array_merge($this->getEmptySiblingData(), ['hasSiblingInDorm' => false]);
+            // Check if sibling exists and return sibling data or empty data
+            if (!$sibling) {
+                return array_merge($this->getEmptySiblingData(), [
+                    "hasSiblingInDorm" => false,
+                ]);
+            }
+
+            return [
+                "hasSiblingInDorm" => true,
+                "siblingGender" => $sibling->gender,
+                "siblingFaculty" => $sibling->faculty_id,
+                "siblingName" => $sibling->name,
+                "siblingNationalId" => $sibling->national_id,
+            ];
+        } catch (Exception $e) {
+            Log::error("Failed to get sibling information", [
+                "error" => $e->getMessage(),
+                "action" => "get_sibling_information",
+                "user_id" => $userId,
+            ]);
+            throw $e;
         }
-
-        return [
-            'hasSiblingInDorm' => true, 
-            'siblingGender' => $sibling->gender,
-            'siblingFaculty' => $sibling->faculty_id,
-            'siblingName' => $sibling->name,
-            'siblingNationalId' => $sibling->national_id,
-            'siblingGender' => $sibling->gender,
-        ];
-        
-    } catch (Exception $e) {
-        $this->logError('getSiblingInformation', $e, ['user_id' => $userId]);
-        throw $e;
     }
-}
-
 
     /**
      * Get emergency contact information
@@ -413,140 +427,134 @@ class CompleteProfileService
             }
 
             return [
-                'emergencyContactRelationship' => $emergency->relation,
-                'emergencyContactName' => $emergency->name,
-                'emergencyContactPhone' => $emergency->phone,
+                "emergencyContactRelationship" => $emergency->relation,
+                "emergencyContactName" => $emergency->name,
+                "emergencyContactPhone" => $emergency->phone,
             ];
         } catch (Exception $e) {
-            $this->logError('getEmergencyContact', $e, ['user_id' => $userId]);
+            Log::error("Failed to get emergency contact information", [
+                "error" => $e->getMessage(),
+                "action" => "get_emergency_contact",
+                "user_id" => $userId,
+            ]);
             throw $e;
         }
     }
 
-
-
-    /**
-     * Log error with consistent format
-     *
-     * @param string $method
-     * @param \Exception $exception
-     * @param array $context
-     * @return void
-     */
-    private function logError(string $method, \Exception $exception, array $context = []): void
+    public function storeProfileData(User $user, array $data)
     {
-        Log::error(sprintf(
-            'Error in %s::%s - %s',
-            self::class,
-            $method,
-            $exception->getMessage()
-        ), array_merge($context, [
-            'trace' => $exception->getTraceAsString(),
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine()
-        ]));
-    }
+        try {
+            DB::beginTransaction();
 
+            $existingStudent = $user->student()->first();
 
-public function storeProfileData(User $user, array $data)
-{
-    try {
-        DB::beginTransaction();
-
-        $existingStudent = $user->student()->first();
-
-        $studentData = [
-            'name_en'               => $data['nameEn'] ?? null,
-            'name_ar'               => $data['nameAr'] ?? null,
-            'national_id'           => $data['nationalId'] ?? null,
-            'academic_id'           => $data['academicId'] ?? null,
-            'phone'                => $data['phone'] ?? null,
-            'birth_date'             => $data['birthDate'] ?? null,
-            'gender'                => $data['gender'] ?? null,
-            'governorate_id'        => $data['governorate'] ?? null,
-            'city_id'               => $data['city'] ?? null,
-            'street'                => $data['street'] ?? null,
-            'faculty_id'            => $data['faculty'] ?? null,
-            'program_id'            => $data['program'] ?? null,
-            'university_archive_id' => $user->universityArchive->id,
-        ];
-
-        if (!$existingStudent) {
-            $studentData['application_status'] = 'pending';
-        }
-
-        // Update or create student record
-        $user->student()->updateOrCreate(
-            ['user_id' => $user->id],
-            $studentData
-        );
-
-        // Store parent information
-        $parentData = [
-            'relation'          => $data['parentRelationship'] ?? null,
-            'name'              => $data['parentName'] ?? null,
-            'phone'            => $data['parentPhone'] ?? null,
-            'email'             => $data['parentEmail'] ?? null,
-            'living_abroad'         => $data['isParentAbroad'] === '1',
-            'abroad_country_id' => $data['isParentAbroad'] === '1' ? ($data['abroadCountry'] ?? null) : null,
-            'living_with'        => $data['isParentAbroad'] === '0' ? ($data['livingWithParent'] ?? null) : null,
-            'governorate_id'    => $data['isParentAbroad'] === '0' ? ($data['parentGovernorate'] ?? null) : null,
-            'city_id'           => $data['isParentAbroad'] === '0' ? ($data['parentCity'] ?? null) : null,
-        ];
-
-        $livesWithValue = $data['isParentAbroad'] === '0' ? ($data['livingWithParent'] ?? null) : null;
-
-        // Log the value
-        $user->parent()->updateOrCreate(['user_id' => $user->id], $parentData);
-
-        // Store emergency contact information if parent is abroad
-        if ($data['isParentAbroad'] === '1') {
-            $emergencyContactData = [
-                'relation' => $data['emergencyContactRelationship'] ?? null,
-                'name'     => $data['emergencyContactName'] ?? null,
-                'phone'    => $data['emergencyContactPhone'] ?? null,
+            $studentData = [
+                "name_en" => $data["nameEn"] ?? null,
+                "name_ar" => $data["nameAr"] ?? null,
+                "national_id" => $data["nationalId"] ?? null,
+                "academic_id" => $data["academicId"] ?? null,
+                "phone" => $data["phone"] ?? null,
+                "birth_date" => $data["birthDate"] ?? null,
+                "gender" => $data["gender"] ?? null,
+                "governorate_id" => $data["governorate"] ?? null,
+                "city_id" => $data["city"] ?? null,
+                "street" => $data["street"] ?? null,
+                "faculty_id" => $data["faculty"] ?? null,
+                "program_id" => $data["program"] ?? null,
+                "university_archive_id" => $user->universityArchive->id,
             ];
-            $user->emergencyContact()->updateOrCreate(['user_id' => $user->id], $emergencyContactData);
-        }
 
-        // Store sibling information if applicable
-        if (!empty($data['hasSiblingInDorm']) && $data['hasSiblingInDorm'] === '1') {
-            $siblingData = [
-                'gender' => $data['siblingGender'] ?? null,
-                'name'         => $data['siblingName'] ?? null,
-                'national_id'  => $data['siblingNationalId'] ?? null,
-                'faculty_id'   => $data['siblingFaculty'] ?? null,
+            if (!$existingStudent) {
+                $studentData["application_status"] = "pending";
+            }
+
+            // Update or create student record
+            $user
+                ->student()
+                ->updateOrCreate(["user_id" => $user->id], $studentData);
+
+            // Store parent information
+            $parentData = [
+                "relation" => $data["parentRelationship"] ?? null,
+                "name" => $data["parentName"] ?? null,
+                "phone" => $data["parentPhone"] ?? null,
+                "email" => $data["parentEmail"] ?? null,
+                "living_abroad" => $data["isParentAbroad"] === "1",
+                "abroad_country_id" =>
+                    $data["isParentAbroad"] === "1"
+                        ? $data["abroadCountry"] ?? null
+                        : null,
+                "living_with" =>
+                    $data["isParentAbroad"] === "0"
+                        ? $data["livingWithParent"] ?? null
+                        : null,
+                "governorate_id" =>
+                    $data["isParentAbroad"] === "0"
+                        ? $data["parentGovernorate"] ?? null
+                        : null,
+                "city_id" =>
+                    $data["isParentAbroad"] === "0"
+                        ? $data["parentCity"] ?? null
+                        : null,
             ];
-            $user->sibling()->updateOrCreate(['user_id' => $user->id], $siblingData);
+
+            $user
+                ->parent()
+                ->updateOrCreate(["user_id" => $user->id], $parentData);
+
+            // Store emergency contact information if parent is abroad
+            if ($data["isParentAbroad"] === "1") {
+                $emergencyContactData = [
+                    "relation" => $data["emergencyContactRelationship"] ?? null,
+                    "name" => $data["emergencyContactName"] ?? null,
+                    "phone" => $data["emergencyContactPhone"] ?? null,
+                ];
+                $user
+                    ->emergencyContact()
+                    ->updateOrCreate(
+                        ["user_id" => $user->id],
+                        $emergencyContactData
+                    );
+            }
+
+            // Store sibling information if applicable
+            if (
+                !empty($data["hasSiblingInDorm"]) &&
+                $data["hasSiblingInDorm"] === "1"
+            ) {
+                $siblingData = [
+                    "gender" => $data["siblingGender"] ?? null,
+                    "name" => $data["siblingName"] ?? null,
+                    "national_id" => $data["siblingNationalId"] ?? null,
+                    "faculty_id" => $data["siblingFaculty"] ?? null,
+                ];
+                $user
+                    ->sibling()
+                    ->updateOrCreate(["user_id" => $user->id], $siblingData);
+            }
+
+            // Mark profile as completed
+            $user->update([
+                "profile_completed" => true,
+                "profile_completed_at" => Carbon::now(),
+            ]);
+
+            DB::commit();
+
+            return ["success" => true];
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error("Failed to store profile data", [
+                "error" => $e->getMessage(),
+                "action" => "store_profile_data",
+                "user_id" => $user->id,
+            ]);
+            return [
+                "success" => false,
+                "message" => __(
+                    "Failed to store profile data. Please try again or contact support."
+                ),
+            ];
         }
-
-        // Mark profile as completed
-        $user->update([
-            'profile_completed'    => true,
-            'profile_completed_at' => Carbon::now(),
-        ]);
-
-        DB::commit();
-
-
-        return ['success' => true];
-    } catch (\Exception $e) {
-        DB::rollBack();
-        
-        // Log the error with additional context
-        Log::error('Error in storeProfileData', [
-            'method'  => 'storeProfileData',
-            'user_id' => $user->id,
-            'data'    => $data,
-            'error'   => $e->getMessage(),
-            'trace'   => $e->getTraceAsString(),
-        ]);
-
-        return [
-            'success' => false,
-            'message' => __('Failed to store profile data. Please try again or contact support.')
-        ];
     }
-}
-
 }

@@ -33,7 +33,7 @@ class ReservationRequestService
             Log::error('Error creating reservation request', [
                 'user_id' => $user->id,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'action' => "create-reservation-request",
             ]);
             throw $e;
         }
@@ -213,6 +213,7 @@ private function validateSingleDayReservation(int $userId, string $startDate): v
         ]);
 
         $this->addPeriodSpecificData($reservation, $data);
+        
         return $reservation;
     }
 

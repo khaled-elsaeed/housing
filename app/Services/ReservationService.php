@@ -116,7 +116,10 @@ class ReservationService
                 ]);
             });
         } catch (Exception $e) {
-            Log::error('Error processing reservation requests: ' . $e->getMessage());
+            Log::error('Error processing reservation requests', [
+                'error' => $e->getMessage(),
+                'action' => 'automate-reservation-process',
+            ]);
             throw $e;
         }
     }
@@ -193,7 +196,6 @@ class ReservationService
             'regular' => $this->processRegularReservations(collect($reservationRequests['regular']), $availableRooms),
         ];
 
-        Log::info("Processed gender requests: $gender", $results);
     }
 
     /**
@@ -243,6 +245,11 @@ class ReservationService
                     'room_id' => $oldRoom->id,
                 ];
             } catch (Exception $e) {
+                Log::error('Error processing old room reservation', [
+                    'reservation_request_id' => $request->id,
+                    'error' => $e->getMessage(),
+                    'action' => 'process-old-room-reservations',
+                ]);
                 $results['failed'][] = [
                     'request_id' => $request->id,
                     'reason' => $e->getMessage(),
@@ -307,6 +314,11 @@ class ReservationService
                     'room_id' => $room->id,
                 ];
             } catch (Exception $e) {
+                Log::error('Error processing sibling reservation', [
+                    'reservation_request_id' => $request->id,
+                    'error' => $e->getMessage(),
+                    'action' => 'process-sibling-reservations',
+                ]);
                 $results['failed'][] = [
                     'request_id' => $request->id,
                     'reason' => $e->getMessage(),
@@ -349,6 +361,11 @@ class ReservationService
                     'room_id' => $room->id,
                 ];
             } catch (Exception $e) {
+                Log::error('Error processing regular reservation', [
+                    'reservation_request_id' => $request->id,
+                    'error' => $e->getMessage(),
+                    'action' => 'process-regular-reservations',
+                ]);
                 $results['failed'][] = [
                     'request_id' => $request->id,
                     'reason' => $e->getMessage(),
@@ -448,11 +465,12 @@ class ReservationService
                 $this->addShortTermInvoiceDetails($invoice, $reservation);
             }
         } catch (\Exception $e) {
-            Log::error('Failed to create invoice', [
-                'reservation_id' => $reservation->id ?? null,
-                'error_message' => $e->getMessage(),
+            Log::error('Error creating invoice for reservation', [
+                'reservation_id' => $reservation->id,
+                'error' => $e->getMessage(),
+                'action' => 'create-invoice',
             ]);
-            throw new \Exception('Failed to create invoice: ' . $e->getMessage());
+            throw $e;
         }
     }
 
@@ -486,12 +504,13 @@ class ReservationService
                 ]);
             }
         } catch (\Exception $e) {
-            Log::error('Failed to add long-term invoice details', [
+
+            Log::error('Error to add long-term invoice details', [
                 'invoice_id' => $invoice->id ?? null,
-                'room_type' => $roomType,
-                'error_message' => $e->getMessage(),
+                'error' => $e->getMessage(),
+                'action' => 'add-long-invoice-details',
             ]);
-            throw new \Exception('Failed to add long-term invoice details: ' . $e->getMessage());
+            throw $e;
         }
     }
 
@@ -516,9 +535,10 @@ class ReservationService
         } catch (\Exception $e) {
             Log::error('Failed to add short-term invoice details', [
                 'invoice_id' => $invoice->id ?? null,
-                'error_message' => $e->getMessage(),
+                'error' => $e->getMessage(),
+                'action' => 'add-short-invoice-details',
             ]);
-            throw new \Exception('Failed to add short-term invoice details: ' . $e->getMessage());
+            throw $e;
         }
     }
 
@@ -547,9 +567,10 @@ class ReservationService
             Log::error('Failed to calculate fee price', [
                 'start_date' => $startDate,
                 'end_date' => $endDate,
-                'error_message' => $e->getMessage(),
+                'error' => $e->getMessage(),
+                'action' => 'calculate-fee-price',
             ]);
-            throw new \Exception('Failed to calculate fee price: ' . $e->getMessage());
+            throw $e;
         }
     }
 }

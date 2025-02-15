@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Student;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\UserActivity;
+use App\Models\Reservation;
+
 use App\Models\AcademicTerm;
 use App\Services\ReservationService;
 use Illuminate\Support\Facades\Log;
 use Throwable;
+use App\Exceptions\BusinessRuleException;
 use App\Models\User;
 
 class StudentHomeController extends Controller
@@ -19,35 +22,57 @@ class StudentHomeController extends Controller
      * @return \Illuminate\View\View
      */
     public function index()
-    {
-        try {
-            $user = auth()->user();
+{
+    try {
+        $user = auth()->user();
+        
+        $reservation = null;
 
-            $reservation = $user
-                ->reservations()
-                ->where('status', 'active')
-                ->latest()
-                ->first();
+        // Fetch latest active reservation
+        $reservation = $user->reservations()
+            ->where('status', 'active')
+            ->latest()
+            ->first();
 
-            $activities = $user
-                ->activities()
-                ->orderBy('created_at', 'desc')
-                ->get();
+        // Fetch activities
+        $activities = $user->activities()
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-            $availableTerms = AcademicTerm::whereIn('status', ['active', 'planned'])->get();
+        // Get roommates if user has an active reservation
+$roommates = collect(); // Default empty collection
 
-            $sibling = $this->getEligibleSibling($user);
+if ($reservation && optional($reservation->room)->apartment) {
+    $apartment = $reservation->room->apartment;
+    $roomIds = $apartment->rooms->pluck('id');
 
-            return view('student.home', compact('user', 'reservation', 'activities', 'availableTerms', 'sibling'));
-        } catch (Throwable $e) {
-            Log::error('Failed to load user profile page', [
-                'error' => $e->getMessage(),
-                'action' => 'show_user_profile_page',
-                'user_id' => auth()->id(),
-            ]);
-            return view('errors.500');
-        }
+    $roommates = Reservation::whereIn('room_id', $roomIds)
+        ->where('status', 'active')
+        ->where('user_id', '!=', $user->id)
+        ->with(['user', 'room'])
+        ->get();
+}
+
+
+        // Fetch available academic terms
+        $availableTerms = AcademicTerm::whereIn('status', ['active', 'planned'])->get();
+
+        // Get sibling information
+        $sibling = $this->getEligibleSibling($user);
+
+        return view('student.home', compact('user', 'roommates', 'reservation', 'activities', 'availableTerms', 'sibling'));
+
+    } catch (Throwable $e) {
+        Log::error('Failed to load user profile page', [
+            'error' => $e->getMessage(),
+            'action' => 'show_user_profile_page',
+            'user_id' => auth()->id(),
+        ]);
+
+        return view('errors.500');
     }
+}
+
 
     /**
      * Determine if user has an eligible sibling for room sharing based on gender
