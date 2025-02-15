@@ -20,7 +20,7 @@ class StudentProfileCompleteController extends Controller
     {
         $this->completeProfileService = $completeProfileService;
     }
-    
+
     /**
      * Show the Complete Profile form.
      *
@@ -30,11 +30,11 @@ class StudentProfileCompleteController extends Controller
     {
         try {
             $user = auth()->user();
-            
+
             \Log::info('Loading complete profile page for user', [
                 'user_id' => $user->id ?? 'Guest',
-                'email'   => $user->email ?? 'No Email',
-                'name'    => $user->name ?? 'No Name',
+                'email' => $user->email ?? 'No Email',
+                'name' => $user->name ?? 'No Name',
             ]);
 
             $profileData = $this->completeProfileService->getUserProfileData($user);
@@ -42,11 +42,17 @@ class StudentProfileCompleteController extends Controller
 
             return view('student.complete-profile', compact('profileData', 'formData'));
         } catch (\Exception $e) {
-            \Log::error('Error loading complete profile page: ' . $e->getMessage());
-            
-            return redirect()->back()->withErrors([
-                'error' => __('Unable to load the profile page. Please try again later.')
+            Log::error('Failed to load complete profile page', [
+                'error' => $e->getMessage(),
+                'action' => 'show_user_profile_page',
+                'user_id' => auth()->id(),
             ]);
+
+            return redirect()
+                ->back()
+                ->withErrors([
+                    'error' => __('Unable to load the profile page. Please try again later.'),
+                ]);
         }
     }
 
@@ -58,11 +64,11 @@ class StudentProfileCompleteController extends Controller
     private function getFormData()
     {
         return [
-            'faculties'     => Faculty::all(),
-            'governorates'  => Governorate::all(),
-            'cities'        => City::all(),
-            'programs'      => Program::all(),
-            'countries'     => Country::all(),
+            'faculties' => Faculty::all(),
+            'governorates' => Governorate::all(),
+            'cities' => City::all(),
+            'programs' => Program::all(),
+            'countries' => Country::all(),
         ];
     }
 
@@ -73,45 +79,53 @@ class StudentProfileCompleteController extends Controller
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function store(CompleteProfileRequest $request)
-{
-    try {
-        // Get validated data
-        $validatedData = $request->validated();
+    {
+        try {
+            // Get validated data
+            $validatedData = $request->validated();
 
-        // Get authenticated user
-        $user = auth()->user();
+            // Get authenticated user
+            $user = auth()->user();
 
-        // Store profile data using the service
-        $result = $this->completeProfileService->storeProfileData($user, $validatedData);
+            // Store profile data using the service
+            $result = $this->completeProfileService->storeProfileData($user, $validatedData);
 
-        if (!$result['success']) {
-            \Log::error('Profile completion failed for user ID ' . $user->id . ': ' . $result['message']);
+            if (!$result['success']) {
+                \Log::error('Profile completion failed for user ID ' . $user->id . ': ' . $result['message']);
 
-            return response()->json([
-                'success' => false,
-                'message' => __('An error occurred while completing your profile.'),
-                'error'   => $result['message'],
-            ], 400);
+                return response()->json(
+                    [
+                        'success' => false,
+                        'message' => __('An error occurred while completing your profile.'),
+                    ],
+                    400
+                );
+            }
+
+            // Mark profile as completed
+            $user->update(['profile_completed' => true]);
+
+            return response()->json(
+                [
+                    'success' => true,
+                    'message' => __('Your registration has been completed successfully.'),
+                    'redirect' => route('student.home'),
+                ],
+                200
+            );
+        } catch (\Throwable $e) {
+            Log::error('Error complete profile data', [
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id(),
+                'action' => 'complete_user_profile',
+            ]);
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => __('An error occurred while completing your profile.'),
+                ],
+                500
+            );
         }
-
-        // Mark profile as completed
-        $user->update(['profile_completed' => true]);
-
-        return response()->json([
-            'success'  => true,
-            'message'  => __('Your registration has been completed successfully.'),
-            'redirect' => route('student.home'),
-        ], 200);
-
-    } catch (\Throwable $e) {
-        \Log::error('Profile completion error for user ID ' . ($user->id ?? 'N/A') . ': ' . $e->getMessage());
-
-        return response()->json([
-            'success' => false,
-            'message' => __('An error occurred while completing your profile.'),
-            'error'   => $e->getMessage(),
-        ], 500);
     }
-}
-
 }

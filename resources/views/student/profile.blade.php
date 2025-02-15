@@ -127,20 +127,22 @@
                         </li>
                         @if($user->hasProfilePicture())
                         <li class="list-inline-item">
-                           <form action="{{ route('student.profile.delete-picture') }}" method="POST" style="display:inline;">
+                           <form action="{{ route('student.profile.delete-picture') }}" method="POST" style="display:inline;" id="deleteProfilePictureForm">
                               @csrf
                               @method('DELETE')
-                              <button type="submit" class="btn btn-danger btn-sm font-16" 
-                                 onclick="return confirm('{{ __('Are you sure you want to delete your profile picture?') }}')">
-                              <i class="fa fa-trash-alt me-2"></i> {{ __('Delete Picture') }}
+                              <button type="submit" class="btn btn-danger btn-sm font-16" id="deleteProfilePictureBtn">
+                                 <i class="fas fa-trash-alt"></i> <!-- Font Awesome trash icon -->
+                                 <span class="button-text">{{ __('Delete Picture') }}</span>
+                                 <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                               </button>
+
                            </form>
                         </li>
                         @endif
                      </ul>
                   </div>
                   <!-- Edit Profile Information Form -->
-                  <form class="row g-3" method="POST" action="{{ route('student.profile.update') }}">
+                  <form class="row g-3" method="POST" action="{{ route('student.profile.update') }}" id="updateProfileForm">
                      @csrf
                      @method('PUT')
                      <!-- First Name -->
@@ -181,8 +183,9 @@
                      </div>
                      <!-- Submit Button -->
                      <div class="col-12">
-                        <button type="submit" class="btn btn-secondary w-50">
-                        <i class="fa fa-save me-2"></i> {{ __('Update Profile') }}
+                        <button type="submit" class="btn btn-secondary w-50" id="updateProfileBtn">
+                        <span class="button-text"> <i class="fa fa-save me-2"></i> {{ __('Update Profile') }}</span>
+                           <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                         </button>
                      </div>
                   </form>
@@ -914,6 +917,98 @@
                    $btn.prop('disabled', false);
                    $spinner.addClass('d-none');
                    $btnText.text("{{ __('Upload New Picture') }}");
+               }
+           });
+       });
+
+       $('#updateProfileForm').on('submit', function(e) {
+           e.preventDefault();
+           const $form = $(this);
+           const $btn = $('#updateProfileBtn');
+           const $spinner = $btn.find('.spinner-border');
+           const $btnText = $btn.find('.button-text');
+   
+           const formData = new FormData(this);
+   
+           $btn.prop('disabled', true);
+           $spinner.removeClass('d-none');
+           $btnText.text("{{ __('Updating...') }}");
+   
+           $.ajax({
+               url: "{{ route('student.profile.update') }}",
+               type: 'POST',
+               data: formData,
+               processData: false,
+               contentType: false,
+               headers: {
+                   'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+               },
+               success: function(response) {
+                   swal({
+                       type: 'success',
+                       title: "{{ __('Success') }}",
+                       text: "{{ __('Profile data updated successfully!') }}"
+                   }).then(() => {
+                       window.location.reload(); 
+                   });
+               },
+               error: function(xhr) {
+                   swal({
+                       type: 'error',
+                       title: "{{ __('Error') }}",
+                       text: xhr.responseJSON?.message || "{{ __('Failed to update profile data') }}"
+                   });
+               },
+               complete: function() {
+                   $btn.prop('disabled', false);
+                   $spinner.addClass('d-none');
+                   $btnText.text("{{ __('Update Profile') }}");
+               }
+           });
+       });
+
+       $('#deleteProfilePictureForm').on('submit', function(e) {
+           e.preventDefault();
+           const $form = $(this);
+           const $btn = $('#deleteProfilePictureBtn');
+           const $spinner = $btn.find('.spinner-border');
+           const $btnText = $btn.find('.button-text');
+   
+           const formData = new FormData(this);
+   
+           $btn.prop('disabled', true);
+           $spinner.removeClass('d-none');
+           $btnText.text("{{ __('Deleting...') }}");
+   
+           $.ajax({
+               url: "{{ route('student.profile.delete-picture') }}",
+               type: 'POST',
+               data: formData,
+               processData: false,
+               contentType: false,
+               headers: {
+                   'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+               },
+               success: function(response) {
+                   swal({
+                       type: 'success',
+                       title: "{{ __('Success') }}",
+                       text: "{{ __('Profile picture deleted successfully!') }}"
+                   }).then(() => {
+                       window.location.reload(); 
+                   });
+               },
+               error: function(xhr) {
+                   swal({
+                       type: 'error',
+                       title: "{{ __('Error') }}",
+                       text: xhr.responseJSON?.message || "{{ __('Failed to delete profile picture') }}"
+                   });
+               },
+               complete: function() {
+                   $btn.prop('disabled', false);
+                   $spinner.addClass('d-none');
+                   $btnText.text("{{ __('Delete Picture') }}");
                }
            });
        });

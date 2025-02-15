@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin\Reservation;
 use App\Http\Controllers\Controller;
 use App\Models\ReservationRequest;
 use App\Models\Room;
-use App\Models\AdminActionLog; // Assuming you have a model for admin action logs
+use App\Models\AdminAction; // Assuming you have a model for admin action logs
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Exception;
@@ -186,7 +186,7 @@ class ReservationRequestsController extends Controller
             $reservationRequest->save();
 
             // Log admin action
-            AdminActionLog::create([
+            AdminAction::create([
                 'admin_id' => auth()->id(),
                 'action' => 'accept_reservation_request',
                 'description' => 'Accepted a reservation request',
@@ -249,7 +249,7 @@ class ReservationRequestsController extends Controller
             $reservationRequest->save();
 
             // Log admin action
-            AdminActionLog::create([
+            AdminAction::create([
                 'admin_id' => auth()->id(),
                 'action' => 'reject_reservation_request',
                 'description' => 'Rejected a reservation request',
@@ -298,7 +298,7 @@ class ReservationRequestsController extends Controller
             $this->reservationService->automateReservationProcess();
 
             // Log admin action
-            AdminActionLog::create([
+            AdminAction::create([
                 'admin_id' => auth()->id(),
                 'action' => 'auto_reserve',
                 'description' => 'Auto reserved all pending reservation requests',

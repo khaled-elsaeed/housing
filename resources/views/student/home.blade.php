@@ -89,6 +89,12 @@
                   <li class="list-group-item d-flex justify-content-between align-items-center">
                      <div class="d-flex align-items-center">
                         <div class="me-3">
+                           @if($activity->activity_type === 'update_profile')
+                           <i class="fa fa-check-circle text-success"></i>
+                           @if($activity->activity_type === 'update_profile_picture')
+                           <i class="fa fa-check-circle text-success"></i>
+                           @if($activity->activity_type === 'delete_profile_picture')
+                           <i class="fa fa-check-circle text-success"></i>
                            @if($activity->activity_type === 'Reservation Created')
                            <i class="fa fa-check-circle text-success"></i>
                            @elseif($activity->activity_type === 'Invoice Upload')

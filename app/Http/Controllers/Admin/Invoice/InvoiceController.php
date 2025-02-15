@@ -33,7 +33,7 @@ class InvoiceController extends Controller
             Log::error('Failed to load invoices page', [
                 'error' => $e->getMessage(),
                 'action' => 'show_invoices_page',
-                'admin_id' => auth()->id(), // Log the admin performing the action
+                'user_id' => auth()->id(), // Log the admin performing the action
             ]);
             return response()->view("errors.500");
         }
@@ -117,7 +117,7 @@ class InvoiceController extends Controller
             Log::error('Failed to fetch invoice statistics', [
                 'error' => $e->getMessage(),
                 'action' => 'fetch_invoice_stats',
-                'admin_id' => auth()->id(),
+                'user_id' => auth()->id(),
             ]);
             return response()->json(["error" => "Failed to fetch invoice statistics."], 500);
         }

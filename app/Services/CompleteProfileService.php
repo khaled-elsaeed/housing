@@ -44,7 +44,12 @@ class CompleteProfileService
 
             return [];
         } catch (Exception $e) {
-            $this->logError('getUserProfileData', $e, ['user_id' => $user->id ?? null]);
+            Log::error('Error getting profile data', [
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id(),
+                'action' => 'get_user_profile_data',
+
+            ]);
             throw $e;
         }
     }
@@ -84,11 +89,6 @@ class CompleteProfileService
 {
     try {
         
-        \Log::info('Fetching no-profile data for user', [
-            'user_id'  => $user->id ?? 'Guest',
-            'email'    => $user->email ?? 'No Email',
-            'name'     => $user->name ?? 'No Name',
-        ]);
 
         $archiveData = $user->UniversityArchive;
 
@@ -290,8 +290,13 @@ class CompleteProfileService
                 'phone' => $student?->phone,
             ];
         } catch (Exception $e) {
-            $this->logError('getContactInformation', $e, ['user_id' => $userId]);
-            throw $e;
+            Log::error('Error getting profile data', [
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id(),
+                'action' => 'get_user_profile_data',
+
+            ]);
+                        throw $e;
         }
     }
 
@@ -448,12 +453,6 @@ public function storeProfileData(User $user, array $data)
     try {
         DB::beginTransaction();
 
-        // Log the incoming data for debugging
-        Log::info('Storing profile data', [
-            'user_id' => $user->id,
-            'data'    => $data
-        ]);
-
         $existingStudent = $user->student()->first();
 
         $studentData = [
@@ -529,7 +528,6 @@ public function storeProfileData(User $user, array $data)
 
         DB::commit();
 
-        Log::info('Profile data stored successfully', ['user_id' => $user->id,'data'=>$data]);
 
         return ['success' => true];
     } catch (\Exception $e) {
