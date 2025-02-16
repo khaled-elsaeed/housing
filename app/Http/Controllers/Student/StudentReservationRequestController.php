@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Services\ReservationRequestService;
 use App\Models\{ReservationRequest, User};
 use Illuminate\Support\Facades\Log;
+use App\Models\UserActivity;
+
 use App\Events\ReservationRequested;
 use App\Exceptions\BusinessRuleException;
 use App\Http\Requests\ReservationRequest as ReservationRequestValidation; // Import the custom Request
@@ -47,16 +49,16 @@ class StudentReservationRequestController extends Controller
             // Create reservation request
             $reservationRequest = $this->reservationRequestService->createReservationRequest($student, $validatedData);
             event(new ReservationRequested($reservationRequest));
-            // Log successful reservation request
-            Log::info('Reservation request submitted successfully', [
-                'user_id' => $student->id,
-                'reservation_period_type' => $validatedData['reservation_period_type'],
-                'action' => 'create_reservation_request',
-            ]);
 
+            UserActivity::create([
+                'user_id' => auth()->id(),
+                'activity_type' => 'reservation_request',
+                'description' => 'Reservation request submitted, awaiting approval',
+            ]);
+            
             return response()->json([
                 'success' => true,
-                'message' => 'Reservation request submitted successfully!',
+                'message' => trans('Reservation request submitted successfully!'),
             ], 201);
         } catch (BusinessRuleException $e) {
             // Handle business rule violations
@@ -80,7 +82,7 @@ class StudentReservationRequestController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'An unexpected error occurred. Please try again later.',
+                'message' => trans('An unexpected error occurred. Please try again later.'),
             ], 500); // 500 Internal Server Error
         }
     }

@@ -90,19 +90,15 @@
                   <div class="d-flex align-items-center">
                      <div class="me-3">
                            @if($activity->activity_type === 'update_profile')
-                              <i class="fa fa-check-circle text-success"></i>
+                              <i class="fa fa-circle-check text-success"></i>
                            @elseif($activity->activity_type === 'update_profile_picture')
-                              <i class="fa fa-check-circle text-success"></i>
+                              <i class="fa fa-circle-check text-success"></i>
                            @elseif($activity->activity_type === 'delete_profile_picture')
-                              <i class="fa fa-check-circle text-success"></i>
-                           @elseif($activity->activity_type === 'Reservation Created')
-                              <i class="fa fa-check-circle text-success"></i>
-                           @elseif($activity->activity_type === 'Invoice Upload')
+                              <i class="fa fa-circle-check text-success"></i>
+                           @elseif($activity->activity_type === 'reservation_requested')
+                              <i class="fa fa-circle-check text-success"></i>
+                           @elseif($activity->activity_type === 'invoice_upload')
                               <i class="fa fa-upload text-primary"></i>
-                           @elseif($activity->activity_type === 'Room Assignment')
-                              <i class="fa fa-building text-info"></i>
-                           @elseif($activity->activity_type === 'Term Registration')
-                              <i class="fa fa-calendar text-warning"></i>
                            @else
                               <i class="fa fa-circle text-secondary"></i>
                            @endif
@@ -399,7 +395,7 @@
                         <button class="btn btn-link collapsed" type="button" 
                            data-bs-toggle="collapse" data-bs-target="#collapseActivateReservation" 
                            aria-expanded="false" aria-controls="collapseActivateReservation">
-                        <i class="feather icon-check-circle me-2"></i>{{ __('Activate/Finalize Reservation') }}
+                        <i class="feather icon-circle-check me-2"></i>{{ __('Activate/Finalize Reservation') }}
                         </button>
                      </h2>
                   </div>
