@@ -127,9 +127,13 @@
         });
     });
 
-    // Toggle Password Visibility
+    // Toggle Password Visibility for both fields
     const togglePassword = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
+    const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+
+    // Toggle visibility of the password field
     togglePassword.addEventListener('click', function () {
         const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
         passwordInput.setAttribute('type', type);
@@ -137,6 +141,13 @@
         this.classList.toggle('fa-eye-slash');
     });
 
+    // Toggle visibility of the confirm password field
+    toggleConfirmPassword.addEventListener('click', function () {
+        const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        confirmPasswordInput.setAttribute('type', type);
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
+    });
 
     // Loading Spinner on Form Submit
     const registerForm = document.getElementById('registerForm');
@@ -150,6 +161,7 @@
         loadingSpinner.classList.remove('d-none');
     });
 </script>
+
 
 </body>
 
