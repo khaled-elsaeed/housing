@@ -124,7 +124,7 @@
             <div class="search-icon-container">
                <i class="fa fa-search search-icon"></i>
             </div>
-            <input type="search" class="form-control search-input" id="searchBox" placeholder="@lang('Search by request details')" />
+            <input type="search" class="form-control search-input" id="searchBox" placeholder="@lang('Search for Requests')" />
          </div>
       </div>
    </div>
@@ -139,8 +139,8 @@
                <table id="default-datatable" class="display table table-bordered">
                   <thead>
                      <tr>
-                        <th>@lang('Student Name')</th>
-                        <th>@lang('Period Type')</th>
+                        <th>@lang('Name')</th>
+                        <th>@lang('Period')</th>
                         <th>@lang('Duration')</th>
                         <th>@lang('Date')</th>
                         <th>@lang('Status')</th>

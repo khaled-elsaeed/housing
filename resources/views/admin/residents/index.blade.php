@@ -147,27 +147,35 @@
 <!-- Search Filter -->
 <div class="collapse" id="collapseExample">
    <div class="search-filter-container card card-body">
-      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+      <div class="d-flex flex-column flex-lg-row justify-content-between align-items-center gap-3">
          <!-- Search Box with Icon on the Left -->
-         <div class="search-container d-flex align-items-center mb-3 mb-md-0">
-            <div class="search-icon-container">
+         <div class="search-container d-flex align-items-center flex-grow-1 mb-3 mb-md-0">
+            <div class="search-icon-container me-2">
                <i class="fa fa-search search-icon"></i>
             </div>
-            <input type="search" class="form-control search-input" id="searchBox" placeholder="@lang('Search residents')" />
+            <input
+               type="search"
+               class="form-control search-input flex-grow-1"
+               id="searchBox"
+               placeholder="@lang('Search residents')"
+            />
          </div>
-         <div class="d-flex flex-column flex-md-row filters-container">
+
+         <!-- Filters Container -->
+         <div class="d-flex flex-column flex-md-row align-items-center gap-2 w-100 w-md-auto">
             <!-- Building Select -->
-            <select id="buildingFilter" class="form-select mb-2 mb-md-0" name="building_id">
-               <option value="">Select Building</option>
+            <select id="buildingFilter" class="form-select flex-grow-1 flex-md-grow-0" name="building_id">
+               <option value="">{{ trans("Select Building") }}</option>
                @foreach($buildings as $number)
-               <option value="{{ $number }}">@lang('Building'){{ $number }}</option>
+               <option value="{{ $number }}">@lang('Building') {{ $number }}</option>
                @endforeach
             </select>
+
             <!-- Apartment Select -->
-            <select id="apartmentFilter" class="form-select mb-2 mb-md-0" name="apartment_id">
-               <option value="">Select Apartment</option>
+            <select id="apartmentFilter" class="form-select flex-grow-1 flex-md-grow-0" name="apartment_id">
+               <option value="">{{ trans("Select Apartment") }}</option>
                @foreach($apartments as $number)
-               <option value="{{ $number }}">@lang('Apartment'){{ $number }}</option>
+               <option value="{{ $number }}">@lang('Apartment') {{ $number }}</option>
                @endforeach
             </select>
          </div>

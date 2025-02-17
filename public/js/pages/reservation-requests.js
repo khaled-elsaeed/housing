@@ -1,4 +1,5 @@
 $(document).ready(function() {
+
     const messages = {
         en: {
             success: "Success!",
@@ -150,6 +151,7 @@ $(document).ready(function() {
 // Handle Auto-Reserve button
 $('#autoReserveBtn').on('click', function() {
     const btn = $(this);
+
     toggleButtonLoading(btn, true);
 
     $.ajax({
@@ -355,8 +357,9 @@ $('#autoReserveBtn').on('click', function() {
     function toggleButtonLoading(button, isLoading) {
         if (isLoading) {
             // Store the full button HTML (including the icon) before changing it
+            let loading = lang == 'en' ? 'Loading...' : 'تحميل...';
             button.data('original-html', button.html())
-                .html('<i class="fa fa-spinner fa-spin"></i> Loading...')
+                .html(`<i class="fa fa-spinner fa-spin"></i> ${loading}`)
                 .prop('disabled', true);
         } else {
             // Restore the full original HTML (with the icon)
@@ -364,5 +367,6 @@ $('#autoReserveBtn').on('click', function() {
                 .prop('disabled', false);
         }
     }
+    
     
 });

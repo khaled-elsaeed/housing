@@ -42,9 +42,9 @@ class Room extends Model
         $building = $apartment ? $apartment->building : null;
 
         return [
-            'building' => optional($building)->number ?? 'N/A',
-            'apartment' => optional($apartment)->number ?? 'N/A',
-            'room' => $this->number ?? 'N/A',
+            'building' => optional($building)->number ?? trans("N/A"),
+            'apartment' => optional($apartment)->number ?? trans("N/A"),
+            'room' => $this->number ?? trans("N/A"),
         ];
     }
 }

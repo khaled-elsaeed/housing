@@ -112,15 +112,15 @@
    </div>
    <!-- End col for Pending Reservations -->
 
-   <!-- Start col for Confirmed Reservations -->
+   <!-- Start col for Active Reservations -->
    <div class="col-lg-3 col-md-6 mb-2">
       <div class="card m-b-30">
          <div class="card-body">
             <div class="row align-items-center">
                
                <div class="col-7 text-start mt-2 mb-2">
-                  <h5 class="card-title font-14">@lang('Confirmed Reservations')</h5>
-                  <h4 class="mb-0" id="totalConfirmedReservationsCount">
+                  <h5 class="card-title font-14">@lang('Active Reservations')</h5>
+                  <h4 class="mb-0" id="totalActiveReservationsCount">
                      <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
                         <span class="visually-hidden">@lang('Loading...')</span>
                      </div>
@@ -137,7 +137,7 @@
                   <span class="font-13">@lang('Male')</span>
                </div>
                <div class="col-6 text-end">
-                  <span class="font-13" id="maleConfirmedReservationsCount">
+                  <span class="font-13" id="maleActiveReservationsCount">
                      <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
                         <span class="visually-hidden">@lang('Loading...')</span>
                      </div>
@@ -149,7 +149,7 @@
                   <span class="font-13">@lang('Female')</span>
                </div>
                <div class="col-6 text-end">
-                  <span class="font-13" id="femaleConfirmedReservationsCount">
+                  <span class="font-13" id="femaleActiveReservationsCount">
                      <div class="spinner-border spinner-border-sm text-primary d-inline-block" role="status">
                         <span class="visually-hidden">@lang('Loading...')</span>
                      </div>
@@ -159,7 +159,7 @@
          </div>
       </div>
    </div>
-   <!-- End col for Confirmed Reservations -->
+   <!-- End col for Active Reservations -->
 
    <!-- Start col for Cancelled Reservations -->
    <div class="col-lg-3 col-md-6 mb-2">

@@ -56,23 +56,21 @@ class ReservationRequestsController extends Controller
     public function fetch(Request $request)
     {
         try {
-            $query = ReservationRequest::with(['user', 'academicTerm'])
-                ->select('reservation_requests.*');
+            $query = ReservationRequest::with(['user.student', 'academicTerm'])
+                ->select('reservation_requests.*')
+                ->orderBy('created_at','desc');
 
-            if ($request->filled('customSearch')) {
-                $search = $request->input('customSearch');
-                $query->where(function ($q) use ($search) {
-                    $q->whereHas('user', function ($userQuery) use ($search) {
-                        $userQuery->where('name', 'like', "%{$search}%");
-                    })
-                    ->orWhereHas('academicTerm', function ($termQuery) use ($search) {
-                        $termQuery->where('name', 'like', "%{$search}%");
-                    })
-                    ->orWhere('period_type', 'like', "%{$search}%")
-                    ->orWhere('period_duration', 'like', "%{$search}%")
-                    ->orWhere('status', 'like', "%{$search}%");
-                });
-            }
+                if ($request->filled('customSearch')) {
+                    $search = $request->input('customSearch');
+                    $query->where(function ($q) use ($search) {
+                        $q->whereHas('user.student', function ($userQuery) use ($search) {
+                            $userQuery->where('name_ar', 'like', "%{$search}%")
+                                ->orWhere('name_en', 'like', "%{$search}%") 
+                                ->orWhere('national_id', 'like', "%{$search}%"); 
+                        });
+                    });
+                }
+                
 
             return DataTables::of($query)
                 ->editColumn('user.name', function ($request) {

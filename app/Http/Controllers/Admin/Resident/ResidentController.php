@@ -7,188 +7,195 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Building;
 use App\Models\Apartment;
-use App\Models\Room;
 use Illuminate\Support\Facades\Log;
 use Exception;
 use Illuminate\Support\Facades\App;
+use Yajra\DataTables\Facades\DataTables;
 
 class ResidentController extends Controller
 {
+    /**
+     * Display the residents index page with building and apartment data.
+     *
+     * @return \Illuminate\View\View|\Illuminate\Http\Response
+     */
     public function index()
     {
         try {
-
             $buildings = Building::pluck("number")->sort()->values()->all();
             $apartments = Apartment::pluck("number")->unique()->sort()->values()->all();
 
             return view("admin.residents.index", compact("buildings", "apartments"));
-
         } catch (Exception $e) {
-
-            Log::error("Error retrieving resident page data: " . $e->getMessage(), [
-                "exception" => $e,
-                "stack" => $e->getTraceAsString(),
+            Log::error('Failed to load residents page', [
+                'error' => $e->getMessage(),
+                'action' => 'show_residents_page',
+                'admin_id' => auth()->id(), // Log the admin performing the action
             ]);
-
-            return response()->view("errors.505", [
-                "message" => "An error occurred while loading the data.",
-            ]);
+            return response()->view("errors.500");
         }
     }
 
+    /**
+     * Fetch residents data for DataTables with optional search and filters.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function fetchResidents(Request $request)
-    {
-        $currentLang = App::getLocale();
+{
+    try {
+        // Base query for residents with active or pending reservations
+        $query = User::role("resident")
+            ->whereHas("reservations", function ($q) {
+                $q->whereIn("status", ["active", "pending"]);
+            })
+            ->with(["reservations.room.apartment.building", "reservations.room.apartment", "student", "student.faculty"])
+            ->orderBy('created_at', 'asc');
 
-        try {
-
-            // Base query for residents with active reservations
-            $query = User::role("resident")
-                ->whereHas("reservations", function ($q) {
-                    $q->where("status", "active");
-                })
-                ->with(["reservations.room.apartment.building", "reservations.room.apartment", "student", "student.faculty"]);
-
-            // Search by name, national ID
-            if ($request->filled("customSearch")) {
-                $searchTerm = $request->get("customSearch");
-                $query->where(function ($q) use ($searchTerm, $currentLang) {
-                    $q->whereHas("student", function ($q) use ($searchTerm, $currentLang) {
-                        $q
-                            ->where("name_" . ($currentLang == "ar" ? "ar" : "en"), "like", "%" . $searchTerm . "%")
-                            ->orWhere("national_id", "like", "%" . $searchTerm . "%");
-                    });
+        // Apply search by name or national ID
+        if ($request->filled("customSearch")) {
+            $search = $request->input("customSearch");
+            $query->where(function ($q) use ($search) {
+                $q->whereHas("student", function ($q) use ($search) {
+                    $q->where("name_en", "like", "%{$search}%")
+                        ->orWhere("name_ar", "like", "%{$search}%")
+                        ->orWhere("national_id", "like", "%{$search}%");
                 });
-            }
-
-            // Filter by building
-            if ($request->filled("building_number")) {
-                $buildingNumber = $request->get("building_number");
-                $query->whereHas("reservations.room.apartment.building", function ($q) use ($buildingNumber) {
-                    $q->where("number", $buildingNumber);
-                });
-            }
-
-            // Filter by apartment
-            if ($request->filled("apartment_number")) {
-                $apartmentNumber = $request->get("apartment_number");
-                $query->whereHas("reservations.room.apartment", function ($q) use ($apartmentNumber) {
-                    $q->where("number", $apartmentNumber);
-                });
-            }
-
-
-            // Count total and filtered records
-            $totalRecords = User::role("resident")
-                ->whereHas("reservations", function ($q) {
-                    $q->where("status", "active");
-                })
-                ->count();
-            $filteredRecords = $query->count();
-
-            // Pagination
-            $start = $request->get("start", 0);
-            $length = $request->get("length", 10);
-            $residents = $query
-                ->skip($start)
-                ->take($length)
-                ->get();
-
-            // Format response
-            return response()->json([
-                "draw" => $request->get("draw"),
-                "recordsTotal" => $totalRecords,
-                "recordsFiltered" => $filteredRecords,
-                "data" => $residents->map(function ($resident) use ($currentLang) {
-                    $location = method_exists($resident, "getLocationDetails")
-                        ? $resident->getLocationDetails()
-                        : [
-                            "building" => "N/A",
-                            "apartment" => "N/A",
-                            "room" => "N/A",
-                        ];
-
-                    $locationString = "Building " . $location["building"] . " - Apartment " . $location["apartment"] . " - Room " . $location["room"];
-
-                    return [
-                        "resident_id" => $resident->id,
-                        "name" => $resident->student ? $resident->student->{"name_" . ($currentLang == "ar" ? "ar" : "en")} : "N/A",
-                        "national_id" => $resident->student->national_id ?? "N/A",
-                        "location" => $locationString,
-                        "faculty" => $resident->student && $resident->student->faculty ? $resident->student->faculty->{"name_" . ($currentLang == "ar" ? "ar" : "en")} : "N/A",
-                        "mobile" => $resident->student->mobile ?? "N/A",
-                    ];
-                }),
-            ]);
-        } catch (Exception $e) {
-            Log::error("Error fetching residents data: " . $e->getMessage());
-            return response()->json(["error" => "Failed to fetch residents data."], 500);
+            });
         }
-    }
 
+        // Apply building filter
+        if ($request->filled("building_number")) {
+            $buildingNumber = $request->input("building_number");
+            $query->whereHas("reservations.room.apartment.building", function ($q) use ($buildingNumber) {
+                $q->where("number", $buildingNumber);
+            });
+        }
+
+        // Apply apartment filter
+        if ($request->filled("apartment_number")) {
+            $apartmentNumber = $request->input("apartment_number");
+            $query->whereHas("reservations.room.apartment", function ($q) use ($apartmentNumber) {
+                $q->where("number", $apartmentNumber);
+            });
+        }
+
+        // Format data for DataTables
+        return DataTables::of($query)
+            ->editColumn("name", function ($resident) {
+                return $resident->student
+                    ? ($resident->student->{"name_" . (App::getLocale() == "ar" ? "ar" : "en")} ?? trans("N/A"))
+                    : trans("N/A");
+            })
+            ->editColumn("national_id", function ($resident) {
+                return $resident->student->national_id ?? trans("N/A");
+            })
+            ->editColumn("location", function ($resident) {
+                // Get the first reservation (assuming a resident has at least one reservation)
+                $reservation = $resident->reservations->first();
+
+                if ($reservation && $reservation->room && $reservation->room->apartment && $reservation->room->apartment->building) {
+                    $buildingNumber = $reservation->room->apartment->building->number ?? trans("N/A");
+                    $apartmentNumber = $reservation->room->apartment->number ?? trans("N/A");
+                    $roomNumber = $reservation->room->number ?? trans("N/A");
+
+                    return trans('Building') . " " . $buildingNumber . " - " .
+                    trans('Apartment') . " " . $apartmentNumber . " - " .
+                    trans('Room') . " " . $roomNumber;                }
+
+                return trans("N/A");
+            })            
+
+            ->editColumn("faculty", function ($resident) {
+                return $resident->student && $resident->student->faculty
+                    ? $resident->student->faculty->{"name_" . (App::getLocale() == "ar" ? "ar" : "en")}
+                    : trans("N/A");
+            })
+            ->editColumn("mobile", function ($resident) {
+                return $resident->student->mobile ?? trans("N/A");
+            })
+            
+            ->make(true);
+    } catch (Exception $e) {
+        Log::error("Error fetching residents data", [
+            "error" => $e->getMessage(),
+            "action" => "fetch_residents",
+            "admin_id" => auth()->id(),
+        ]);
+        return response()->json(["error" => "Failed to fetch residents data."], 500);
+    }
+}
+
+    /**
+     * Get summary statistics for residents, including counts and last update timestamps.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getSummary()
     {
         try {
             // Total count of residents
             $totalResidents = User::role("resident")
                 ->whereHas("reservations", function ($query) {
-                    $query->whereIn("status", ["active", "upcoming"]);
+                    $query->whereIn("status", ["pending","active", "upcoming"]);
                 })
                 ->count();
 
             // Total male residents count
             $totalMaleCount = User::role("resident")
                 ->whereHas("reservations", function ($query) {
-                    $query->where("gender", "male")->whereIn("status", ["active", "upcoming"]);
+                    $query->where("gender", "male")->whereIn("status", ["pending","active", "upcoming"]);
                 })
                 ->count();
 
             // Total female residents count
             $totalFemaleCount = User::role("resident")
                 ->whereHas("reservations", function ($query) {
-                    $query->where("gender", "female")->whereIn("status", ["active", "upcoming"]);
+                    $query->where("gender", "female")->whereIn("status", ["pending","active", "upcoming"]);
                 })
                 ->count();
 
-            // Get last updated timestamp for residents
+            // Last updated timestamp for all residents
             $lastUpdateOverall = User::role("resident")
                 ->whereHas("reservations", function ($query) {
-                    $query->whereIn("status", ["active", "upcoming"]);
+                    $query->whereIn("status", ["pending","active", "upcoming"]);
                 })
                 ->latest("updated_at")
                 ->value("updated_at");
 
-            // Get last updated timestamp for male residents
+            // Last updated timestamp for male residents
             $lastUpdateMaleResidents = User::role("resident")
                 ->whereHas("reservations", function ($query) {
-                    $query->where("gender", "male")->whereIn("status", ["active", "upcoming"]);
+                    $query->where("gender", "male")->whereIn("status", ["pending","active", "upcoming"]);
                 })
                 ->latest("updated_at")
                 ->value("updated_at");
 
-            // Get last updated timestamp for female residents
+            // Last updated timestamp for female residents
             $lastUpdateFemaleResidents = User::role("resident")
                 ->whereHas("reservations", function ($query) {
-                    $query->where("gender", "female")->whereIn("status", ["active", "upcoming"]);
+                    $query->where("gender", "female")->whereIn("status", ["pending","active", "upcoming"]);
                 })
                 ->latest("updated_at")
                 ->value("updated_at");
 
-            // Return the summary in JSON format
             return response()->json([
                 "totalResidents" => $totalResidents,
                 "totalMaleCount" => $totalMaleCount,
                 "totalFemaleCount" => $totalFemaleCount,
-                "lastUpdateOverall" => $lastUpdateOverall,
-                "lastUpdateMaleResidents" => $lastUpdateMaleResidents,
-                "lastUpdateFemaleResidents" => $lastUpdateFemaleResidents,
+                "lastUpdateOverall" => formatLastUpdated($lastUpdateOverall),
+                "lastUpdateMaleResidents" => formatLastUpdated($lastUpdateMaleResidents),
+                "lastUpdateFemaleResidents" => formatLastUpdated($lastUpdateFemaleResidents),
             ]);
         } catch (Exception $e) {
-            // Log error and return an appropriate response
-            Log::error("Error fetching summary data: " . $e->getMessage(), [
-                "exception" => $e,
+            Log::error("Error fetching residents summary data", [
+                "error" => $e->getMessage(),
+                "action" => "get_residents_summary_data",
+                "admin_id" => auth()->id(),
             ]);
             return response()->json(["error" => "Error fetching summary data"], 500);
         }
     }
+
 }

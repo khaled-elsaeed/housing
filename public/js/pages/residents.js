@@ -1,15 +1,17 @@
-$(document).ready(function() {
+$(document).ready(function () {
+    const lang = $("html").attr("lang") || "en"; // Get the current language (default to 'en')
+
     // Function to toggle the icon when the collapse is shown or hidden
     function toggleIconOnCollapse() {
         const toggleButton = document.getElementById("toggleButton");
         const icon = toggleButton.querySelector("i");
 
-        document.getElementById("collapseExample").addEventListener("shown.bs.collapse", function() {
+        document.getElementById("collapseExample").addEventListener("shown.bs.collapse", function () {
             icon.classList.remove("fa-search-plus");
             icon.classList.add("fa-search-minus");
         });
 
-        document.getElementById("collapseExample").addEventListener("hidden.bs.collapse", function() {
+        document.getElementById("collapseExample").addEventListener("hidden.bs.collapse", function () {
             icon.classList.remove("fa-search-minus");
             icon.classList.add("fa-search-plus");
         });
@@ -24,15 +26,15 @@ $(document).ready(function() {
         responsive: true,
         ajax: {
             url: window.routes.fetchResidents,
-            data: function(d) {
+            data: function (d) {
                 d.customSearch = $('#searchBox').val();
                 d.building_number = $('#buildingFilter').val();
                 d.apartment_number = $('#apartmentFilter').val();
                 return d;
             },
-            error: function(xhr, error, thrown) {
+            error: function (xhr, error, thrown) {
                 console.error('Error fetching data:', error);
-                alert('Failed to fetch data. Please try again.');
+                alert(lang === "ar" ? "فشل جلب البيانات. يرجى المحاولة مرة أخرى." : "Failed to fetch data. Please try again.");
             }
         },
         columns: [
@@ -40,23 +42,53 @@ $(document).ready(function() {
             { data: 'national_id', name: 'national_id' },
             { data: 'location', name: 'location' },
             { data: 'faculty', name: 'faculty' },
-            { data: 'mobile', name: 'mobile' }
-        ]
+            { data: 'mobile', name: 'mobile' },
+            
+        ],
+        language: lang === "ar" ? {
+            url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json",
+        } : {}
     });
+    
+    // Event listener for "Fetch More" button
+    $(document).on('click', '.fetch-more-btn', function () {
+        const userId = $(this).data('user-id'); // Get the user ID from the button
+        fetchMoreData(userId);
+    });
+    
+    // Function to fetch more data for a specific user
+    function fetchMoreData(userId) {
+        $.ajax({
+            url: window.routes.fetchMoreData, // Replace with your backend endpoint
+            method: 'GET',
+            data: { user_id: userId },
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    // Display the additional data (customize this part based on your needs)
+                    alert(lang === "ar" ? "تم جلب البيانات بنجاح: " + JSON.stringify(response.data) : "Data fetched successfully: " + JSON.stringify(response.data));
+                } else {
+                    alert(lang === "ar" ? "فشل جلب البيانات." : "Failed to fetch data.");
+                }
+            },
+            error: function () {
+                alert(lang === "ar" ? "حدث خطأ أثناء جلب البيانات." : "An error occurred while fetching data.");
+            }
+        });
+    }
 
     // Function to set up event listeners for filters
     function setupFilterListeners() {
-        $('#searchBox').on('keyup', function() {
+        $('#searchBox').on('keyup', function () {
             table.ajax.reload();
         });
 
-
-        $('#buildingFilter').on('change', function() {
+        $('#buildingFilter').on('change', function () {
             resetApartmentFilter();
             table.ajax.reload();
         });
 
-        $('#apartmentFilter').on('change', function() {
+        $('#apartmentFilter').on('change', function () {
             table.ajax.reload();
         });
     }
@@ -73,14 +105,14 @@ $(document).ready(function() {
             url: window.routes.getSummary,
             method: 'GET',
             dataType: 'json',
-            success: function(data) {
+            success: function (data) {
                 if (data.error) {
                     handleSummaryError();
                 } else {
                     updateSummaryData(data);
                 }
             },
-            error: function() {
+            error: function () {
                 handleSummaryError();
             }
         });
@@ -88,13 +120,13 @@ $(document).ready(function() {
 
     // Function to handle errors in summary data fetching
     function handleSummaryError() {
-        $('#totalResidents').text('Error');
-        $('#totalMaleCount').text('Error');
-        $('#totalFemaleCount').text('Error');
-        $('#lastUpdateOverall').text('Error');
-        $('#lastUpdateMaleResidents').text('Error');
-        $('#lastUpdateFemaleResidents').text('Error');
-        alert('Error while fetching data');
+        $('#totalResidents').text(lang === "ar" ? "خطأ" : "Error");
+        $('#totalMaleCount').text(lang === "ar" ? "خطأ" : "Error");
+        $('#totalFemaleCount').text(lang === "ar" ? "خطأ" : "Error");
+        $('#lastUpdateOverall').text(lang === "ar" ? "خطأ" : "Error");
+        $('#lastUpdateMaleResidents').text(lang === "ar" ? "خطأ" : "Error");
+        $('#lastUpdateFemaleResidents').text(lang === "ar" ? "خطأ" : "Error");
+        alert(lang === "ar" ? "حدث خطأ أثناء جلب البيانات." : "Error while fetching data.");
     }
 
     // Function to update the summary data in the UI
@@ -103,24 +135,12 @@ $(document).ready(function() {
         $('#totalMaleCount').text(data.totalMaleCount);
         $('#totalFemaleCount').text(data.totalFemaleCount);
 
-        $('#lastUpdateOverall').text(data.lastUpdateOverall ? formatDate(data.lastUpdateOverall) : 'N/A');
-        $('#lastUpdateMaleResidents').text(data.lastUpdateMaleResidents ? formatDate(data.lastUpdateMaleResidents) : 'N/A');
-        $('#lastUpdateFemaleResidents').text(data.lastUpdateFemaleResidents ? formatDate(data.lastUpdateFemaleResidents) : 'N/A');
+        $('#lastUpdateOverall').text(data.lastUpdateOverall ? data.lastUpdateOverall : lang === "ar" ? "غير متاح" : "N/A");
+        $('#lastUpdateMaleResidents').text(data.lastUpdateMaleResidents ? data.lastUpdateMaleResidents : lang === "ar" ? "غير متاح" : "N/A");
+        $('#lastUpdateFemaleResidents').text(data.lastUpdateFemaleResidents ? data.lastUpdateFemaleResidents : lang === "ar" ? "غير متاح" : "N/A");
     }
 
-    // Helper function to format the date
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-    }
-
+  
+    // Fetch summary data on page load
     fetchSummaryData();
-
-
 });
