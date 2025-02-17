@@ -20,7 +20,18 @@ class ReservationController extends Controller
     // Display the reservation index page
     public function index()
     {
-        return view('admin.reservation.index');
+        try {
+
+            return view('admin.reservation.index');
+        }
+        catch (Exception $e){
+            Log::error('Failed to load reservations page', [
+                'error' => $e->getMessage(),
+                'action' => 'show_reservation_requests_page',
+                'admin_id' => auth()->id(), // Log the admin performing the action
+            ]);
+        }
+        
     }
 
     // Fetch reservations with filters, pagination, and search
@@ -106,8 +117,11 @@ class ReservationController extends Controller
             })
             ->make(true);
     } catch (Exception $e) {
-        Log::error('Error fetching reservations data: ' . $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine());
-        return response()->json(['error' => trans('errors.fetch_reservations_data')], 500);
+        Log::error('Failed to fetch reservations', [
+            'error' => $e->getMessage(),
+            'action' => 'fetch_reservations',
+            'admin_id' => auth()->id(), // Log the admin performing the action
+        ]);        return response()->json(['error' => trans('errors.fetch_reservations_data')], 500);
     }
 }
 
@@ -154,185 +168,14 @@ class ReservationController extends Controller
 
             return response()->json($summary);
         } catch (Exception $e) {
-            Log::error('Error fetching reservation summary: ' . $e->getMessage());
-            return response()->json(['error' => 'Failed to fetch reservation summary.'], 500);
-        }
-    }
-
-    // Display view to reallocate residents to another room
-    public function relocation()
-    {
-        return view('admin.reservation.relocation');
-    }
-
-    // Show resident info
-    public function show($nationalId)
-    {
-        $user = User::getUserByNationalId($nationalId);
-
-        if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
-        }
-
-        Log::info('User found', [
-            'nationalId' => $nationalId,
-            'user' => $user->toArray(),
-        ]);
-
-        $reservation = $user->reservations()
-            ->where('status', 'active')
-            ->latest()
-            ->first();
-
-        if (!$reservation) {
-            Log::warning('User has no reservation', ['nationalId' => $nationalId]);
-
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' => 'No active reservation found',
-                ],
-                404
-            );
-        }
-
-        $location = $user->getLocationDetails();
-
-        $student = $user->student;
-
-        return response()->json([
-            'success' => true,
-            'reservation' => [
-                'id' => $reservation->id,
-                'room_number' => $location['room'] ?? null,
-                'building_number' => $location['building'] ?? null,
-                'apartment_number' => $location['apartment'] ?? null,
-            ],
-            'student' => [
-                'name_en' => $student->name_en ?? 'N/A',
-                'faculty' => $student->faculty->name_en ?? 'N/A',
-            ],
-        ]);
-    }
-
-    public function swapReservationLocation(Request $request)
-    {
-        // Validate the request data
-        $validatedData = $request->validate([
-            'reservation_id_1' => 'required|exists:reservations,id',
-            'reservation_id_2' => 'required|exists:reservations,id',
-        ]);
-    
-        // Find the reservations
-        $reservation1 = Reservation::with(['user', 'room.apartment.building'])->find($validatedData['reservation_id_1']);
-        $reservation2 = Reservation::with(['user', 'room.apartment.building'])->find($validatedData['reservation_id_2']);
-    
-        // Check if reservations exist
-        if (!$reservation1 || !$reservation2) {
-            return response()->json(['error' => 'Reservations not found'], 404);
-        }
-    
-        // Validate user gender
-        if ($reservation1->user->gender !== $reservation2->user->gender) {
-            return response()->json(['error' => 'Users must be of the same gender to swap reservations'], 400);
-        }
-    
-        // Validate building gender for reservation 1
-        if ($reservation1->user->gender !== $reservation2->room->apartment->building->gender) {
-            return response()->json(['error' => 'Building gender for Reservation 2 does not match the user gender of Reservation 1'], 400);
-        }
-    
-        // Validate building gender for reservation 2
-        if ($reservation2->user->gender !== $reservation1->room->apartment->building->gender) {
-            return response()->json(['error' => 'Building gender for Reservation 1 does not match the user gender of Reservation 2'], 400);
-        }
-    
-        // Swap room IDs
-        $tempRoomId = $reservation1->room_id;
-        $reservation1->room_id = $reservation2->room_id;
-        $reservation2->room_id = $tempRoomId;
-    
-        // Save the changes
-        $reservation1->save();
-        $reservation2->save();
-    
-        // Return success response
-        return response()->json([
-            'success' => true,
-            'message' => 'Reservation locations swapped successfully',
-            'reservation1' => $reservation1,
-            'reservation2' => $reservation2,
-        ]);
-    }
-    public function reallocateReservation(Request $request)
-    {
-        // Validate the request data
-        $validatedData = $request->validate([
-            'reservation_id' => 'required|exists:reservations,id',
-            'room_id' => 'required|exists:rooms,id',
-        ]);
-
-        try {
-            // Find the reservation and new room
-            $reservation = Reservation::findOrFail($validatedData['reservation_id']);
-
-            $newRoom = Room::findOrFail($validatedData['room_id']);
-
-            // Check if the new room is already assigned to another reservation
-            if (Reservation::where('room_id', $newRoom->id)->exists()) {
-                return response()->json(['error' => 'Room is already assigned to another reservation'], 400);
-            }
-
-            // Check if the room's gender matches the resident's gender
-            if ($reservation->user->gender !== $newRoom->apartment->building->gender) {
-                return response()->json(['error' => 'Room gender is different than resident gender'], 400);
-            }
-
-            // Begin the reallocation process
-            DB::beginTransaction();
-
-            // Update the previous room's occupancy if it exists
-            if ($reservation->room_id) {
-                $previousRoom = Room::find($reservation->room_id);
-                if ($previousRoom) {
-                    $previousRoom->current_occupancy -= 1;
-                    if ($previousRoom->current_occupancy != $previousRoom->max_occupancy) {
-                        $previousRoom->full_occupied = 0;
-                    }
-                    $previousRoom->save();
-                }
-            }
-
-            // Update the new room's occupancy
-            $newRoom->current_occupancy += 1;
-            if ($newRoom->current_occupancy == $newRoom->max_occupancy) {
-                $newRoom->full_occupied = 1;
-            }
-            $newRoom->save();
-
-            // Assign the new room to the reservation
-            $reservation->room_id = $newRoom->id;
-            $reservation->save();
-
-            // Commit the transaction
-            DB::commit();
-
-            // Return success response
-            return response()->json([
-                'success' => true,
-                'message' => 'Reservation reallocated successfully',
-                'reservation' => $reservation,
+            Log::error('Failed to fetch reservations summary', [
+                'error' => $e->getMessage(),
+                'action' => 'fetch_reservations_summary',
+                'admin_id' => auth()->id(), // Log the admin performing the action
             ]);
-
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            // Handle case where reservation or room is not found
-            DB::rollBack();
-            return response()->json(['error' => 'Reservation or Room not found'], 404);
-
-        } catch (\Exception $e) {
-            // Handle any other exceptions
-            DB::rollBack();
-            return response()->json(['error' => 'An error occurred while reallocating the reservation: ' . $e->getMessage()], 500);
+                        return response()->json(['error' => 'Failed to fetch reservation summary.'], 500);
         }
     }
+    
+    
 }

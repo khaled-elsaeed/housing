@@ -1,0 +1,190 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Reservation;
+use App\Models\Room;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Exceptions\BusinessRuleException;
+use Exception;
+
+class ReservationSwapService
+{
+    /**
+     * Get user by national ID.
+     *
+     * @param string $nationalId
+     * @return User
+     * @throws Exception
+     */
+    public function getUserByNationalId($nationalId)
+    {
+        try {
+            $user = User::getUserByNationalId($nationalId);
+
+            if (!$user) {
+                throw new Exception('User not found');
+            }
+
+            return $user;
+        } catch (Exception $e) {
+            Log::error('Failed to find user by national ID', [
+                'error' => $e->getMessage(),
+                'action' => 'get_user_by_national_id',
+                'admin_id' => auth()->id(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Get the active reservation for a user.
+     *
+     * @param User $user
+     * @return Reservation
+     * @throws BusinessRuleException|Exception
+     */
+    public function getActiveReservation($user)
+    {
+        try {
+            $reservation = $user->reservations()
+                ->where('status', 'active')
+                ->latest()
+                ->first();
+
+            if (!$reservation) {
+                throw new BusinessRuleException('No active reservation found');
+            }
+
+            return $reservation;
+        } catch (Exception $e) {
+            Log::error('Failed to get active reservation', [
+                'error' => $e->getMessage(),
+                'action' => 'get_active_reservation',
+                'admin_id' => auth()->id(),
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Swap reservation locations for two reservations.
+     *
+     * @param int $reservationId1
+     * @param int $reservationId2
+     * @return array
+     * @throws BusinessRuleException|Exception
+     */
+    public function swapReservationLocations($reservationId1, $reservationId2)
+    {
+        return DB::transaction(function () use ($reservationId1, $reservationId2) {
+            try {
+                $reservation1 = Reservation::with(['user', 'room.apartment.building'])->find($reservationId1);
+                $reservation2 = Reservation::with(['user', 'room.apartment.building'])->find($reservationId2);
+
+                if (!$reservation1 || !$reservation2) {
+                    throw new Exception('Reservations not found');
+                }
+
+                if ($reservation1->user->gender !== $reservation2->user->gender) {
+                    throw new BusinessRuleException('Users must be of the same gender to swap reservations');
+                }
+
+                // Swap room IDs
+                $tempRoomId = $reservation1->room_id;
+                $reservation1->room_id = $reservation2->room_id;
+                $reservation2->room_id = $tempRoomId;
+
+                $reservation1->save();
+                $reservation2->save();
+
+                return [
+                    'reservation1' => $reservation1,
+                    'reservation2' => $reservation2,
+                ];
+            } catch (Exception $e) {
+                Log::error('Failed to swap reservation locations', [
+                    'error' => $e->getMessage(),
+                    'action' => 'swap_reservation_locations',
+                    'admin_id' => auth()->id(),
+                ]);
+                throw $e;
+            }
+        });
+    }
+
+/**
+ * Reallocate a reservation to a new room.
+ *
+ * @param int $reservationId
+ * @param int $roomId
+ * @return array
+ * @throws BusinessRuleException|Exception
+ */
+public function reallocateReservation($reservationId, $roomId)
+{
+    return DB::transaction(function () use ($reservationId, $roomId) {
+        try {
+            // Find the reservation and new room with their relationships
+            $reservation = Reservation::with(['room.apartment.building', 'user'])->findOrFail($reservationId);
+            $newRoom = Room::with('apartment.building')->findOrFail($roomId);
+
+            // Check if the room is already assigned to another reservation
+            if (Reservation::where('room_id', $newRoom->id)->exists()) {
+                throw new BusinessRuleException('Room is already assigned to another reservation');
+            }
+
+            // Check if the room's gender matches the resident's gender
+            if ($reservation->user->gender !== $newRoom->apartment->building->gender) {
+                throw new BusinessRuleException('Room gender is different than resident gender');
+            }
+
+            // Update the previous room's occupancy if it exists
+            if ($reservation->room_id) {
+                $previousRoom = Room::find($reservation->room_id);
+                if ($previousRoom) {
+                    $previousRoom->current_occupancy -= 1;
+                    if ($previousRoom->current_occupancy != $previousRoom->max_occupancy) {
+                        $previousRoom->full_occupied = 0;
+                    }
+                    $previousRoom->save();
+                }
+            }
+
+            // Update the new room's occupancy
+            $newRoom->current_occupancy += 1;
+            if ($newRoom->current_occupancy == $newRoom->max_occupancy) {
+                $newRoom->full_occupied = 1;
+            }
+            $newRoom->save();
+
+            // Assign the new room to the reservation
+            $reservation->room_id = $newRoom->id;
+            $reservation->save();
+
+            // Prepare the new room details
+            $newRoomDetails = [
+                'room_number' => $newRoom->number,
+                'apartment_number' => $newRoom->apartment->number,
+                'building_number' => $newRoom->apartment->building->number,
+            ];
+
+            // Return the reservation and new room details
+            return [
+                'reservation' => $reservation,
+                'new_room_details' => $newRoomDetails,
+            ];
+
+        } catch (Exception $e) {
+            Log::error('Failed to reallocate reservation', [
+                'error' => $e->getMessage(),
+                'action' => 'reallocate_reservation',
+                'admin_id' => auth()->id(),
+            ]);
+            throw $e;
+        }
+    });
+}
+}

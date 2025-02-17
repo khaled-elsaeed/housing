@@ -21,7 +21,7 @@ use App\Http\Controllers\Admin\Applicant\{
 };
 
 
-use App\Http\Controllers\Admin\Reservation\{ReservationController,ReservationRequestsController};
+use App\Http\Controllers\Admin\Reservation\{ReservationController,ReservationRequestsController,ReservationSwapController};
 use App\Http\Controllers\App\UploadController;
 
 use App\Http\Controllers\Student\StudentHomeController;
@@ -200,10 +200,10 @@ Route::middleware(Localization::class)
             
                 // Relocation routes
                 Route::prefix('relocation')->name('relocation.')->group(function () {
-                    Route::get('/', [ReservationController::class, 'relocation'])->name('index');
-                    Route::get('/{userId}', [ReservationController::class, 'show'])->name('show');
-                    Route::post('/swap', [ReservationController::class, 'swapReservationLocation'])->name('swap');
-                    Route::post('/reallocate', [ReservationController::class, 'reallocateReservation'])->name('reallocate');
+                    Route::get('/', [ReservationSwapController::class, 'index'])->name('index');
+                    Route::get('/{userId}', [ReservationSwapController::class, 'show'])->name('show');
+                    Route::post('/swap', [ReservationSwapController::class, 'swapReservationLocation'])->name('swap');
+                    Route::post('/reallocate', [ReservationSwapController::class, 'reallocateReservation'])->name('reallocate');
                 });
             });
 
