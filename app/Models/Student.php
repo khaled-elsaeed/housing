@@ -68,7 +68,7 @@ public function getNameAttribute()
     if ($lang == 'ar') {
         return $this->name_ar;
     }
-    return $this->fname_en;
+    return $this->name_en;
 }
 
     public function reservations()

@@ -152,12 +152,12 @@ class ReservationSwapController extends Controller
             );
 
             // Return the success response with reservation and new room details
-        return response()->json([
-            'success' => true,
-            'message' => 'Reservation reallocated successfully',
-            'reservation' => $reservation['reservation'],
-            'new_room_details' => $reservation['new_room_details'],
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Reservation reallocated successfully',
+                'reservation' => $reservation['reservation'],
+                'new_room_details' => $reservation['new_room_details'],
+            ]);
         } 
         catch (BusinessRuleException $e) {
             

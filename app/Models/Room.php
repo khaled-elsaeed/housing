@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Room extends Model
 {
@@ -31,9 +33,26 @@ class Room extends Model
         return $this->belongsTo(Apartment::class);
     }
 
-    public function reservations()
+      /**
+     * Get all reservations for this room.
+     *
+     * @return HasMany
+     */
+    public function reservations(): HasMany
     {
         return $this->hasMany(Reservation::class);
+    }
+
+    /**
+     * Get the last active reservation for this room.
+     *
+     * @return HasOne
+     */
+    public function reservation(): HasOne
+    {
+        return $this->hasOne(Reservation::class)
+            ->where('status', 'active') // Filter by active status
+            ->latest(); // Order by the latest reservation
     }
 
     public function getLocation()

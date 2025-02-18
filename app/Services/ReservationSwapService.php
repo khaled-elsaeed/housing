@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Exceptions\BusinessRuleException;
 use Exception;
+use App\Events\ReservationRoomChanged; // Import the event
 
 class ReservationSwapService
 {
@@ -100,6 +101,10 @@ class ReservationSwapService
                 $reservation1->save();
                 $reservation2->save();
 
+                // Dispatch events for both reservations
+                event(new ReservationRoomChanged($reservation1->room));
+                event(new ReservationRoomChanged($reservation2->room));
+
                 return [
                     'reservation1' => $reservation1,
                     'reservation2' => $reservation2,
@@ -115,76 +120,81 @@ class ReservationSwapService
         });
     }
 
-/**
- * Reallocate a reservation to a new room.
- *
- * @param int $reservationId
- * @param int $roomId
- * @return array
- * @throws BusinessRuleException|Exception
- */
-public function reallocateReservation($reservationId, $roomId)
-{
-    return DB::transaction(function () use ($reservationId, $roomId) {
-        try {
-            // Find the reservation and new room with their relationships
-            $reservation = Reservation::with(['room.apartment.building', 'user'])->findOrFail($reservationId);
-            $newRoom = Room::with('apartment.building')->findOrFail($roomId);
+    /**
+     * Reallocate a reservation to a new room.
+     *
+     * @param int $reservationId
+     * @param int $roomId
+     * @return array
+     * @throws BusinessRuleException|Exception
+     */
+    public function reallocateReservation($reservationId, $roomId)
+    {
+        return DB::transaction(function () use ($reservationId, $roomId) {
+            try {
+                // Find the reservation and new room with their relationships
+                $reservation = Reservation::with(['room.apartment.building', 'user'])->findOrFail($reservationId);
+                $newRoom = Room::with('apartment.building')->findOrFail($roomId);
 
-            // Check if the room is already assigned to another reservation
-            if (Reservation::where('room_id', $newRoom->id)->exists()) {
-                throw new BusinessRuleException('Room is already assigned to another reservation');
-            }
-
-            // Check if the room's gender matches the resident's gender
-            if ($reservation->user->gender !== $newRoom->apartment->building->gender) {
-                throw new BusinessRuleException('Room gender is different than resident gender');
-            }
-
-            // Update the previous room's occupancy if it exists
-            if ($reservation->room_id) {
-                $previousRoom = Room::find($reservation->room_id);
-                if ($previousRoom) {
-                    $previousRoom->current_occupancy -= 1;
-                    if ($previousRoom->current_occupancy != $previousRoom->max_occupancy) {
-                        $previousRoom->full_occupied = 0;
-                    }
-                    $previousRoom->save();
+                // Check if the room is already assigned to another reservation
+                if (Reservation::where('room_id', $newRoom->id)->exists()) {
+                    throw new BusinessRuleException('Room is already assigned to another reservation');
                 }
+
+                // Check if the room's gender matches the resident's gender
+                if ($reservation->user->gender !== $newRoom->apartment->building->gender) {
+                    throw new BusinessRuleException('Room gender is different than resident gender');
+                }
+
+                // Update the previous room's occupancy if it exists
+                if ($reservation->room_id) {
+                    $previousRoom = Room::find($reservation->room_id);
+                    if ($previousRoom) {
+                        $previousRoom->current_occupancy -= 1;
+                        if ($previousRoom->current_occupancy != $previousRoom->max_occupancy) {
+                            $previousRoom->full_occupied = 0;
+                        }
+                        $previousRoom->save();
+                    }
+                }
+
+                // Update the new room's occupancy
+                $newRoom->current_occupancy += 1;
+                if ($newRoom->current_occupancy == $newRoom->max_occupancy) {
+                    $newRoom->full_occupied = 1;
+                }
+
+                $newRoom->save();
+
+                // Assign the new room to the reservation
+                $reservation->room_id = $newRoom->id;
+                $reservation->save();
+
+                // Dispatch the event for the room change
+                log::info('sending now......');
+                event(new ReservationRoomChanged($newRoom));
+
+                // Prepare the new room details
+                $newRoomDetails = [
+                    'room_number' => $newRoom->number,
+                    'apartment_number' => $newRoom->apartment->number,
+                    'building_number' => $newRoom->apartment->building->number,
+                ];
+
+                // Return the reservation and new room details
+                return [
+                    'reservation' => $reservation,
+                    'new_room_details' => $newRoomDetails,
+                ];
+
+            } catch (Exception $e) {
+                Log::error('Failed to reallocate reservation', [
+                    'error' => $e->getMessage(),
+                    'action' => 'reallocate_reservation',
+                    'admin_id' => auth()->id(),
+                ]);
+                throw $e;
             }
-
-            // Update the new room's occupancy
-            $newRoom->current_occupancy += 1;
-            if ($newRoom->current_occupancy == $newRoom->max_occupancy) {
-                $newRoom->full_occupied = 1;
-            }
-            $newRoom->save();
-
-            // Assign the new room to the reservation
-            $reservation->room_id = $newRoom->id;
-            $reservation->save();
-
-            // Prepare the new room details
-            $newRoomDetails = [
-                'room_number' => $newRoom->number,
-                'apartment_number' => $newRoom->apartment->number,
-                'building_number' => $newRoom->apartment->building->number,
-            ];
-
-            // Return the reservation and new room details
-            return [
-                'reservation' => $reservation,
-                'new_room_details' => $newRoomDetails,
-            ];
-
-        } catch (Exception $e) {
-            Log::error('Failed to reallocate reservation', [
-                'error' => $e->getMessage(),
-                'action' => 'reallocate_reservation',
-                'admin_id' => auth()->id(),
-            ]);
-            throw $e;
-        }
-    });
-}
+        });
+    }
 }
