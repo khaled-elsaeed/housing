@@ -30,7 +30,7 @@
    <!-- Dashboard Content -->
    <div class="row">
       <!-- Reservation Overview -->
-      <div class="col-lg-8">
+      <div class="col-lg-8 mb-3">
          @if($reservation)
          <div class="card border-0 mb-4">
             <div class="card-header bg-white border-0 py-3">

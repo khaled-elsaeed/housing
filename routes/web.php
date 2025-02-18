@@ -21,8 +21,11 @@ use App\Http\Controllers\Admin\Applicant\{
 };
 
 
+
+
 use App\Http\Controllers\Admin\Reservation\{ReservationController,ReservationRequestsController,ReservationSwapController};
 use App\Http\Controllers\App\UploadController;
+use App\Http\Controllers\App\NotificationController;
 
 use App\Http\Controllers\Student\StudentHomeController;
 use App\Http\Controllers\Student\StudentReservationRequestController;
@@ -298,4 +301,9 @@ Route::middleware(Localization::class)
 
 // Keep only non-auth routes outside
 Route::post('upload', UploadController::class,'')->name('upload');
+
+// Notification Routes
+Route::post('/notifications/{notification}/mark-as-read',[NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+Route::post('/notifications/mark-all-as-read',[NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 

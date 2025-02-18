@@ -61,17 +61,18 @@
                                     </div>
                                 </li>
                             @else
-                                @foreach(auth()->user()->notifications as $notification)
-                                    <li class="d-flex p-2 mt-1 dropdown-item">
-                                        <span class="action-icon badge badge-info">
-                                            <i class="feather icon-check-circle"></i>
-                                        </span>
-                                        <div class="media-body">
-                                            <p>{{ $notification->data['message'] }}</p>
-                                            <p><span class="timing">{{ \Carbon\Carbon::parse($notification->created_at)->setTimezone('Africa/Cairo')->diffForHumans() }}</span></p>
-                                        </div>
-                                    </li>
-                                @endforeach
+                            @foreach(auth()->user()->notifications->take(5) as $notification)
+                                <li class="d-flex p-2 mt-1 dropdown-item">
+                                    <span class="action-icon badge badge-info">
+                                        <i class="feather icon-check-circle"></i>
+                                    </span>
+                                    <div class="media-body">
+                                        <p>{{ $notification->data['message'] }}</p>
+                                        <p><span class="timing">{{ \Carbon\Carbon::parse($notification->created_at)->setTimezone('Africa/Cairo')->diffForHumans() }}</span></p>
+                                    </div>
+                                </li>
+                            @endforeach
+
                             @endif
                         </ul>
                     </div>
