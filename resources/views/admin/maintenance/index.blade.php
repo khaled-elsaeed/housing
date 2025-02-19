@@ -214,22 +214,18 @@
                <table id="default-datatable" class="display table table-bordered">
                   <thead>
                      <tr>
-                        <th>@lang('No.')</th>
-                        <th>@lang('Student Name')</th>
-                        <th>@lang('Location')</th>
+                        <th>@lang('Resident Name')</th>
+                        <th>@lang('Resident Location')</th>
+                        <th>@lang('Resident Phone')</th>
+                        <th>@lang('Title')</th>
                         <th>@lang('Description')</th>
                         <th>@lang('Status')</th>
+                        <th>@lang('Assigned Staff')</th>
+                        <th>@lang('Created At')</th>
                         <th>@lang('Actions')</th>
-                        <th>@lang('Actions')</th>
-
-                        <th>@lang('Actions')</th>
-
-                        <th>@lang('Actions')</th>
-
                      </tr>
                   </thead>
                   <tbody>
-                    
                   </tbody>
                </table>
             </div>
@@ -237,6 +233,7 @@
       </div>
    </div>
 </div>
+
 
 <!-- Modal -->
 <div class="modal fade" id="viewRequestModal" tabindex="-1" aria-labelledby="viewRequestModalLabel" aria-hidden="true">
@@ -262,7 +259,46 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="maintenancAssignModal" tabindex="-1" role="dialog" aria-labelledby="maintenancAssignModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Accept Maintenance Request</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 
+            </div>
+            <form id="maintenanceForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="categorySelect">Category</label>
+                        <select id="categorySelect" class="form-control" required>
+                            <option value="General Housing Issues">General Housing Issues</option>
+                            <option value="Electrical Issues">Electrical Issues</option>
+                            <option value="Water and Sanitary Issues">Water and Sanitary Issues</option>
+
+
+                            <!-- Add other categories as needed -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="optionsSelect">Available Options</label>
+                        <select id="optionsSelect" class="form-control" required>
+                            <option value="">Select an option</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="maintenanceNotes">Notes</label>
+                        <textarea id="maintenanceNotes" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @endsection
 
@@ -274,7 +310,9 @@
 <script src="{{ asset('js/pages/maintenance.js') }}"></script>
 <script>
     window.routes = {
-      fetchRequests: "{{ route('admin.maintenance.requests.fetch') }}",  
+      fetchRequests: "{{ route('admin.maintenance.requests.fetch') }}",
+      fetchStaff: "{{ route('admin.maintenance.requests.fetchStaff') }}",  
+
     };
 </script>
 @endsection

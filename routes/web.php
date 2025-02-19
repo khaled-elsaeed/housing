@@ -16,10 +16,6 @@ use App\Http\Controllers\Admin\{
     AdminSettingsController,
 };
 
-use App\Http\Controllers\Admin\Applicant\{
-    ApplicantController,
-};
-
 
 
 use App\Http\Controllers\Admin\Maintenance\{
@@ -94,17 +90,6 @@ Route::middleware(Localization::class)
                 Route::get('/stats', [AdminHomeController::class, 'fetchStats'])->name('.stats');
             });
             
-
-            Route::prefix('applicants')->name('applicants')->group(function () {
-                Route::get('/', [ApplicantController::class, 'showApplicantPage'])->name(''); 
-                Route::get('/fetch', [ApplicantController::class, 'fetchApplicants'])->name('.fetch'); 
-                Route::get('/stats', [ApplicantController::class, 'fetchStats'])->name('.stats'); 
-                Route::get('/{id}', [ApplicantController::class, 'fetchApplicantInfo'])->name('.details');
-                // Export Routes
-                Route::prefix('export')->name('.export-')->group(function () {
-                    Route::get('/excel', [ApplicantController::class, 'downloadApplicantsExcel'])->name('excel'); 
-                });
-            });
 
             Route::prefix('invoices')->name('invoices')->group(function () {
                 Route::get('/', [InvoiceController::class, 'showInvoicesPage'])->name('.index');  // Show invoices page
@@ -257,6 +242,7 @@ Route::middleware(Localization::class)
             // Maintenance and Settings
             Route::get('/maintenance', [MaintenanceController::class, 'index'])->name('maintenance.index');
             Route::get('/maintenance/fetch', [MaintenanceController::class, 'fetchRequests'])->name('maintenance.requests.fetch');
+            Route::get('/maintenance/fetchStaff', [MaintenanceController::class, 'fetchStaff'])->name('maintenance.requests.fetchStaff');
 
             Route::get('settings', [AdminSettingsController::class, 'index'])->name('setting');
             Route::post('settings/reservation-update', [AdminSettingsController::class, 'updateReservationSettings'])->name('setting.update-reservation');

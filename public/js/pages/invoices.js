@@ -184,6 +184,9 @@ $(document).ready(function() {
             {
                 data: 'phone',
                 name: 'phone'
+            },{
+                data:'reservation_duration',
+                name:'reservation_duration'
             },
             {
                 data: 'status',

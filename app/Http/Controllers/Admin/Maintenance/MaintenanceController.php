@@ -44,44 +44,44 @@ class MaintenanceController extends Controller
         $rejectedMaintenanceRequestsCount = MaintenanceRequest::where('status', 'rejected')->count();
     
         // Gender Breakdown for Total Requests
-        $maleTotalCount = MaintenanceRequest::whereHas('reservation.user', function ($query) {
+        $maleTotalCount = MaintenanceRequest::whereHas('room.reservation.user', function ($query) {
             $query->where('gender', 'male');
         })->count();
     
-        $femaleTotalCount = MaintenanceRequest::whereHas('reservation.user', function ($query) {
+        $femaleTotalCount = MaintenanceRequest::whereHas('room.reservation.user', function ($query) {
             $query->where('gender', 'female');
         })->count();
     
         // Gender Breakdown for Pending Requests
         $malePendingCount = MaintenanceRequest::where('status', 'pending')
-            ->whereHas('reservation.user', function ($query) {
+            ->whereHas('room.reservation.user', function ($query) {
                 $query->where('gender', 'male');
             })->count();
     
         $femalePendingCount = MaintenanceRequest::where('status', 'pending')
-            ->whereHas('reservation.user', function ($query) {
+            ->whereHas('room.reservation.user', function ($query) {
                 $query->where('gender', 'female');
             })->count();
     
         // Gender Breakdown for Completed Requests
         $maleCompletedCount = MaintenanceRequest::where('status', 'completed')
-            ->whereHas('reservation.user', function ($query) {
+            ->whereHas('room.reservation.user', function ($query) {
                 $query->where('gender', 'male');
             })->count();
     
         $femaleCompletedCount = MaintenanceRequest::where('status', 'completed')
-            ->whereHas('reservation.user', function ($query) {
+            ->whereHas('room.reservation.user', function ($query) {
                 $query->where('gender', 'female');
             })->count();
     
         // Gender Breakdown for Rejected Requests
         $maleRejectedCount = MaintenanceRequest::where('status', 'rejected')
-            ->whereHas('reservation.user', function ($query) {
+            ->whereHas('room.reservation.user', function ($query) {
                 $query->where('gender', 'male');
             })->count();
     
         $femaleRejectedCount = MaintenanceRequest::where('status', 'rejected')
-            ->whereHas('reservation.user', function ($query) {
+            ->whereHas('room.reservation.user', function ($query) {
                 $query->where('gender', 'female');
             })->count();
     
@@ -161,96 +161,125 @@ class MaintenanceController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function fetchRequests(Request $request)
-{
-    try {
-        $currentLang = App::getLocale();
+    {
+        try {
+            $currentLang = App::getLocale();
 
-        $query = MaintenanceRequest::with(['room.reservation.user'])
-            ->select('maintenance_requests.*')
-            ->orderByRaw("
-                CASE 
-                    WHEN status = 'pending' THEN 1
-                    WHEN status = 'assigned' THEN 2
-                    WHEN status = 'in_progress' THEN 3
-                    ELSE 4
-                END,
-                created_at DESC
-            ");
+            $query = MaintenanceRequest::with(['room.reservation.user'])
+                ->select('maintenance_requests.*')
+                ->orderByRaw("
+                    CASE 
+                        WHEN status = 'pending' THEN 1
+                        WHEN status = 'assigned' THEN 2
+                        WHEN status = 'in_progress' THEN 3
+                        ELSE 4
+                    END,
+                    created_at DESC
+                ");
 
-        // Filter by status
-        if ($request->filled('status')) {
-            $status = $request->get('status');
-            $query->where('status', $status);
-        }
+            // Filter by status
+            if ($request->filled('status')) {
+                $status = $request->get('status');
+                $query->where('status', $status);
+            }
 
-        // Custom search filtering
-        if ($request->filled('customSearch')) {
-            $searchTerm = $request->get('customSearch');
-            $query->where(function ($q) use ($searchTerm, $currentLang) {
-                $q->whereHas('room.reservation.user', function ($userQuery) use ($searchTerm, $currentLang) {
-                    $userQuery->where('name', 'like', "%{$searchTerm}%")
-                        ->orWhere('email', 'like', "%{$searchTerm}%")
-                        ->orWhere('phone', 'like', "%{$searchTerm}%");
+            // Custom search filtering
+            if ($request->filled('customSearch')) {
+                $searchTerm = $request->get('customSearch');
+                $query->where(function ($q) use ($searchTerm, $currentLang) {
+                    $q->whereHas('room.reservation.user', function ($userQuery) use ($searchTerm, $currentLang) {
+                        $userQuery->where('name', 'like', "%{$searchTerm}%")
+                            ->orWhere('email', 'like', "%{$searchTerm}%")
+                            ->orWhere('phone', 'like', "%{$searchTerm}%");
+                    })
+                    ->orWhere('title', 'like', "%{$searchTerm}%")
+                    ->orWhere('description', 'like', "%{$searchTerm}%");
+                });
+            }
+
+            return DataTables::of($query)
+                ->addColumn('resident_name', function ($request) {
+                    return $request->room->reservation->user->name ?? 'N/A';
                 })
-                ->orWhere('title', 'like', "%{$searchTerm}%")
-                ->orWhere('description', 'like', "%{$searchTerm}%");
-            });
+                ->addColumn('resident_location', function ($request) {
+                    $roomNumber = $request->room->number ?? 'N/A';
+                    $apartmentNumber = $request->room->apartment->number ?? 'N/A';
+                    $buildingNumber = $request->room->apartment->building->number ?? 'N/A';
+                
+                    return trans('resident_location', [
+                        'room' => $roomNumber,
+                        'apartment' => $apartmentNumber,
+                        'building' => $buildingNumber
+                    ]);
+                })
+                
+                ->addColumn('resident_phone', function ($request) {
+                    return $request->room->reservation->user->phone ?? 'N/A';
+                })
+                ->addColumn('category', function ($request) {
+                    return $request->category->name;
+                })
+                ->addColumn('problems', function ($request) {
+                    return collect($request->problems);
+                })
+                ->addColumn('status', function ($request) {
+                    return trans($request->status);
+                })
+                ->addColumn('assigned_staff', function ($request) {
+                    return $request->assignments?->first()?->staff->name ?? 'N/A';
+                })
+                ->addColumn('created_at', function ($request) {
+                    return $request->created_at->format('Y-m-d H:i:s');
+                })
+                
+                ->make(true);
+        } catch (Exception $e) {
+            Log::error('Failed to fetch maintenance requests', [
+                'error' => $e->getMessage(),
+                'action' => 'fetch_maintenance_requests',
+                'request_data' => $request->all(),
+                'admin_id' => auth()->id(),
+            ]);
+            return response()->json(["error" => "Failed to fetch maintenance requests data."], 500);
         }
-
-        return DataTables::of($query)
-            ->addColumn('resident_name', function ($request) {
-                return $request->room->reservation->user->name ?? 'N/A';
-            })
-            ->addColumn('resident_location', function ($request) {
-                $roomNumber = $request->room->number ?? 'N/A';
-                $apartmentNumber = $request->room->apartment->number ?? 'N/A';
-                $buildingNumber = $request->room->apartment->building->number ?? 'N/A';
-            
-                return trans('resident_location', [
-                    'room' => $roomNumber,
-                    'apartment' => $apartmentNumber,
-                    'building' => $buildingNumber
-                ]);
-            })
-            
-            ->addColumn('resident_phone', function ($request) {
-                return $request->room->reservation->user->phone ?? 'N/A';
-            })
-            ->addColumn('title', function ($request) {
-                return $request->title;
-            })
-            ->addColumn('description', function ($request) {
-                return $request->description;
-            })
-            ->addColumn('status', function ($request) {
-                return trans($request->status);
-            })
-            ->addColumn('assigned_staff', function ($request) {
-                return $request->assignments?->first()?->staff->name ?? 'N/A';
-            })
-            ->addColumn('created_at', function ($request) {
-                return $request->created_at->format('Y-m-d H:i:s');
-            })
-            ->addColumn('actions', function ($request) {
-                $actions = '';
-                if ($request->status === 'pending') {
-                    $actions .= '<button class="btn btn-sm btn-primary assign-btn" data-id="' . $request->id . '">Assign</button>';
-                }
-                if ($request->status === 'assigned' || $request->status === 'in_progress') {
-                    $actions .= '<button class="btn btn-sm btn-success complete-btn" data-id="' . $request->id . '">Complete</button>';
-                }
-                return $actions;
-            })
-            ->rawColumns(['actions'])
-            ->make(true);
-    } catch (Exception $e) {
-        Log::error('Failed to fetch maintenance requests', [
-            'error' => $e->getMessage(),
-            'action' => 'fetch_maintenance_requests',
-            'request_data' => $request->all(),
-            'admin_id' => auth()->id(),
-        ]);
-        return response()->json(["error" => "Failed to fetch maintenance requests data."], 500);
     }
+
+
+
+public function fetchStaff(Request $request)
+{
+    // Get category name from request
+    $categoryName = $request->input('category');
+
+    // Define category-to-role mapping
+    $categoryRoles = [
+        'Water and Sanitary Issues' => ['plumber'],
+        'Electrical Issues' => ['electrician'],
+        'General Housing Issues' => ['carpenter', 'plumber', 'electrician'],
+    ];
+
+    // Validate if category exists
+    if (!isset($categoryRoles[$categoryName])) {
+        return response()->json(['error' => 'Invalid category name'], 400);
+    }
+
+    // Get the roles associated with the category
+    $roles = $categoryRoles[$categoryName];
+
+   // Fetch users who have "technician" as the main role AND match the category roles
+$technicians = User::whereHas('roles', fn($query) => $query->where('name', 'technician'))
+->whereHas('roles', fn($query) => $query->whereIn('name', $roles))
+->with('roles')
+->get();
+
+$technicians = $technicians->map(function ($tech) {
+$tech->name = $tech->name; // Assuming 'name' is a property
+return $tech; // Return the modified object
+});
+
+    
+    return response()->json(["staff"=>$technicians]);
 }
+
+
 }

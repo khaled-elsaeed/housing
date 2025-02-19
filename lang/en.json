@@ -561,6 +561,7 @@
     "Profile picture deleted successfully": "Profile picture deleted successfully",
     "No profile picture found": "No profile picture found",
     "Payments Info":"Payments Info",
+    "Reservation Duration":"Reservation Duration",
 
     "Users must be of the same gender to swap reservations": "Users must be of the same gender to swap reservations",
     "Room is already assigned to another reservation": "Room is already assigned to another reservation",

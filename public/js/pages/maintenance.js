@@ -1,10 +1,41 @@
 $(document).ready(function () {
     const isArabic = $('html').attr('dir') === 'rtl';
+    $('body').tooltip({ selector: '.more-problems' });
+
+    // Translation dictionary
+    const translations = {
+        en: {
+            approve: 'Approve',
+            reject: 'Reject',
+            acceptedAt: 'Accepted at',
+            noIssues: 'No issues available',
+            noAdditionalInfo: 'No additional information available',
+            errorFetchingIssues: 'Error fetching issues',
+            statusUpdatedSuccessfully: 'Status updated successfully',
+            anErrorOccurred: 'An error occurred'
+        },
+        ar: {
+            approve: 'موافقة',
+            reject: 'رفض',
+            acceptedAt: 'تم القبول في',
+            noIssues: 'لا توجد مشكلات',
+            noAdditionalInfo: 'لا توجد معلومات إضافية',
+            errorFetchingIssues: 'حدث خطأ أثناء جلب المشكلات',
+            statusUpdatedSuccessfully: 'تم تحديث الحالة بنجاح',
+            anErrorOccurred: 'حدث خطأ'
+        }
+    };
+
+    // Helper function to translate text
+    function gettext(key, lang) {
+        return translations[lang]?.[key] || key; // Fallback to the key if translation is missing
+    }
 
     // Initialize DataTable
     const table = $('#default-datatable').DataTable({
         processing: true,
         serverSide: true,
+        responsive: true,
         ajax: {
             url: window.routes.fetchRequests,
             type: 'GET',
@@ -17,17 +48,67 @@ $(document).ready(function () {
             { data: 'resident_name', name: 'resident_name' },
             { data: 'resident_location', name: 'resident_location' },
             { data: 'resident_phone', name: 'resident_phone' },
-            { data: 'title', name: 'title' },
-            { data: 'description', name: 'description' },
+            { data: 'category', name: 'category' },
+            {
+                data: 'problems',
+                name: 'problems',
+                render: function (data) {
+                    if (!data) return ''; // Handle null values safely
+
+                    let problems = JSON.parse(data); // Convert JSON string to JS object
+                    if (!Array.isArray(problems)) return ''; // Ensure it's an array
+
+                    let displayedProblems = problems.slice(0, 3) // Show only first 3
+                        .map(problem => `<span class="badge bg-primary">${problem.name}</span>`)
+                        .join(' ');
+
+                    if (problems.length > 3) {
+                        let moreProblems = problems.slice(3) // Remaining problems
+                            .map(problem => problem.name).join(', ');
+
+                        displayedProblems += ` <span class="text-info more-problems" 
+                                                data-bs-toggle="tooltip" 
+                                                title="${moreProblems}">
+                                                +${problems.length - 3} more
+                                            </span>`;
+                    }
+
+                    return displayedProblems;
+                }
+            },
             { data: 'status', name: 'status' },
             { data: 'assigned_staff', name: 'assigned_staff' },
             { data: 'created_at', name: 'created_at' },
-            { data: 'actions', name: 'actions', orderable: false, searchable: false },
+            {
+                data: null,
+                render: function (data) {
+                    const lang = $('html').attr('lang') || 'en';
+                    if (data.status === 'pending') {
+                        return renderPendingActions(data);
+                    }
+                    if (data.status === 'accepted' && data.updated_at) {
+                        return renderAcceptedStatus(data);
+                    }
+                    return '';
+                }
+            }
         ],
         language: isArabic ? {
-            url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json",
-        } : {},
+            url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json"
+        } : {}
     });
+
+    // Helper function to render accepted status
+    function renderAcceptedStatus(data) {
+        const lang = $('html').attr('lang') || 'en';
+        const formattedDate = data.actions; // Assuming `actions` contains the formatted date
+        return `
+            <div class="accepted-status">
+                <span class="badge badge-success">${gettext('acceptedAt', lang)}</span>
+                <br>
+                <large>${formattedDate}</large>
+            </div>`;
+    }
 
     // Reload table on search or filter change
     $('#searchBox').on('keyup', function () {
@@ -67,7 +148,7 @@ $(document).ready(function () {
                     .addClass('loading')
                     .prop('disabled', true);
             } else {
-                button.html('<i class="fa fa-spinner fa-spin"></i> Downloading...')
+                button.html('<i class="fa fa-spinner fa-spin"></i> Loading...')
                     .addClass('loading')
                     .prop('disabled', true);
             }
@@ -79,105 +160,109 @@ $(document).ready(function () {
         }
     }
 
-    // Function to update request status
-    function updateStatus(requestId, status) {
-        const updateStatusUrl = window.routes.updateStatus.replace(':id', requestId);
-
-        const formData = {
-            status: status,
-            _token: $('meta[name="csrf-token"]').attr('content')
-        };
-
-        $.ajax({
-            url: updateStatusUrl,
-            type: 'PUT',
-            data: formData,
-            beforeSend: function () {
-                toggleButtonLoading($('#in-progress-status-btn-' + requestId), true);
-                toggleButtonLoading($('#reject-status-btn-' + requestId), true);
-            },
-            success: function (response) {
-                if (response.success) {
-                    swal('Success!', response.message || 'Status updated successfully.', 'success');
-                    location.reload();
-                }
-            },
-            error: function (xhr) {
-                swal('Error!', (xhr.responseJSON && xhr.responseJSON.message) || 'An error occurred.', 'error');
-            },
-            complete: function () {
-                toggleButtonLoading($('#in-progress-status-btn-' + requestId), false);
-                toggleButtonLoading($('#reject-status-btn-' + requestId), false);
-            }
-        });
+    // Modified renderPendingActions function to include category data
+    function renderPendingActions(data) {
+        const lang = $('html').attr('lang') || 'en';
+        return `
+            <div class="action-buttons">
+                <button class="btn btn-round btn-success accept-btn" 
+                    data-id="${data.id}" 
+                    data-category="${data.category || 'maintenance'}"
+                    title="${gettext('approve', lang)}">
+                    <i class="feather icon-check"></i>
+                </button>
+                <button class="btn btn-round btn-danger reject-btn" 
+                    data-id="${data.id}" 
+                    title="${gettext('reject', lang)}">
+                    <i class="feather icon-x"></i>
+                </button>
+            </div>`;
     }
 
-    // Event listeners for status buttons
-    $(document).on('click', '[id^="in-progress-status-btn-"]', function () {
-        const requestId = $(this).attr('id').split('-').pop();
-        updateStatus(requestId, 'in_progress');
+    // Handle accept button click
+    $(document).on('click', '.accept-btn', function () {
+        const requestId = $(this).data('id');
+        const category = $(this).data('category');
+
+        // Open modal and pre-select category
+        $('#maintenancAssignModal').modal('show');
+        $('#categorySelect').val(category).trigger('change');
+        $('#maintenancAssignModal').data('requestId', requestId);
     });
 
-    $(document).on('click', '[id^="reject-status-btn-"]', function () {
-        const requestId = $(this).attr('id').split('-').pop();
-        updateStatus(requestId, 'rejected');
-    });
+    // Handle category change to load available options
+    $('#categorySelect').on('change', function () {
+        const selectedCategory = $(this).val();
+        const optionsSelect = $('#optionsSelect');
 
-    $(document).on('click', '[id^="complete-status-btn-"]', function () {
-        const requestId = $(this).attr('id').split('-').pop();
-        updateStatus(requestId, 'completed');
-    });
+        // Clear current options
+        optionsSelect.empty().append('<option>Loading...</option>');
 
-    // Modal for viewing request details
-    $('#viewRequestModal').on('show.bs.modal', function (event) {
-        const button = $(event.relatedTarget);
-        const requestId = button.data('request-id');
-        const currentLang = $('html').attr('lang') || 'en'; // Default to 'en' if lang attribute is not set
-
-        // Mapping of issue types and descriptions
-        const issueTypeMapping = {
-            'electrical_issues': { en: 'Electrical Issues', ar: 'مشاكل كهربائية' },
-            'water_issues': { en: 'Water Issues', ar: 'مشاكل مائية' },
-            'housing_issues': { en: 'Housing Issues', ar: 'مشاكل سكنية' },
-            'General Housing': { en: 'General Housing', ar: 'مشاكل السكن العامة' }
-        };
-
-        const descriptionMapping = {
-            'leakage': { en: 'Water Leakage', ar: 'تسرب مياه' },
-            'sewage_problem': { en: 'Sewage Problem', ar: 'مشكلة في الصرف الصحي' },
-            'plumbing_problem': { en: 'Plumbing Problem', ar: 'مشكلة في السباكة' },
-            'bulb_replacement': { en: 'Bulb Replacement', ar: 'استبدال مصباح' },
-            'fan_issue': { en: 'Fan Issue', ar: 'مشكلة في المروحة' },
-            'water_heater_issue': { en: 'Water Heater Issue', ar: 'مشكلة في سخان المياه' },
-            'electricity_problem': { en: 'Electricity Problem', ar: 'مشكلة كهربائية' },
-            'furniture_damage': { en: 'Furniture Damage', ar: 'تلف الأثاث' },
-            'appliance_issue': { en: 'Appliance Issue', ar: 'مشكلة في الأجهزة' },
-            'door_window_issue': { en: 'Door/Window Problem', ar: 'مشكلة في الباب/النافذة' }
-        };
-
-        // Fetch request details
+        // Fetch available options for the selected category
         $.ajax({
-            url: window.routes.getIssues.replace(':id', requestId),
-            type: 'GET',
-            dataType: 'json',
+            url: window.routes.fetchStaff,
+            method: 'GET',
+            data: { category: selectedCategory },
             success: function (response) {
-                $('#issueList').empty();
-
-                if (response.issues.length > 0) {
-                    response.issues.forEach(function (issue) {
-                        const issueTypeDescription = issueTypeMapping[issue.issue_type]?.[currentLang] || issue.issue_type;
-                        const issueDescription = descriptionMapping[issue.description]?.[currentLang] || issue.description;
-
-                        $('#issueList').append('<li class="list-group-item">' + issueTypeDescription + ': ' + issueDescription + '</li>');
+                optionsSelect.empty();
+                if (response.staff && response.staff.length > 0) {
+                    response.staff.forEach(staff => {
+                        optionsSelect.append(`<option value="${staff.id}">${staff.name}</option>`);
                     });
                 } else {
-                    $('#issueList').append('<li class="list-group-item">' + (currentLang === 'ar' ? 'لا توجد مشكلات' : 'No issues available') + '</li>');
+                    optionsSelect.append('<option value="">No options available</option>');
                 }
-
-                $('#additionalInfo').text(response.additional_info || (currentLang === 'ar' ? 'لا توجد معلومات إضافية' : 'No additional information available'));
             },
             error: function () {
-                alert(currentLang === 'ar' ? 'حدث خطأ أثناء جلب المشكلات' : 'Error fetching issues');
+                optionsSelect.empty().append('<option value="">Error loading options</option>');
+            }
+        });
+    });
+
+    // Handle maintenance form submission
+    $('#maintenanceForm').on('submit', function (e) {
+        e.preventDefault();
+
+        const requestId = $('#maintenanceModal').data('requestId');
+        const $submitButton = $(this).find('button[type="submit"]');
+        const formData = {
+            request_id: requestId,
+            category: $('#categorySelect').val(),
+            option_id: $('#optionsSelect').val(),
+            notes: $('#maintenanceNotes').val()
+        };
+
+        // Show loading state
+        toggleButtonLoading($submitButton, true);
+
+        // Submit the form
+        $.ajax({
+            url: window.routes.acceptRequest,
+            method: 'POST',
+            data: formData,
+            success: function (response) {
+                $('#maintenanceModal').modal('hide');
+                table.ajax.reload();
+
+                // Show success message using SweetAlert2
+                swal({
+                    type: 'success',
+                    title: gettext('statusUpdatedSuccessfully', $('html').attr('lang') || 'en'),
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            },
+            error: function () {
+                // Show error message using SweetAlert2
+                swal({
+                    type: 'error',
+                    title: gettext('anErrorOccurred', $('html').attr('lang') || 'en'),
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            },
+            complete: function () {
+                toggleButtonLoading($submitButton, false);
             }
         });
     });

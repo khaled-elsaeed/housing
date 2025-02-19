@@ -194,6 +194,15 @@ class InvoiceController extends Controller
             ->addColumn('admin_approval', function ($invoice) {
                 return trans($invoice->admin_approval);
             })
+            ->addColumn('admin_approval', function ($invoice) {
+                return trans($invoice->admin_approval);
+            })
+            ->editColumn('reservation_duration', function ($request) {
+                if ($request->reservation->period_type === "long" && $request->reservation->academicTerm) {
+                    return trans($request->reservation->academicTerm->semester . " Term ( " . ($request->reservation->academicTerm->name) . " " . $request->reservation->academicTerm->academic_year . " )");
+                }
+                return $request->period_duration;
+            })
             ->make(true);
     } catch (Exception $e) {
         Log::error('Failed to fetch invoices', [
