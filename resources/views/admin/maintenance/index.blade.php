@@ -220,62 +220,16 @@
                         <th>@lang('Description')</th>
                         <th>@lang('Status')</th>
                         <th>@lang('Actions')</th>
+                        <th>@lang('Actions')</th>
+
+                        <th>@lang('Actions')</th>
+
+                        <th>@lang('Actions')</th>
+
                      </tr>
                   </thead>
                   <tbody>
-                     @foreach($maintenanceRequests as $request)
-                        <tr>
-                           <td>{{ $loop->iteration }}</td>
-                           <td>{{ $request->user->getUsername() }}</td>
-                           <?php
-                              $location = method_exists($request->user, 'getLocationDetails') 
-                              ? $request->user->getLocationDetails() 
-                              : ['building' => 'N/A', 'apartment' => 'N/A', 'room' => 'N/A'];
-
-                              $locationString = 'Building: ' . $location['building'] . ' - Apartment: ' . $location['apartment'] . ' - Room: ' . $location['room'];
-                           ?>
-                           <td>{{$locationString}}</td>
-                           <td>{{ $request->description ?? __('No Description') }}</td>
-                           <td>
-    @if($request->status === 'pending')
-        <span class="badge bg-warning text-dark">@lang('Pending')</span>
-    @elseif($request->status === 'in_progress')
-        <span class="badge bg-success">@lang('Accepted')</span><br>
-        <small>@lang('Accepted at') {{ $request->updated_at->format('d M Y, h:i A') }}</small>
-    @elseif($request->status === 'rejected')
-        <span class="badge bg-danger">@lang('Rejected')</span><br>
-        <small>@lang('Rejected at') {{ $request->updated_at->format('d M Y, h:i A') }}</small>
-    @elseif($request->status === 'completed')
-        <span class="badge bg-primary">@lang('Completed')</span><br>
-        <small>@lang('Completed at') {{ $request->updated_at->format('d M Y, h:i A') }}</small>
-    @endif
-</td>
-
-<td>
-    @if($request->status === 'pending')
-        <!-- Accept and Reject Buttons -->
-        <button type="button" class="btn btn-rounded btn-success-rgba" id="in-progress-status-btn-{{ $request->id }}" title="@lang('Accept Request')">
-            <i class="feather icon-check-circle"></i> @lang('Accept')
-        </button>
-        <button type="button" class="btn btn-rounded btn-danger-rgba" id="reject-status-btn-{{ $request->id }}" title="@lang('Reject Request')">
-            <i class="feather icon-x-square"></i> @lang('Reject')
-        </button>
-    @elseif($request->status === 'in_progress')
-        <!-- Complete Button -->
-        <button type="button" class="btn btn-rounded btn-info-rgba" id="complete-status-btn-{{ $request->id }}" title="@lang('Complete Request')" onclick="completeRequest({{ $request->id }})">
-            <i class="feather icon-check-circle"></i> @lang('Complete')
-        </button>
-    @endif
-
-    <!-- View Button -->
-    <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#viewRequestModal" data-request-id="{{ $request->id }}">
-        <i class="feather icon-eye"></i> @lang('View')
-    </button>
-</td>
-
-
-                        </tr>
-                     @endforeach
+                    
                   </tbody>
                </table>
             </div>
@@ -320,9 +274,7 @@
 <script src="{{ asset('js/pages/maintenance.js') }}"></script>
 <script>
     window.routes = {
-        exportExcel: "{{ route('admin.maintenance.excel') }}",
-        updateStatus: "{{ route('admin.maintenance.updateStatus', ':id') }}",
-        getIssues: "{{ route('admin.maintenance.getIssues', ':id') }}",
+      fetchRequests: "{{ route('admin.maintenance.requests.fetch') }}",  
     };
 </script>
 @endsection

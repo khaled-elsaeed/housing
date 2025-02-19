@@ -277,9 +277,10 @@
                         <th>@lang('National ID')</th>
                         <th>@lang('Faculty')</th>
                         <th>@lang('Mobile')</th>
-                        <th>@lang('Invoice Status')</th>
+                        <th>@lang('Status')</th>
                         <th>@lang('Admin Approval')</th>
                         <th>@lang('Actions')</th>
+
                      </tr>
                   </thead>
                   <tbody>

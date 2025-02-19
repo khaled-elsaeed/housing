@@ -30,7 +30,7 @@
    <!-- Dashboard Content -->
    <div class="row">
       <!-- Reservation Overview -->
-      <div class="col-lg-8">
+      <div class="col-lg-8 mb-3">
          @if($reservation)
          <div class="card border-0 mb-4">
             <div class="card-header bg-white border-0 py-3">
@@ -89,19 +89,20 @@
                <li class="list-group-item d-flex justify-content-between align-items-center">
                   <div class="d-flex align-items-center">
                      <div class="me-3">
-                           @if($activity->activity_type === 'update_profile')
-                              <i class="fa fa-circle-check text-success"></i>
-                           @elseif($activity->activity_type === 'update_profile_picture')
-                              <i class="fa fa-circle-check text-success"></i>
-                           @elseif($activity->activity_type === 'delete_profile_picture')
-                              <i class="fa fa-circle-check text-success"></i>
-                           @elseif($activity->activity_type === 'reservation_requested')
-                              <i class="fa fa-circle-check text-success"></i>
-                           @elseif($activity->activity_type === 'invoice_upload')
-                              <i class="fa fa-upload text-primary"></i>
-                           @else
-                              <i class="fa fa-circle text-secondary"></i>
-                           @endif
+                     @php
+                     $iconMapping = [
+                        'update_profile' => '<i class="fa fa-check-circle text-success"></i>',
+                        'update_profile_picture' => '<i class="fa fa-check-circle text-success"></i>',
+                        'delete_profile_picture' => '<i class="fa fa-check-circle text-success"></i>',
+                        'reservation_requested' => '<i class="fa fa-check-circle text-success"></i>',
+                        'invoice_upload' => '<i class="fa fa-upload text-primary"></i>',
+                     ];
+
+                     $defaultIcon = '<i class="fa fa-circle text-secondary"></i>';
+                     $icon = $iconMapping[$activity->activity_type] ?? $defaultIcon;
+                     @endphp
+
+                     {!! $icon !!}
 
                         </div>
                         <div>

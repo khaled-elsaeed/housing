@@ -11,17 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('maintenance_issues', function (Blueprint $table) {
+        Schema::create('maintenance_requests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('maintenance_request_id')  
-            ->constrained('maintenance_requests')
-            ->onDelete('cascade')
-            ->onUpdate('cascade');            
-            $table->string('issue_type');
-            $table->string('description');
+            $table->foreignId('room_id')->constrained('rooms')->onDelete('cascade');
+            $table->string('title');
+            $table->text('description');
+            $table->enum('status', ['pending', 'assigned', 'in_progress', 'completed'])->default('pending');
             $table->timestamps();
-
-            
         });
     }
 
@@ -30,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('maintenance_issues');
+        Schema::dropIfExists('maintenance_requests');
     }
 };

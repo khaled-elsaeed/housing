@@ -1,5 +1,7 @@
 <?php
 
+// app/Models/MaintenanceRequest.php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,27 +11,28 @@ class MaintenanceRequest extends Model
 {
     use HasFactory;
 
-   // Table name (optional if it's the default 'maintenance_requests')
-   protected $table = 'maintenance_requests';
+    protected $fillable = [
+        'room_id',
+        'title',
+        'description',
+        'status',
+    ];
 
-   protected $fillable = [
-    'user_id',
-    'additional_info',
-    'status',
-];
+    // Relationship to Room
+    public function room()
+    {
+        return $this->belongsTo(Room::class);
+    }
 
-public function user()
-{
-    return $this->belongsTo(User::class); // A request belongs to a user
-}
+    // Relationship to Reservation through Room
+    public function reservation()
+    {
+        return $this->hasOneThrough(Reservation::class, Room::class, 'id', 'room_id', 'room_id', 'id');
+    }
 
-public function issues()
-{
-    return $this->hasMany(MaintenanceIssue::class); // A request can have many issues
-}
-
-public function images()
-{
-    return $this->hasMany(MaintenanceImage::class); // A request can have many images
-}
+    // Relationship to User through Reservation
+    public function user()
+    {
+        return $this->hasOneThrough(User::class, Reservation::class, 'room_id', 'id', 'room_id', 'user_id');
+    }
 }

@@ -60,7 +60,16 @@ public function city()
     return $this->belongsTo(City::class);
 }
 
+public function getNameAttribute()
+{
     
+    $lang = app()->getLocale();
+
+    if ($lang == 'ar') {
+        return $this->name_ar;
+    }
+    return $this->name_en;
+}
 
     public function reservations()
     {

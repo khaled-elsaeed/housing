@@ -12,7 +12,7 @@ class AdminHomeService
     public function getHomeData()
     {
         $students = User::whereHas('reservations', function ($query) {
-            $query->whereIn('status', ['active','upcoming']);
+            $query->whereIn('status', ['pending','active','upcoming']);
         })->with('reservations')->get();
 
         $maleStudents = $this->filterStudentsByGender($students, 'male');
@@ -95,28 +95,30 @@ class AdminHomeService
     private function formatLastUpdated($lastUpdated)
     {
         if (!$lastUpdated) {
-            return 'Never';
+            return __('Never');
         }
-
+    
         $lastUpdated = Carbon::parse($lastUpdated);
         $diffInMinutes = $lastUpdated->diffInMinutes(now());
-
+    
         if ($diffInMinutes < 60) {
-            return $diffInMinutes . ' minute(s) ago';
+            return trans_choice(__('minute_ago'), $diffInMinutes, ['value' => $diffInMinutes]);
         }
-
-        $diffInHours = (int)$lastUpdated->diffInHours(now());
-
+    
+        $diffInHours = (int) $lastUpdated->diffInHours(now());
+    
         if ($diffInHours < 24) {
             $minutes = $diffInMinutes % 60;
             if ($minutes > 0) {
-                return $diffInHours . ' hour(s) and ' . $minutes . ' minute(s) ago';
+                return __('hour_minute_ago', ['hours' => $diffInHours, 'minutes' => $minutes]);
             } else {
-                return $diffInHours . ' hour(s) ago';
+                return trans_choice(__('hour_ago'), $diffInHours, ['value' => $diffInHours]);
             }
         }
-
-        $diffInDays = (int)$lastUpdated->diffInDays(now());
-        return $diffInDays . ' day(s) ago';
+    
+        $diffInDays = (int) $lastUpdated->diffInDays(now());
+        return trans_choice(__('day_ago'), $diffInDays, ['value' => $diffInDays]);
     }
+    
+
 }

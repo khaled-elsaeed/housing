@@ -14,15 +14,22 @@ use App\Http\Controllers\Admin\{
     AdminHomeController,
     AdminProfileController,
     AdminSettingsController,
-    AdminMaintenanceController,
 };
+
 use App\Http\Controllers\Admin\Applicant\{
     ApplicantController,
 };
 
 
-use App\Http\Controllers\Admin\Reservation\{ReservationController,ReservationRequestsController};
+
+use App\Http\Controllers\Admin\Maintenance\{
+    MaintenanceController,
+};
+
+
+use App\Http\Controllers\Admin\Reservation\{ReservationController,ReservationRequestsController,ReservationSwapController};
 use App\Http\Controllers\App\UploadController;
+use App\Http\Controllers\App\NotificationController;
 
 use App\Http\Controllers\Student\StudentHomeController;
 use App\Http\Controllers\Student\StudentReservationRequestController;
@@ -200,10 +207,10 @@ Route::middleware(Localization::class)
             
                 // Relocation routes
                 Route::prefix('relocation')->name('relocation.')->group(function () {
-                    Route::get('/', [ReservationController::class, 'relocation'])->name('index');
-                    Route::get('/{userId}', [ReservationController::class, 'show'])->name('show');
-                    Route::post('/swap', [ReservationController::class, 'swapReservationLocation'])->name('swap');
-                    Route::post('/reallocate', [ReservationController::class, 'reallocateReservation'])->name('reallocate');
+                    Route::get('/', [ReservationSwapController::class, 'index'])->name('index');
+                    Route::get('/{userId}', [ReservationSwapController::class, 'show'])->name('show');
+                    Route::post('/swap', [ReservationSwapController::class, 'swapReservationLocation'])->name('swap');
+                    Route::post('/reallocate', [ReservationSwapController::class, 'reallocateReservation'])->name('reallocate');
                 });
             });
 
@@ -248,10 +255,8 @@ Route::middleware(Localization::class)
             Route::post('/permissions/{id}/reject', [PermissionRequestController::class, 'reject'])->name('permissions.reject');
 
             // Maintenance and Settings
-            Route::get('/maintenance', [AdminMaintenanceController::class, 'index'])->name('maintenance.index');
-            Route::get('/maintenance/excel', [AdminMaintenanceController::class, 'downloadMaintenanceRequestsExcel'])->name('maintenance.excel');
-            Route::put('maintenance/update-status/{id}', [AdminMaintenanceController::class, 'updateStatus'])->name('maintenance.updateStatus');
-            Route::get('/maintenance/issues/{id}', [AdminMaintenanceController::class, 'getIssues'])->name('maintenance.getIssues');
+            Route::get('/maintenance', [MaintenanceController::class, 'index'])->name('maintenance.index');
+            Route::get('/maintenance/fetch', [MaintenanceController::class, 'fetchRequests'])->name('maintenance.requests.fetch');
 
             Route::get('settings', [AdminSettingsController::class, 'index'])->name('setting');
             Route::post('settings/reservation-update', [AdminSettingsController::class, 'updateReservationSettings'])->name('setting.update-reservation');
@@ -298,4 +303,9 @@ Route::middleware(Localization::class)
 
 // Keep only non-auth routes outside
 Route::post('upload', UploadController::class,'')->name('upload');
+
+// Notification Routes
+Route::post('/notifications/{notification}/mark-as-read',[NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+Route::post('/notifications/mark-all-as-read',[NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 

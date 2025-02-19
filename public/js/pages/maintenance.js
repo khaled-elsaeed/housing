@@ -3,14 +3,42 @@ $(document).ready(function () {
 
     // Initialize DataTable
     const table = $('#default-datatable').DataTable({
-        responsive: true,
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: window.routes.fetchRequests,
+            type: 'GET',
+            data: function (d) {
+                d.customSearch = $('#searchBox').val();
+                d.status = $('#statusFilter').val();
+            }
+        },
+        columns: [
+            { data: 'resident_name', name: 'resident_name' },
+            { data: 'resident_location', name: 'resident_location' },
+            { data: 'resident_phone', name: 'resident_phone' },
+            { data: 'title', name: 'title' },
+            { data: 'description', name: 'description' },
+            { data: 'status', name: 'status' },
+            { data: 'assigned_staff', name: 'assigned_staff' },
+            { data: 'created_at', name: 'created_at' },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false },
+        ],
         language: isArabic ? {
             url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json",
         } : {},
-
     });
 
-    // Reference to the toggle button and icon
+    // Reload table on search or filter change
+    $('#searchBox').on('keyup', function () {
+        table.ajax.reload();
+    });
+
+    $('#statusFilter').on('change', function () {
+        table.ajax.reload();
+    });
+
+    // Toggle button icon for search collapse
     const toggleButton = document.getElementById("toggleButton");
     if (toggleButton) {
         const icon = toggleButton.querySelector("i");
@@ -18,12 +46,14 @@ $(document).ready(function () {
             icon.classList.remove("fa-search-plus");
             icon.classList.add("fa-search-minus");
         });
-    
+
         document.getElementById("collapseExample").addEventListener("hidden.bs.collapse", function () {
             icon.classList.remove("fa-search-minus");
             icon.classList.add("fa-search-plus");
         });
     }
+
+    // Function to toggle button loading state
     function toggleButtonLoading(button, isLoading) {
         const hasClassBtnRound = button.hasClass('btn-round');
 
@@ -49,10 +79,9 @@ $(document).ready(function () {
         }
     }
 
-   
-
+    // Function to update request status
     function updateStatus(requestId, status) {
-        let updateStatusUrl = window.routes.updateStatus.replace(':id', requestId);
+        const updateStatusUrl = window.routes.updateStatus.replace(':id', requestId);
 
         const formData = {
             status: status,
@@ -83,113 +112,68 @@ $(document).ready(function () {
         });
     }
 
+    // Event listeners for status buttons
     $(document).on('click', '[id^="in-progress-status-btn-"]', function () {
-        const button = $(this);
-        const requestId = button.attr('id').split('-').pop();
+        const requestId = $(this).attr('id').split('-').pop();
         updateStatus(requestId, 'in_progress');
     });
 
     $(document).on('click', '[id^="reject-status-btn-"]', function () {
-        const button = $(this);
-        const requestId = button.attr('id').split('-').pop();
+        const requestId = $(this).attr('id').split('-').pop();
         updateStatus(requestId, 'rejected');
     });
 
     $(document).on('click', '[id^="complete-status-btn-"]', function () {
-        const button = $(this);
-        const requestId = button.attr('id').split('-').pop();
+        const requestId = $(this).attr('id').split('-').pop();
         updateStatus(requestId, 'completed');
     });
 
+    // Modal for viewing request details
     $('#viewRequestModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget);
-        var requestId = button.data('request-id');
-    
-        // Define the mapping of issue types and descriptions in both English and Arabic
-        var issueTypeMapping = {
-            'electrical_issues': {
-                en: 'Electrical Issues',
-                ar: 'مشاكل كهربائية'
-            },
-            'water_issues': {
-                en: 'Water Issues',
-                ar: 'مشاكل مائية'
-            },
-            'housing_issues': {
-                en: 'Housing Issues',
-                ar: 'مشاكل سكنية'
-            },
-            'General Housing': {
-                en: 'General Housing',
-                ar: 'مشاكل السكن العامة'
-            }
-        };
-    
-    var descriptionMapping = {
-    'leakage': {
-        en: 'Water Leakage',
-        ar: 'تسرب مياه'
-    },
-    'sewage_problem': {
-        en: 'Sewage Problem',
-        ar: 'مشكلة في الصرف الصحي'
-    },
-    'plumbing_problem': {
-        en: 'Plumbing Problem',
-        ar: 'مشكلة في السباكة'
-    },
-    'bulb_replacement': {
-        en: 'Bulb Replacement',
-        ar: 'استبدال مصباح'
-    },
-    'fan_issue': {
-        en: 'Fan Issue',
-        ar: 'مشكلة في المروحة'
-    },
-    'water_heater_issue': {
-        en: 'Water Heater Issue',
-        ar: 'مشكلة في سخان المياه'
-    },
-    'electricity_problem': {
-        en: 'Electricity Problem',
-        ar: 'مشكلة كهربائية'
-    },
-    'furniture_damage': {
-        en: 'Furniture Damage',
-        ar: 'تلف الأثاث'
-    },
-    'appliance_issue': {
-        en: 'Appliance Issue',
-        ar: 'مشكلة في الأجهزة'
-    },
-    'door_window_issue': {
-        en: 'Door/Window Problem',
-        ar: 'مشكلة في الباب/النافذة'
-    }
-};
+        const button = $(event.relatedTarget);
+        const requestId = button.data('request-id');
+        const currentLang = $('html').attr('lang') || 'en'; // Default to 'en' if lang attribute is not set
 
-    
-        // Detect current language of the page (check <html> tag's lang attribute)
-        var currentLang = $('html').attr('lang') || 'en'; // Default to 'en' if lang attribute is not set
-    
+        // Mapping of issue types and descriptions
+        const issueTypeMapping = {
+            'electrical_issues': { en: 'Electrical Issues', ar: 'مشاكل كهربائية' },
+            'water_issues': { en: 'Water Issues', ar: 'مشاكل مائية' },
+            'housing_issues': { en: 'Housing Issues', ar: 'مشاكل سكنية' },
+            'General Housing': { en: 'General Housing', ar: 'مشاكل السكن العامة' }
+        };
+
+        const descriptionMapping = {
+            'leakage': { en: 'Water Leakage', ar: 'تسرب مياه' },
+            'sewage_problem': { en: 'Sewage Problem', ar: 'مشكلة في الصرف الصحي' },
+            'plumbing_problem': { en: 'Plumbing Problem', ar: 'مشكلة في السباكة' },
+            'bulb_replacement': { en: 'Bulb Replacement', ar: 'استبدال مصباح' },
+            'fan_issue': { en: 'Fan Issue', ar: 'مشكلة في المروحة' },
+            'water_heater_issue': { en: 'Water Heater Issue', ar: 'مشكلة في سخان المياه' },
+            'electricity_problem': { en: 'Electricity Problem', ar: 'مشكلة كهربائية' },
+            'furniture_damage': { en: 'Furniture Damage', ar: 'تلف الأثاث' },
+            'appliance_issue': { en: 'Appliance Issue', ar: 'مشكلة في الأجهزة' },
+            'door_window_issue': { en: 'Door/Window Problem', ar: 'مشكلة في الباب/النافذة' }
+        };
+
+        // Fetch request details
         $.ajax({
             url: window.routes.getIssues.replace(':id', requestId),
             type: 'GET',
             dataType: 'json',
             success: function (response) {
                 $('#issueList').empty();
-    
+
                 if (response.issues.length > 0) {
                     response.issues.forEach(function (issue) {
-                        var issueTypeDescription = issueTypeMapping[issue.issue_type] && issueTypeMapping[issue.issue_type][currentLang] || issue.issue_type;
-                        var issueDescription = descriptionMapping[issue.description] && descriptionMapping[issue.description][currentLang] || issue.description;
-    
+                        const issueTypeDescription = issueTypeMapping[issue.issue_type]?.[currentLang] || issue.issue_type;
+                        const issueDescription = descriptionMapping[issue.description]?.[currentLang] || issue.description;
+
                         $('#issueList').append('<li class="list-group-item">' + issueTypeDescription + ': ' + issueDescription + '</li>');
                     });
                 } else {
-                    $('#issueList').append('<li class="list-group-item">' + (currentLang === 'ar' ? 'لا توجد مشكلات' : 'No issues available') + '</li>'); // Adjust based on language
+                    $('#issueList').append('<li class="list-group-item">' + (currentLang === 'ar' ? 'لا توجد مشكلات' : 'No issues available') + '</li>');
                 }
-    
+
                 $('#additionalInfo').text(response.additional_info || (currentLang === 'ar' ? 'لا توجد معلومات إضافية' : 'No additional information available'));
             },
             error: function () {
@@ -197,9 +181,4 @@ $(document).ready(function () {
             }
         });
     });
-    
-
-   
-
-   
 });
