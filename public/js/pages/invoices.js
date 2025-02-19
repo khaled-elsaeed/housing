@@ -1,16 +1,6 @@
 $(document).ready(function() {
     const translations = {
         en: {
-            invoice_status: {
-                paid: "Paid",
-                unpaid: "Unpaid",
-                pending: "Pending"
-            },
-            payment_status: {
-                success: "Success",
-                failed: "Failed",
-                pending: "Pending"
-            },
             studentDetails: "Student Details",
             name: "Name",
             faculty: "Faculty",
@@ -23,7 +13,7 @@ $(document).ready(function() {
             accept: "Accept",
             reject: "Reject",
             noDetails: "No details or pictures available for this applicant.",
-            loadingFailed: "Failed to load details.",
+            loadingFailed: "Failed to load details. Please try again later.",
             balance: "Balance",
             paidAmount: "Paid Amount",
             invoiceDetails: "Invoice Details",
@@ -34,26 +24,25 @@ $(document).ready(function() {
             enterOverpayment: "Enter overpayment amount (if any)",
             adminNotes: "Admin Notes",
             addNotes: "Add any notes about this invoice (optional)",
-            areYouSureReject: "You are about to reject this invoice.",
-            areYouSureAccept: "You are about to accept this invoice with the selected payments.",
+            areYouSureReject: "You are about to reject this invoice. Are you sure?",
+            areYouSureAccept: "You are about to accept this invoice with the selected payments. Are you sure?",
             warning: "Warning",
             selectPayment: "Please select at least one payment detail to accept.",
             negativeAmount: "Overpayment amount cannot be negative.",
             success: "Success",
             error: "Error",
-            errorUpdating: "Error updating payment status: "
+            errorUpdating: "Error updating payment status: ",
+            noDataAvailable: "No data available.",
+            confirmAction: "Confirm Action",
+            cancel: "Cancel",
+            proceed: "Proceed",
+            paymentProof: "Payment Proof",
+            totalAmount: "Total Amount",
+            remainingBalance: "Remaining Balance",
+            notes: "Notes",
+            optional: "Optional",
         },
         ar: {
-            invoice_status: {
-                paid: "مدفوع",
-                unpaid: "غير مدفوع",
-                pending: "قيد الانتظار"
-            },
-            payment_status: {
-                success: "ناجح",
-                failed: "فشل",
-                pending: "قيد الانتظار"
-            },
             studentDetails: "تفاصيل الطالب",
             name: "الاسم",
             faculty: "الكلية",
@@ -66,7 +55,7 @@ $(document).ready(function() {
             accept: "قبول",
             reject: "رفض",
             noDetails: "لا توجد تفاصيل أو صور لهذا الطالب.",
-            loadingFailed: "فشل في تحميل التفاصيل.",
+            loadingFailed: "فشل في تحميل التفاصيل. يرجى المحاولة مرة أخرى لاحقاً.",
             balance: "الرصيد",
             paidAmount: "المبلغ المدفوع",
             invoiceDetails: "تفاصيل الفاتورة",
@@ -77,45 +66,90 @@ $(document).ready(function() {
             enterOverpayment: "أدخل مبلغ الدفع الزائد (إن وجد)",
             adminNotes: "ملاحظات الإدارة",
             addNotes: "أضف أي ملاحظات حول هذه الفاتورة (اختياري)",
-            areYouSureReject: "أنت على وشك رفض هذه الفاتورة.",
-            areYouSureAccept: "أنت على وشك قبول هذه الفاتورة مع المدفوعات المحددة.",
+            areYouSureReject: "أنت على وشك رفض هذه الفاتورة. هل أنت متأكد؟",
+            areYouSureAccept: "أنت على وشك قبول هذه الفاتورة مع المدفوعات المحددة. هل أنت متأكد؟",
             warning: "تحذير",
             selectPayment: "يرجى تحديد تفاصيل دفع واحد على الأقل للقبول.",
             negativeAmount: "لا يمكن أن يكون مبلغ الدفع الزائد سالباً.",
             success: "نجاح",
             error: "خطأ",
-            errorUpdating: "خطأ في تحديث حالة الدفع: "
-        }
+            errorUpdating: "خطأ في تحديث حالة الدفع: ",
+            noDataAvailable: "لا تتوفر بيانات.",
+            confirmAction: "تأكيد الإجراء",
+            cancel: "إلغاء",
+            proceed: "متابعة",
+            paymentProof: "إثبات الدفع",
+            totalAmount: "المبلغ الإجمالي",
+            remainingBalance: "الرصيد المتبقي",
+            notes: "ملاحظات",
+            optional: "اختياري",
+        },
     };
 
     const lang = $("html").attr("lang") || "en";
 
     // Core utility functions
-    function getTranslation(key) {
-        const [category, status] = key.split(".");
-        if (translations[lang] && translations[lang][category] && translations[lang][category][status]) {
-            return translations[lang][category][status];
+    function getTranslation(key, language = 'en') {
+        // Ensure the translations object and language exist
+        if (!translations || !translations[language]) {
+            console.error(`Translations not loaded for language: ${language}`);
+            return key; // Return the key itself as a fallback
         }
-        console.warn("Translation not found for key:", key);
-        return key;
+
+        // Get the translation for the key
+        const translation = translations[language][key];
+
+        // If the translation is not found, log a warning and return the key
+        if (!translation) {
+            console.warn(`Translation not found for key: ${key}`);
+            return key; // Return the key itself as a fallback
+        }
+
+        return translation;
     }
 
-    function getLabels() {
+    function getLabels(language = 'en') {
         return {
-            studentDetails: getTranslation("studentDetails"),
-            name: getTranslation("name"),
-            faculty: getTranslation("faculty"),
-            building: getTranslation("building"),
-            apartment: getTranslation("apartment"),
-            room: getTranslation("room"),
-            balance: getTranslation('balance'),
-            uploadedPictures: getTranslation("uploadedPictures"),
-            view: getTranslation("view"),
-            accept: getTranslation("accept"),
-            reject: getTranslation("reject"),
-            noDetails: getTranslation("noDetails"),
-            loadingFailed: getTranslation("loadingFailed"),
-            paidAmount: getTranslation("paidAmount"),
+            studentDetails: getTranslation('studentDetails', language),
+            name: getTranslation('name', language),
+            faculty: getTranslation('faculty', language),
+            building: getTranslation('building', language),
+            apartment: getTranslation('apartment', language),
+            room: getTranslation('room', language),
+            uploadedPictures: getTranslation('uploadedPictures', language),
+            view: getTranslation('view', language),
+            download: getTranslation('download', language),
+            accept: getTranslation('accept', language),
+            reject: getTranslation('reject', language),
+            noDetails: getTranslation('noDetails', language),
+            loadingFailed: getTranslation('loadingFailed', language),
+            balance: getTranslation('balance', language),
+            paidAmount: getTranslation('paidAmount', language),
+            invoiceDetails: getTranslation('invoiceDetails', language),
+            category: getTranslation('category', language),
+            amount: getTranslation('amount', language),
+            paid: getTranslation('paid', language),
+            overpaymentAmount: getTranslation('overpaymentAmount', language),
+            enterOverpayment: getTranslation('enterOverpayment', language),
+            adminNotes: getTranslation('adminNotes', language),
+            addNotes: getTranslation('addNotes', language),
+            areYouSureReject: getTranslation('areYouSureReject', language),
+            areYouSureAccept: getTranslation('areYouSureAccept', language),
+            warning: getTranslation('warning', language),
+            selectPayment: getTranslation('selectPayment', language),
+            negativeAmount: getTranslation('negativeAmount', language),
+            success: getTranslation('success', language),
+            error: getTranslation('error', language),
+            errorUpdating: getTranslation('errorUpdating', language),
+            noDataAvailable: getTranslation('noDataAvailable', language),
+            confirmAction: getTranslation('confirmAction', language),
+            cancel: getTranslation('cancel', language),
+            proceed: getTranslation('proceed', language),
+            paymentProof: getTranslation('paymentProof', language),
+            totalAmount: getTranslation('totalAmount', language),
+            remainingBalance: getTranslation('remainingBalance', language),
+            notes: getTranslation('notes', language),
+            optional: getTranslation('optional', language),
         };
     }
 
@@ -132,40 +166,42 @@ $(document).ready(function() {
                 d.gender = $("#genderFilter").val();
             },
         },
-        columns: [{
-                data: "name",
-                name: "student.name_en"
-            },
-            {
-                data: "national_id",
-                name: "student.national_id"
-            },
-            {
-                data: "faculty",
-                name: "student.faculty.name_en"
-            },
-            {
-                data: "mobile",
-                name: "student.mobile"
-            },
-            {
-                data: "invoice_status",
-                name: "invoice_status",
-                searchable: true,
-                render: function(data) {
-                    const translation = getTranslation("invoice_status." + data.toLowerCase());
-                    return translation || data;
-                }
-            }, {
-                data: "admin_approval",
-                name: "admin_approval"
-            },
+        columns: [
 
+            // Other columns
             {
-                data: "actions",
-                name: "actions",
-                orderable: false,
-                searchable: false
+                data: 'name',
+                name: 'name'
+            },
+            {
+                data: 'national_id',
+                name: 'national_id'
+            },
+            {
+                data: 'faculty',
+                name: 'faculty'
+            },
+            {
+                data: 'phone',
+                name: 'phone'
+            },
+            {
+                data: 'status',
+                name: 'status'
+            },
+            {
+                data: 'admin_approval',
+                name: 'admin_approval'
+            },
+            // Add the action column first
+            // Add the action column first
+            {
+                data: null, // Use null because this column is not tied to any specific data
+                render: function(data, type, row) {
+                    // Create the button dynamically
+                    return '<button type="button" class="btn btn-sm btn-info-rgba" data-invoice-id="' + row.id + '" id="details-btn" title="More Details"><i class="feather icon-info"></i></button>';
+                },
+
             },
         ],
         language: lang === "ar" ? {
@@ -221,9 +257,8 @@ $(document).ready(function() {
     };
 
     function showInvoiceDetails(invoiceId) {
-
         const modalBody = $("#applicantDetailsModal .modal-body");
-        const labels = getLabels();
+        const labels = getLabels(lang);
 
         // Reset current invoice tracking
         currentInvoiceDetails = {
@@ -238,52 +273,31 @@ $(document).ready(function() {
             method: "GET",
             success: function(response) {
                 if (!response.invoiceDetails || response.invoiceDetails.length === 0) {
-                    modalBody.html(`<p class="text-center text-muted py-5">${labels.noDetails}</p>`);
+                    showNoDataMessage(modalBody, labels.noDetails);
                     return;
                 }
 
-                const studentDetails = response.studentDetails || {};
-                const invoiceDetails = response.invoiceDetails;
-                const media = response.media || [];
-
-                const studentDetailsHtml = generateStudentDetailsHtml(studentDetails, labels);
-                const invoiceDetailsHtml = generateInvoiceDetailsHtml(invoiceDetails,response.status);
-                const paymentImagesHtml = generatePaymentImagesHtml(media, labels);
-                const statusButtonsHtml = generateStatusButtonsHtml(response.invoice_id, labels);
-
-               
-                if(response.status == 'accepted'){
-                    modalBody.html(`
-                        <div class="container-fluid">
-                            ${studentDetailsHtml}
-                            ${paymentImagesHtml}
-                            ${invoiceDetailsHtml}
-                        </div>
-                    `);
-                }else{
-                    modalBody.html(`
-                        <div class="container-fluid">
-                            ${studentDetailsHtml}
-                            ${paymentImagesHtml}
-                            ${invoiceDetailsHtml}
-                            ${statusButtonsHtml}
-                        </div>
-                    `);
-                }
-
+                const {
+                    studentDetails,
+                    invoiceDetails,
+                    media,
+                    status,
+                    invoice_id
+                } = response;
+                renderInvoiceDetails(modalBody, studentDetails, invoiceDetails, media, status, invoice_id, labels);
                 attachEventListeners(response, labels);
             },
             error: function() {
-                modalBody.html(`<p class="text-center text-danger py-5">${labels.loadingFailed}</p>`);
+                showErrorMessage(modalBody, labels.loadingFailed);
             },
         });
 
         if (!$("#applicantDetailsModal").hasClass("show")) {
             $("#applicantDetailsModal").modal("show");
         }
-
     }
 
+    // Helper Functions
     function showLoadingSpinner(modalBody) {
         modalBody.html(`
             <div class="text-center py-5">
@@ -294,50 +308,77 @@ $(document).ready(function() {
         `);
     }
 
-    // HTML Generation functions
+    function showNoDataMessage(modalBody, message) {
+        modalBody.html(`<p class="text-center text-muted py-5">${message}</p>`);
+    }
+
+    function showErrorMessage(modalBody, message) {
+        modalBody.html(`<p class="text-center text-danger py-5">${message}</p>`);
+    }
+
+    function renderInvoiceDetails(modalBody, studentDetails, invoiceDetails, media, status, invoiceId, labels) {
+        const studentDetailsHtml = generateStudentDetailsHtml(studentDetails, labels);
+        const invoiceDetailsHtml = generateInvoiceDetailsHtml(invoiceDetails, status);
+        const paymentImagesHtml = generatePaymentImagesHtml(media, labels);
+        const statusButtonsHtml = status !== 'accepted' ? generateStatusButtonsHtml(invoiceId, labels) : '';
+
+        modalBody.html(`
+            <div class="container-fluid">
+                ${studentDetailsHtml}
+                ${paymentImagesHtml}
+                ${invoiceDetailsHtml}
+                ${statusButtonsHtml}
+            </div>
+        `);
+    }
+
+    // HTML Generation Functions
     function generateStudentDetailsHtml(studentDetails, labels) {
-        return `
-            <div class="card mb-4 shadow-sm border-primary">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">${labels.studentDetails}</h5>
+        const details = ["name", "faculty", "building", "apartment", "room", "balance"];
+    
+        // Generate the student details cards dynamically
+        const studentDetailsCards = details.map((key) => `
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body p-3">
+                        <small class="text-muted text-uppercase fs-12">${labels[key]}</small>
+                        <p class="mb-0 fw-semibold fs-6">${studentDetails[key] || "N/A"}</p>
+                    </div>
                 </div>
-                <div class="card-body">
+            </div>
+        `).join("");
+    
+        return `
+            <div class="card mb-4 shadow-sm border-0">
+                <div class="card-header bg-primary text-white p-3">
+                    <h5 class="card-title mb-0 fs-5">${labels.studentDetails}</h5>
+                </div>
+                <div class="card-body p-3">
                     <div class="row g-3">
-                        ${["name", "faculty", "building", "apartment", "room",'balance']
-                            .map(
-                                (key) => `
-                            <div class="col-md-4">
-                                <div class="p-3 border rounded bg-light">
-                                    <small class="text-muted">${labels[key]}</small>
-                                    <p class="mb-0 fw-bold">${studentDetails[key] || "N/A"}</p>
-                                </div>
-                            </div>
-                        `
-                            )
-                            .join("")}
+                        ${studentDetailsCards}
                     </div>
                 </div>
             </div>
         `;
     }
 
-    function generateInvoiceDetailsHtml(invoiceDetails, $invoiceStatus) {
+    function generateInvoiceDetailsHtml(invoiceDetails, invoiceStatus) {
         const totalAmount = invoiceDetails.reduce((sum, detail) => sum + parseFloat(detail.amount), 0);
-        const showOverpayment = $invoiceStatus !== 'accepted';
-    
+        const showOverpayment = invoiceStatus !== 'accepted';
+
         return `
             <div class="card mb-4 shadow-sm border-secondary">
                 <div class="card-header bg-secondary text-white">
-                    <h5 class="card-title mb-0">${getTranslation('invoiceDetails')}</h5>
+                    <h5 class="card-title mb-0">${getTranslation('invoiceDetails',lang)}</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
-                                    <th>${getTranslation('category')}</th>
-                                    <th class="text-end">${getTranslation('amount')}</th>
-                                    <th class="text-end">${getTranslation('paid')}</th>
+                                    <th>${getTranslation('category',lang)}</th>
+                                    <th class="text-end">${getTranslation('amount',lang)}</th>
+                                    <th class="text-end">${getTranslation('paid',lang)}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -359,58 +400,51 @@ $(document).ready(function() {
     
                     ${showOverpayment ? `
                         <div class="mt-3">
-                            <label for="overpayment-amount" class="form-label">${getTranslation('overpaymentAmount')}</label>
+                            <label for="overpayment-amount" class="form-label">${getTranslation('overpaymentAmount'),lang}</label>
                             <input type="number" id="overpayment-amount" class="form-control border border-secondary" 
-                                   placeholder="${getTranslation('enterOverpayment')}">
+                                   placeholder="${getTranslation('enterOverpayment',lang)}">
                         </div>
-
+    
                         <div class="mt-3">
-                            <label for="admin-notes" class="form-label">${getTranslation('adminNotes')}</label>
+                            <label for="admin-notes" class="form-label">${getTranslation('adminNotes',lang)}</label>
                             <textarea id="admin-notes" class="form-control border border-secondary" rows="3" 
-                                placeholder="${getTranslation('addNotes')}"></textarea>
+                                placeholder="${getTranslation('addNotes',lang)}"></textarea>
                         </div>
                     ` : ''}
                 </div>
             </div>
         `;
     }
-    
 
     function generatePaymentImagesHtml(media, labels) {
-        if (media.length > 0) {
-            return `
-                <div class="card mb-4 shadow-sm border-primary">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="card-title mb-0">${labels.uploadedPictures}</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-3">
-                            ${media
-                                .map(
-                                    (doc) => `
-                                <div class="col-md-4">
-                                    <div class="card border-0 shadow-sm">
-                                        <img src="${doc.payment_url}" alt="Payment" class="card-img-top" style="height: 150px; object-fit: cover;" />
-                                        <div class="card-body text-center">
-                                            <a href="${doc.payment_url}" target="_blank" class="btn btn-sm btn-outline-primary me-2">
-                                                <i class="fa fa-eye"></i> ${labels.view}
-                                            </a>
-                                            <a href="${doc.payment_url}" download class="btn btn-sm btn-outline-success">
-                                                <i class="fa fa-download"></i> ${labels.download}
-                                            </a>
-                                        </div>
+        if (media.length === 0) return `<p class="text-center text-muted py-3">${labels.noDetails}</p>`;
+
+        return `
+            <div class="card mb-4 shadow-sm border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">${labels.uploadedPictures}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        ${media.map((doc) => `
+                            <div class="col-md-4">
+                                <div class="card border-0 shadow-sm">
+                                    <img src="${doc.payment_url}" alt="Payment" class="card-img-top" style="height: 150px; object-fit: cover;" />
+                                    <div class="card-body text-center">
+                                        <a href="${doc.payment_url}" target="_blank" class="btn btn-sm btn-outline-primary me-2">
+                                            <i class="fa fa-eye"></i> ${labels.view}
+                                        </a>
+                                        <a href="${doc.payment_url}" download class="btn btn-sm btn-outline-success">
+                                            <i class="fa fa-download"></i> ${labels.download}
+                                        </a>
                                     </div>
                                 </div>
-                            `
-                                )
-                                .join("")}
-                        </div>
+                            </div>
+                        `).join("")}
                     </div>
                 </div>
-            `;
-        } else {
-            return `<p class="text-center text-muted py-3">${labels.noDetails}</p>`;
-        }
+            </div>
+        `;
     }
 
     function generateStatusButtonsHtml(invoiceId, labels) {
@@ -459,12 +493,12 @@ $(document).ready(function() {
 
     function handleRejectButtonClick(response, labels) {
         swal({
-            title: getTranslation('warning'),
-            text: getTranslation('areYouSureReject'),
+            title: getTranslation('warning',lang),
+            text: getTranslation('areYouSureReject',lang),
             type: "warning",
             showCancelButton: true,
             confirmButtonText: labels.reject,
-            cancelButtonText: getTranslation('cancel'),
+            cancelButtonText: getTranslation('cancel',lang),
         }).then(() => {
             updatePaymentStatus(response.invoice_id, "rejected", null);
 
@@ -479,8 +513,8 @@ $(document).ready(function() {
         if (currentInvoiceDetails.paidDetails.length === 0 && overPaymentAmount === 0) {
             swal({
                 type: "warning",
-                title: getTranslation('warning'),
-                text: getTranslation('selectPayment'),
+                title: getTranslation('warning',lang),
+                text: getTranslation('selectPayment',lang),
             });
             return;
         }
@@ -489,23 +523,23 @@ $(document).ready(function() {
         if (overPaymentAmount < 0) {
             swal({
                 type: "warning",
-                title: getTranslation('warning'),
-                text: getTranslation('negativeAmount'),
+                title: getTranslation('warning',lang),
+                text: getTranslation('negativeAmount',lang),
             });
             return;
         }
 
         swal({
-            title: getTranslation('warning'),
-            text: getTranslation('areYouSureAccept'),
+            title: getTranslation('warning',lang),
+            text: getTranslation('areYouSureAccept',lang),
             type: "warning",
             showCancelButton: true,
             confirmButtonText: labels.accept,
-            cancelButtonText: getTranslation('cancel'),
+            cancelButtonText: getTranslation('cancel',lang),
         }).then(() => {
             updatePaymentStatus(
-                currentInvoiceDetails.id, 
-                "accepted", 
+                currentInvoiceDetails.id,
+                "accepted",
                 currentInvoiceDetails.paidDetails,
                 overPaymentAmount
             );
@@ -515,18 +549,18 @@ $(document).ready(function() {
     function updatePaymentStatus(invoiceId, status, paidDetails = null, overPaymentAmount = 0) {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
         const notes = $("#admin-notes").val();
-        
+
         const data = {
             _token: csrfToken,
             status: status,
             overPaymentAmount: overPaymentAmount,
             notes: notes,
         };
-    
+
         if (status === "accepted" && paidDetails) {
             data.paidDetails = paidDetails;
         }
-    
+
         $.ajax({
             url: window.routes.updateInvoiceStatus.replace(":paymentId", invoiceId),
             method: "POST",
@@ -534,24 +568,24 @@ $(document).ready(function() {
             success: function(response) {
                 swal({
                     type: "success",
-                    title: getTranslation('success'),
+                    title: getTranslation('success',lang),
                     text: response.message,
                 }).then(() => {
                     showInvoiceDetails(invoiceId);
                     table.ajax.reload();
-    
+
                 });
             },
             error: function(xhr) {
                 swal({
                     type: "error",
-                    title: getTranslation('error'),
-                    text: getTranslation('errorUpdating') + xhr.responseJSON.error,
+                    title: getTranslation('error',lang),
+                    text: getTranslation('errorUpdating',lang) + xhr.responseJSON.error,
                 });
             },
         });
     }
-    
+
 
     // Initialize
     fetchStats();

@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Exceptions\BusinessRuleException;
 use Exception;
-use App\Events\ReservationRoomChanged; // Import the event
+use App\Events\ReservationRoomChanged;
+use App\Models\ResidentRoomMovement;
+
 
 class ReservationSwapService
 {
@@ -93,15 +95,21 @@ class ReservationSwapService
                     throw new BusinessRuleException('Users must be of the same gender to swap reservations');
                 }
 
+                // Store previous room assignments
+                $oldRoom1 = $reservation1->room_id;
+                $oldRoom2 = $reservation2->room_id;
+
                 // Swap room IDs
-                $tempRoomId = $reservation1->room_id;
-                $reservation1->room_id = $reservation2->room_id;
-                $reservation2->room_id = $tempRoomId;
+                $reservation1->room_id = $oldRoom2;
+                $reservation2->room_id = $oldRoom1;
 
                 $reservation1->save();
                 $reservation2->save();
 
-                // Dispatch events for both reservations
+                $this->createResidentRoomMovement($reservation1, $oldRoom1, $oldRoom2, 'Room swap with another resident');
+                $this->createResidentRoomMovement($reservation2, $oldRoom2, $oldRoom1, 'Room swap with another resident');
+
+                // Dispatch events
                 event(new ReservationRoomChanged($reservation1->room));
                 event(new ReservationRoomChanged($reservation2->room));
 
@@ -132,23 +140,23 @@ class ReservationSwapService
     {
         return DB::transaction(function () use ($reservationId, $roomId) {
             try {
-                // Find the reservation and new room with their relationships
                 $reservation = Reservation::with(['room.apartment.building', 'user'])->findOrFail($reservationId);
                 $newRoom = Room::with('apartment.building')->findOrFail($roomId);
 
-                // Check if the room is already assigned to another reservation
                 if (Reservation::where('room_id', $newRoom->id)->exists()) {
                     throw new BusinessRuleException('Room is already assigned to another reservation');
                 }
 
-                // Check if the room's gender matches the resident's gender
                 if ($reservation->user->gender !== $newRoom->apartment->building->gender) {
                     throw new BusinessRuleException('Room gender is different than resident gender');
                 }
 
-                // Update the previous room's occupancy if it exists
-                if ($reservation->room_id) {
-                    $previousRoom = Room::find($reservation->room_id);
+                // Store old room ID
+                $oldRoomId = $reservation->room_id;
+
+                // Update previous room occupancy
+                if ($oldRoomId) {
+                    $previousRoom = Room::find($oldRoomId);
                     if ($previousRoom) {
                         $previousRoom->current_occupancy -= 1;
                         if ($previousRoom->current_occupancy != $previousRoom->max_occupancy) {
@@ -158,35 +166,32 @@ class ReservationSwapService
                     }
                 }
 
-                // Update the new room's occupancy
+                // Update new room occupancy
                 $newRoom->current_occupancy += 1;
                 if ($newRoom->current_occupancy == $newRoom->max_occupancy) {
                     $newRoom->full_occupied = 1;
                 }
-
+                
                 $newRoom->save();
 
-                // Assign the new room to the reservation
+                // Assign new room to reservation
                 $reservation->room_id = $newRoom->id;
                 $reservation->save();
 
-                // Dispatch the event for the room change
-                log::info('sending now......');
+                // Fix: Use oldRoomId instead of reservation->room_id which has already been updated
+                $this->createResidentRoomMovement($reservation, $oldRoomId, $newRoom->id, 'Reallocated to a new room');
+
+                // Dispatch event
                 event(new ReservationRoomChanged($newRoom));
 
-                // Prepare the new room details
-                $newRoomDetails = [
-                    'room_number' => $newRoom->number,
-                    'apartment_number' => $newRoom->apartment->number,
-                    'building_number' => $newRoom->apartment->building->number,
-                ];
-
-                // Return the reservation and new room details
                 return [
                     'reservation' => $reservation,
-                    'new_room_details' => $newRoomDetails,
+                    'new_room_details' => [
+                        'room_number' => $newRoom->number,
+                        'apartment_number' => $newRoom->apartment->number,
+                        'building_number' => $newRoom->apartment->building->number,
+                    ],
                 ];
-
             } catch (Exception $e) {
                 Log::error('Failed to reallocate reservation', [
                     'error' => $e->getMessage(),
@@ -196,5 +201,16 @@ class ReservationSwapService
                 throw $e;
             }
         });
+    }
+
+    private function createResidentRoomMovement($reservation, $oldRoomId, $newRoomId, $reason){
+        ResidentRoomMovement::create([
+            'user_id' => $reservation->user->id,
+            'reservation_id' => $reservation->id,
+            'old_room_id' => $oldRoomId,
+            'new_room_id' => $newRoomId,
+            'changed_by' => auth()->id(),
+            'reason' => $reason,
+        ]);
     }
 }

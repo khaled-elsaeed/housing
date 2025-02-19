@@ -89,19 +89,20 @@
                <li class="list-group-item d-flex justify-content-between align-items-center">
                   <div class="d-flex align-items-center">
                      <div class="me-3">
-                           @if($activity->activity_type === 'update_profile')
-                              <i class="fa fa-circle-check text-success"></i>
-                           @elseif($activity->activity_type === 'update_profile_picture')
-                              <i class="fa fa-circle-check text-success"></i>
-                           @elseif($activity->activity_type === 'delete_profile_picture')
-                              <i class="fa fa-circle-check text-success"></i>
-                           @elseif($activity->activity_type === 'reservation_requested')
-                              <i class="fa fa-circle-check text-success"></i>
-                           @elseif($activity->activity_type === 'invoice_upload')
-                              <i class="fa fa-upload text-primary"></i>
-                           @else
-                              <i class="fa fa-circle text-secondary"></i>
-                           @endif
+                     @php
+                     $iconMapping = [
+                        'update_profile' => '<i class="fa fa-check-circle text-success"></i>',
+                        'update_profile_picture' => '<i class="fa fa-check-circle text-success"></i>',
+                        'delete_profile_picture' => '<i class="fa fa-check-circle text-success"></i>',
+                        'reservation_requested' => '<i class="fa fa-check-circle text-success"></i>',
+                        'invoice_upload' => '<i class="fa fa-upload text-primary"></i>',
+                     ];
+
+                     $defaultIcon = '<i class="fa fa-circle text-secondary"></i>';
+                     $icon = $iconMapping[$activity->activity_type] ?? $defaultIcon;
+                     @endphp
+
+                     {!! $icon !!}
 
                         </div>
                         <div>

@@ -9,9 +9,10 @@ use App\Models\Payment;
 use App\Models\Insurance;
 use App\Models\InvoiceDetail;
 use App\Models\AdminAction; // Assuming you have a model for admin action logs
-use Yajra\DataTables\DataTables;
+use Yajra\DataTables\Facades\DataTables;
 use App\Exports\Invoices\InvoicesExport;
 use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\App;
@@ -130,45 +131,13 @@ class InvoiceController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function fetchInvoices(Request $request)
-    {
-        $currentLang = App::getLocale(); // Get current locale
-
-        try {
-            $query = Invoice::with([
-                "reservation" => function ($query) {
-                    $query->with(["user.student"]);
-                },
-            ]);
-
-            // Gender filtering
-            if ($request->filled("gender")) {
-                $gender = $request->get("gender");
-                $query->whereHas("reservation.user.student", function ($query) use ($gender) {
-                    $query->where("gender", $gender);
-                });
-            }
-
-            // Custom search filtering
-            if ($request->filled("customSearch")) {
-                $searchTerm = $request->get("customSearch");
-                $query->where(function ($query) use ($searchTerm, $currentLang) {
-                    $query->whereHas("reservation.user.student", function ($query) use ($searchTerm, $currentLang) {
-                        $query
-                            ->where("name_" . ($currentLang == "ar" ? "ar" : "en"), "like", "%$searchTerm%")
-                            ->orWhere("national_id", "like", "%$searchTerm%")
-                            ->orWhere("mobile", "like", "%$searchTerm%");
-                    });
-                });
-            }
-
-            // Filter invoices by approval status if provided
-            if ($request->filled("admin_approval")) {
-                $approvalStatus = $request->get("admin_approval");
-                $query->where("admin_approval", $approvalStatus);
-            }
-
-            // Order by payment status and admin approval
-            $query->orderByRaw("
+{
+    try {
+        $currentLang = App::getLocale();
+        
+        $query = Invoice::with(['reservation.user.student.faculty'])
+            ->select('invoices.*')
+            ->orderByRaw("
                 CASE 
                     WHEN status = 'paid' THEN 1
                     WHEN status = 'unpaid' THEN 2
@@ -181,47 +150,61 @@ class InvoiceController extends Controller
                 END
             ");
 
-            // Count total and filtered records
-            $totalRecords = $query->count("invoices.id");
-            $filteredRecords = $query->count("invoices.id");
-
-            // Paginate
-            $invoices = $query
-                ->select("invoices.*") // Select only invoice fields
-                ->skip($request->get("start", 0))
-                ->take($request->get("length", 10))
-                ->get();
-
-            return response()->json([
-                "draw" => $request->get("draw"),
-                "recordsTotal" => $totalRecords,
-                "recordsFiltered" => $filteredRecords,
-                "data" => $invoices->map(function ($invoice) use ($currentLang) {
-                    $student = $invoice->reservation->user->student ?? null;
-                    $faculty = $student->faculty ?? null;
-
-                    return [
-                        "invoice_id" => $invoice->id,
-                        "name" => $student ? $student->{"name_" . ($currentLang == "ar" ? "ar" : "en")} : "N/A",
-                        "national_id" => $student ? $student->national_id : "N/A",
-                        "faculty" => $faculty ? $faculty->{"name_" . ($currentLang == "ar" ? "ar" : "en")} : "N/A",
-                        "mobile" => $student ? $student->mobile : "N/A",
-                        "invoice_status" => $invoice->status,
-                        "admin_approval" => $invoice->admin_approval,
-                        "actions" => '<button type="button" class="btn btn-round btn-info-rgba" data-invoice-id="' . $invoice->id . '" id="details-btn" title="More Details"><i class="feather icon-info"></i></button>',
-                    ];
-                }),
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Failed to fetch invoices', [
-                'error' => $e->getMessage(),
-                'action' => 'fetch_invoices',
-                'request_data' => $request->all(),
-                'admin_id' => auth()->id(),
-            ]);
-            return response()->json(["error" => "Failed to fetch invoices data."], 500);
+        // Gender filtering
+        if ($request->filled('gender')) {
+            $gender = $request->get('gender');
+            $query->whereHas('reservation.user.student', function ($q) use ($gender) {
+                $q->where('gender', $gender);
+            });
         }
+
+        // Custom search filtering
+        if ($request->filled('customSearch')) {
+            $searchTerm = $request->get('customSearch');
+            $query->where(function ($q) use ($searchTerm, $currentLang) {
+                $q->whereHas('reservation.user.student', function ($studentQuery) use ($searchTerm, $currentLang) {
+                    $studentQuery->where('name_' . ($currentLang == 'ar' ? 'ar' : 'en'), 'like', "%{$searchTerm}%")
+                        ->orWhere('national_id', 'like', "%{$searchTerm}%")
+                        ->orWhere('phone', 'like', "%{$searchTerm}%");
+                });
+            });
+        }
+
+        // Filter by approval status
+        if ($request->filled('admin_approval')) {
+            $query->where('admin_approval', $request->get('admin_approval'));
+        }
+
+        return DataTables::of($query)
+            ->addColumn('name', function ($invoice)  {
+                return $invoice->reservation->user->student?->name ?? 'N/A';
+            })
+            ->addColumn('national_id', function ($invoice) {
+                return $invoice->reservation->user->student?->national_id ?? 'N/A';
+            })
+            ->addColumn('faculty', function ($invoice)  {
+                return $invoice->reservation->user->student?->faculty?->name?? 'N/A';
+            })
+            ->addColumn('phone', function ($invoice) {
+                return $invoice->reservation->user->student?->phone ?? 'N/A';
+            })
+            ->addColumn('status', function ($invoice) {
+                return trans($invoice->status);
+            })
+            ->addColumn('admin_approval', function ($invoice) {
+                return trans($invoice->admin_approval);
+            })
+            ->make(true);
+    } catch (Exception $e) {
+        Log::error('Failed to fetch invoices', [
+            'error' => $e->getMessage(),
+            'action' => 'fetch_invoices',
+            'request_data' => $request->all(),
+            'admin_id' => auth()->id(),
+        ]);
+        return response()->json(["error" => "Failed to fetch invoices data."], 500);
     }
+}
 
     /**
      * Fetch detailed information about a specific invoice by invoice ID.
@@ -242,9 +225,9 @@ class InvoiceController extends Controller
 
             // Build student details
             $studentDetails = [
-                "name" => $user->student->name_en ?? "N/A",
+                "name" => $user->student->name ?? "N/A",
                 "balance" => $user->balance . " EGP",
-                "faculty" => $user->student->faculty->name_en ?? "N/A",
+                "faculty" => $user->student->faculty->name ?? "N/A",
                 "building" => $room->apartment->building->number ?? "N/A",
                 "apartment" => $room->apartment->number ?? "N/A",
                 "room" => $room->number ?? "N/A",
@@ -413,28 +396,8 @@ class InvoiceController extends Controller
             }
         }
 
-        // Update the overall invoice paid status
-        $this->updateInvoicePaidStatus($invoice);
     }
 
-    /**
-     * Update the overall paid status of the invoice.
-     *
-     * @param Invoice $invoice
-     */
-    private function updateInvoicePaidStatus(Invoice $invoice)
-    {
-        $totalInvoiceDetails = $invoice->details->count();
-        $paidInvoiceDetails = $invoice->details->where("status", "paid")->count();
-
-        if ($totalInvoiceDetails == $paidInvoiceDetails) {
-            $invoice->paid_status = "full_paid";
-        } elseif ($totalInvoiceDetails > $paidInvoiceDetails && $paidInvoiceDetails != 0) {
-            $invoice->paid_status = "partial_paid";
-        }
-
-        $invoice->save();
-    }
 
     /**
      * Update the reservation status if the invoice is accepted.

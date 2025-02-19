@@ -561,8 +561,14 @@
     "Profile picture deleted successfully": "Profile picture deleted successfully",
     "No profile picture found": "No profile picture found",
     "Payments Info":"Payments Info",
+
+    "Users must be of the same gender to swap reservations": "Users must be of the same gender to swap reservations",
+    "Room is already assigned to another reservation": "Room is already assigned to another reservation",
+    "Room gender is different than resident gender": "Room gender is different than resident gender",
     "N/A" : "N/A",
     "Date" :"Date",
+    "resident_location" : "Room: :room, Apartment: :apartment, Building: :building",
+
     "Auto-Reserve All" : "Auto-Reserve All",
     "spring 2024-2025" : "Spring 2024-2025",
     "pending" : "pending",

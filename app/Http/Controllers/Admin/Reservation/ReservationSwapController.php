@@ -118,7 +118,7 @@ class ReservationSwapController extends Controller
             ]);
         } catch (BusinessRuleException $e) {
             
-            return response()->json(['error' => $e->getMessage()], 400);
+            return response()->json(['error' => trans($e->getMessage())], 400);
         
         } catch (Exception $e) {
             // Handle all other exceptions
@@ -161,7 +161,7 @@ class ReservationSwapController extends Controller
         } 
         catch (BusinessRuleException $e) {
             
-            return response()->json(['error' => $e->getMessage()], 400);
+            return response()->json(['error' => trans($e->getMessage())], 400);
         
         } catch (Exception $e) {
             // Handle all other exceptions

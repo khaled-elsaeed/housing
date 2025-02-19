@@ -91,7 +91,7 @@
                 <h3 style="color:#8C2F39;margin-top:0;">تفاصيل الغرفة الجديدة</h3>
                 <p>
                     <strong>رقم الغرفة:</strong> {{ $room->number }}<br>
-                    <strong>الدور:</strong> {{ $room->apartment->number }}<br>
+                    <strong>الشقة:</strong> {{ $room->apartment->number }}<br>
                     <strong>المبنى:</strong> {{ $room->apartment->building->number }}<br>
                     @php
                         $roomTypes = [

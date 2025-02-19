@@ -203,6 +203,10 @@ function fetchResidentDetails(nationalIdInput, detailsContainer, reservationIdIn
 function handleRelocationFormSubmission(event) {
     event.preventDefault();
 
+    const btn = $(event.target).find("button[type='submit']");
+
+    toggleButtonLoading(btn, true);
+
     const newRoom = $('#room_select').val();
     const reservationId = $('#reservation_id_1').val();
     const csrfToken = $('meta[name="csrf-token"]').attr('content');
@@ -244,6 +248,10 @@ function handleRelocationFormSubmission(event) {
             const errorMessage = response.responseJSON?.error || getText('relocation_error');
             showError(errorMessage);
         },
+        complete:function(){
+            toggleButtonLoading(btn, false);
+
+        }
     });
 }
 
@@ -253,6 +261,10 @@ function handleRelocationFormSubmission(event) {
  */
 function handleSwapFormSubmission(event) {
     event.preventDefault();
+
+    const btn = $(event.target).find("button[type='submit']");
+
+    toggleButtonLoading(btn, true);
 
     const reservation1Id = $('#reservation_id_1_swap').val();
     const reservation2Id = $('#reservation_id_2_swap').val();
@@ -277,6 +289,10 @@ function handleSwapFormSubmission(event) {
             const errorMessage = error.responseJSON?.error || getText('swap_error');
             showError(errorMessage);
         },
+        complete:function(){
+            toggleButtonLoading(btn, false);
+
+        }
     });
 }
 
@@ -306,6 +322,20 @@ function showError(message) {
         type: 'error',
         confirmButtonText: getText('ok'),
     });
+}
+
+function toggleButtonLoading(button, isLoading) {
+    if (isLoading) {
+        // Store the full button HTML (including the icon) before changing it
+        let loading = getText('loading');
+        button.data('original-html', button.html())
+            .html(`<i class="fa fa-spinner fa-spin"></i> ${loading}`)
+            .prop('disabled', true);
+    } else {
+        // Restore the full original HTML (with the icon)
+        button.html(button.data('original-html'))
+            .prop('disabled', false);
+    }
 }
 
 /**
