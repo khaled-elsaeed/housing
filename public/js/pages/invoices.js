@@ -9,6 +9,7 @@ $(document).ready(function() {
             room: "Room",
             uploadedPictures: "Uploaded Pictures",
             view: "View",
+            rejected: "Rejected",
             download: "Download",
             accept: "Accept",
             reject: "Reject",
@@ -40,14 +41,23 @@ $(document).ready(function() {
             totalAmount: "Total Amount",
             remainingBalance: "Remaining Balance",
             notes: "Notes",
+            referenceNumber: 'referenceNumber',
+            fee:"Fee",
+            insurance:"Insurance",
+            enterReferenceNumber: 'enterReferenceNumber',
             optional: "Optional",
         },
         ar: {
             studentDetails: "تفاصيل الطالب",
             name: "الاسم",
             faculty: "الكلية",
+            rejected: "مرفوض",
+            fee:"مصاريف",
+            insurance:"تأمين",
             building: "المبنى",
             apartment: "الشقة",
+            referenceNumber: 'الرقم المرجعي',
+            enterReferenceNumber: 'أدخل الرقم المرجعي',
             room: "الغرفة",
             uploadedPictures: "الصور المرفوعة",
             view: "عرض",
@@ -129,6 +139,9 @@ $(document).ready(function() {
             category: getTranslation('category', language),
             amount: getTranslation('amount', language),
             paid: getTranslation('paid', language),
+            referenceNumber: getTranslation('referenceNumber', language),
+            enterReferenceNumber: getTranslation('enterReferenceNumber', language),
+
             overpaymentAmount: getTranslation('overpaymentAmount', language),
             enterOverpayment: getTranslation('enterOverpayment', language),
             adminNotes: getTranslation('adminNotes', language),
@@ -184,9 +197,9 @@ $(document).ready(function() {
             {
                 data: 'phone',
                 name: 'phone'
-            },{
-                data:'reservation_duration',
-                name:'reservation_duration'
+            }, {
+                data: 'reservation_duration',
+                name: 'reservation_duration'
             },
             {
                 data: 'status',
@@ -338,7 +351,7 @@ $(document).ready(function() {
     // HTML Generation Functions
     function generateStudentDetailsHtml(studentDetails, labels) {
         const details = ["name", "faculty", "building", "apartment", "room", "balance"];
-    
+
         // Generate the student details cards dynamically
         const studentDetailsCards = details.map((key) => `
             <div class="col-md-4 mb-3">
@@ -350,7 +363,7 @@ $(document).ready(function() {
                 </div>
             </div>
         `).join("");
-    
+
         return `
             <div class="card mb-4 shadow-sm border-0">
                 <div class="card-header bg-primary text-white p-3">
@@ -387,7 +400,7 @@ $(document).ready(function() {
                             <tbody>
                                 ${invoiceDetails.map((detail) => `
                                     <tr>
-                                        <td>${detail.category}</td>
+                                        <td>${getTranslation(detail.category,lang)}</td>
                                         <td class="fs-5 text-end">${parseFloat(detail.amount).toLocaleString()}</td>
                                         <td class="fs-5 text-end">
                                             <input class="form-check-input border border-secondary invoice-detail-status" 
@@ -402,8 +415,15 @@ $(document).ready(function() {
                     </div>
     
                     ${showOverpayment ? `
+                        <!-- Add Reference Number input first -->
                         <div class="mt-3">
-                            <label for="overpayment-amount" class="form-label">${getTranslation('overpaymentAmount'),lang}</label>
+                            <label for="reference-number" class="form-label">الرقم المرجعي</label>
+                            <input type="text" id="reference-number" class="form-control border border-secondary" 
+                                   placeholder="أدخل الرقم المرجعي">
+                        </div>
+    
+                        <div class="mt-3">
+                            <label for="overpayment-amount" class="form-label">${getTranslation('overpaymentAmount',lang)}</label>
                             <input type="number" id="overpayment-amount" class="form-control border border-secondary" 
                                    placeholder="${getTranslation('enterOverpayment',lang)}">
                         </div>
@@ -496,12 +516,12 @@ $(document).ready(function() {
 
     function handleRejectButtonClick(response, labels) {
         swal({
-            title: getTranslation('warning',lang),
-            text: getTranslation('areYouSureReject',lang),
+            title: getTranslation('warning', lang),
+            text: getTranslation('areYouSureReject', lang),
             type: "warning",
             showCancelButton: true,
             confirmButtonText: labels.reject,
-            cancelButtonText: getTranslation('cancel',lang),
+            cancelButtonText: getTranslation('cancel', lang),
         }).then(() => {
             updatePaymentStatus(response.invoice_id, "rejected", null);
 
@@ -510,46 +530,61 @@ $(document).ready(function() {
 
     function handleAcceptButtonClick(response, labels) {
         const overPaymentAmount = parseFloat($("#overpayment-amount").val()) || 0;
+
+        const referenceNumber = $("#reference-number").val();
+
         const unpaidDetails = response.invoiceDetails.filter(d => !d.is_paid);
 
         // Validate that all required payments are selected
         if (currentInvoiceDetails.paidDetails.length === 0 && overPaymentAmount === 0) {
             swal({
                 type: "warning",
-                title: getTranslation('warning',lang),
-                text: getTranslation('selectPayment',lang),
+                title: getTranslation('warning', lang),
+                text: getTranslation('selectPayment', lang),
             });
             return;
         }
+
+        // Should be:
+        if (!referenceNumber || referenceNumber.trim() === "") {
+            swal({
+                icon: "warning",
+                title: getTranslation('warning', lang),
+                text: getTranslation('enterReferenceNumber', lang),
+            });
+            return;
+        }
+
 
         // Validate overpayment amount
         if (overPaymentAmount < 0) {
             swal({
                 type: "warning",
-                title: getTranslation('warning',lang),
-                text: getTranslation('negativeAmount',lang),
+                title: getTranslation('warning', lang),
+                text: getTranslation('negativeAmount', lang),
             });
             return;
         }
 
         swal({
-            title: getTranslation('warning',lang),
-            text: getTranslation('areYouSureAccept',lang),
+            title: getTranslation('warning', lang),
+            text: getTranslation('areYouSureAccept', lang),
             type: "warning",
             showCancelButton: true,
             confirmButtonText: labels.accept,
-            cancelButtonText: getTranslation('cancel',lang),
+            cancelButtonText: getTranslation('cancel', lang),
         }).then(() => {
             updatePaymentStatus(
                 currentInvoiceDetails.id,
                 "accepted",
                 currentInvoiceDetails.paidDetails,
-                overPaymentAmount
+                overPaymentAmount,
+                referenceNumber
             );
         });
     }
 
-    function updatePaymentStatus(invoiceId, status, paidDetails = null, overPaymentAmount = 0) {
+    function updatePaymentStatus(invoiceId, status, paidDetails = null, overPaymentAmount = 0, referenceNumber = null) {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
         const notes = $("#admin-notes").val();
 
@@ -557,7 +592,9 @@ $(document).ready(function() {
             _token: csrfToken,
             status: status,
             overPaymentAmount: overPaymentAmount,
+            referenceNumber: referenceNumber,
             notes: notes,
+
         };
 
         if (status === "accepted" && paidDetails) {
@@ -571,7 +608,7 @@ $(document).ready(function() {
             success: function(response) {
                 swal({
                     type: "success",
-                    title: getTranslation('success',lang),
+                    title: getTranslation('success', lang),
                     text: response.message,
                 }).then(() => {
                     showInvoiceDetails(invoiceId);
@@ -582,8 +619,8 @@ $(document).ready(function() {
             error: function(xhr) {
                 swal({
                     type: "error",
-                    title: getTranslation('error',lang),
-                    text: getTranslation('errorUpdating',lang) + xhr.responseJSON.error,
+                    title: getTranslation('error', lang),
+                    text: getTranslation('errorUpdating', lang) + xhr.responseJSON.error,
                 });
             },
         });

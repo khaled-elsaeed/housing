@@ -217,11 +217,13 @@
                         <th>@lang('Resident Name')</th>
                         <th>@lang('Resident Location')</th>
                         <th>@lang('Resident Phone')</th>
-                        <th>@lang('Title')</th>
-                        <th>@lang('Description')</th>
+                        <th>@lang('Category')</th>
+                        <th>@lang('Problems')</th>
                         <th>@lang('Status')</th>
                         <th>@lang('Assigned Staff')</th>
                         <th>@lang('Created At')</th>
+                        <th>@lang('Has Photos')</th>
+                        <th>@lang('Photos')</th>
                         <th>@lang('Actions')</th>
                      </tr>
                   </thead>
@@ -268,7 +270,8 @@
 
             </div>
             <form id="maintenanceForm">
-                <div class="modal-body">
+            @csrf
+            <div class="modal-body">
                     <div class="form-group">
                         <label for="categorySelect">Category</label>
                         <select id="categorySelect" class="form-control" required>
@@ -312,6 +315,8 @@
     window.routes = {
       fetchRequests: "{{ route('admin.maintenance.requests.fetch') }}",
       fetchStaff: "{{ route('admin.maintenance.requests.fetchStaff') }}",  
+      acceptRequest: "{{ route('admin.maintenance.requests.assign', ':id') }}",  
+
 
     };
 </script>

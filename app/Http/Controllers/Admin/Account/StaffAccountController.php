@@ -114,7 +114,9 @@ class StaffAccountController extends Controller
                 'user_id' => 'required|exists:users,id',
                 'first_name_en' => 'required|string|max:255',
                 'first_name_ar' => 'required|string|max:255',
-                'last_name' => 'required|string|max:255',
+                'last_name_en' => 'required|string|max:255',
+                'last_name_ar' => 'required|string|max:255',
+
                 'email' => 'required|email|unique:users,email,' . $request->user_id,
                 'role' => 'required|string|in:admin,housing_manager,building_manager,technician',
             ]);
@@ -123,7 +125,8 @@ class StaffAccountController extends Controller
             $user->update([
                 'first_name_en' => $request->first_name_en,
                 'first_name_ar' => $request->first_name_ar,
-                'last_name' => $request->last_name,
+                'last_name_ar' => $request->last_name_ar,
+                'last_name_en' => $request->last_name_en,
                 'email' => $request->email,
             ]);
 

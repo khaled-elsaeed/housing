@@ -12,7 +12,10 @@ $(document).ready(function () {
             noAdditionalInfo: 'No additional information available',
             errorFetchingIssues: 'Error fetching issues',
             statusUpdatedSuccessfully: 'Status updated successfully',
-            anErrorOccurred: 'An error occurred'
+            anErrorOccurred: 'An error occurred',
+            assignedAt: 'Assigned at',
+            staffAcceptedAt: 'Staff accepted at',
+            staffCompletedAt: 'Staff completed at' // Added missing key
         },
         ar: {
             approve: 'موافقة',
@@ -22,9 +25,15 @@ $(document).ready(function () {
             noAdditionalInfo: 'لا توجد معلومات إضافية',
             errorFetchingIssues: 'حدث خطأ أثناء جلب المشكلات',
             statusUpdatedSuccessfully: 'تم تحديث الحالة بنجاح',
-            anErrorOccurred: 'حدث خطأ'
+            anErrorOccurred: 'حدث خطأ',
+            assignedAt: 'تم التعيين في',
+            staffAcceptedAt: 'تم قبول الموظف في',
+            staffCompletedAt: 'تم اكتمال الصيانة من قبل الموظف في' // Added missing key
         }
     };
+    
+    
+    
 
     // Helper function to translate text
     function gettext(key, lang) {
@@ -54,41 +63,119 @@ $(document).ready(function () {
                 name: 'problems',
                 render: function (data) {
                     if (!data) return ''; // Handle null values safely
-
-                    let problems = JSON.parse(data); // Convert JSON string to JS object
+    
+                    let problems;
+                    try {
+                        problems = JSON.parse(data); // Convert JSON string to JS object
+                    } catch (e) {
+                        console.error("Invalid JSON format in problems field:", e);
+                        return ''; // Return empty if JSON is malformed
+                    }
+    
                     if (!Array.isArray(problems)) return ''; // Ensure it's an array
-
-                    let displayedProblems = problems.slice(0, 3) // Show only first 3
+    
+                    let displayedProblems = problems.slice(0, 3) // Show only first 3 problems
                         .map(problem => `<span class="badge bg-primary">${problem.name}</span>`)
                         .join(' ');
-
+    
                     if (problems.length > 3) {
                         let moreProblems = problems.slice(3) // Remaining problems
                             .map(problem => problem.name).join(', ');
-
+    
                         displayedProblems += ` <span class="text-info more-problems" 
                                                 data-bs-toggle="tooltip" 
                                                 title="${moreProblems}">
                                                 +${problems.length - 3} more
                                             </span>`;
                     }
-
+    
                     return displayedProblems;
                 }
             },
-            { data: 'status', name: 'status' },
+            {
+                data: 'status',
+                name: 'status',
+                render: function (data) {
+                    if (!data) return 'N/A'; // Handle null values
+    
+                    let badgeClass = '';
+                    switch (data) {
+                        case 'pending':
+                            badgeClass = 'badge bg-warning text-dark';
+                            break;
+                        case 'assigned':
+                            badgeClass = 'badge bg-primary';
+                            break;
+                        case 'in_progress':
+                            badgeClass = 'badge bg-info';
+                            break;
+                        case 'completed':
+                            badgeClass = 'badge bg-success';
+                            break;
+                        default:
+                            badgeClass = 'badge bg-secondary';
+                            break;
+                    }
+    
+                    return `<span class="${badgeClass}">${data.replace('_', ' ')}</span>`;
+                }
+            },
             { data: 'assigned_staff', name: 'assigned_staff' },
-            { data: 'created_at', name: 'created_at' },
+            {
+                data: 'created_at',
+                name: 'created_at',
+                render: function (data) {
+                    if (!data) return 'N/A'; // Handle null values safely
+    
+                    let date = new Date(data);
+                    return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                }
+            },
+            {
+                data: 'has_photos',
+                name: 'has_photos',
+                render: function (data) {
+                    // Display "Yes" or "No" based on whether photos exist
+                    return data === 'Yes' ? `<span class="badge bg-success">Yes</span>` : `<span class="badge bg-secondary">No</span>`;
+                }
+            },
+            {
+                data: 'photos',
+                name: 'photos',
+                render: function (data) {
+                    if (data === 'No photos') {
+                        return data; // Return "No photos" if no photos exist
+                    }
+    
+                    // Render buttons for each photo
+                    return data;
+                }
+            },
             {
                 data: null,
                 render: function (data) {
                     const lang = $('html').attr('lang') || 'en';
+    
                     if (data.status === 'pending') {
                         return renderPendingActions(data);
                     }
+    
                     if (data.status === 'accepted' && data.updated_at) {
                         return renderAcceptedStatus(data);
                     }
+    
+                    if (data.status === 'assigned' && data.updated_at) {
+                        return renderAssignedStatus(data);
+                    }
+    
+                    if (data.status === 'in_progress') {
+                        return renderInProgressStatus(data);
+                    }
+    
+                    if (data.status === 'completed') {
+                        return renderCompletedStatus(data);
+                    }
+    
                     return '';
                 }
             }
@@ -98,10 +185,10 @@ $(document).ready(function () {
         } : {}
     });
 
-    // Helper function to render accepted status
     function renderAcceptedStatus(data) {
         const lang = $('html').attr('lang') || 'en';
-        const formattedDate = data.actions; // Assuming `actions` contains the formatted date
+        let formattedDate = formatDate(data.actions); // Format the date
+    
         return `
             <div class="accepted-status">
                 <span class="badge badge-success">${gettext('acceptedAt', lang)}</span>
@@ -109,6 +196,52 @@ $(document).ready(function () {
                 <large>${formattedDate}</large>
             </div>`;
     }
+
+    function renderCompletedStatus(data) {
+        const lang = $('html').attr('lang') || 'en';
+        let formattedDate = formatDate(data.updated_at); 
+        let assignedStaff = data.assigned_staff ? data.assigned_staff : 'N/A';
+    
+        return `
+            <div class="completed-status">
+                
+                <strong>${gettext('staffCompletedAt', lang)}:</strong> ${formattedDate}
+            </div>`;
+    }
+    
+    function renderInProgressStatus(data) {
+        const lang = $('html').attr('lang') || 'en';
+        let formattedDate = formatDate(data.updated_at); 
+        let assignedStaff = data.assigned_staff ? data.assigned_staff : 'N/A';
+    
+        return `
+            <div class="in-progress-status">
+               
+                <strong>${gettext('staffAcceptedAt', lang)}:</strong> ${formattedDate}
+            </div>`;
+    }
+    
+    
+    function renderAssignedStatus(data) {
+        const lang = $('html').attr('lang') || 'en';
+        let formattedDate = formatDate(data.updated_at); // Format the date
+    
+        return `
+            <div class="assigned-status">
+                <span class="badge badge-info">${gettext('assignedAt', lang)}</span>
+                <br>
+                <large>${formattedDate}</large>
+            </div>`;
+    }
+    
+    // **Helper function to format dates**
+    function formatDate(dateString) {
+        if (!dateString) return 'N/A'; // Handle null values safely
+    
+        let date = new Date(dateString);
+        return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    }
+    
 
     // Reload table on search or filter change
     $('#searchBox').on('keyup', function () {
@@ -223,12 +356,11 @@ $(document).ready(function () {
     $('#maintenanceForm').on('submit', function (e) {
         e.preventDefault();
 
-        const requestId = $('#maintenanceModal').data('requestId');
+        const requestId = $('#maintenancAssignModal').data('requestId');
         const $submitButton = $(this).find('button[type="submit"]');
         const formData = {
             request_id: requestId,
-            category: $('#categorySelect').val(),
-            option_id: $('#optionsSelect').val(),
+            staff_id: $('#optionsSelect').val(),
             notes: $('#maintenanceNotes').val()
         };
 
@@ -237,13 +369,16 @@ $(document).ready(function () {
 
         // Submit the form
         $.ajax({
-            url: window.routes.acceptRequest,
+            url: window.routes.acceptRequest.replace(":id", formData.request_id),
             method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Fixing CSRF token retrieval
+            },
             data: formData,
             success: function (response) {
                 $('#maintenanceModal').modal('hide');
                 table.ajax.reload();
-
+        
                 // Show success message using SweetAlert2
                 swal({
                     type: 'success',
@@ -265,5 +400,6 @@ $(document).ready(function () {
                 toggleButtonLoading($submitButton, false);
             }
         });
+        
     });
 });

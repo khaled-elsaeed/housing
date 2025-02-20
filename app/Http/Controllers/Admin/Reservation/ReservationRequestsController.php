@@ -58,6 +58,7 @@ class ReservationRequestsController extends Controller
         try {
             $query = ReservationRequest::with(['user.student', 'academicTerm'])
                 ->select('reservation_requests.*')
+                ->orderBy('status','desc')
                 ->orderBy('created_at','desc');
 
                 if ($request->filled('customSearch')) {
@@ -73,7 +74,7 @@ class ReservationRequestsController extends Controller
                 
 
             return DataTables::of($query)
-                ->editColumn('user.name', function ($request) {
+                ->editColumn('name', function ($request) {
                     return $request->user?->name ?? 'N/A';
                 })
                 ->editColumn('period_type', function ($request) {
@@ -81,10 +82,12 @@ class ReservationRequestsController extends Controller
                 })
                 ->editColumn('period_duration', function ($request) {
                     if ($request->period_type === "long" && $request->academicTerm) {
-                        return trans($request->academicTerm->semester . " Term ( " . ($request->academicTerm->name) . " " . $request->academicTerm->academic_year . " )");
+                        return trans($request->academicTerm->semester . " Term ( " . $request->academicTerm->name . " " . $request->academicTerm->academic_year . " )");
+                    } else {
+                        return $request->start_date . trans(' To ') . $request->end_date; 
                     }
-                    return $request->period_duration;
                 })
+                
                 ->editColumn('requested_at', function ($request) {
                     return \Carbon\Carbon::parse($request->created_at)->format('F j, Y g:i A');
                 })
@@ -92,7 +95,7 @@ class ReservationRequestsController extends Controller
                     return $request->status ?? 'pending';
                 })
                 ->editColumn('actions', function ($request) {
-                    return $request->status === 'accepted'
+                    return $request->status !== 'pending'
                         ? \Carbon\Carbon::parse($request->updated_at)->format('d M Y, h:i A')
                         : 'pending';
                 })

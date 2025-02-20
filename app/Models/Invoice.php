@@ -14,6 +14,7 @@ class Invoice extends Model
      protected $fillable = [
         'reservation_id', 
         'amount', 
+        'reference_number',
         'due_date', 
         'paid_amount',
         'status', 
@@ -67,7 +68,7 @@ class Invoice extends Model
 
     public function media()
     {
-        return $this->hasOne(Media::class, 'id', 'media_id');  // Specify the correct foreign key
+        return $this->hasOne(Media::class, 'id', 'media_id');  
     }
     
 

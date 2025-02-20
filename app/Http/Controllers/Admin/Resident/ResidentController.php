@@ -112,8 +112,8 @@ class ResidentController extends Controller
                     ? $resident->student->faculty->{"name_" . (App::getLocale() == "ar" ? "ar" : "en")}
                     : trans("N/A");
             })
-            ->editColumn("mobile", function ($resident) {
-                return $resident->student->mobile ?? trans("N/A");
+            ->editColumn("phone", function ($resident) {
+                return $resident->student->phone ?? trans("N/A");
             })
             
             ->make(true);

@@ -3,6 +3,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+
 
 class MaintenanceRequest extends Model
 {
@@ -61,4 +63,10 @@ class MaintenanceRequest extends Model
     {
         return !is_null($this->assigned_to);
     }
+
+    public function media(): MorphMany
+    {
+        return $this->morphMany(Media::class, 'mediable');
+    }
+
 }

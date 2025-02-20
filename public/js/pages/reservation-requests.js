@@ -7,7 +7,13 @@ $(document).ready(function() {
             approve: "Approve",
             reject: "Reject",
             acceptedAt: "Accepted At",
-            accepted:"Accepted",
+            accepted: "Accepted",
+            pending: "Pending",
+            rejected: "Rejected",
+            selectBuilding: "Select Building",
+            selectApartment: "Select Apartment",
+            selectRoom: "Select Room",
+            loading: "Loading..."
         },
         ar: {
             success: "نجاح!",
@@ -15,8 +21,13 @@ $(document).ready(function() {
             approve: "موافقة",
             reject: "رفض",
             acceptedAt: "تم القبول في",
-            accepted:"مقبول",
-
+            accepted: "مقبول",
+            pending: "معلق",
+            rejected: "مرفوض",
+            selectBuilding: "اختر المبنى",
+            selectApartment: "اختر الشقة",
+            selectRoom: "اختر الغرفة",
+            loading: "تحميل..."
         }
     };
 
@@ -51,30 +62,27 @@ $(document).ready(function() {
             }
         },
         columns: [
-            { data: 'user.name', name: 'user.name' },
+            { data: 'name', name: 'name' },
             { data: 'period_type', name: 'period_type' },
             { data: 'period_duration', name: 'period_duration' },
             { data: 'requested_at', name: 'requested_at' },
-
             {
                 data: 'status',
                 render: function(data) {
                     let badgeClass = 'badge badge-';
-                    let stat ;
+                    let stat;
                     switch(data) {
                         case 'pending':
                             badgeClass += 'warning';
-                            stat = 'pending' ;
+                            stat = 'pending';
                             break;
                         case 'accepted':
                             badgeClass += 'success';
-                            stat = 'accepted' ;
-
+                            stat = 'accepted';
                             break;
                         case 'rejected':
                             badgeClass += 'danger';
-                            stat = 'rejected' ;
-
+                            stat = 'rejected';
                             break;
                     }
                     return `<span class="${badgeClass}">${messages[lang][stat]}</span>`;
@@ -86,17 +94,12 @@ $(document).ready(function() {
                     if (data.status === 'pending') {
                         return renderPendingActions(data);
                     }
-            
                     if (data.status === 'accepted' && data.updated_at) {
                         return renderAcceptedStatus(data);
                     }
-            
                     return '';
                 }
             }
-            
-            
-            
         ],
         language: lang === "ar" ? {
             url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json",
@@ -115,7 +118,7 @@ $(document).ready(function() {
                 </button>
             </div>`;
     }
-    
+
     // Helper function to render accepted status
     function renderAcceptedStatus(data) {
         const formattedDate = data.actions; // Assuming `actions` contains the formatted date
@@ -126,6 +129,7 @@ $(document).ready(function() {
                 <large>${formattedDate}</large>
             </div>`;
     }
+
     // Search functionality
     $('#searchBox').on('keyup', function() {
         table.ajax.reload();
@@ -148,44 +152,41 @@ $(document).ready(function() {
     // Load summary on page load
     fetchSummaryData();
 
-// Handle Auto-Reserve button
-$('#autoReserveBtn').on('click', function() {
-    const btn = $(this);
+    // Handle Auto-Reserve button
+    $('#autoReserveBtn').on('click', function() {
+        const btn = $(this);
+        toggleButtonLoading(btn, true);
 
-    toggleButtonLoading(btn, true);
-
-    $.ajax({
-        url: window.routes.autoReserve,
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Add CSRF Token
-        },
-        success: function(response) {
-            swal({
-                title: messages[lang].success,
-                text: response.message,
-                type: "success",
-                showConfirmButton: true
-            });
-            table.ajax.reload();
-            fetchSummaryData();
-        },
-        error: function(xhr) {
-            let errorMessage = xhr.responseJSON?.message || messages[lang].error;
-
-            swal({
-                title: messages[lang].error,
-                text: errorMessage,
-                type: "error",
-                showConfirmButton: true
-            });
-        },
-        complete: function() {
-            toggleButtonLoading(btn, false);
-        }
+        $.ajax({
+            url: window.routes.autoReserve,
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Add CSRF Token
+            },
+            success: function(response) {
+                swal({
+                    title: messages[lang].success,
+                    text: response.message,
+                    type: "success",
+                    showConfirmButton: true
+                });
+                table.ajax.reload();
+                fetchSummaryData();
+            },
+            error: function(xhr) {
+                let errorMessage = xhr.responseJSON?.message || messages[lang].error;
+                swal({
+                    title: messages[lang].error,
+                    text: errorMessage,
+                    type: "error",
+                    showConfirmButton: true
+                });
+            },
+            complete: function() {
+                toggleButtonLoading(btn, false);
+            }
+        });
     });
-});
-
 
     // Handle Accept Request button
     $(document).on('click', '.accept-btn', function() {
@@ -209,7 +210,7 @@ $('#autoReserveBtn').on('click', function() {
             method: 'GET',
             success: function(data) {
                 const select = $('#building');
-                select.empty().append('<option value="">Select Building</option>');
+                select.empty().append(`<option value="">${messages[lang].selectBuilding}</option>`);
                 data.buildings.forEach(function(building) {
                     select.append(`<option value="${building.id}">${building.number}</option>`);
                 });
@@ -223,8 +224,8 @@ $('#autoReserveBtn').on('click', function() {
         const apartmentSelect = $('#apartment');
         const roomSelect = $('#room');
 
-        apartmentSelect.empty().append('<option value="">Select Apartment</option>').prop('disabled', true);
-        roomSelect.empty().append('<option value="">Select Room</option>').prop('disabled', true);
+        apartmentSelect.empty().append(`<option value="">${messages[lang].selectApartment}</option>`).prop('disabled', true);
+        roomSelect.empty().append(`<option value="">${messages[lang].selectRoom}</option>`).prop('disabled', true);
 
         if (buildingId) {
             apartmentSelect.prop('disabled', false);
@@ -246,7 +247,7 @@ $('#autoReserveBtn').on('click', function() {
         const apartmentId = $(this).val();
         const roomSelect = $('#room');
 
-        roomSelect.empty().append('<option value="">Select Room</option>').prop('disabled', true);
+        roomSelect.empty().append(`<option value="">${messages[lang].selectRoom}</option>`).prop('disabled', true);
 
         if (apartmentId) {
             roomSelect.prop('disabled', false);
@@ -268,7 +269,7 @@ $('#autoReserveBtn').on('click', function() {
         const btn = $(this);
         const form = $('#acceptRequestForm');
         const requestId = $('#requestId').val();
-        
+
         if (!form[0].checkValidity()) {
             form[0].reportValidity();
             return;
@@ -294,7 +295,6 @@ $('#autoReserveBtn').on('click', function() {
             },
             error: function(xhr) {
                 let errorMessage = xhr.responseJSON?.message || messages[lang].error;
-
                 swal({
                     title: messages[lang].error,
                     text: errorMessage,
@@ -339,7 +339,6 @@ $('#autoReserveBtn').on('click', function() {
             },
             error: function(xhr) {
                 let errorMessage = xhr.responseJSON?.message || messages[lang].error;
-
                 swal({
                     title: messages[lang].error,
                     text: errorMessage,
@@ -356,17 +355,12 @@ $('#autoReserveBtn').on('click', function() {
     // Utility function for button loading state
     function toggleButtonLoading(button, isLoading) {
         if (isLoading) {
-            // Store the full button HTML (including the icon) before changing it
-            let loading = lang == 'en' ? 'Loading...' : 'تحميل...';
             button.data('original-html', button.html())
-                .html(`<i class="fa fa-spinner fa-spin"></i> ${loading}`)
+                .html(`<i class="fa fa-spinner fa-spin"></i> ${messages[lang].loading}`)
                 .prop('disabled', true);
         } else {
-            // Restore the full original HTML (with the icon)
             button.html(button.data('original-html'))
                 .prop('disabled', false);
         }
     }
-    
-    
 });

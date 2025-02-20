@@ -14,7 +14,8 @@ return new class extends Migration
         // Create maintenance categories table
         Schema::create('maintenance_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name_en'); // English name
+            $table->string('name_ar'); // Arabic name
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
@@ -23,10 +24,12 @@ return new class extends Migration
         Schema::create('maintenance_problems', function (Blueprint $table) {
             $table->id();
             $table->foreignId('category_id')->constrained('maintenance_categories')->onDelete('cascade');
-            $table->string('name');
+            $table->string('name_en'); // English name
+            $table->string('name_ar'); // Arabic name
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
+    
 
         // Create maintenance requests table
         Schema::create('maintenance_requests', function (Blueprint $table) {

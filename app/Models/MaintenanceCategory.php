@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class MaintenanceCategory extends Model
 {
     protected $fillable = [
-        'name',
+        'name_en',
+        'name_ar',
         'is_active'
     ];
 
@@ -24,5 +25,14 @@ class MaintenanceCategory extends Model
     public function requests(): HasMany
     {
         return $this->hasMany(MaintenanceRequest::class, 'category_id');
+    }
+
+    /**
+     * Accessor: Get the name based on the current language.
+     */
+    public function getNameAttribute()
+    {
+        $locale = app()->getLocale(); // Get the current app language (en/ar)
+        return $locale === 'ar' ? $this->name_ar : $this->name_en;
     }
 }

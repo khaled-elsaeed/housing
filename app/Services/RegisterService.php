@@ -109,16 +109,18 @@ class RegisterService
      * @param string $nationalId
      * @return string
      */
-    private function getGenderFromNationalId(int $nationalId): string
-{
-    if ($nationalId >= 10**12) { 
-        $genderDigit = $nationalId % 10; 
-
+    private function getGenderFromNationalId(string $nationalId): string
+    {
+        // Ensure the national ID is exactly 14 digits long
+        if (strlen($nationalId) !== 14 || !ctype_digit($nationalId)) {
+            return 'unknown'; 
+        }
+    
+        // Extract the 13th digit (index 12 in zero-based indexing)
+        $genderDigit = (int)$nationalId[12];
+    
         return ($genderDigit % 2 === 0) ? 'female' : 'male';
     }
-
-    return 'unknown'; // Return 'unknown' if the format is incorrect
-}
 
 
     /**

@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'is_active',
         'media_id',
+        'gender',
         'last_login',
         'is_verified',
         'activation_token',

@@ -20,19 +20,33 @@
                 </a>
             </li>
 
-            <!-- <li>
-                <a href="{{ route('student.maintenance.form') }}">
-                    <img src="{{ asset('images/svg-icon/components.svg') }}" class="img-fluid" alt="maintenance">
+            <li>
+                <a href="{{ route('student.maintenance.index') }}" class="{{ request()->routeIs('student.maintenance*') ? 'active' : '' }}">
+                    <img src="{{ asset('images/svg-icon/maintenance.svg') }}" class="img-fluid" alt="maintenance">
                     <span>@lang('Maintenance')</span>
+                    <i class="feather icon-chevron-right"></i>
                 </a>
-            </li> -->
+                <ul class="vertical-submenu">
+                    
+                    <li>
+                        <a href="{{ route('student.maintenance.index') }}" class="{{ request()->routeIs('student.maintenance.index') ? 'active' : '' }}">
+                        @lang('All Requests')
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('student.maintenance.create') }}" class="{{ request()->routeIs('student.maintenance.create') ? 'active' : '' }}">
+                            @lang('Submit New Request')
+                        </a>
+                    </li>
+                </ul>
+            </li>
 
             <li>
-    <a href="{{ route('student.profile') }}" class="{{ request()->routeIs('student.profile*') ? 'active' : '' }}">
-        <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="profile">
-        <span>@lang('My Profile')</span>
-    </a>
-</li>
+                <a href="{{ route('student.profile') }}" class="{{ request()->routeIs('student.profile*') ? 'active' : '' }}">
+                    <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="profile">
+                    <span>@lang('My Profile')</span>
+                </a>
+            </li>
         </ul>
     </div>
     <!-- End Navigationbar -->

@@ -243,6 +243,8 @@ Route::middleware(Localization::class)
             Route::get('/maintenance', [MaintenanceController::class, 'index'])->name('maintenance.index');
             Route::get('/maintenance/fetch', [MaintenanceController::class, 'fetchRequests'])->name('maintenance.requests.fetch');
             Route::get('/maintenance/fetchStaff', [MaintenanceController::class, 'fetchStaff'])->name('maintenance.requests.fetchStaff');
+            Route::post('/maintenance/assignStaff/{id}', [MaintenanceController::class, 'assign'])->name('maintenance.requests.assign');
+
 
             Route::get('settings', [AdminSettingsController::class, 'index'])->name('setting');
             Route::post('settings/reservation-update', [AdminSettingsController::class, 'updateReservationSettings'])->name('setting.update-reservation');
@@ -252,8 +254,18 @@ Route::middleware(Localization::class)
         Route::prefix('student')->name('student.')->group(function () {
             Route::get('/home', [StudentHomeController::class, 'index'])->name('home');
 
-            Route::get('maintenance', [StudentMaintenanceController::class, 'showForm'])->name('maintenance.form');
-            Route::post('maintenance/store', [StudentMaintenanceController::class, 'store'])->name('maintenance.store');
+            Route::get('/maintenance', [StudentMaintenanceController::class, 'index'])->name('maintenance.index');
+            Route::get('/maintenance/create', [StudentMaintenanceController::class, 'create'])->name('maintenance.create');
+            Route::post('/maintenance/store', [StudentMaintenanceController::class, 'store'])->name('maintenance.store');
+            Route::get('/maintenance/{id}', [StudentMaintenanceController::class, 'show'])->name('maintenance.show');
+            Route::get('/student/maintenance/requests', [StudentMaintenanceController::class, 'fetchUserRequests'])
+    ->name('maintenance.requests');
+            // Additional maintenance actions
+            Route::post('/maintenance/{id}/cancel', [StudentMaintenanceController::class, 'cancel'])->name('maintenance.cancel');
+            Route::post('/maintenance/{id}/comment', [StudentMaintenanceController::class, 'addComment'])->name('maintenance.comment');
+            Route::post('/maintenance/{id}/confirm-resolution', [StudentMaintenanceController::class, 'confirmResolution'])->name('maintenance.confirm-resolution');
+            Route::post('/maintenance/{id}/report-unresolved', [StudentMaintenanceController::class, 'reportUnresolved'])->name('maintenance.report-unresolved');
+            Route::get('/maintenance/{id}/problems-by-category', [StudentMaintenanceController::class, 'getProblemsByCategory'])->name('maintenance.problems.by.category');
 
             Route::post('/reservation',[StudentReservationRequestController::class,'store'])->name('reservation.store');
 

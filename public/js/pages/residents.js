@@ -42,7 +42,7 @@ $(document).ready(function () {
             { data: 'national_id', name: 'national_id' },
             { data: 'location', name: 'location' },
             { data: 'faculty', name: 'faculty' },
-            { data: 'mobile', name: 'mobile' },
+            { data: 'phone', name: 'phone' },
             
         ],
         language: lang === "ar" ? {
