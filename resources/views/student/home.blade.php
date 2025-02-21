@@ -85,25 +85,22 @@
             <div class="card-body p-0">
                @if($activities->isNotEmpty())
                <ul class="list-group list-group-flush">
-               @foreach($activities as $activity)
-               <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <div class="d-flex align-items-center">
-                     <div class="me-3">
-                     @php
-                     $iconMapping = [
-                        'update_profile' => '<i class="fa fa-check-circle text-success"></i>',
-                        'update_profile_picture' => '<i class="fa fa-check-circle text-success"></i>',
-                        'delete_profile_picture' => '<i class="fa fa-check-circle text-success"></i>',
-                        'reservation_requested' => '<i class="fa fa-check-circle text-success"></i>',
-                        'invoice_upload' => '<i class="fa fa-upload text-primary"></i>',
-                     ];
-
-                     $defaultIcon = '<i class="fa fa-circle text-secondary"></i>';
-                     $icon = $iconMapping[$activity->activity_type] ?? $defaultIcon;
-                     @endphp
-
-                     {!! $icon !!}
-
+                  @foreach($activities as $activity)
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                     <div class="d-flex align-items-center">
+                        <div class="me-3">
+                           @php
+                           $iconMapping = [
+                           'update_profile' => '<i class="fa fa-check-circle text-success"></i>',
+                           'update_profile_picture' => '<i class="fa fa-check-circle text-success"></i>',
+                           'delete_profile_picture' => '<i class="fa fa-check-circle text-success"></i>',
+                           'reservation_request' => '<i class="fa fa-check-circle text-success"></i>',
+                           'invoice_upload' => '<i class="fa fa-upload text-primary"></i>',
+                           ];
+                           $defaultIcon = '<i class="fa fa-circle text-secondary"></i>';
+                           $icon = $iconMapping[$activity->activity_type] ?? $defaultIcon;
+                           @endphp
+                           {!! $icon !!}
                         </div>
                         <div>
                            <h6 class="mb-1">{{ __($activity->activity_type) }}</h6>
@@ -124,89 +121,83 @@
       </div>
       <!-- Reservation Details and Quick Actions -->
       <div class="col-lg-4 mt-4 mt-md-0">
-    @if($reservation)
-        <div class="row">
+         @if($reservation)
+         <div class="row">
             <div class="col-12">
-                <div class="card border-0">
-                    <div class="card-header bg-white border-0 py-3">
-                        <h4 class="card-title mb-0 fs-5 fw-semibold">
-                            <i class="fa fa-users text-primary me-2"></i>{{ __('Apartment Roommates') }}
-                        </h4>
-                    </div>
-                    <div class="card-body">
-                        @if(isset($roommates) && $roommates->count() > 0)
-                            <div class="row g-3">
-                            @foreach($roommates as $roommate)
-    <div class="col-md-6 mb-4">
-        <div class="card border-0 shadow-sm h-100 hover-scale transition-all">
-            <div class="card-body p-4">
-                <!-- Profile Icon -->
-                <div class="d-flex justify-content-center mb-3">
-                    <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm border" style="width: 40px; height: 40px;">
-                        <i class="fa fa-user text-primary fs-3"></i>
-                    </div>
-                </div>
-
-                <!-- Roommate Info -->
-                <div class="text-center">
-                    <h6 class="mb-2 fw-bold text-dark">
-                        {{ optional($roommate->user)->name ?? __('Unknown') }}
-                    </h6>
-
-                    <!-- Room Number -->
-                    <p class="text-muted mb-2 small">
-                        <i class="fa fa-bed me-1"></i> {{ __('Room') }} {{ optional($roommate->room)->number ?? 'N/A' }}
-                    </p>
-
-                    <!-- Phone Number -->
-                    <p class="text-muted mb-2 small">
-                        <i class="fa fa-phone me-1"></i> {{ __('Phone') }} {{ optional($roommate->user->student)->phone ?? 'N/A' }}
-                    </p>
-
-                    <!-- faculty (Optional) -->
-                    <p class="text-muted mb-0 small">
-    <i class="fa fa-university me-1"></i> 
-    {{ optional($roommate->user->student->faculty)->name ?? 'N/A' }}
-</p>
-
-                </div>
-            </div>            
-        </div>
-    </div>
-@endforeach
-                            </div>
-                        @else
-                            <div class="text-center text-muted py-3">
-                                <i class="fa fa-info-circle mb-2 d-block fs-4"></i>
-                                {{ __('No roommates found in your apartment.') }}
-                            </div>
-                        @endif
-                    </div>
-                </div>
+               <div class="card border-0">
+                  <div class="card-header bg-white border-0 py-3">
+                     <h4 class="card-title mb-0 fs-5 fw-semibold">
+                        <i class="fa fa-users text-primary me-2"></i>{{ __('Apartment Roommates') }}
+                     </h4>
+                  </div>
+                  <div class="card-body">
+                     @if(isset($roommates) && $roommates->count() > 0)
+                     <div class="row g-3">
+                        @foreach($roommates as $roommate)
+                        <div class="col-md-6 mb-4">
+                           <div class="card border-0 shadow-sm h-100 hover-scale transition-all">
+                              <div class="card-body p-4">
+                                 <!-- Profile Icon -->
+                                 <div class="d-flex justify-content-center mb-3">
+                                    <div class="bg-white rounded-circle d-flex align-items-center justify-content-center shadow-sm border" style="width: 40px; height: 40px;">
+                                       <i class="fa fa-user text-primary fs-3"></i>
+                                    </div>
+                                 </div>
+                                 <!-- Roommate Info -->
+                                 <div class="text-center">
+                                    <h6 class="mb-2 fw-bold text-dark">
+                                       {{ optional($roommate->user)->name ?? __('Unknown') }}
+                                    </h6>
+                                    <!-- Room Number -->
+                                    <p class="text-muted mb-2 small">
+                                       <i class="fa fa-bed me-1"></i> {{ __('Room') }} {{ optional($roommate->room)->number ?? 'N/A' }}
+                                    </p>
+                                    <!-- Phone Number -->
+                                    <p class="text-muted mb-2 small">
+                                       <i class="fa fa-phone me-1"></i> {{ __('Phone') }} {{ optional($roommate->user->student)->phone ?? 'N/A' }}
+                                    </p>
+                                    <!-- faculty (Optional) -->
+                                    <p class="text-muted mb-0 small">
+                                       <i class="fa fa-university me-1"></i> 
+                                       {{ optional($roommate->user->student->faculty)->name ?? 'N/A' }}
+                                    </p>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                        @endforeach
+                     </div>
+                     @else
+                     <div class="text-center text-muted py-3">
+                        <i class="fa fa-info-circle mb-2 d-block fs-4"></i>
+                        {{ __('No roommates found in your apartment.') }}
+                     </div>
+                     @endif
+                  </div>
+               </div>
             </div>
-        </div>
-    @endif
-
-    <!-- Quick Actions -->
-    <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white border-0 py-3">
-            <h4 class="card-title mb-0"><i class="fa fa-bolt text-primary me-2"></i>{{ __('Quick Actions') }}</h4>
-        </div>
-        <div class="card-body">
-            <div class="d-grid gap-3">
-                <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addReservationModal">
-                    <i class="fa fa-plus-circle me-2"></i>{{ __('New Reservation') }}
-                </button>
-                <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#guideModal">
-                    <i class="fa fa-file-text-o me-2"></i>{{ __('View Guide') }}
-                </button>
-                <button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#helpSupportModal">
-                    <i class="fa fa-support me-2"></i>{{ __('Help & Support') }}
-                </button>
+         </div>
+         @endif
+         <!-- Quick Actions -->
+         <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+               <h4 class="card-title mb-0"><i class="fa fa-bolt text-primary me-2"></i>{{ __('Quick Actions') }}</h4>
             </div>
-        </div>
-    </div>
-</div>
+            <div class="card-body">
+               <div class="d-grid gap-3">
+                  <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addReservationModal">
+                  <i class="fa fa-plus-circle me-2"></i>{{ __('New Reservation') }}
+                  </button>
+                  <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#guideModal">
+                  <i class="fa fa-file-text-o me-2"></i>{{ __('View Guide') }}
+                  </button>
+                  <button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#helpSupportModal">
+                  <i class="fa fa-support me-2"></i>{{ __('Help & Support') }}
+                  </button>
+               </div>
+            </div>
+         </div>
+      </div>
    </div>
 </div>
 <!-- Add Reservation Modal -->
@@ -229,7 +220,6 @@
                      <option value="short">{{ __('Short Period') }}</option>
                   </select>
                </div>
-
                <!-- Long Term Details (Academic Terms) -->
                <div id="longPeriodDetails" class="mb-3 d-none">
                   <label for="reservationTerm" class="form-label">{{ __('Select Academic Term') }}</label>
@@ -242,7 +232,6 @@
                      </option>
                      @endforeach
                   </select>
-
                   <!-- Option to Stay in Old Room -->
                   @if($user->lastReservation())
                   <div id="oldRoomOption" class="mb-3 mt-3">
@@ -253,25 +242,24 @@
                      <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="stayInOldRoom" name="stay_in_last_old_room">
                         <label class="form-check-label d-flex align-items-center" for="stayInOldRoom">
-                           <span class="me-2">{{ __('Yes, I want to stay in my old room') }}</span>
-                           <input type="hidden" name="old_room_id" value="{{ $user->lastReservation()->room->id }}">
-                           <span class="badge bg-secondary d-flex align-items-center">
-                              <i class="fa fa-bed me-1"></i>
-                              <span>{{ __('Room') }}: {{ $user->lastReservation()->room->number }}</span>
-                           </span>
-                           <span class="badge bg-secondary ms-2 d-flex align-items-center">
-                              <i class="fa fa-home me-1"></i>
-                              <span>{{ __('Apartment') }}: {{ $user->lastReservation()->room->apartment->number }}</span>
-                           </span>
-                           <span class="badge bg-secondary ms-2 d-flex align-items-center">
-                              <i class="fa fa-hotel me-1"></i>
-                              <span>{{ __('Building') }}: {{ $user->lastReservation()->room->apartment->building->number }}</span>
-                           </span>
+                        <span class="me-2">{{ __('Yes, I want to stay in my old room') }}</span>
+                        <input type="hidden" name="old_room_id" value="{{ $user->lastReservation()->room->id }}">
+                        <span class="badge bg-secondary d-flex align-items-center">
+                        <i class="fa fa-bed me-1"></i>
+                        <span>{{ __('Room') }}: {{ $user->lastReservation()->room->number }}</span>
+                        </span>
+                        <span class="badge bg-secondary ms-2 d-flex align-items-center">
+                        <i class="fa fa-home me-1"></i>
+                        <span>{{ __('Apartment') }}: {{ $user->lastReservation()->room->apartment->number }}</span>
+                        </span>
+                        <span class="badge bg-secondary ms-2 d-flex align-items-center">
+                        <i class="fa fa-hotel me-1"></i>
+                        <span>{{ __('Building') }}: {{ $user->lastReservation()->room->apartment->building->number }}</span>
+                        </span>
                         </label>
                      </div>
                   </div>
                   @endif
-
                   <!-- Sibling Option (Only shows if user has eligible siblings) -->
                   @if($sibling)
                   <div id="siblingOption" class="mb-3 d-none">
@@ -283,14 +271,13 @@
                         <input class="form-check-input" type="checkbox" id="shareWithSibling" name="share_with_sibling">
                         <input type="hidden" name="sibling_id" value="{{ $sibling->id }}">
                         <label class="form-check-label" for="shareWithSibling">
-                           {{ __('Yes, I want to share a double room with my sibling') }}
-                           <strong>({{ $sibling->name }})</strong>
+                        {{ __('Yes, I want to share a double room with my sibling') }}
+                        <strong>({{ $sibling->name }})</strong>
                         </label>
                      </div>
                   </div>
                   @endif
                </div>
-
                <!-- Short Term Details (Day/Week/Month) -->
                <div id="shortPeriodDetails" class="d-none">
                   <label for="shortPeriodDuration" class="form-label">{{ __('Select Duration') }}</label>
@@ -312,12 +299,11 @@
                      </div>
                   </div>
                </div>
-
                <!-- Submit Button -->
                <div class="mt-3">
                   <button type="submit" class="btn btn-primary w-100" id="submitReservation" disabled>
-                     <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true" id="submitSpinner"></span>
-                     <span id="submitText">{{ __('Add Reservation') }}</span>
+                  <span class="spinner-border spinner-border-sm d-none me-2" role="status" aria-hidden="true" id="submitSpinner"></span>
+                  <span id="submitText">{{ __('Add Reservation') }}</span>
                   </button>
                </div>
             </form>
@@ -325,7 +311,6 @@
       </div>
    </div>
 </div>
-
 <!-- Guide Modal -->
 <div class="modal fade" id="guideModal" tabindex="-1" aria-labelledby="guideModalLabel">
    <div class="modal-dialog modal-lg">
@@ -379,13 +364,12 @@
                      aria-labelledby="shortPeriodGuide" 
                      data-parent="#housingGuideAccordion">
                      <div class="card-body">
-                     <ol class="list-group list-group-numbered">
-                        <li class="list-group-item">{{ __('Click "New Reservation" on your dashboard') }}</li>
-                        <li class="list-group-item">{{ __('Select "Short Period" (day, week, or month)') }}</li>
-                        <li class="list-group-item">{{ __('Choose your stay period') }}</li>
-                        <li class="list-group-item">{{ __('Submit and await approval') }}</li>
-                    </ol>
-
+                        <ol class="list-group list-group-numbered">
+                           <li class="list-group-item">{{ __('Click "New Reservation" on your dashboard') }}</li>
+                           <li class="list-group-item">{{ __('Select "Short Period" (day, week, or month)') }}</li>
+                           <li class="list-group-item">{{ __('Choose your stay period') }}</li>
+                           <li class="list-group-item">{{ __('Submit and await approval') }}</li>
+                        </ol>
                      </div>
                   </div>
                </div>
@@ -447,7 +431,6 @@
       </div>
    </div>
 </div>
-
 <!-- Help & Support Modal -->
 <div class="modal fade" id="helpSupportModal" tabindex="-1" aria-labelledby="helpSupportModalLabel">
    <div class="modal-dialog modal-lg">
@@ -486,12 +469,10 @@
                                  <li class="list-group-item">
                                     <strong>{{ __('Hend Sabry:') }}</strong><br>
                                     {{ __('Role: Supervisor-female') }}<br>
-                                    
                                  </li>
                                  <li class="list-group-item">
                                     <strong>{{ __('Nagwa Ebrahim:') }}</strong><br>
                                     {{ __('Role: Supervisor-female') }}<br>
-                                    
                                  </li>
                               </ul>
                            </div>
@@ -549,7 +530,6 @@
       </div>
    </div>
 </div>
-
 @endsection 
 @section('scripts')
 <script>

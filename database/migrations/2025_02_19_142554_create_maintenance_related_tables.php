@@ -29,19 +29,40 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
-    
 
         // Create maintenance requests table
         Schema::create('maintenance_requests', function (Blueprint $table) {
             $table->id();
+            
+            // Foreign keys
             $table->foreignId('room_id')->constrained('rooms')->onDelete('cascade');
             $table->foreignId('category_id')->constrained('maintenance_categories');
-            $table->text('description');
-            $table->json('problems')->comment('Array of problem IDs and details');
-            $table->enum('priority', ['low', 'medium', 'high', 'urgent'])->default('medium');
-            $table->enum('status', ['pending', 'assigned', 'in_progress', 'completed'])->default('pending');
+            
+            // Request details
+            $table->text('description');            
+            // Status tracking
+            $table->enum('status', ['pending', 'accepted', 'rejected', 'assigned', 'in_progress', 'completed'])->default('pending');
+            
+            // Assigned technician
             $table->foreignId('assigned_to')->nullable()->constrained('users');
-            $table->timestamp('completed_at')->nullable();
+            
+            // Timestamps for tracking
+            $table->timestamp('assigned_at')->nullable(); 
+            $table->timestamp('staff_accepted_at')->nullable(); 
+
+            $table->timestamp('rejected_at')->nullable(); 
+            $table->text('reject_reason')->nullable(); 
+            $table->timestamp('completed_at')->nullable(); 
+            
+            // Default timestamps
+            $table->timestamps();
+        });
+
+        // ✅ Pivot table for many-to-many relationship
+        Schema::create('maintenance_problem_request', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('request_id')->constrained('maintenance_requests')->onDelete('cascade');
+            $table->foreignId('problem_id')->constrained('maintenance_problems')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -52,6 +73,7 @@ return new class extends Migration
     public function down(): void
     {
         // Drop tables in reverse order due to foreign key constraints
+        Schema::dropIfExists('maintenance_problem_request');
         Schema::dropIfExists('maintenance_requests');
         Schema::dropIfExists('maintenance_problems');
         Schema::dropIfExists('maintenance_categories');

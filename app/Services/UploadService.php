@@ -8,6 +8,7 @@ use App\Models\Media;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Model;
 
 class UploadService implements UploadServiceContract 
 {
@@ -16,25 +17,18 @@ class UploadService implements UploadServiceContract
      *
      * @param UploadedFile $file
      * @param string|null $collection
+     * @param Model $model
      * @return Media
      */
-    public function upload(UploadedFile $file, string $collection = null): Media
+    public function upload(UploadedFile $file, string $collection = null, Model $model): Media
     {
         // Generate the file name using hashName()
         $name = $file->hashName();
     
         // If a collection is provided, use it as a folder in the storage path
-        $path = $collection ? "$collection/$name" : $name;
-    
-        // Store the file in the appropriate directory
-        if ($collection == 'payments') {
-            $storedPath = Storage::disk('public')->putFileAs('payments', $file, $name);
-        } else if ($collection == 'profile_picture') {
-            $storedPath = Storage::disk('public')->putFileAs('profile_picture', $file, $name);
-        } else {
-            $storedPath = Storage::disk('public')->putFileAs($collection, $file, $name);
-        }
-    
+        $folder = $collection ?? 'uploads'; // Default folder if collection is null
+        $storedPath = Storage::disk('public')->putFileAs($folder, $file, $name);
+
         // Generate the absolute path for hashing
         $absolutePath = Storage::disk('public')->path($storedPath);
         
@@ -46,17 +40,19 @@ class UploadService implements UploadServiceContract
             name: $name,
             originalName: $file->getClientOriginalName(),
             mime: $file->getClientMimeType(),
-            path: $storedPath, // Store relative path
-            disk: 'public', // Explicitly set the disk
-            hash: $fileHash, // Use the generated hash
+            path: Storage::url($storedPath), 
+            disk: 'public', 
+            hash: $fileHash, 
             collection: $collection,
             size: $file->getSize(),
         );
-    
+
         // Create and return the media object
         $media = Media::create($fileDto->toArray());
-        
-        return $media;
+
+        $model->media()->save($media);
+
+        return $media; // Return Media instead of `true`
     }
 
     /**

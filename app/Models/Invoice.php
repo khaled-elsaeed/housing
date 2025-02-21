@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+
 
 class Invoice extends Model
 {
@@ -66,9 +68,14 @@ class Invoice extends Model
     return $this->reservation->academicTerm;
 }
 
-    public function media()
+    // public function media()
+    // {
+    //     return $this->hasOne(Media::class, 'id', 'media_id');  
+    // }
+
+    public function media(): MorphMany
     {
-        return $this->hasOne(Media::class, 'id', 'media_id');  
+        return $this->morphMany(Media::class, 'mediable');
     }
     
 

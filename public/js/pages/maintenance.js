@@ -62,36 +62,29 @@ $(document).ready(function () {
                 data: 'problems',
                 name: 'problems',
                 render: function (data) {
-                    if (!data) return ''; // Handle null values safely
-    
-                    let problems;
-                    try {
-                        problems = JSON.parse(data); // Convert JSON string to JS object
-                    } catch (e) {
-                        console.error("Invalid JSON format in problems field:", e);
-                        return ''; // Return empty if JSON is malformed
-                    }
-    
-                    if (!Array.isArray(problems)) return ''; // Ensure it's an array
-    
-                    let displayedProblems = problems.slice(0, 3) // Show only first 3 problems
-                        .map(problem => `<span class="badge bg-primary">${problem.name}</span>`)
+                    console.log(data); 
+                
+                  
+                    let problems = data.split(',')
+                    let displayedProblems = problems 
+                        .map(problem => `<span class="badge bg-primary">${problem}</span>`)
                         .join(' ');
-    
+                
                     if (problems.length > 3) {
                         let moreProblems = problems.slice(3) // Remaining problems
-                            .map(problem => problem.name).join(', ');
-    
+                            .map(problem => problem).join(', ');
+            
                         displayedProblems += ` <span class="text-info more-problems" 
                                                 data-bs-toggle="tooltip" 
                                                 title="${moreProblems}">
-                                                +${problems.length - 3} more
+                                                +${data.length - 3} more
                                             </span>`;
                     }
-    
+                
                     return displayedProblems;
                 }
-            },
+            }
+,            
             {
                 data: 'status',
                 name: 'status',
@@ -160,11 +153,7 @@ $(document).ready(function () {
                         return renderPendingActions(data);
                     }
     
-                    if (data.status === 'accepted' && data.updated_at) {
-                        return renderAcceptedStatus(data);
-                    }
-    
-                    if (data.status === 'assigned' && data.updated_at) {
+                    if (data.status === 'assigned' && data.accepted_at) {
                         return renderAssignedStatus(data);
                     }
     
@@ -211,9 +200,7 @@ $(document).ready(function () {
     
     function renderInProgressStatus(data) {
         const lang = $('html').attr('lang') || 'en';
-        let formattedDate = formatDate(data.updated_at); 
-        let assignedStaff = data.assigned_staff ? data.assigned_staff : 'N/A';
-    
+        let formattedDate = formatDate(data.staff_accepted_at);     
         return `
             <div class="in-progress-status">
                
@@ -224,7 +211,7 @@ $(document).ready(function () {
     
     function renderAssignedStatus(data) {
         const lang = $('html').attr('lang') || 'en';
-        let formattedDate = formatDate(data.updated_at); // Format the date
+        let formattedDate = formatDate(data.assigned_at); // Format the date
     
         return `
             <div class="assigned-status">

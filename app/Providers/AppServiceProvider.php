@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
+
 use App\Contracts\UploadServiceContract;
 use App\Services\UploadService;
 
@@ -28,6 +30,9 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('is-admin', function (User $user) {
             return $user->hasRole('admin');
                 });
+
+                Paginator::useBootstrapFive();
+                Paginator::useBootstrapFour();
     }
 
     

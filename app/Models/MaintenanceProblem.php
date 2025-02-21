@@ -34,4 +34,9 @@ class MaintenanceProblem extends Model
         $locale = app()->getLocale(); // Get the current app language (en/ar)
         return $locale === 'ar' ? $this->name_ar : $this->name_en;
     }
+
+    public function requests()
+    {
+        return $this->belongsToMany(MaintenanceRequest::class, 'maintenance_problem_request', 'problem_id', 'request_id');
+    }
 }

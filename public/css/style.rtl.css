@@ -1582,10 +1582,10 @@ a.text-primary:hover {
 }
 
 a.text-secondary:focus {
-  color: #81a7cd !important;
+  color: #234E70 !important;
 }
 a.text-secondary:hover {
-  color: #81a7cd !important;
+  color: #234E70 !important;
 }
 
 a.text-success:focus {
@@ -27025,10 +27025,10 @@ mark {
   background-color: #234E70;
 }
 .badge-secondary[href]:hover {
-  background-color: #81a7cd;
+  background-color: #234E70;
 }
 .badge-secondary[href]:focus {
-  background-color: #81a7cd;
+  background-color: #234E70;
 }
 
 .badge-success {
@@ -27122,11 +27122,11 @@ mark {
   color: #234E70;
 }
 .badge-secondary-inverse[href]:hover {
-  background-color: #81a7cd;
+  background-color: #234E70;
   color: #ffffff;
 }
 .badge-secondary-inverse[href]:focus {
-  background-color: #81a7cd;
+  background-color: #234E70;
   color: #ffffff;
 }
 
@@ -27402,36 +27402,36 @@ mark {
   border-color: #234E70;
 }
 .btn-secondary:active {
-  background-color: #81a7cd;
-  border-color: #81a7cd;
+  background-color: #234E70;
+  border-color: #234E70;
 }
 .btn-secondary:hover {
-  background-color: #81a7cd;
-  border-color: #81a7cd;
+  background-color: #234E70;
+  border-color: #234E70;
 }
 .btn-secondary.focus {
   color: #ffffff;
-  background-color: #81a7cd;
-  border-color: #81a7cd;
+  background-color: #234E70;
+  border-color: #234E70;
   box-shadow: 0 0 0 0.2rem #a5c1db;
 }
 .btn-secondary:focus {
   color: #ffffff;
-  background-color: #81a7cd;
-  border-color: #81a7cd;
+  background-color: #234E70;
+  border-color: #234E70;
   box-shadow: 0 0 0 0.2rem #a5c1db;
 }
 .btn-secondary:visited {
-  background-color: #81a7cd;
-  border-color: #81a7cd;
+  background-color: #234E70;
+  border-color: #234E70;
 }
 .btn-secondary:not(:disabled):not(.disabled).active {
-  background-color: #81a7cd;
-  border-color: #81a7cd;
+  background-color: #234E70;
+  border-color: #234E70;
 }
 .btn-secondary:not(:disabled):not(.disabled):active {
-  background-color: #81a7cd;
-  border-color: #81a7cd;
+  background-color: #234E70;
+  border-color: #234E70;
 }
 .btn-secondary:not(:disabled):not(.disabled).active:focus {
   box-shadow: 0 0 0 0.2rem #a5c1db;
@@ -27446,13 +27446,13 @@ mark {
   border-color: #234E70;
 }
 .btn-outline-secondary:active {
-  background-color: #81a7cd;
-  border-color: #81a7cd;
+  background-color: #234E70;
+  border-color: #234E70;
 }
 .btn-outline-secondary:hover {
   color: #ffffff;
-  background-color: #81a7cd;
-  border-color: #81a7cd;
+  background-color: #234E70;
+  border-color: #234E70;
 }
 .btn-outline-secondary.focus {
   box-shadow: 0 0 0 0.2rem #a5c1db;
@@ -27461,16 +27461,16 @@ mark {
   box-shadow: 0 0 0 0.2rem #a5c1db;
 }
 .btn-outline-secondary:visited {
-  background-color: #81a7cd;
-  border-color: #81a7cd;
+  background-color: #234E70;
+  border-color: #234E70;
 }
 .btn-outline-secondary:not(:disabled):not(.disabled).active {
-  background-color: #81a7cd;
-  border-color: #81a7cd;
+  background-color: #234E70;
+  border-color: #234E70;
 }
 .btn-outline-secondary:not(:disabled):not(.disabled):active {
-  background-color: #81a7cd;
-  border-color: #81a7cd;
+  background-color: #234E70;
+  border-color: #234E70;
 }
 .btn-outline-secondary:not(:disabled):not(.disabled).active:focus {
   box-shadow: 0 0 0 0.2rem #a5c1db;
@@ -27480,20 +27480,20 @@ mark {
 }
 
 .open > .dropdown-toggle.btn-secondary {
-  background-color: #81a7cd;
-  border-color: #81a7cd;
+  background-color: #234E70;
+  border-color: #234E70;
 }
 
 .show > .btn-outline-secondary.dropdown-toggle {
-  background-color: #81a7cd;
-  border-color: #81a7cd;
+  background-color: #234E70;
+  border-color: #234E70;
 }
 .show > .btn-outline-secondary.dropdown-toggle:focus {
   box-shadow: 0 0 0 0.2rem #dce7f1;
 }
 .show > .btn-secondary.dropdown-toggle {
-  background-color: #81a7cd;
-  border-color: #81a7cd;
+  background-color: #234E70;
+  border-color: #234E70;
 }
 .show > .btn-secondary.dropdown-toggle:focus {
   box-shadow: 0 0 0 0.2rem #dce7f1;
@@ -31541,7 +31541,7 @@ input[type=range]:focus {
   text-transform: capitalize;
 }
 .jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-default:hover {
-  background: #81a7cd;
+  background: #234E70;
 }
 
 .jconfirm.jconfirm-light .jconfirm-box {
@@ -31558,7 +31558,7 @@ input[type=range]:focus {
   text-transform: capitalize;
 }
 .jconfirm.jconfirm-light .jconfirm-box .jconfirm-buttons button.btn-default:hover {
-  background: #81a7cd;
+  background: #234E70;
 }
 
 .jconfirm .jconfirm-box .jconfirm-buttons button.btn-default {
@@ -33889,14 +33889,14 @@ table.focus-on tfoot tr.focused td {
 }
 
 .toolbar-secondary .tool-item.selected {
-  background: #81a7cd;
+  background: #234E70;
 }
 .toolbar-secondary .tool-item:hover {
-  background: #81a7cd;
+  background: #234E70;
 }
 
 .btn-toolbar-secondary.pressed {
-  background: #81a7cd;
+  background: #234E70;
 }
 
 .toolbar-success .tool-item {

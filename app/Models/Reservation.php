@@ -54,23 +54,30 @@ class Reservation extends Model
     }
 
     public function getFormattedStartDateAttribute()
-    {
-        if($this->period_type === 'long'){
-            return $this->academicTerm->start_date ? Carbon::parse($this->academicTerm->start_date)->format('d M Y') : trans('Not specified');
-        } else {
-            return $this->start_date ? Carbon::parse($this->start_date)->format('d M Y') : null;
-
-        }
+{
+    if ($this->period_type === 'long') {
+        return $this->academicTerm->start_date 
+            ? Carbon::parse($this->academicTerm->start_date)->translatedFormat('d M Y') 
+            : trans('Not specified');
+    } else {
+        return $this->start_date 
+            ? Carbon::parse($this->start_date)->translatedFormat('d M Y') 
+            : null;
     }
+}
 
-    public function getFormattedEndDateAttribute()
-    {
-        if($this->period_type === 'long'){
-            return $this->academicTerm->end_date ? Carbon::parse($this->academicTerm->end_date)->format('d M Y') : trans('Not specified');
-        } else {
-            return $this->end_date ? Carbon::parse($this->end_date)->format('d M Y') : null;
-
-        }    }
+public function getFormattedEndDateAttribute()
+{
+    if ($this->period_type === 'long') {
+        return $this->academicTerm->end_date 
+            ? Carbon::parse($this->academicTerm->end_date)->translatedFormat('d M Y') 
+            : trans('Not specified');
+    } else {
+        return $this->end_date 
+            ? Carbon::parse($this->end_date)->translatedFormat('d M Y') 
+            : null;
+    }
+}
 
         public function getFullRoomDetailsAttribute()
 {

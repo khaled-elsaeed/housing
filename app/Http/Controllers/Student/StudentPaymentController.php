@@ -30,7 +30,8 @@ class StudentPaymentController extends Controller
         $validated = $request->validate([
             "invoice_id" => "required|exists:invoices,id",
             "payment_method" => "required|string|in:bank_transfer,instapay",
-            "invoice-receipt" => "required",
+            "photos" => 'nullable|array',
+            "photos.*" => 'image|mimes:jpeg,png,jpg|max:5120', // 5MB max per file
         ]);
 
         $invoice = Invoice::findOrFail($validated["invoice_id"]);
@@ -58,16 +59,21 @@ class StudentPaymentController extends Controller
         DB::beginTransaction();
 
         try {
-            // Store the payment receipt image
-            $paymentImage = $this->storePaymentImage($request->file("invoice-receipt"));
-
+            
             // Update the invoice status and payment details
             $invoice->update([
-                "media_id" => $paymentImage->id,
                 "status" => "paid",
                 "payment_method" => $validated["payment_method"],
                 "paid_at" => now(),
             ]);
+
+           // Handle file uploads using UploadService
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $photo) {
+                // Use UploadService to handle the file upload
+                $this->uploadService->upload($photo, 'payments', $invoice);
+            }
+        }
 
             DB::commit();
 
@@ -179,18 +185,5 @@ class StudentPaymentController extends Controller
         }
     }
 
-    /**
-     * Store the payment receipt image.
-     *
-     * @param mixed $file
-     * @return mixed
-     * @throws \Exception
-     */
-    private function storePaymentImage($file)
-    {
-        if (!$file) {
-            throw new \Exception("Payment receipt file is required.");
-        }
-        return $this->uploadService->upload($file, "payments");
-    }
+    
 }

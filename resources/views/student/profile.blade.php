@@ -131,11 +131,10 @@
                               @csrf
                               @method('DELETE')
                               <button type="submit" class="btn btn-danger btn-sm font-16" id="deleteProfilePictureBtn">
-                                 <i class="fas fa-trash-alt"></i> <!-- Font Awesome trash icon -->
+                                 <i class="fa fa-trash-alt"></i> <!-- Font Awesome trash icon -->
                                  <span class="button-text">{{ __('Delete Picture') }}</span>
                                  <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                               </button>
-
                            </form>
                         </li>
                         @endif
@@ -185,7 +184,7 @@
                      <div class="col-12">
                         <button type="submit" class="btn btn-secondary w-50" id="updateProfileBtn">
                         <span class="button-text"> <i class="fa fa-save me-2"></i> {{ __('Update Profile') }}</span>
-                           <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                         </button>
                      </div>
                   </form>
@@ -270,193 +269,190 @@
                </div>
             </div>
          </div>
-     <!-- Academic Info Tab -->
-<div class="tab-pane fade" id="v-pills-academic-info" role="tabpanel" aria-labelledby="v-pills-academic-info-tab">
-    <div class="card m-b-30">
-        <div class="card-header bg-primary p-4 position-relative">
-            <div class="text-white position-relative z-2">
-                <h4 class="card-title mb-0 fw-bold">
-                    <i class="fa fa-building me-2"></i>{{ __('Academic Info') }}
-                </h4>
+         <!-- Academic Info Tab -->
+         <div class="tab-pane fade" id="v-pills-academic-info" role="tabpanel" aria-labelledby="v-pills-academic-info-tab">
+            <div class="card m-b-30">
+               <div class="card-header bg-primary p-4 position-relative">
+                  <div class="text-white position-relative z-2">
+                     <h4 class="card-title mb-0 fw-bold">
+                        <i class="fa fa-building me-2"></i>{{ __('Academic Info') }}
+                     </h4>
+                  </div>
+                  <div class="position-absolute top-0 end-0 p-3">
+                     <i class="fa fa-shapes text-white opacity-25 fa-3x"></i>
+                  </div>
+               </div>
+               <div class="card-body">
+                  <p class="text-muted">{{ __('Manage your academic details.') }}</p>
+                  <form class="row g-3">
+                     @if(!empty(optional($user->student)->faculty))
+                     <div class="col-md-6">
+                        <label for="faculty">{{ __('Faculty') }}</label>
+                        <input type="text" class="form-control" id="faculty" 
+                           value="{{ app()->getLocale() == 'en' ? optional($user->student)->faculty->name_en : optional($user->student)->faculty->name_ar }}" 
+                           disabled>
+                     </div>
+                     @endif
+                     @if(!empty(optional($user->student)->program))
+                     <div class="col-md-6">
+                        <label for="program">{{ __('Program') }}</label>
+                        <input type="text" class="form-control" id="program"
+                           value="{{ app()->getLocale() == 'en' ? optional($user->student)->program->name_en : optional($user->student)->program->name_ar }}" 
+                           disabled>
+                     </div>
+                     @endif
+                  </form>
+               </div>
             </div>
-            <div class="position-absolute top-0 end-0 p-3">
-                <i class="fa fa-shapes text-white opacity-25 fa-3x"></i>
-            </div>
-        </div>
-        <div class="card-body">
-            <p class="text-muted">{{ __('Manage your academic details.') }}</p>
-            <form class="row g-3">
-                @if(!empty(optional($user->student)->faculty))
-                <div class="col-md-6">
-                    <label for="faculty">{{ __('Faculty') }}</label>
-                    <input type="text" class="form-control" id="faculty" 
-                        value="{{ app()->getLocale() == 'en' ? optional($user->student)->faculty->name_en : optional($user->student)->faculty->name_ar }}" 
-                        disabled>
-                </div>
-                @endif
-                @if(!empty(optional($user->student)->program))
-                <div class="col-md-6">
-                    <label for="program">{{ __('Program') }}</label>
-                    <input type="text" class="form-control" id="program"
-                        value="{{ app()->getLocale() == 'en' ? optional($user->student)->program->name_en : optional($user->student)->program->name_ar }}" 
-                        disabled>
-                </div>
-                @endif
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Parent Info Tab -->
-<div class="tab-pane fade" id="v-pills-parent-info" role="tabpanel" aria-labelledby="v-pills-parent-info-tab">
-    <div class="card m-b-30">
-        <div class="card-header bg-primary p-4 position-relative">
-            <div class="text-white position-relative z-2">
-                <h4 class="card-title mb-0 fw-bold">
-                    <i class="fa fa-building me-2"></i>{{ __('Parent Information') }}
-                </h4>
-            </div>
-            <div class="position-absolute top-0 end-0 p-3">
-                <i class="fa fa-shapes text-white opacity-25 fa-3x"></i>
-            </div>
-        </div>
-        <div class="card-body">
-            @if($user->parent)
-            <div class="row">
-                <div class="col-md-6">
-                    <label for="parent_name">{{ __('Parent Name') }}</label>
-                    <input type="text" class="form-control" id="parent_name" 
-                        value="{{ $user->parent->name }}" disabled>
-                </div>
-                <div class="col-md-6">
-                    <label for="parent_relation">{{ __('Parent Relation') }}</label>
-                    <input type="text" class="form-control" id="parent_relation" 
-                        value="{{ __($user->parent->relation) }}" disabled>
-                </div>
-                <div class="col-md-6">
-                    <label for="parent_email">{{ __('Parent Email') }}</label>
-                    <input type="email" class="form-control" id="parent_email" 
-                        value="{{ $user->parent->email }}" disabled>
-                </div>
-                <div class="col-md-6">
-                    <label for="parent_phone">{{ __('Parent Phone') }}</label>
-                    <input type="text" class="form-control" id="parent_phone" 
-                        value="{{ $user->parent->phone }}" disabled>
-                </div>
-                <div class="col-md-6">
-                    <label for="parent_living_abroad">{{ __('Living Abroad') }}</label>
-                    <input type="text" class="form-control" id="parent_living_abroad" 
-                        value="{{ $user->parent->living_abroad == 1 ? __('Yes') : __('No') }}" disabled>
-                </div>
-                @if($user->parent->living_abroad === 0)
-                  <div class="col-md-6">
-                     <label for="parent_living_with">{{ __('Living With parents') }}</label>
-                     <input type="text" class="form-control" id="parent_living_with" 
+         </div>
+         <!-- Parent Info Tab -->
+         <div class="tab-pane fade" id="v-pills-parent-info" role="tabpanel" aria-labelledby="v-pills-parent-info-tab">
+            <div class="card m-b-30">
+               <div class="card-header bg-primary p-4 position-relative">
+                  <div class="text-white position-relative z-2">
+                     <h4 class="card-title mb-0 fw-bold">
+                        <i class="fa fa-building me-2"></i>{{ __('Parent Information') }}
+                     </h4>
+                  </div>
+                  <div class="position-absolute top-0 end-0 p-3">
+                     <i class="fa fa-shapes text-white opacity-25 fa-3x"></i>
+                  </div>
+               </div>
+               <div class="card-body">
+                  @if($user->parent)
+                  <div class="row">
+                     <div class="col-md-6">
+                        <label for="parent_name">{{ __('Parent Name') }}</label>
+                        <input type="text" class="form-control" id="parent_name" 
+                           value="{{ $user->parent->name }}" disabled>
+                     </div>
+                     <div class="col-md-6">
+                        <label for="parent_relation">{{ __('Parent Relation') }}</label>
+                        <input type="text" class="form-control" id="parent_relation" 
+                           value="{{ __($user->parent->relation) }}" disabled>
+                     </div>
+                     <div class="col-md-6">
+                        <label for="parent_email">{{ __('Parent Email') }}</label>
+                        <input type="email" class="form-control" id="parent_email" 
+                           value="{{ $user->parent->email }}" disabled>
+                     </div>
+                     <div class="col-md-6">
+                        <label for="parent_phone">{{ __('Parent Phone') }}</label>
+                        <input type="text" class="form-control" id="parent_phone" 
+                           value="{{ $user->parent->phone }}" disabled>
+                     </div>
+                     <div class="col-md-6">
+                        <label for="parent_living_abroad">{{ __('Living Abroad') }}</label>
+                        <input type="text" class="form-control" id="parent_living_abroad" 
+                           value="{{ $user->parent->living_abroad == 1 ? __('Yes') : __('No') }}" disabled>
+                     </div>
+                     @if($user->parent->living_abroad === 0)
+                     <div class="col-md-6">
+                        <label for="parent_living_with">{{ __('Living With parents') }}</label>
+                        <input type="text" class="form-control" id="parent_living_with" 
                            value="{{ $user->parent->living_with == 1 ? __('Yes') : __('No') }}" disabled>
-                  </div>
-                  @if($user->parent->living_with == 0)
-                  <div class="col-md-6">
-                     <label for="parent_city">{{ __('Parent City') }}</label>
-                     <input type="text" class="form-control" id="parent_city" 
+                     </div>
+                     @if($user->parent->living_with == 0)
+                     <div class="col-md-6">
+                        <label for="parent_city">{{ __('Parent City') }}</label>
+                        <input type="text" class="form-control" id="parent_city" 
                            value="{{ $user->parent->city->name }}" disabled>
-                  </div>
-                  <div class="col-md-6">
-                     <label for="parent_governorate">{{ __('Parent Governorate') }}</label>
-                     <input type="text" class="form-control" id="parent_governorate" 
+                     </div>
+                     <div class="col-md-6">
+                        <label for="parent_governorate">{{ __('Parent Governorate') }}</label>
+                        <input type="text" class="form-control" id="parent_governorate" 
                            value="{{ $user->parent->governorate->name }}" disabled>
+                     </div>
+                     @endif
+                     @endif
                   </div>
+                  @else
+                  <p>{{ __('No parent information available') }}</p>
                   @endif
-                @endif
+               </div>
             </div>
-            @else
-            <p>{{ __('No parent information available') }}</p>
-            @endif
-        </div>
-    </div>
-</div>
-
-<!-- Sibling Info Tab -->
-<div class="tab-pane fade" id="v-pills-sibling-info" role="tabpanel" aria-labelledby="v-pills-sibling-info-tab">
-    <div class="card m-b-30">
-        <div class="card-header bg-primary p-4 position-relative">
-            <div class="text-white position-relative z-2">
-                <h4 class="card-title mb-0 fw-bold">
-                    <i class="fa fa-building me-2"></i>{{ __('Sibling Information') }}
-                </h4>
+         </div>
+         <!-- Sibling Info Tab -->
+         <div class="tab-pane fade" id="v-pills-sibling-info" role="tabpanel" aria-labelledby="v-pills-sibling-info-tab">
+            <div class="card m-b-30">
+               <div class="card-header bg-primary p-4 position-relative">
+                  <div class="text-white position-relative z-2">
+                     <h4 class="card-title mb-0 fw-bold">
+                        <i class="fa fa-building me-2"></i>{{ __('Sibling Information') }}
+                     </h4>
+                  </div>
+                  <div class="position-absolute top-0 end-0 p-3">
+                     <i class="fa fa-shapes text-white opacity-25 fa-3x"></i>
+                  </div>
+               </div>
+               <div class="card-body">
+                  @if($user->sibling)
+                  <div class="row">
+                     <div class="col-md-6">
+                        <label for="sibling_gender">{{ __('Sibling Gender') }}</label>
+                        <input type="text" class="form-control" id="sibling_gender" 
+                           value="{{ __($user->sibling->gender) }}" disabled>
+                     </div>
+                     <div class="col-md-6">
+                        <label for="sibling_name">{{ __('Sibling Name') }}</label>
+                        <input type="text" class="form-control" id="sibling_name" 
+                           value="{{ $user->sibling->name }}" disabled>
+                     </div>
+                     <div class="col-md-6">
+                        <label for="sibling_national_id">{{ __('Sibling National ID') }}</label>
+                        <input type="text" class="form-control" id="sibling_national_id" 
+                           value="{{ $user->sibling->national_id }}" disabled>
+                     </div>
+                     <div class="col-md-6">
+                        <label for="sibling_faculty">{{ __('Sibling Faculty') }}</label>
+                        <input type="text" class="form-control" id="sibling_faculty" 
+                           value="{{ optional($user->sibling->faculty)->name }}" disabled>
+                     </div>
+                  </div>
+                  @else
+                  <p class="text-muted">{{ __('No sibling information available') }}</p>
+                  @endif
+               </div>
             </div>
-            <div class="position-absolute top-0 end-0 p-3">
-                <i class="fa fa-shapes text-white opacity-25 fa-3x"></i>
+         </div>
+         <!-- Emergency Info Tab -->
+         <div class="tab-pane fade" id="v-pills-emergency-info" role="tabpanel" aria-labelledby="v-pills-emergency-info-tab">
+            <div class="card m-b-30">
+               <div class="card-header bg-primary p-4 position-relative">
+                  <div class="text-white position-relative z-2">
+                     <h4 class="card-title mb-0 fw-bold">
+                        <i class="fa fa-building me-2"></i>{{ __('Emergency Information') }}
+                     </h4>
+                  </div>
+                  <div class="position-absolute top-0 end-0 p-3">
+                     <i class="fa fa-shapes text-white opacity-25 fa-3x"></i>
+                  </div>
+               </div>
+               <div class="card-body">
+                  @if($user->emergencyContact)
+                  <div class="row">
+                     <div class="col-md-6">
+                        <label for="emergency_contact_name">{{ __('Emergency Contact Name') }}</label>
+                        <input type="text" class="form-control" id="emergency_contact_name"
+                           value="{{ $user->emergencyContact->name }}" disabled>
+                     </div>
+                     <div class="col-md-6">
+                        <label for="emergency_phone">{{ __('Emergency Phone') }}</label>
+                        <input type="text" class="form-control" id="emergency_phone"
+                           value="{{ $user->emergencyContact->phone }}" disabled>
+                     </div>
+                     <div class="col-md-6">
+                        <label for="relationship">{{ __('Relationship') }}</label>
+                        <input type="text" class="form-control" id="relationship"
+                           value="{{ __($user->emergencyContact->relation) }}" disabled>
+                     </div>
+                  </div>
+                  @else
+                  <p class="text-muted">{{ __('No emergency contact information available') }}</p>
+                  @endif
+               </div>
             </div>
-        </div>
-        <div class="card-body">
-            @if($user->sibling)
-            <div class="row">
-                <div class="col-md-6">
-                    <label for="sibling_gender">{{ __('Sibling Gender') }}</label>
-                    <input type="text" class="form-control" id="sibling_gender" 
-                        value="{{ __($user->sibling->gender) }}" disabled>
-                </div>
-                <div class="col-md-6">
-                    <label for="sibling_name">{{ __('Sibling Name') }}</label>
-                    <input type="text" class="form-control" id="sibling_name" 
-                        value="{{ $user->sibling->name }}" disabled>
-                </div>
-                <div class="col-md-6">
-                    <label for="sibling_national_id">{{ __('Sibling National ID') }}</label>
-                    <input type="text" class="form-control" id="sibling_national_id" 
-                        value="{{ $user->sibling->national_id }}" disabled>
-                </div>
-                <div class="col-md-6">
-                    <label for="sibling_faculty">{{ __('Sibling Faculty') }}</label>
-                    <input type="text" class="form-control" id="sibling_faculty" 
-                        value="{{ optional($user->sibling->faculty)->name }}" disabled>
-                </div>
-            </div>
-            @else
-            <p class="text-muted">{{ __('No sibling information available') }}</p>
-            @endif
-        </div>
-    </div>
-</div>
-
-<!-- Emergency Info Tab -->
-<div class="tab-pane fade" id="v-pills-emergency-info" role="tabpanel" aria-labelledby="v-pills-emergency-info-tab">
-    <div class="card m-b-30">
-        <div class="card-header bg-primary p-4 position-relative">
-            <div class="text-white position-relative z-2">
-                <h4 class="card-title mb-0 fw-bold">
-                    <i class="fa fa-building me-2"></i>{{ __('Emergency Information') }}
-                </h4>
-            </div>
-            <div class="position-absolute top-0 end-0 p-3">
-                <i class="fa fa-shapes text-white opacity-25 fa-3x"></i>
-            </div>
-        </div>
-        <div class="card-body">
-            @if($user->emergencyContact)
-            <div class="row">
-                <div class="col-md-6">
-                    <label for="emergency_contact_name">{{ __('Emergency Contact Name') }}</label>
-                    <input type="text" class="form-control" id="emergency_contact_name"
-                        value="{{ $user->emergencyContact->name }}" disabled>
-                </div>
-                <div class="col-md-6">
-                    <label for="emergency_phone">{{ __('Emergency Phone') }}</label>
-                    <input type="text" class="form-control" id="emergency_phone"
-                        value="{{ $user->emergencyContact->phone }}" disabled>
-                </div>
-                <div class="col-md-6">
-                    <label for="relationship">{{ __('Relationship') }}</label>
-                    <input type="text" class="form-control" id="relationship"
-                        value="{{ __($user->emergencyContact->relation) }}" disabled>
-                </div>
-            </div>
-            @else
-            <p class="text-muted">{{ __('No emergency contact information available') }}</p>
-            @endif
-        </div>
-    </div>
-</div>
+         </div>
          <!-- End Emergency Info Tab -->
          <!-- Reservation Info -->
          <div class="tab-pane fade" id="v-pills-reservation-info" role="tabpanel" aria-labelledby="v-pills-reservation-info-tab">
@@ -555,10 +551,14 @@
                                        <div class="flex-grow-1">
                                           <h6 class="text-uppercase text-muted mb-1" style="font-size: 11px; letter-spacing: 0.5px;">{{ __('Duration') }}</h6>
                                           <div class="font-weight-bold" style="font-size: 0.95rem;">
-                                             <div class="d-flex align-items-center">
-                                                <time datetime="{{ $reservation->start_date }}">{{ $reservation->formatted_start_date }}</time>
-                                                <i class="feather icon-arrow-right text-muted mx-2" style="font-size: 14px;"></i>
-                                                <time datetime="{{ $reservation->end_date }}">{{ $reservation->formatted_end_date }}</time>
+                                             <div class="d-flex align-items-center justify-content-center">
+                                                <time datetime="{{ $reservation->start_date }}" class="text-nowrap">
+                                                {{ $reservation->formatted_start_date }}
+                                                </time>
+                                                <span class="text-muted mx-2" style="font-size: 14px;">&mdash;</span> <!-- Separator -->
+                                                <time datetime="{{ $reservation->end_date }}">
+                                                {{ $reservation->formatted_end_date }}
+                                                </time>
                                              </div>
                                           </div>
                                        </div>
@@ -603,91 +603,96 @@
          <!-- Payments Info Tab -->
          <div class="tab-pane fade" id="v-pills-payments-info" role="tabpanel" aria-labelledby="v-pills-payments-info-tab">
             <div class="card shadow border-0 rounded-lg">
-               <div class="card-header bg-primary text-white">
+               <!-- Card Header -->
+               <div class="card-header bg-primary text-white p-3">
                   <h5 class="card-title mb-0">{{ __('Payments Info') }}</h5>
                </div>
-               <div class="card-body">
+               <!-- Card Body -->
+               <div class="card-body p-3">
                   <div class="row">
-                  @if($invoices && $invoices->count() > 0)
-                     <!-- Existing Invoice Cards -->
+                     @if($invoices && $invoices->count() > 0)
+                     <!-- Loop through invoices -->
                      @foreach($invoices as $invoice)
-                       <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
-                        <div class="card shadow-sm border-primary">
-                           <!-- Image Section -->
-                           <img class="card-img-top rounded-top" src="{{ asset('images/invoice/invoice.svg') }}" alt="{{ __('Housing Fees') }}">
-                           <div class="card-body">
-                            <!-- Title and Subtitle -->
-                            <h5 class="card-title font-weight-bold text-primary">
-                              {{ __('Housing') }}
-                            </h5>
-                            <h6 class="card-subtitle mb-3 text-muted">
-                            @if($invoice->reservation->period_type === 'long')
-                            <h6 class="text">
-                              @if(app()->getLocale() == 'ar')
-                                 {{ __('Term') }} {{ $invoice->reservation->academicTerm->term }}
-
-                                {{ __($invoice->reservation->academicTerm->semester) }}  
-                                @else
-
-                                {{ __($invoice->reservation->academicTerm->semester) }}  
-                                {{ __('Term') }} {{ $invoice->reservation->academicTerm->term }}
-
-                                @endif
-
+                     <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
+                        <div class="card shadow-sm border-primary h-100">
+                           <!-- Invoice Image -->
+                           <img class="card-img-top rounded-top" src="{{ asset('images/invoice/invoice.svg') }}" alt="{{ __('Housing Fees') }}" aria-hidden="true">
+                           <div class="card-body p-3">
+                              <!-- Invoice Title and Subtitle -->
+                              <h6 class="card-title font-weight-bold text-primary mb-2">
+                                 {{ __('Housing') }}
                               </h6>
-                              <div class="d-flex align-items-center gap-2">
-                               
-                               <span>{{ __(optional($invoice->reservation->academicTerm)->name). ' - '.optional($invoice->reservation->academicTerm)->academic_year ?? __('Not specified') }}</span>
+                              <div class="card-subtitle mb-2 text-muted small">
+                                 @if($invoice->reservation->period_type === 'long')
+                                 <div class="d-flex align-items-center gap-1">
+                                    <span>{{ __($invoice->reservation->academicTerm->semester) }}</span>
+                                    <span>{{ __('Term') }} {{ $invoice->reservation->academicTerm->term }}</span>
+                                 </div>
+                                 <div class="d-flex align-items-center gap-1">
+                                    <span>{{ optional($invoice->reservation->academicTerm)->name }}</span>
+                                    <span>{{ optional($invoice->reservation->academicTerm)->academic_year ?? __('Not specified') }}</span>
+                                 </div>
+                                 @else
+                                 <span class="d-flex align-items-center">
+                                 {{ __('Short Term') }}
+                                 <i class="feather icon-zap ml-1 text-warning" style="font-size: 12px;"></i>
+                                 </span>
+                                 @endif
                               </div>
-                            @else
-                              <span class="d-flex align-items-center">
-                               {{ __('Short Term') }}
-                               <i class="feather icon-zap ml-2 text-warning" style="font-size: 14px;"></i>
-                              </span>
-                            @endif
-                            </h6>
-                            
-                            <!-- Info Section: Total and Status -->
-                            <div class="mb-2">
-                              <h6 class="text-secondary">
-                               <strong>{{ __('Total:') }}</strong>
-                              </h6>
-                              <h6 class="text-success">
-                               {{ $invoice->totalAmount() }}
-                              </h6>
-                            </div>
-                            <!-- Info Section: Total and Status -->
-                            <div class="d-flex justify-content-between mb-2">
-                              <p class="mb-0">
-                               <span class="badge rounded-pill {{ 
-                                 $invoice->status == 'paid' ? 'bg-success' : 
-                                 ($invoice->status == 'pending' ? 'bg-warning' : 'bg-danger') 
-                                 }}">
-                               <i class="fa fa-circle me-1 small"></i>
-                               {{ __($invoice->status) }}
-                               </span>
-                              </p>
-                            </div>
+                              <!-- Invoice Total Amount -->
+                              <div class="mb-2">
+                                 <span class="text-secondary small">{{ __('Total:') }}</span>
+                                 <h6 class="text-success mb-0">{{ $invoice->totalAmount() }}</h6>
+                              </div>
+                              <!-- Invoice Status -->
+                              <div class="d-flex justify-content-between mb-2">
+                                 <span class="badge rounded-pill {{ 
+                                    $invoice->status == 'paid' ? 'bg-success' : 
+                                    ($invoice->status == 'pending' ? 'bg-warning' : 'bg-danger') 
+                                    }}">
+                                 <i class="fa fa-circle me-1 small"></i>
+                                 {{ __($invoice->status) }}
+                                 </span>
+                              </div>
+                              <!-- Attachments Section -->
+                              @if($invoice->media->count() > 0)
+                              <div class="list-group-item border-0 px-0 py-1">
+                                 <i class="fa fa-paperclip text-secondary me-1"></i>
+                                 <span class="small">{{ __('Attachments') }} ({{ $invoice->media->count() }}):</span>
+                                 <div class="mt-1">
+                                    @foreach ($invoice->media as $media)
+                                    @if(in_array(pathinfo($media->path, PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png']))
+                                    <a href="{{ asset($media->path) }}" target="_blank" aria-label="{{ __('View attachment') }}">
+                                    <img src="{{ asset($media->path) }}" alt="Attachment" class="img-thumbnail me-1" style="max-width: 60px; max-height: 60px;">
+                                    </a>
+                                    @else
+                                    <a href="{{ asset($media->path) }}" target="_blank" class="d-block text-truncate small" aria-label="{{ __('Download attachment') }}">
+                                    <i class="fa fa-file me-1"></i> {{ basename($media->file_path) }}
+                                    </a>
+                                    @endif
+                                    @endforeach
+                                 </div>
+                              </div>
+                              @endif
                            </div>
-                           <!-- Footer with Buttons -->
-                           <div class="card-footer d-flex flex-column flex-sm-row justify-content-center align-items-center align-items-sm-center gap-2">
-                            @if($invoice->status == 'unpaid')
-                            <!-- Pay Now Button with Icon and Loading State -->
-                            <button class="btn btn-outline-primary btn-sm pay-now-btn" data-invoice-id="{{ $invoice->id }}">
-                            <span class="button-content">
-                            <i class="fa fa-credit-card"></i> {{ __('Pay Now') }}
-                            </span>
-                            </button>
-                            @endif
+                           <!-- Card Footer with Actions -->
+                           <div class="card-footer d-flex justify-content-center p-2">
+                              @if($invoice->status == 'unpaid')
+                              <!-- Pay Now Button -->
+                              <button class="btn btn-outline-primary btn-sm pay-now-btn" data-invoice-id="{{ $invoice->id }}" aria-label="{{ __('Pay now for invoice') }}">
+                              <i class="fa fa-credit-card"></i> {{ __('Pay Now') }}
+                              </button>
+                              @endif
                            </div>
                         </div>
-                       </div>
+                     </div>
                      @endforeach
                      @else
+                     <!-- No Payments Found Message -->
                      <div class="col-12">
-                        <div class="alert alert-info border-0 shadow-sm d-flex align-items-center m-0" role="alert">
-                           <i class="feather icon-info mr-2" style="font-size: 1.25rem;"></i>
-                           <span>{{ __('No payments found.') }}</span>
+                        <div class="alert alert-info border-0 shadow-sm d-flex align-items-center p-2" role="alert">
+                           <i class="feather icon-info mr-2" style="font-size: 1rem;"></i>
+                           <span class="small">{{ __('No payments found.') }}</span>
                         </div>
                      </div>
                      @endif
@@ -736,7 +741,7 @@
             </div>
          </div>
          <!-- Modal for File Upload -->
-         <div class="modal fade" id="fileUploadModal" tabindex="-1" aria-labelledby="fileUploadModalLabel" >
+         <div class="modal fade" id="fileUploadModal" tabindex="-1" aria-labelledby="fileUploadModalLabel">
             <div class="modal-dialog">
                <div class="modal-content">
                   <div class="modal-header">
@@ -751,16 +756,17 @@
                            <select class="form-select" id="uploadPaymentMethod" name="payment_method" required>
                               <option value="" disabled selected>{{ __('Select Payment Method') }}</option>
                               <option value="instapay">{{ __('Instapay') }}</option>
-                              <option value="bank_transfer">{{ __('Bank Transfere') }}</option>
+                              <option value="bank_transfer">{{ __('Bank Transfer') }}</option>
                            </select>
                         </div>
-                        <!-- File Upload -->
+                        <!-- File Upload (Multiple Files) -->
                         <div class="mb-3">
-                           <label for="uploadInvoiceReceipt" class="form-label">{{ __('Choose File') }}</label>
-                           <input type="file" class="form-control" id="uploadInvoiceReceipt" name="invoice-receipt" required>
+                           <label for="uploadInvoiceReceipt" class="form-label">{{ __('Choose Files (Max 3)') }}</label>
+                           <input type="file" class="form-control" id="uploadInvoiceReceipt" name="photos[]" multiple required>
+                           <small class="text-muted">{{ __('You can upload up to 3 files.') }}</small>
                         </div>
                         <!-- Submit Button -->
-                        <button type="submit" class="btn btn-primary">{{ __('Upload File') }}</button>
+                        <button type="submit" class="btn btn-primary">{{ __('Upload Files') }}</button>
                      </form>
                   </div>
                </div>
@@ -843,7 +849,7 @@
            }
            return true;
        }
-
+   
                // Real-time image validation on file input change
                $('input[type="file"]').on('change', function() {
             const file = this.files[0];
@@ -920,7 +926,7 @@
                }
            });
        });
-
+   
        $('#updateProfileForm').on('submit', function(e) {
            e.preventDefault();
            const $form = $(this);
@@ -966,7 +972,7 @@
                }
            });
        });
-
+   
        $('#deleteProfilePictureForm').on('submit', function(e) {
            e.preventDefault();
            const $form = $(this);
