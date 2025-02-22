@@ -99,45 +99,47 @@ class ResidentAccountController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function resetPassword(Request $request)
-    {
-        try {
-            $user = User::findOrFail($request->user_id);
-            ResetAccountCredentials::dispatch(collect([$user]));
+{
+    try {
+        $user = User::findOrFail($request->user_id);
 
-            // Log admin action
-            AdminAction::create([
-                'admin_id' => auth()->id(),
-                'action' => 'reset_password',
-                'description' => 'Reset resident user password',
-                'changes' => json_encode([
-                    'user_id' => $user->id,
-                ]),
-                'ip_address' => $request->ip(),
-                'user_agent' => $request->userAgent(),
-            ]);
+        // Use Eloquent query to get an Eloquent Collection
+        ResetAccountCredentials::dispatch(User::whereIn('id', [$request->user_id])->get());
 
-            return response()->json([
-                'success' => true,
-                'message' => trans('messages.password_reset_successfully'),
-                'data' => [
-                    'user_id' => $user->id,
-                ],
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Failed to reset resident password', [
-                'error' => $e->getMessage(),
-                'action' => 'reset_password',
-                'user_id' => $request->user_id,
-                'admin_id' => auth()->id(),
-            ]);
+        // Log admin action
+        AdminAction::create([
+            'admin_id' => auth()->id(),
+            'action' => 'reset_password',
+            'description' => 'Reset resident user password',
+            'changes' => json_encode([
+                'user_id' => $user->id,
+            ]),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
 
-            return response()->json([
-                'success' => false,
-                'message' => trans('messages.unable_to_reset_password'),
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'message' => trans('messages.password_reset_successfully'),
+            'data' => [
+                'user_id' => $user->id,
+            ],
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Failed to reset resident password', [
+            'error' => $e->getMessage(),
+            'action' => 'reset_password',
+            'user_id' => $request->user_id,
+            'admin_id' => auth()->id(),
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' => trans('messages.unable_to_reset_password'),
+            'error' => $e->getMessage(),
+        ], 500);
     }
+}
 
     /**
      * Reset passwords for all resident users.
@@ -147,6 +149,7 @@ class ResidentAccountController extends Controller
     public function resetAllUsersPasswords()
     {
         try {
+
             $residents = User::role('resident')->get();
             ResetAccountCredentials::dispatch($residents);
 

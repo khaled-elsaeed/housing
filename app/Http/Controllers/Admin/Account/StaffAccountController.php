@@ -247,9 +247,9 @@ class StaffAccountController extends Controller
                 'user_id' => 'required|exists:users,id',
             ]);
 
-            $user = User::findOrFail($request->user_id);
-            $users = User::where('id', $user->id)->get();
-            ResetAccountCredentials::dispatch($users);
+
+            ResetAccountCredentials::dispatch(User::whereIn('id', [$request->user_id])->get());
+
 
             AdminAction::create([
                 'admin_id' => auth()->id(),
