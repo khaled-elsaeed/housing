@@ -16,42 +16,53 @@ class MediaCheckSeeder extends Seeder
      */
     public function run()
     {
-        // Source folder to check
+        // Source and destination folders
         $sourceFolder = Storage::disk('public')->path('payments');
-        
-        // Destination folder for not found files
         $notFoundFolder = Storage::disk('public')->path('not_found_media');
-        
-        // Create the not found folder if it doesn't exist
+
+        // Ensure the not_found folder exists
         if (!File::exists($notFoundFolder)) {
             File::makeDirectory($notFoundFolder, 0755, true);
         }
-        
+
         // Get all files from the source folder
         $files = File::files($sourceFolder);
-        
-        $this->command->info('Found ' . count($files) . ' files to check.');
-        
+        $this->command->info("\n🔍 Found " . count($files) . " files to check.\n");
+
         foreach ($files as $file) {
             $filename = $file->getFilename();
             $path = 'payments/' . $filename;
             $fullPath = $file->getPathname();
-            $fileHash = hash_file('sha256', $fullPath);
+            $fileHash = hash_file('sha256', $fullPath); 
+
+            $this->command->info("🔎 Checking: {$filename}");
+
             
-            // Check if file exists in media table by path or hash
             $mediaItem = DB::table('media')
-                ->where('path', 'like', '%' . $path . '%')
+                ->where(function ($query) use ($path, $fileHash) {
+                    $query->where('path', 'like', '%' . $path . '%')
+                          ->orWhere('file_hash', $fileHash);
+                })
                 ->first();
-            
+
             if ($mediaItem) {
                 // File found in database, update details if needed
-                $this->command->info("File {$filename} found in database. Updating details...");
-                
+                $this->command->info("✅ File found in database (ID: {$mediaItem->id})");
+
                 // Get file details
                 $size = $file->getSize();
                 $mimeType = File::mimeType($fullPath);
-                
-                // Update only if details have changed
+
+                // Update missing hash if not present in the database
+                if (empty($mediaItem->file_hash)) {
+                    DB::table('media')
+                        ->where('id', $mediaItem->id)
+                        ->update(['file_hash' => $fileHash, 'updated_at' => now()]);
+
+                    $this->command->warn("🛠 Hash updated for {$filename}");
+                }
+
+                // Update file details if changed
                 if ($mediaItem->size != $size || $mediaItem->mime_type != $mimeType) {
                     DB::table('media')
                         ->where('id', $mediaItem->id)
@@ -60,34 +71,36 @@ class MediaCheckSeeder extends Seeder
                             'mime_type' => $mimeType,
                             'updated_at' => now()
                         ]);
-                    
-                    $this->command->info("Updated details for {$filename}");
+
+                    $this->command->info("📝 Updated details: Size - {$size} bytes | MIME Type - {$mimeType}");
                 } else {
-                    $this->command->info("No changes needed for {$filename}");
+                    $this->command->info("✅ No changes needed for {$filename}");
                 }
             } else {
-                // File not found in database, move to not found folder and delete from original location
-                $this->command->warn("File {$filename} not found in database. Moving to not found folder...");
-                
+                // File not found in database, move to `not_found_media`
+                $this->command->warn("❌ File not found in database. Moving to 'not_found_media'...");
+
                 // Copy file to not found folder
                 File::copy($fullPath, $notFoundFolder . '/' . $filename);
-                
-                // Delete the file from payments folder after successful copy
+
+                // Delete original file after successful copy
                 if (File::exists($notFoundFolder . '/' . $filename)) {
                     File::delete($fullPath);
-                    $this->command->info("File {$filename} successfully deleted from payments folder.");
+                    $this->command->info("📁 Moved: {$filename} -> not_found_media/");
                 } else {
-                    $this->command->error("Failed to copy {$filename}. File not deleted from payments folder.");
+                    $this->command->error("⚠️ Failed to move {$filename}.");
                 }
-                
-                // Log this action
+
+                // Log the missing file details
                 $this->logNotFoundFile($filename, $path, $fileHash);
             }
+
+            $this->command->line(str_repeat('-', 50)); // Separator for better readability
         }
-        
-        $this->command->info('Media check completed successfully.');
+
+        $this->command->info("\n✅ Media check completed successfully.\n");
     }
-    
+
     /**
      * Log not found file details for reference
      *
@@ -99,7 +112,7 @@ class MediaCheckSeeder extends Seeder
     private function logNotFoundFile($filename, $path, $fileHash)
     {
         $logPath = storage_path('logs/not_found_media.log');
-        $logEntry = "[" . now() . "] File not found in database: {$filename}, Path: {$path}, Hash: {$fileHash}\n";
+        $logEntry = "[" . now() . "] ❌ File not found in database: {$filename}, Path: {$path}, Hash: {$fileHash}\n";
         File::append($logPath, $logEntry);
     }
 }

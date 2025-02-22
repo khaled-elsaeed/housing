@@ -58,7 +58,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // ✅ Pivot table for many-to-many relationship
+        
         Schema::create('maintenance_problem_request', function (Blueprint $table) {
             $table->id();
             $table->foreignId('request_id')->constrained('maintenance_requests')->onDelete('cascade');

@@ -8,14 +8,15 @@ return new class extends Migration {
     public function up()
     {
         Schema::table('invoices', function (Blueprint $table) {
-            $table->string('reference_number')->nullable()->after('notes'); // Adding column
+            $table->string('reference_number')->nullable()->unique()->after('notes'); 
         });
     }
 
     public function down()
     {
         Schema::table('invoices', function (Blueprint $table) {
-            $table->dropColumn('reference_number'); // Rolling back the change
+            $table->dropUnique(['reference_number']); 
+            $table->dropColumn('reference_number'); 
         });
     }
 };
