@@ -6,6 +6,7 @@ $(document).ready(function() {
             faculty: "Faculty",
             building: "Building",
             apartment: "Apartment",
+            notes : "Notes",
             room: "Room",
             uploadedPictures: "Uploaded Pictures",
             view: "View",
@@ -61,6 +62,8 @@ $(document).ready(function() {
             room: "الغرفة",
             uploadedPictures: "الصور المرفوعة",
             view: "عرض",
+            notes : "ملاحظات",
+
             download: "تحميل",
             accept: "قبول",
             reject: "رفض",
@@ -141,7 +144,7 @@ $(document).ready(function() {
             paid: getTranslation('paid', language),
             referenceNumber: getTranslation('referenceNumber', language),
             enterReferenceNumber: getTranslation('enterReferenceNumber', language),
-
+            invoiceNotes : getTranslation('notes',language),
             overpaymentAmount: getTranslation('overpaymentAmount', language),
             enterOverpayment: getTranslation('enterOverpayment', language),
             adminNotes: getTranslation('adminNotes', language),
@@ -298,9 +301,10 @@ $(document).ready(function() {
                     invoiceDetails,
                     media,
                     status,
-                    invoice_id
+                    invoice_id,
+                    notes
                 } = response;
-                renderInvoiceDetails(modalBody, studentDetails, invoiceDetails, media, status, invoice_id, labels);
+                renderInvoiceDetails(modalBody, studentDetails, invoiceDetails, media, status, invoice_id, labels,notes);
                 attachEventListeners(response, labels);
             },
             error: function() {
@@ -332,21 +336,42 @@ $(document).ready(function() {
         modalBody.html(`<p class="text-center text-danger py-5">${message}</p>`);
     }
 
-    function renderInvoiceDetails(modalBody, studentDetails, invoiceDetails, media, status, invoiceId, labels) {
+    function renderInvoiceDetails(modalBody, studentDetails, invoiceDetails, media, status, invoiceId, labels, notes) {
         const studentDetailsHtml = generateStudentDetailsHtml(studentDetails, labels);
         const invoiceDetailsHtml = generateInvoiceDetailsHtml(invoiceDetails, status);
         const paymentImagesHtml = generatePaymentImagesHtml(media, labels);
+        const invoiceNotesHtml = generateInvoiceNotesHtml(notes, labels); // New notes section
         const statusButtonsHtml = status !== 'accepted' ? generateStatusButtonsHtml(invoiceId, labels) : '';
-
+    
         modalBody.html(`
             <div class="container-fluid">
                 ${studentDetailsHtml}
                 ${paymentImagesHtml}
                 ${invoiceDetailsHtml}
+                ${invoiceNotesHtml} <!-- Adding notes section -->
                 ${statusButtonsHtml}
             </div>
         `);
     }
+    
+    // New function to generate the invoice notes section
+    function generateInvoiceNotesHtml(notes, labels) {
+        if (!notes || notes.trim() === '') {
+            return ''; // If notes are empty, return an empty string
+        }
+    
+        return `
+            <div class="card mb-4 shadow-sm border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">${labels.invoiceNotes}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">${notes}</p>
+                </div>
+            </div>
+        `;
+    }
+    
 
     // HTML Generation Functions
     function generateStudentDetailsHtml(studentDetails, labels) {
@@ -532,8 +557,6 @@ $(document).ready(function() {
         const overPaymentAmount = parseFloat($("#overpayment-amount").val()) || 0;
 
         const referenceNumber = $("#reference-number").val();
-
-        const unpaidDetails = response.invoiceDetails.filter(d => !d.is_paid);
 
         // Validate that all required payments are selected
         if (currentInvoiceDetails.paidDetails.length === 0 && overPaymentAmount === 0) {

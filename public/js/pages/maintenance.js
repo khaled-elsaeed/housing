@@ -1,44 +1,143 @@
 $(document).ready(function () {
+    // Detect language direction
     const isArabic = $('html').attr('dir') === 'rtl';
+    const lang = $('html').attr('lang') || 'en';
+
+    // Enable tooltips for more problems
     $('body').tooltip({ selector: '.more-problems' });
 
     // Translation dictionary
     const translations = {
         en: {
-            approve: 'Approve',
-            reject: 'Reject',
-            acceptedAt: 'Accepted at',
-            noIssues: 'No issues available',
-            noAdditionalInfo: 'No additional information available',
-            errorFetchingIssues: 'Error fetching issues',
-            statusUpdatedSuccessfully: 'Status updated successfully',
-            anErrorOccurred: 'An error occurred',
-            assignedAt: 'Assigned at',
-            staffAcceptedAt: 'Staff accepted at',
-            staffCompletedAt: 'Staff completed at' // Added missing key
+            pending: "Pending",
+            assigned: "Assigned",
+            in_progress: "In Progress",
+            completed: "Completed",
+            approve: "Approve",
+            reject: "Reject",
+            acceptedAt: "Accepted at",
+            noIssues: "No issues available",
+            noAdditionalInfo: "No additional information available",
+            errorFetchingIssues: "Error fetching issues",
+            statusUpdatedSuccessfully: "Status updated successfully",
+            anErrorOccurred: "An error occurred",
+            assignedAt: "Assigned at",
+            staffAcceptedAt: "Staff accepted at",
+            staffCompletedAt: "Staff completed at",
+            "Water and Sanitary Issues": "Water and Sanitary Issues",
+                "Electrical Issues": "Electrical Issues",
+                "General Housing Issues": "General Housing Issues"
+            
         },
         ar: {
-            approve: 'موافقة',
-            reject: 'رفض',
-            acceptedAt: 'تم القبول في',
-            noIssues: 'لا توجد مشكلات',
-            noAdditionalInfo: 'لا توجد معلومات إضافية',
-            errorFetchingIssues: 'حدث خطأ أثناء جلب المشكلات',
-            statusUpdatedSuccessfully: 'تم تحديث الحالة بنجاح',
-            anErrorOccurred: 'حدث خطأ',
-            assignedAt: 'تم التعيين في',
-            staffAcceptedAt: 'تم قبول الموظف في',
-            staffCompletedAt: 'تم اكتمال الصيانة من قبل الموظف في' // Added missing key
+            pending: "معلق",
+            assigned: "تم التعيين",
+            in_progress: "قيد التنفيذ",
+            completed: "مكتمل",
+            approve: "موافقة",
+            reject: "رفض",
+            acceptedAt: "تم القبول في",
+            noIssues: "لا توجد مشكلات",
+            noAdditionalInfo: "لا توجد معلومات إضافية",
+            errorFetchingIssues: "حدث خطأ أثناء جلب المشكلات",
+            statusUpdatedSuccessfully: "تم تحديث الحالة بنجاح",
+            anErrorOccurred: "حدث خطأ",
+            assignedAt: "تم التعيين في",
+            staffAcceptedAt: "تم قبول الموظف في",
+            staffCompletedAt: "تم اكتمال الصيانة من قبل الموظف في",
+                "Water and Sanitary Issues": "مشاكل المياه والصرف الصحي",
+                "Electrical Issues": "مشاكل الكهرباء",
+                "General Housing Issues": "مشاكل السكن العامة"
+            
         }
     };
     
-    
-    
 
-    // Helper function to translate text
-    function gettext(key, lang) {
-        return translations[lang]?.[key] || key; // Fallback to the key if translation is missing
+    // Translate text based on key and language
+    function gettext(key) {
+        return translations[lang]?.[key] || key;
     }
+
+    // Format date for display
+    function formatDate(dateString) {
+        if (!dateString) return "N/A";
+        const date = new Date(dateString);
+        return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    }
+
+    // Toggle button loading state
+    function toggleButtonLoading(button, isLoading) {
+        const hasClassBtnRound = button.hasClass('btn-round');
+        if (isLoading) {
+            if (!button.data('original-text')) {
+                button.data('original-text', button.html());
+            }
+            button.html(hasClassBtnRound ? '<i class="fa fa-spinner fa-spin"></i>' : '<i class="fa fa-spinner fa-spin"></i> Loading...')
+                  .addClass('loading')
+                  .prop('disabled', true);
+        } else {
+            button.html(button.data('original-text'))
+                  .removeClass('loading')
+                  .prop('disabled', false)
+                  .removeData('original-text');
+        }
+    }
+
+    // Render action buttons for pending status
+    function renderPendingActions(data) {
+        return `
+            <div class="action-buttons">
+                <button class="btn btn-round btn-success accept-btn" data-id="${data.id}" data-category="${data.category || 'maintenance'}" title="${gettext('approve')}">
+                    <i class="feather icon-check"></i>
+                </button>
+                <button class="btn btn-round btn-danger reject-btn" data-id="${data.id}" title="${gettext('reject')}">
+                    <i class="feather icon-x"></i>
+                </button>
+            </div>`;
+    }
+
+// Render status details
+function renderAssignedStatus(data) {
+    return `
+        <div class="status-card assigned-status p-2 mb-2 rounded shadow-sm bg-light">
+            <div class="d-flex align-items-center">
+                <i class="fa fa-user-check text-primary me-2"></i>
+                <div>
+                    <span class="badge bg-primary text-white fw-normal">${gettext('assignedAt')}</span>
+                    <div class="text-muted mt-1">${formatDate(data.assigned_at)}</div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderInProgressStatus(data) {
+    return `
+        <div class="status-card in-progress-status p-2 mb-2 rounded shadow-sm bg-light">
+            <div class="d-flex align-items-center">
+                <i class="fa fa-tools text-info me-2"></i>
+                <div>
+                    <span class="badge bg-info text-white fw-normal">${gettext('staffAcceptedAt')}</span>
+                    <div class="text-muted mt-1">${formatDate(data.staff_accepted_at)}</div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderCompletedStatus(data) {
+    return `
+        <div class="status-card completed-status p-2 mb-2 rounded shadow-sm bg-light">
+            <div class="d-flex align-items-center">
+                <i class="fa fa-check-circle text-success me-2"></i>
+                <div>
+                    <span class="badge bg-success text-white fw-normal">${gettext('staffCompletedAt')}</span>
+                    <div class="text-muted mt-1">${formatDate(data.completed_at)}</div>
+                </div>
+            </div>
+        </div>
+    `;
+}
 
     // Initialize DataTable
     const table = $('#default-datatable').DataTable({
@@ -57,41 +156,30 @@ $(document).ready(function () {
             { data: 'resident_name', name: 'resident_name' },
             { data: 'resident_location', name: 'resident_location' },
             { data: 'resident_phone', name: 'resident_phone' },
-            { data: 'category', name: 'category' },
+            { data: 'category', name: 'category',render: function (data) {
+                return gettext(data,)
+            } },
             {
                 data: 'problems',
                 name: 'problems',
                 render: function (data) {
-                    console.log(data); 
-                
-                  
-                    let problems = data.split(',')
-                    let displayedProblems = problems 
+                    const problems = data.split(',');
+                    let displayedProblems = problems.slice(0, 3)
                         .map(problem => `<span class="badge bg-primary">${problem}</span>`)
                         .join(' ');
-                
                     if (problems.length > 3) {
-                        let moreProblems = problems.slice(3) // Remaining problems
-                            .map(problem => problem).join(', ');
-            
-                        displayedProblems += ` <span class="text-info more-problems" 
-                                                data-bs-toggle="tooltip" 
-                                                title="${moreProblems}">
-                                                +${data.length - 3} more
-                                            </span>`;
+                        const moreProblems = problems.slice(3).join(', ');
+                        displayedProblems += ` <span class="text-info more-problems" data-bs-toggle="tooltip" title="${moreProblems}">+${problems.length - 3} more</span>`;
                     }
-                
                     return displayedProblems;
                 }
-            }
-,            
+            },
             {
                 data: 'status',
                 name: 'status',
                 render: function (data) {
-                    if (!data) return 'N/A'; // Handle null values
-    
-                    let badgeClass = '';
+                    if (!data) return "N/A";
+                    let badgeClass;
                     switch (data) {
                         case 'pending':
                             badgeClass = 'badge bg-warning text-dark';
@@ -107,10 +195,8 @@ $(document).ready(function () {
                             break;
                         default:
                             badgeClass = 'badge bg-secondary';
-                            break;
                     }
-    
-                    return `<span class="${badgeClass}">${data.replace('_', ' ')}</span>`;
+                    return `<span class="${badgeClass}">${gettext(data)}</span>`;
                 }
             },
             { data: 'assigned_staff', name: 'assigned_staff' },
@@ -118,119 +204,45 @@ $(document).ready(function () {
                 data: 'created_at',
                 name: 'created_at',
                 render: function (data) {
-                    if (!data) return 'N/A'; // Handle null values safely
-    
-                    let date = new Date(data);
-                    return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                    return data ? formatDate(data) : "N/A";
                 }
             },
             {
                 data: 'has_photos',
                 name: 'has_photos',
                 render: function (data) {
-                    // Display "Yes" or "No" based on whether photos exist
-                    return data === 'Yes' ? `<span class="badge bg-success">Yes</span>` : `<span class="badge bg-secondary">No</span>`;
+                    return data === 'Yes' ? '<span class="badge bg-success">Yes</span>' : '<span class="badge bg-secondary">No</span>';
                 }
             },
             {
                 data: 'photos',
                 name: 'photos',
                 render: function (data) {
-                    if (data === 'No photos') {
-                        return data; // Return "No photos" if no photos exist
-                    }
-    
-                    // Render buttons for each photo
-                    return data;
+                    return data === 'No photos' ? data : data;
                 }
             },
             {
                 data: null,
                 render: function (data) {
-                    const lang = $('html').attr('lang') || 'en';
-    
-                    if (data.status === 'pending') {
-                        return renderPendingActions(data);
+                    switch (data.status) {
+                        case 'pending':
+                            return renderPendingActions(data);
+                        case 'assigned':
+                            return data.assigned_at ? renderAssignedStatus(data) : '';
+                        case 'in_progress':
+                            return renderInProgressStatus(data);
+                        case 'completed':
+                            return renderCompletedStatus(data);
+                        default:
+                            return '';
                     }
-    
-                    if (data.status === 'assigned' && data.accepted_at) {
-                        return renderAssignedStatus(data);
-                    }
-    
-                    if (data.status === 'in_progress') {
-                        return renderInProgressStatus(data);
-                    }
-    
-                    if (data.status === 'completed') {
-                        return renderCompletedStatus(data);
-                    }
-    
-                    return '';
                 }
             }
         ],
-        language: isArabic ? {
-            url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json"
-        } : {}
+        language: isArabic ? { url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json" } : {}
     });
 
-    function renderAcceptedStatus(data) {
-        const lang = $('html').attr('lang') || 'en';
-        let formattedDate = formatDate(data.actions); // Format the date
-    
-        return `
-            <div class="accepted-status">
-                <span class="badge badge-success">${gettext('acceptedAt', lang)}</span>
-                <br>
-                <large>${formattedDate}</large>
-            </div>`;
-    }
-
-    function renderCompletedStatus(data) {
-        const lang = $('html').attr('lang') || 'en';
-        let formattedDate = formatDate(data.updated_at); 
-        let assignedStaff = data.assigned_staff ? data.assigned_staff : 'N/A';
-    
-        return `
-            <div class="completed-status">
-                
-                <strong>${gettext('staffCompletedAt', lang)}:</strong> ${formattedDate}
-            </div>`;
-    }
-    
-    function renderInProgressStatus(data) {
-        const lang = $('html').attr('lang') || 'en';
-        let formattedDate = formatDate(data.staff_accepted_at);     
-        return `
-            <div class="in-progress-status">
-               
-                <strong>${gettext('staffAcceptedAt', lang)}:</strong> ${formattedDate}
-            </div>`;
-    }
-    
-    
-    function renderAssignedStatus(data) {
-        const lang = $('html').attr('lang') || 'en';
-        let formattedDate = formatDate(data.assigned_at); // Format the date
-    
-        return `
-            <div class="assigned-status">
-                <span class="badge badge-info">${gettext('assignedAt', lang)}</span>
-                <br>
-                <large>${formattedDate}</large>
-            </div>`;
-    }
-    
-    // **Helper function to format dates**
-    function formatDate(dateString) {
-        if (!dateString) return 'N/A'; // Handle null values safely
-    
-        let date = new Date(dateString);
-        return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-    }
-    
-
-    // Reload table on search or filter change
+    // Event handlers for search and filter
     $('#searchBox').on('keyup', function () {
         table.ajax.reload();
     });
@@ -239,7 +251,7 @@ $(document).ready(function () {
         table.ajax.reload();
     });
 
-    // Toggle button icon for search collapse
+    // Toggle search collapse icon
     const toggleButton = document.getElementById("toggleButton");
     if (toggleButton) {
         const icon = toggleButton.querySelector("i");
@@ -247,78 +259,28 @@ $(document).ready(function () {
             icon.classList.remove("fa-search-plus");
             icon.classList.add("fa-search-minus");
         });
-
         document.getElementById("collapseExample").addEventListener("hidden.bs.collapse", function () {
             icon.classList.remove("fa-search-minus");
             icon.classList.add("fa-search-plus");
         });
     }
 
-    // Function to toggle button loading state
-    function toggleButtonLoading(button, isLoading) {
-        const hasClassBtnRound = button.hasClass('btn-round');
-
-        if (isLoading) {
-            if (!button.data('original-text')) {
-                button.data('original-text', button.html());
-            }
-
-            if (hasClassBtnRound) {
-                button.html('<i class="fa fa-spinner fa-spin"></i>')
-                    .addClass('loading')
-                    .prop('disabled', true);
-            } else {
-                button.html('<i class="fa fa-spinner fa-spin"></i> Loading...')
-                    .addClass('loading')
-                    .prop('disabled', true);
-            }
-        } else {
-            button.html(button.data('original-text'))
-                .removeClass('loading')
-                .prop('disabled', false);
-            button.removeData('original-text');
-        }
-    }
-
-    // Modified renderPendingActions function to include category data
-    function renderPendingActions(data) {
-        const lang = $('html').attr('lang') || 'en';
-        return `
-            <div class="action-buttons">
-                <button class="btn btn-round btn-success accept-btn" 
-                    data-id="${data.id}" 
-                    data-category="${data.category || 'maintenance'}"
-                    title="${gettext('approve', lang)}">
-                    <i class="feather icon-check"></i>
-                </button>
-                <button class="btn btn-round btn-danger reject-btn" 
-                    data-id="${data.id}" 
-                    title="${gettext('reject', lang)}">
-                    <i class="feather icon-x"></i>
-                </button>
-            </div>`;
-    }
-
     // Handle accept button click
     $(document).on('click', '.accept-btn', function () {
         const requestId = $(this).data('id');
         const category = $(this).data('category');
-
-        // Open modal and pre-select category
-        $('#maintenancAssignModal').modal('show');
+        $('#maintenancAssignModal').modal('show')
+            .data('requestId', requestId);
+            console.log(category);
         $('#categorySelect').val(category).trigger('change');
-        $('#maintenancAssignModal').data('requestId', requestId);
     });
 
-    // Handle category change to load available options
+    // Fetch staff options on category change
     $('#categorySelect').on('change', function () {
         const selectedCategory = $(this).val();
         const optionsSelect = $('#optionsSelect');
-
-        // Clear current options
         optionsSelect.empty().append('<option>Loading...</option>');
 
-        // Fetch available options for the selected category
         $.ajax({
             url: window.routes.fetchStaff,
             method: 'GET',
@@ -342,7 +304,6 @@ $(document).ready(function () {
     // Handle maintenance form submission
     $('#maintenanceForm').on('submit', function (e) {
         e.preventDefault();
-
         const requestId = $('#maintenancAssignModal').data('requestId');
         const $submitButton = $(this).find('button[type="submit"]');
         const formData = {
@@ -351,34 +312,27 @@ $(document).ready(function () {
             notes: $('#maintenanceNotes').val()
         };
 
-        // Show loading state
         toggleButtonLoading($submitButton, true);
 
-        // Submit the form
         $.ajax({
             url: window.routes.acceptRequest.replace(":id", formData.request_id),
             method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Fixing CSRF token retrieval
-            },
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
             data: formData,
-            success: function (response) {
-                $('#maintenanceModal').modal('hide');
+            success: function () {
+                $('#maintenancAssignModal').modal('hide');
                 table.ajax.reload();
-        
-                // Show success message using SweetAlert2
                 swal({
                     type: 'success',
-                    title: gettext('statusUpdatedSuccessfully', $('html').attr('lang') || 'en'),
+                    title: gettext('statusUpdatedSuccessfully'),
                     showConfirmButton: false,
                     timer: 1500
                 });
             },
             error: function () {
-                // Show error message using SweetAlert2
                 swal({
                     type: 'error',
-                    title: gettext('anErrorOccurred', $('html').attr('lang') || 'en'),
+                    title: gettext('anErrorOccurred'),
                     showConfirmButton: false,
                     timer: 1500
                 });
@@ -387,6 +341,5 @@ $(document).ready(function () {
                 toggleButtonLoading($submitButton, false);
             }
         });
-        
     });
 });

@@ -763,8 +763,11 @@
                         <div class="mb-3">
                            <label for="uploadInvoiceReceipt" class="form-label">{{ __('Choose Files (Max 3)') }}</label>
                            <input type="file" class="form-control" id="uploadInvoiceReceipt" name="photos[]" multiple required>
-                           <small class="text-muted">{{ __('You can upload up to 3 files.') }}</small>
                         </div>
+                        <div class="form-text text-muted mt-1">
+                           <i class="fa fa-camera me-1"></i> {{ __('Up to 3 photos, max 5MB each (JPG, PNG)') }}
+                        </div>
+                        <div id="photoPreviewContainer" class="d-flex flex-wrap mt-2"></div>
                         <!-- Submit Button -->
                         <button type="submit" class="btn btn-primary">{{ __('Upload Files') }}</button>
                      </form>
@@ -779,302 +782,348 @@
 @endsection
 @section('scripts')
 <script>
-   $(document).ready(function() {
-       // Initialize first tab if no hash present
-       if (!window.location.hash) {
-           $('#v-pills-profile-tab').tab('show');
-       }
-   
-       // Handle tab navigation
-       function activateTabFromHash() {
-           let hash = window.location.hash;
-           if (hash) {
-               const $tabLink = $(`a[href="${hash}"]`);
-               if ($tabLink.length) {
-                   $tabLink.tab('show');
-               }
-           }
-       }
-   
-       // Update URL hash when tab changes
-       $('a[data-bs-toggle="pill"]').on('shown.bs.tab', function (e) {
-           const hash = $(e.target).attr('href');
-           if (history.pushState) {
-               history.pushState(null, null, hash);
-           } else {
-               window.location.hash = hash;
-           }
-       });
-   
-       // Handle back/forward browser buttons
-       $(window).on('popstate', activateTabFromHash);
-   
-       // Initial tab activation
-       activateTabFromHash();
-   
-       // File validation config
-       const fileConfig = {
-           maxSize: 4 * 1024 * 1024,
-           allowedTypes: ['image/jpeg', 'image/png']
-       };
-   
-       // Password section toggle
-       $('#toggle-password-btn').click(function() {
-           $('#password-section').toggle();
-           $(this).text(
-               $('#password-section').is(':visible') 
-               ? "{{ __('Cancel Password Change') }}" 
-               : "{{ __('Change Password') }}"
-           );
-       });
-   
-       // Image file validation
-       function validateImageFile(file) {
-           if (!file) return false;
-           if (file.size > fileConfig.maxSize) {
-               swal({
-                   type: 'error',
-                   title: "{{ __('File Too Large') }}",
-                   text: "{{ __('Image size must be less than 4MB') }}"
-               });
-               return false;
-           }
-           if (!fileConfig.allowedTypes.includes(file.type)) {
-               swal({
-                   type: 'error',
-                   title: "{{ __('Invalid File Type') }}",
-                   text: "{{ __('Please upload only JPG or PNG images') }}"
-               });
-               return false;
-           }
-           return true;
-       }
-   
-               // Real-time image validation on file input change
-               $('input[type="file"]').on('change', function() {
-            const file = this.files[0];
-            validateImageFile(file, this);
+$(document).ready(function() {
+    // === Tab Navigation ===
+    if (!window.location.hash) {
+        $('#v-pills-profile-tab').tab('show');
+    }
+
+    function activateTabFromHash() {
+        let hash = window.location.hash;
+        if (hash) {
+            const $tabLink = $(`a[href="${hash}"]`);
+            if ($tabLink.length) {
+                $tabLink.tab('show');
+            }
+        }
+    }
+
+    $('a[data-bs-toggle="pill"]').on('shown.bs.tab', function(e) {
+        const hash = $(e.target).attr('href');
+        if (history.pushState) {
+            history.pushState(null, null, hash);
+        } else {
+            window.location.hash = hash;
+        }
+    });
+
+    $(window).on('popstate', activateTabFromHash);
+    activateTabFromHash();
+
+    // === File Configuration ===
+    const fileConfig = {
+        maxSize: 4 * 1024 * 1024,
+        allowedTypes: ['image/jpeg', 'image/png']
+    };
+
+    // === File Validation ===
+    function validateImageFile(file) {
+        if (!file) return false;
+        if (file.size > fileConfig.maxSize) {
+            swal({
+                type: 'error',
+                title: "{{ __('File Too Large') }}",
+                text: "{{ __('Image size must be less than 4MB') }}"
+            });
+            return false;
+        }
+        if (!fileConfig.allowedTypes.includes(file.type)) {
+            swal({
+                type: 'error',
+                title: "{{ __('Invalid File Type') }}",
+                text: "{{ __('Please upload only JPG or PNG images') }}"
+            });
+            return false;
+        }
+        return true;
+    }
+
+    $('input[type="file"]').on('change', function() {
+        if (this.files && this.files.length > 1) {
+            Array.from(this.files).forEach(file => {
+                validateImageFile(file);
+            });
+        } else if (this.files && this.files.length === 1) {
+            validateImageFile(this.files[0]);
+        }
+    });
+
+    // === Photo Preview ===
+    const $photoPreviewContainer = $('#photoPreviewContainer');
+    const $fileInput = $('#uploadInvoiceReceipt');
+    const $fileLabel = $('.custom-file-label');
+
+    $fileInput.on('change', function() {
+        $photoPreviewContainer.empty();
+
+        if (this.files && this.files.length > 0) {
+        for (let i = 0; i < Math.min(this.files.length, 3); i++) {
+            const file = this.files[i];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Convert file size to human-readable format
+                const fileSize = file.size < 1024 * 1024 
+                    ? `${(file.size / 1024).toFixed(2)} KB` 
+                    : `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+
+                const $preview = $(`
+                    <div class="photo-preview-item mb-2 position-relative">
+                        <img src="${e.target.result}" alt="Preview" class="img-thumbnail">
+                        <button type="button" class="btn btn-sm btn-danger position-absolute remove-preview-btn">
+                            <i class="fa fa-times"></i>
+                        </button>
+                        <div class="file-size text-center mt-1">
+                            <small class="text-muted">${fileSize}</small>
+                        </div>
+                    </div>
+                `);
+                $photoPreviewContainer.append($preview);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        const fileCount = this.files.length;
+        $fileLabel.text(fileCount > 1 ? `${fileCount} files selected` : this.files[0].name);
+    } else {
+        $fileLabel.text('{{ __("Choose files") }}');
+    }
+    });
+
+    $photoPreviewContainer.on('click', '.remove-preview-btn', function() {
+        $(this).parent().remove();
+        if ($photoPreviewContainer.children().length === 0) {
+            $fileInput.val('');
+            $fileLabel.text('{{ __("Choose files") }}');
+        }
+    });
+
+    // === Profile Management ===
+    $('#toggle-password-btn').click(function() {
+        $('#password-section').toggle();
+        $(this).text(
+            $('#password-section').is(':visible') 
+            ? "{{ __('Cancel Password Change') }}" 
+            : "{{ __('Change Password') }}"
+        );
+    });
+
+    $('#profile_picture').on('change', function() {
+        const file = this.files[0];
+        if (file && validateImageFile(file)) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $('#imagePreview')
+                    .show()
+                    .find('img')
+                    .attr('src', e.target.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            $(this).val('');
+            $('#imagePreview').hide();
+        }
+    });
+
+    $('#profilePictureForm').on('submit', function(e) {
+        e.preventDefault();
+        const $form = $(this);
+        const $btn = $('#uploadProfilePicBtn');
+        const $spinner = $btn.find('.spinner-border');
+        const $btnText = $btn.find('.button-text');
+        const formData = new FormData(this);
+
+        $btn.prop('disabled', true);
+        $spinner.removeClass('d-none');
+        $btnText.text("{{ __('Uploading...') }}");
+
+        $.ajax({
+            url: "{{ route('student.profile.update-picture') }}",
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            success: function(response) {
+                if (response.image_url) {
+                    $('.profile-picture').attr('src', response.image_url);
+                }
+                swal({
+                    type: 'success',
+                    title: "{{ __('Success') }}",
+                    text: "{{ __('Profile picture updated successfully!') }}"
+                }).then(() => {
+                    $('#profilePicModal').modal('hide');
+                    window.location.reload();
+                });
+            },
+            error: function(xhr) {
+                swal({
+                    type: 'error',
+                    title: "{{ __('Error') }}",
+                    text: xhr.responseJSON?.message || "{{ __('Failed to update profile picture') }}"
+                });
+            },
+            complete: function() {
+                $btn.prop('disabled', false);
+                $spinner.addClass('d-none');
+                $btnText.text("{{ __('Upload New Picture') }}");
+            }
         });
-    
-       
-   
-       // Profile picture preview
-       $('#profile_picture').on('change', function() {
-           const file = this.files[0];
-           if (file && validateImageFile(file)) {
-               const reader = new FileReader();
-               reader.onload = function(e) {
-                   $('#imagePreview')
-                       .show()
-                       .find('img')
-                       .attr('src', e.target.result);
-               };
-               reader.readAsDataURL(file);
-           } else {
-               $(this).val('');
-               $('#imagePreview').hide();
-           }
-       });
-   
-       // Profile picture upload
-       $('#profilePictureForm').on('submit', function(e) {
-           e.preventDefault();
-           const $form = $(this);
-           const $btn = $('#uploadProfilePicBtn');
-           const $spinner = $btn.find('.spinner-border');
-           const $btnText = $btn.find('.button-text');
-   
-           const formData = new FormData(this);
-   
-           $btn.prop('disabled', true);
-           $spinner.removeClass('d-none');
-           $btnText.text("{{ __('Uploading...') }}");
-   
-           $.ajax({
-               url: "{{ route('student.profile.update-picture') }}",
-               type: 'POST',
-               data: formData,
-               processData: false,
-               contentType: false,
-               headers: {
-                   'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-               },
-               success: function(response) {
-                   if (response.image_url) {
-                       $('.profile-picture').attr('src', response.image_url);
-                   }
-                   swal({
-                       type: 'success',
-                       title: "{{ __('Success') }}",
-                       text: "{{ __('Profile picture updated successfully!') }}"
-                   }).then(() => {
-                       $('#profilePicModal').modal('hide');
-                       window.location.reload(); 
-                   });
-               },
-               error: function(xhr) {
-                   swal({
-                       type: 'error',
-                       title: "{{ __('Error') }}",
-                       text: xhr.responseJSON?.message || "{{ __('Failed to update profile picture') }}"
-                   });
-               },
-               complete: function() {
-                   $btn.prop('disabled', false);
-                   $spinner.addClass('d-none');
-                   $btnText.text("{{ __('Upload New Picture') }}");
-               }
-           });
-       });
-   
-       $('#updateProfileForm').on('submit', function(e) {
-           e.preventDefault();
-           const $form = $(this);
-           const $btn = $('#updateProfileBtn');
-           const $spinner = $btn.find('.spinner-border');
-           const $btnText = $btn.find('.button-text');
-   
-           const formData = new FormData(this);
-   
-           $btn.prop('disabled', true);
-           $spinner.removeClass('d-none');
-           $btnText.text("{{ __('Updating...') }}");
-   
-           $.ajax({
-               url: "{{ route('student.profile.update') }}",
-               type: 'POST',
-               data: formData,
-               processData: false,
-               contentType: false,
-               headers: {
-                   'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-               },
-               success: function(response) {
-                   swal({
-                       type: 'success',
-                       title: "{{ __('Success') }}",
-                       text: "{{ __('Profile data updated successfully!') }}"
-                   }).then(() => {
-                       window.location.reload(); 
-                   });
-               },
-               error: function(xhr) {
-                   swal({
-                       type: 'error',
-                       title: "{{ __('Error') }}",
-                       text: xhr.responseJSON?.message || "{{ __('Failed to update profile data') }}"
-                   });
-               },
-               complete: function() {
-                   $btn.prop('disabled', false);
-                   $spinner.addClass('d-none');
-                   $btnText.text("{{ __('Update Profile') }}");
-               }
-           });
-       });
-   
-       $('#deleteProfilePictureForm').on('submit', function(e) {
-           e.preventDefault();
-           const $form = $(this);
-           const $btn = $('#deleteProfilePictureBtn');
-           const $spinner = $btn.find('.spinner-border');
-           const $btnText = $btn.find('.button-text');
-   
-           const formData = new FormData(this);
-   
-           $btn.prop('disabled', true);
-           $spinner.removeClass('d-none');
-           $btnText.text("{{ __('Deleting...') }}");
-   
-           $.ajax({
-               url: "{{ route('student.profile.delete-picture') }}",
-               type: 'POST',
-               data: formData,
-               processData: false,
-               contentType: false,
-               headers: {
-                   'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-               },
-               success: function(response) {
-                   swal({
-                       type: 'success',
-                       title: "{{ __('Success') }}",
-                       text: "{{ __('Profile picture deleted successfully!') }}"
-                   }).then(() => {
-                       window.location.reload(); 
-                   });
-               },
-               error: function(xhr) {
-                   swal({
-                       type: 'error',
-                       title: "{{ __('Error') }}",
-                       text: xhr.responseJSON?.message || "{{ __('Failed to delete profile picture') }}"
-                   });
-               },
-               complete: function() {
-                   $btn.prop('disabled', false);
-                   $spinner.addClass('d-none');
-                   $btnText.text("{{ __('Delete Picture') }}");
-               }
-           });
-       });
-   
-       // Payment handling
-       $('.pay-now-btn').click(function() {
-           const invoiceId = $(this).data('invoice-id');
-           $('#fileUploadModal')
-               .data('invoice-id', invoiceId)
-               .modal('show');
-       });
-   
-       // Payment file upload
-       $('#fileUploadForm').on('submit', function(e) {
-           e.preventDefault();
-           const $form = $(this);
-           const $btn = $form.find('button[type="submit"]');
-           const originalBtnText = $btn.html();
-           const file = $('#uploadInvoiceReceipt')[0].files[0];
-           const invoiceId = $('#fileUploadModal').data('invoice-id');
-   
-           if (!validateImageFile(file)) return;
-   
-           const formData = new FormData(this);
-           formData.append('invoice_id', invoiceId);
-   
-           $btn.prop('disabled', true)
-               .html('<i class="fa fa-spinner fa-spin"></i> {{ __("Processing...") }}');
-   
-           $.ajax({
-               url: "{{ route('student.invoice.pay') }}",
-               type: 'POST',
-               data: formData,
-               processData: false,
-               contentType: false,
-               headers: {
-                   'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-               },
-               success: function(response) {
-                   swal({
-                       type: 'success',
-                       title: "{{ __('Success') }}",
-                       text: "{{ __('Payment file uploaded successfully!') }}"
-                   }).then(() => {
-                       $('#fileUploadModal').modal('hide');
-                       location.reload();
-                   });
-               },
-               error: function(xhr) {
-                   swal({
-                       type: 'error',
-                       title: "{{ __('Error') }}",
-                       text: xhr.responseJSON?.message || "{{ __('Failed to upload payment file') }}"
-                   });
-               },
-               complete: function() {
-                   $btn.prop('disabled', false).html(originalBtnText);
-               }
-           });
-       });
-   });
+    });
+
+    $('#updateProfileForm').on('submit', function(e) {
+        e.preventDefault();
+        const $form = $(this);
+        const $btn = $('#updateProfileBtn');
+        const $spinner = $btn.find('.spinner-border');
+        const $btnText = $btn.find('.button-text');
+        const formData = new FormData(this);
+
+        $btn.prop('disabled', true);
+        $spinner.removeClass('d-none');
+        $btnText.text("{{ __('Updating...') }}");
+
+        $.ajax({
+            url: "{{ route('student.profile.update') }}",
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            success: function(response) {
+                swal({
+                    type: 'success',
+                    title: "{{ __('Success') }}",
+                    text: "{{ __('Profile data updated successfully!') }}"
+                }).then(() => {
+                    window.location.reload();
+                });
+            },
+            error: function(xhr) {
+                swal({
+                    type: 'error',
+                    title: "{{ __('Error') }}",
+                    text: xhr.responseJSON?.message || "{{ __('Failed to update profile data') }}"
+                });
+            },
+            complete: function() {
+                $btn.prop('disabled', false);
+                $spinner.addClass('d-none');
+                $btnText.text("{{ __('Update Profile') }}");
+            }
+        });
+    });
+
+    $('#deleteProfilePictureForm').on('submit', function(e) {
+        e.preventDefault();
+        const $form = $(this);
+        const $btn = $('#deleteProfilePictureBtn');
+        const $spinner = $btn.find('.spinner-border');
+        const $btnText = $btn.find('.button-text');
+        const formData = new FormData(this);
+
+        $btn.prop('disabled', true);
+        $spinner.removeClass('d-none');
+        $btnText.text("{{ __('Deleting...') }}");
+
+        $.ajax({
+            url: "{{ route('student.profile.delete-picture') }}",
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            success: function(response) {
+                swal({
+                    type: 'success',
+                    title: "{{ __('Success') }}",
+                    text: "{{ __('Profile picture deleted successfully!') }}"
+                }).then(() => {
+                    window.location.reload();
+                });
+            },
+            error: function(xhr) {
+                swal({
+                    type: 'error',
+                    title: "{{ __('Error') }}",
+                    text: xhr.responseJSON?.message || "{{ __('Failed to delete profile picture') }}"
+                });
+            },
+            complete: function() {
+                $btn.prop('disabled', false);
+                $spinner.addClass('d-none');
+                $btnText.text("{{ __('Delete Picture') }}");
+            }
+        });
+    });
+
+    // === Payment Handling ===
+    $('.pay-now-btn').click(function() {
+        const invoiceId = $(this).data('invoice-id');
+        $('#fileUploadModal')
+            .data('invoice-id', invoiceId)
+            .modal('show');
+    });
+
+    $('#fileUploadForm').on('submit', function(e) {
+        e.preventDefault();
+        const $form = $(this);
+        const $btn = $form.find('button[type="submit"]');
+        const originalBtnText = $btn.html();
+        const fileInput = $('#uploadInvoiceReceipt')[0];
+        const files = fileInput.files;
+        const invoiceId = $('#fileUploadModal').data('invoice-id');
+
+        if (files.length === 0) {
+            swal({
+                type: 'error',
+                title: "{{ __('Error') }}",
+                text: "{{ __('Please select at least one file to upload') }}"
+            });
+            return;
+        }
+
+        for (let i = 0; i < files.length; i++) {
+            if (!validateImageFile(files[i])) {
+                return;
+            }
+        }
+
+        const formData = new FormData(this);
+        formData.append('invoice_id', invoiceId);
+
+        $btn.prop('disabled', true)
+            .html('<i class="fa fa-spinner fa-spin"></i> {{ __("Processing...") }}');
+
+        $.ajax({
+            url: "{{ route('student.invoice.pay') }}",
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            success: function(response) {
+                swal({
+                    type: 'success',
+                    title: "{{ __('Success') }}",
+                    text: "{{ __('Payment file uploaded successfully!') }}"
+                }).then(() => {
+                    $('#fileUploadModal').modal('hide');
+                    location.reload();
+                });
+            },
+            error: function(xhr) {
+                swal({
+                    type: 'error',
+                    title: "{{ __('Error') }}",
+                    text: xhr.responseJSON?.message || "{{ __('Failed to upload payment file') }}"
+                });
+            },
+            complete: function() {
+                $btn.prop('disabled', false).html(originalBtnText);
+            }
+        });
+    });
+});
 </script>
 @endsection

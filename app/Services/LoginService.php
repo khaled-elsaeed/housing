@@ -39,6 +39,11 @@ class LoginService
         return $user->hasRole('resident');
     }
 
+    public function isTechnican(User $user): bool
+    {
+        return $user->hasRole('technician');
+    }
+
     
     public function handleStudentAfterLogin(User $user)
     {

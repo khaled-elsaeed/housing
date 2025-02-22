@@ -149,8 +149,6 @@ class MaintenanceController extends Controller
     public function fetchRequests(Request $request)
     {
         try {
-            $currentLang = App::getLocale();
-
             $query = MaintenanceRequest::with(['room.reservation.user.student', 'media'])
                 ->select('maintenance_requests.*')
                 ->orderByRaw("
@@ -202,13 +200,13 @@ class MaintenanceController extends Controller
                     return $request->room->reservation->user->student->phone ?? 'N/A';
                 })
                 ->addColumn('category', function ($request) {
-                    return $request->category->name ?? 'N/A';
+                    return $request->category->name_en ?? 'N/A';
                 })
                 ->addColumn('problems', function ($request) {
                     return $request->problems->pluck('name')->implode(', ');
                 })
                 ->addColumn('status', function ($request) {
-                    return trans($request->status);
+                    return $request->status;
                 })
                 ->addColumn('assigned_staff', function ($request) {
                     return $request->assignedTo->name ?? 'N/A';

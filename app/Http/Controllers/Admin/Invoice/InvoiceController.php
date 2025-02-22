@@ -221,15 +221,18 @@ class InvoiceController extends Controller
                 ->all();
 
             $mediaArray = [];
-            if ($invoice->media) {
-                $mediaArray[] = [
-                    "id" => $invoice->media->id,
-                    "payment_url" => asset("storage/" . $invoice->media->path),
-                    "collection" => $invoice->media->collection_name,
-                    "created_at" => $invoice->media->created_at,
-                    "updated_at" => $invoice->media->updated_at,
-                ];
+            if ($invoice->media->isNotEmpty()) {
+                $mediaArray = [];
+                foreach ($invoice->media as $media) {
+                    $mediaArray[] = [
+                        "payment_url" => asset($media->path),
+                        "collection" => $media->collection_name,
+                        "created_at" => $media->created_at,
+                        "updated_at" => $media->updated_at,
+                    ];
+                }
             }
+            
 
             return response()->json([
                 "studentDetails" => $studentDetails,
@@ -237,6 +240,8 @@ class InvoiceController extends Controller
                 "media" => $mediaArray,
                 "invoice_id" => $invoice->id,
                 "status" => $invoice->admin_approval,
+                "notes" => $invoice->notes,
+
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to fetch invoice details', [

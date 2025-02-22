@@ -449,12 +449,23 @@
   "Download attachment": "تنزيل المرفق",
   "Pay now for invoice": "ادفع الآن للفاتورة",
   "in_progress" : "قيد العمل",
-
+  "Reject Reason" : "سبب الرفض",
     "No requests": "لا توجد طلبات",
     "No maintenance requests found": "لم يتم العثور على طلبات صيانة",
     "Need something fixed? Create your first maintenance request.": "هل تحتاج إلى إصلاح شيء ما؟ قم بإنشاء أول طلب صيانة.",
     "Reservation request submitted, awaiting approval": "تم تقديم طلب الحجز، في انتظار الموافقة",
-
+    "rejected":"مرفوض",
+    "Resident Name": "اسم الساكن",
+    "Resident Location": "موقع الساكن",
+    "Resident Phone": "هاتف الساكن",
+    "Problems": "المشكلات",
+    "Assigned Staff": "الموظف المعين",
+    "Created At": "تاريخ الإنشاء",
+    "Has Photos": "يحتوي على صور",
+    "Photos": "الصور",
+    "Accept Maintenance Request": "قبول طلب الصيانة",
+    "Available Options": "الخيارات المتاحة",
+    "Select an option": "اختر خيارًا",
     "Request": "طلب",
     "Assigned": "معين إلى",
     "attachment(s)": "مرفق/مرفقات",
@@ -681,7 +692,15 @@
     "long" : "فترة طويلة",
     "second Term ( spring 2024-2025 )":"الترم الثاني (ربيع 2024-2025)",
     "accepted": "مقبول",
-    "Accepted Requests" :"الطلبات المقبولة"
+    "Accepted Requests" :"الطلبات المقبولة",
+    "Failed to load the staff maintenance dashboard.": "فشل تحميل لوحة تحكم الصيانة للموظفين.",
+    "You are not authorized to perform this action.": "أنت غير مخول لتنفيذ هذا الإجراء.",
+    "The maintenance request has been accepted successfully.": "تم قبول طلب الصيانة بنجاح.",
+    "An error occurred while accepting the maintenance request.": "حدث خطأ أثناء قبول طلب الصيانة.",
+    "An error occurred while fetching maintenance requests.": "حدث خطأ أثناء جلب طلبات الصيانة.",
+    "The maintenance request has been completed successfully.": "تم إكمال طلب الصيانة بنجاح.",
+    "An error occurred while completing the maintenance request.": "حدث خطأ أثناء إكمال طلب الصيانة.",
+    "No photos": "لا توجد صور"
 
  
 }

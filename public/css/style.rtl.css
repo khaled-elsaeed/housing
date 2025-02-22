@@ -34594,9 +34594,34 @@ table.focus-on tfoot tr.focused td {
   }
 }
 
+/* preview item in preview of uploaded photos box */
 
-
-
+.photo-preview-item {
+  position: relative;
+  margin-left: 10px;
+  margin-bottom: 10px;
+  }
+  .photo-preview-item img {
+  height: 100px;
+  width: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  }
+  .photo-preview-item button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0 5px;
+  }
+  .photo-preview-item .file-size {
+   font-size: 0.9em; 
+   color: #6c757d; 
+   background-color: #f8f9fa; 
+   padding: 2px 8px;
+   border-radius: 3px;
+   margin-top: 5px; 
+   display: block; 
+}
 
 
 

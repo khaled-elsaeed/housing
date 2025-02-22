@@ -16,7 +16,7 @@ use App\Http\Controllers\Admin\{
     AdminSettingsController,
 };
 
-
+use App\Http\Controllers\Staff\StaffMaintenanceController;
 
 use App\Http\Controllers\Admin\Maintenance\{
     MaintenanceController,
@@ -272,6 +272,13 @@ Route::middleware(Localization::class)
             Route::get('permission', [StudentPermissionController::class, 'showForm'])->name('permission.form');
             Route::post('permission/store', [StudentPermissionController::class, 'store'])->name('permission.store');
         });
+        Route::get('/home', [StaffMaintenanceController::class, 'index'])->name('staff.home');
+
+        Route::get('/maintenance', [StaffMaintenanceController::class, 'index'])->name('staff.maintenance.index');
+    Route::post('/maintenance/{id}/accept', [StaffMaintenanceController::class, 'accept'])->name('staff.maintenance.accept');
+    Route::post('/maintenance/{id}/complete', [StaffMaintenanceController::class, 'complete'])->name('staff.maintenance.complete');
+
+    Route::get('/maintenance/fetch', [StaffMaintenanceController::class, 'fetchRequests'])->name('staff.maintenance.fetch');
 
         // Move these routes inside auth middleware
         Route::get('/get-cities/{governorateId}', [StudentProfileController::class, 'getCitiesByGovernorate'])->name('get-cities');

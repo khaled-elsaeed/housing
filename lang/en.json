@@ -170,6 +170,8 @@
     "Reservation request submitted successfully!" : "Reservation request submitted successfully!",
     "An unexpected error occurred. Please try again later." : "An unexpected error occurred. Please try again later.",
     "Grandmother": "Grandmother",
+    "Reject Reason":"Reject Reason",
+    "rejected":"Rejected",
     "Grandparent": "Grandparent",
     "Help & Support": "Help & Support",
     "Hend Sabry:": "Hend Sabry:",
@@ -669,5 +671,30 @@
     "Profile updated successfully": "Profile updated successfully",
     "Error updating profile": "Error updating profile",
     "Are you sure you want to reset the password? A new password will be generated and sent to the user via email.": "Are you sure you want to reset the password? A new password will be generated and sent to the user via email.",
-    "Confirm Reset": "Confirm Reset"
+    "Confirm Reset": "Confirm Reset",
+
+      "Resident Name" : "Resident Name",
+      "Resident Location" : "Resident Location",
+      "Resident Phone" : "Resident Phone",
+      "Problems" : "Problems",
+
+      "Assigned Staff" : "Assigned Staff",
+      "Created At" : "Created At",
+      "Has Photos" : "Has Photos",
+      "Photos" : "Photos",
+
+      "Accept Maintenance Request" : "Accept Maintenance Request",
+
+      "Available Options" : "Available Options",
+      "Select an option" : "Select an option",
+      "Failed to load the staff maintenance dashboard.": "Failed to load the staff maintenance dashboard.",
+    "You are not authorized to perform this action.": "You are not authorized to perform this action.",
+    "The maintenance request has been accepted successfully.": "The maintenance request has been accepted successfully.",
+    "An error occurred while accepting the maintenance request.": "An error occurred while accepting the maintenance request.",
+    "An error occurred while fetching maintenance requests.": "An error occurred while fetching maintenance requests.",
+    "The maintenance request has been completed successfully.": "The maintenance request has been completed successfully.",
+    "An error occurred while completing the maintenance request.": "An error occurred while completing the maintenance request.",
+    "No photos": "No photos"
+
+  
 }

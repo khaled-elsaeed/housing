@@ -81,6 +81,10 @@ class LoginController extends Controller
                 return redirect()->route('admin.home');
             }
 
+            if ($this->loginService->isTechnican($user)) {
+                return redirect()->route('staff.maintenance.index');
+            }
+
             if ($this->loginService->isResident($user)) {
                 if ($user->profile_completed === 0) {
                     return redirect()->route('profile.complete');

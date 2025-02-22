@@ -2,33 +2,8 @@
 @section('title', __('Maintenance Request'))
 @section('links')
 <style>
-   .problem-checkbox {
-   border: 1px solid #dee2e6;
-   padding: 15px;
-   border-radius: 8px;
-   margin-bottom: 10px;
-   transition: background-color 0.3s ease;
-   }
-   .problem-checkbox:hover {
-   background-color: #f8f9fa;
-   }
-   .photo-preview-item {
-   position: relative;
-   margin-right: 10px;
-   margin-bottom: 10px;
-   }
-   .photo-preview-item img {
-   height: 100px;
-   width: 100px;
-   object-fit: cover;
-   border-radius: 8px;
-   }
-   .photo-preview-item button {
-   position: absolute;
-   top: 0;
-   right: 0;
-   padding: 0 5px;
-   }
+
+
    .custom-file-label::after {
    content: "{{ __('Browse') }}";
    }
