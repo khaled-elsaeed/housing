@@ -22,7 +22,7 @@
                   <div class="row align-items-center">
                      
                      <div class="col-7 text-start mt-2 mb-2">
-                        <h5 class="card-title font-14">{{ __('Total Users') }}</h5>
+                        <h5 class="card-title font-14">{{ __('Total Userss') }}</h5>
                         <h4 class="mb-0">{{ $totalUsersCount }}</h4>
                      </div>
                      <div class="col-5 text-end">
