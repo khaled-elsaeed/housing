@@ -5,8 +5,7 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Auth, Storage, Log, Hash};
-use App\Models\{User, Notification, Governorate, Program, EmergencyContact,
-    Invoice, Sibling, Parents, Faculty, Country, City,UserActivity};
+use App\Models\{User, Notification, Governorate, Program, EmergencyContact, Invoice, Sibling, Parents, Faculty, Country, City, UserActivity};
 use App\Contracts\UploadServiceContract;
 use Exception;
 
@@ -27,7 +26,6 @@ class StudentProfileController extends Controller
     public function index()
     {
         try {
-            
             $user = Auth::user();
             $governorates = Governorate::all();
             $programs = Program::all();
@@ -38,21 +36,12 @@ class StudentProfileController extends Controller
             $reservations = $this->getUserReservations($user);
             $invoices = $this->getUserInvoices($user);
 
-            return view('student.profile', compact(
-                'user',
-                'reservations',
-                'governorates',
-                'programs',
-                'countries',
-                'faculties',
-                'invoices'
-            ));
-
+            return view('student.profile', compact('user', 'reservations', 'governorates', 'programs', 'countries', 'faculties', 'invoices'));
         } catch (Exception $e) {
             Log::error('Failed to load user profile page', [
                 'error' => $e->getMessage(),
                 'action' => 'show_user_profile_page',
-                'user_id' => auth()->id(), 
+                'user_id' => auth()->id(),
             ]);
             return response()->view('errors.500');
         }
@@ -66,21 +55,20 @@ class StudentProfileController extends Controller
      */
     protected function getUserReservations(User $user)
     {
+        if (!$user || !$user->exists) {
+            Log::warning('Invalid user provided to getUserReservations', [
+                'user_id' => $user->id ?? null,
+            ]);
+            return collect();
+        }
 
-            if (!$user || !$user->exists) {
-                Log::warning('Invalid user provided to getUserReservations', [
-                    'user_id' => $user->id ?? null,
-                ]);
-                return collect();
-            }
+        $reservations = $user
+            ->reservations()
+            ->with(['invoice', 'room'])
+            ->orderBy('created_at', 'asc')
+            ->get();
 
-            $reservations = $user->reservations()
-                ->with(['invoice', 'room'])
-                ->orderBy('created_at', 'asc')
-                ->get();
-
-            return $reservations;
-        
+        return $reservations;
     }
 
     /**
@@ -98,120 +86,129 @@ class StudentProfileController extends Controller
             return collect();
         }
 
-        
-            // Get invoices through reservations with eager loading
-            $invoices = Invoice::whereHas('reservation', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })->with(['reservation'])->get();
+        // Get invoices through reservations with eager loading
+        $invoices = Invoice::whereHas('reservation', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+            ->with(['reservation'])
+            ->get();
 
-            if (!$invoices) {
-                
-                return collect();
-            }
-            return $invoices;
-        
-        
+        if (!$invoices) {
+            return collect();
+        }
+        return $invoices;
     }
 
-/**
- * Update the student's basic profile information.
- *
- * @param Request $request
- * @return \Illuminate\Http\JsonResponse
- */
-public function update(Request $request)
-{
-    try {
-        $userId = Auth::user()->id;
-        $user = User::find($userId);
+    /**
+     * Update the student's basic profile information.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(Request $request)
+    {
+        try {
+            $userId = Auth::user()->id;
 
-        // Validate the incoming request fields
-        $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $userId,
-            'password' => 'nullable|confirmed', // Ensure the password confirmation field is checked if password is provided
-        ]);
+            $user = User::find($userId);
 
-        // Check if the password is valid (if it's provided)
-        if ($request->filled('password')) {
-            $validPassword = $this->validatePassword($request->input('password'));
+            $request->validate([
+                'first_name_en' => 'required|string|max:255',
+                'last_name_en' => 'required|string|max:255',
+                'first_name_ar' => 'required|string|max:255',
+                'last_name_ar' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email,' . $user->id,
+                'password' => 'nullable|confirmed|min:8',
+            ]);
 
-            if ($validPassword) {
-                return response()->json([
+            // Check if the password is valid (if it's provided)
+            if ($request->filled('password')) {
+                $validPassword = $this->validatePassword($request->input('password'));
+
+                if ($validPassword) {
+                    return response()->json(
+                        [
+                            'success' => false,
+                            'message' => $validPassword,
+                        ],
+                        422
+                    );
+                }
+            }
+
+            // Prepare the data
+            $updateData = [
+                'first_name_en' => $validatedData['first_name_en'] ?? $user->first_name_en,
+                'last_name_en' => $validatedData['last_name_en'] ?? $user->last_name_en,
+                'first_name_ar' => $validatedData['first_name_ar'] ?? $user->first_name_ar,
+                'last_name_ar' => $validatedData['last_name_ar'] ?? $user->last_name_ar,
+                'email' => $validatedData['email'] ?? $user->email,
+            ];
+
+            // Update password if provided
+            if ($request->filled('password')) {
+                $updateData['password'] = Hash::make($validatedData['password']);
+            }
+
+            // Update the user with the prepared data
+            $user->update($updateData);
+
+            UserActivity::create([
+                'user_id' => $user->id,
+                'activity_type' => 'update_profile',
+                'description' => 'Updated profile information',
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => trans('Profile updated successfully'),
+                'data' => $user,
+            ]);
+        } catch (Exception $e) {
+            Log::error('Error updating profile', [
+                'error' => $e->getMessage(),
+                'user_id' => Auth::user()->id,
+                'action' => 'update_profile_data',
+            ]);
+
+            return response()->json(
+                [
                     'success' => false,
-                    'message' => $validPassword,
-                ], 422);
-            }
+                    'message' => trans('Error updating profile'),
+                    'error' => $e->getMessage(),
+                ],
+                500
+            );
+        }
+    }
+
+    /**
+     * Custom function to validate password strength.
+     */
+    private function validatePassword($password)
+    {
+        if (strlen($password) < 8) {
+            return 'The password must be at least 8 characters long.';
         }
 
-        // Proceed with updating the user profile
-        $user->first_name_en = $request->input('first_name');
-        $user->last_name_en = $request->input('last_name');
-        $user->email = $request->input('email');
-
-        // Update password if it's provided and valid
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->input('password'));
+        if (!preg_match('/[A-Z]/', $password)) {
+            return 'The password must contain at least one uppercase letter.';
         }
 
-        // Save the updated user
-        $user->save();
+        if (!preg_match('/[a-z]/', $password)) {
+            return 'The password must contain at least one lowercase letter.';
+        }
 
-        UserActivity::create([
-            'user_id' => $user->id,
-            'activity_type' => 'update_profile',
-            'description' => 'Updated profile information',
-        ]);
+        if (!preg_match('/\d/', $password)) {
+            return 'The password must contain at least one number.';
+        }
 
-        return response()->json([
-            'success' => true,
-            'message' => trans('Profile updated successfully'),
-            'data' => $user,
-        ]);
-    } catch (Exception $e) {
-        Log::error('Error updating profile', [
-            'error' => $e->getMessage(),
-            'user_id' => Auth::user()->id,
-            'action' => 'update_profile_data',
-        ]);
+        if (!preg_match('/[@$!%*?&]/', $password)) {
+            return 'The password must contain at least one special character (e.g., @, $, !, %, *, ?, &).';
+        }
 
-        return response()->json([
-            'success' => false,
-            'message' => trans('Error updating profile'),
-            'error' => $e->getMessage(),
-        ], 500);
+        return null; // No error, password is valid
     }
-}
-
-/**
- * Custom function to validate password strength.
- */
-private function validatePassword($password)
-{
-    if (strlen($password) < 8) {
-        return 'The password must be at least 8 characters long.';
-    }
-
-    if (!preg_match('/[A-Z]/', $password)) {
-        return 'The password must contain at least one uppercase letter.';
-    }
-
-    if (!preg_match('/[a-z]/', $password)) {
-        return 'The password must contain at least one lowercase letter.';
-    }
-
-    if (!preg_match('/\d/', $password)) {
-        return 'The password must contain at least one number.';
-    }
-
-    if (!preg_match('/[@$!%*?&]/', $password)) {
-        return 'The password must contain at least one special character (e.g., @, $, !, %, *, ?, &).';
-    }
-
-    return null; // No error, password is valid
-}
-
 
     /**
      * Update the student's profile picture.
@@ -227,21 +224,16 @@ private function validatePassword($password)
                 'profile_picture' => 'required',
             ]);
 
-            // Get the authenticated user
             $user = Auth::user();
 
-            // Check if the user already has a profile picture
-            if ($user->media) {
-                $this->uploadService->delete($user->media->path);
-                $user->media->delete();
-                $user->save();
+            if ($profilePicture = $user->profilePictureMedia()->first()) {
+                $this->uploadService->delete($profilePicture->path);
+                $profilePicture->delete();
             }
 
-            $profileImage = $this->storeProfileImage($request->file('profile_picture'));
-
-            $user->media_id = $profileImage->id;
-            
-            $user->save();
+            // Upload the new profile picture
+            $photo = $request->file('profile_picture');
+            $this->uploadService->upload($photo, 'profile_picture', $user);
 
             // Log user activity
             UserActivity::create([
@@ -253,7 +245,6 @@ private function validatePassword($password)
             return response()->json([
                 'success' => true,
                 'message' => trans('Profile picture updated successfully'),
-                'data' => $profileImage,
             ]);
         } catch (Exception $e) {
             Log::error('Error updating profile picture', [
@@ -262,20 +253,15 @@ private function validatePassword($password)
                 'action' => 'update_profile_picture',
             ]);
 
-            return response()->json([
-                'success' => false,
-                'message' => trans('Error updating profile picture'),
-                'error' => $e->getMessage(),
-            ], 500);
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => trans('Error updating profile picture'),
+                    'error' => $e->getMessage(),
+                ],
+                500
+            );
         }
-    }
-
-    private function storeProfileImage($file)
-    {
-        if (!$file) {
-            throw new \Exception("Profile image file is required.");
-        }
-        return $this->uploadService->upload($file, "profile_picture");
     }
 
     /**
@@ -287,10 +273,13 @@ private function validatePassword($password)
     {
         try {
             if (!Auth::check()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => trans('Please login first'),
-                ], 401);
+                return response()->json(
+                    [
+                        'success' => false,
+                        'message' => trans('Please login first'),
+                    ],
+                    401
+                );
             }
 
             $user = Auth::user();
@@ -312,23 +301,28 @@ private function validatePassword($password)
                 'description' => 'Delete profile picture',
             ]);
 
-            return response()->json([
-                'success' => false,
-                'message' => trans('No profile picture found'),
-            ], 404);
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => trans('No profile picture found'),
+                ],
+                404
+            );
         } catch (Exception $e) {
             Log::error('Error deleting profile picture', [
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id(),
                 'action' => 'delete_profile_picture',
-
             ]);
 
-            return response()->json([
-                'success' => false,
-                'message' => trans('Error deleting profile picture'),
-                'error' => $e->getMessage(),
-            ], 500);
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => trans('Error deleting profile picture'),
+                    'error' => $e->getMessage(),
+                ],
+                500
+            );
         }
     }
 }

@@ -8,6 +8,8 @@ use App\Models\AdminAction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+
 use App\Jobs\ResetAccountCredentials;
 use Spatie\Permission\Models\Role;
 
@@ -15,6 +17,8 @@ class StaffAccountController extends Controller
 {
     /**
      * Display the list of staff users.
+     *
+     * @return \Illuminate\View\View|\Illuminate\Http\Response
      */
     public function index()
     {
@@ -38,37 +42,119 @@ class StaffAccountController extends Controller
         }
     }
 
-    /**
-     * Add a new staff user.
-     */
-    public function store(Request $request)
-    {
-        try {
-            $validatedData = $request->validate([
-                'first_name_en'     => 'required|string|max:255',
-                'first_name_ar'     => 'required|string|max:255',
-                'last_name_en'      => 'required|string|max:255',
-                'last_name_ar'      => 'required|string|max:255',
-                'email'             => 'required|email|unique:users,email',
-                'password'          => 'required|string|min:8',
-                'role'              => 'required|string|exists:roles,name',
-                'technician_role'   => 'nullable|required_if:role,technician|exists:roles,name',
-            ]);
 
+
+/**
+ * Add a new staff user.
+ *
+ * @param \Illuminate\Http\Request $request
+ * @return \Illuminate\Http\JsonResponse
+ */
+public function store(Request $request)
+{
+    try {
+        $validatedData = $request->validate([
+            'first_name_en'    => 'required|string|max:255',
+            'first_name_ar'    => 'required|string|max:255',
+            'last_name_en'     => 'required|string|max:255',
+            'last_name_ar'     => 'required|string|max:255',
+            'email'            => 'required|email',
+            'password'         => 'required|string|min:8',
+            'role'             => 'required|string|exists:roles,name',
+            'technician_role'  => 'sometimes|required_if:role,technician|exists:roles,name',
+        ]);
+
+        // Custom email check
+        if (User::where('email', $validatedData['email'])->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Email already exists.')
+            ], 400);
+        }
+
+        // Start transaction
+        $user = DB::transaction(function () use ($validatedData, $request) {
+
+            // Create user
             $user = User::create([
                 'first_name_en' => $validatedData['first_name_en'],
                 'first_name_ar' => $validatedData['first_name_ar'],
-                'last_name'     => $validatedData['last_name_en'],
+                'last_name_en'  => $validatedData['last_name_en'],
+                'last_name_ar'  => $validatedData['last_name_ar'],
                 'email'         => $validatedData['email'],
                 'password'      => Hash::make($validatedData['password']),
             ]);
 
+            // Assign primary role
             $role = Role::where('name', $validatedData['role'])->first();
             if (!$role) {
-                return response()->json(['success' => false, 'message' => __('Invalid role provided.')], 400);
+                throw new \Exception(__('Invalid role provided.'));
+            }
+            $user->assignRole($role->name);
+
+            // Assign technician role if applicable
+            if ($validatedData['role'] === 'technician' && !empty($validatedData['technician_role'])) {
+                $technicianRole = Role::where('name', $validatedData['technician_role'])->first();
+                if (!$technicianRole) {
+                    throw new \Exception(__('Invalid technician role.'));
+                }
+                $user->assignRole($technicianRole->name);
             }
 
-            $user->assignRole($role->name);
+            // Log admin action
+            AdminAction::create([
+                'admin_id'    => auth()->id(),
+                'action'      => 'create_staff',
+                'description' => 'Created a new staff user',
+                'changes'     => json_encode([
+                    'user_id'         => $user->id,
+                    'role'            => $validatedData['role'],
+                    'technician_role' => $validatedData['technician_role'] ?? null,
+                ]),
+                'ip_address'  => $request->ip(),
+                'user_agent'  => $request->userAgent(),
+            ]);
+
+            return $user; // Return the user object from transaction
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => __('User added successfully.'),
+            'user'    => $user // Return created user details if needed
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Failed to create staff user', [
+            'error'    => $e->getMessage(),
+            'action'   => 'create_staff',
+            'admin_id' => auth()->id(),
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage() ?: __('Unable to add user.')
+        ], 500);
+    }
+}
+
+    /**
+     * Edit staff user details.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(Request $request)
+    {
+        try {
+            $request->validate([
+                'user_id' => 'required|exists:users,id',
+                'role'              => 'required|string|exists:roles,name',
+                'technician_role'   => 'nullable|required_if:role,technician|exists:roles,name',
+            ]);
+
+            $user = User::findOrFail($request->user_id);
+            $user->syncRoles([$request->role]);
 
             if ($request->role == 'technician' && $request->technician_role) {
                 $technicianRole = Role::where('name', $request->technician_role)->first();
@@ -78,59 +164,6 @@ class StaffAccountController extends Controller
                     return response()->json(['success' => false, 'message' => __('Invalid technician role.')], 400);
                 }
             }
-
-            AdminAction::create([
-                'admin_id'    => auth()->id(),
-                'action'      => 'create_staff',
-                'description' => 'Created a new staff user',
-                'changes'     => json_encode([
-                    'user_id'          => $user->id,
-                    'role'             => $validatedData['role'],
-                    'technician_role'  => $validatedData['technician_role'] ?? null,
-                ]),
-                'ip_address'  => $request->ip(),
-                'user_agent'  => $request->userAgent(),
-            ]);
-
-            return response()->json(['success' => true, 'message' => __('User added successfully.')]);
-        } catch (\Exception $e) {
-            Log::error('Failed to create staff user', [
-                'error'        => $e->getMessage(),
-                'action'       => 'create_staff',
-                'request_data' => $request->all(),
-                'admin_id'     => auth()->id(),
-            ]);
-            return response()->json(['success' => false, 'message' => __('Unable to add user.')], 500);
-        }
-    }
-
-    /**
-     * Edit staff user details.
-     */
-    public function update(Request $request)
-    {
-        try {
-            $request->validate([
-                'user_id' => 'required|exists:users,id',
-                'first_name_en' => 'required|string|max:255',
-                'first_name_ar' => 'required|string|max:255',
-                'last_name_en' => 'required|string|max:255',
-                'last_name_ar' => 'required|string|max:255',
-
-                'email' => 'required|email|unique:users,email,' . $request->user_id,
-                'role' => 'required|string|in:admin,housing_manager,building_manager,technician',
-            ]);
-
-            $user = User::findOrFail($request->user_id);
-            $user->update([
-                'first_name_en' => $request->first_name_en,
-                'first_name_ar' => $request->first_name_ar,
-                'last_name_ar' => $request->last_name_ar,
-                'last_name_en' => $request->last_name_en,
-                'email' => $request->email,
-            ]);
-
-            $user->syncRoles([$request->role]);
 
             AdminAction::create([
                 'admin_id' => auth()->id(),
@@ -156,6 +189,9 @@ class StaffAccountController extends Controller
 
     /**
      * Delete a staff user.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Request $request)
     {
@@ -190,6 +226,9 @@ class StaffAccountController extends Controller
 
     /**
      * Edit staff user email.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function editEmail(Request $request)
     {
@@ -239,6 +278,9 @@ class StaffAccountController extends Controller
 
     /**
      * Reset staff user password.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function resetPassword(Request $request)
     {
@@ -247,9 +289,8 @@ class StaffAccountController extends Controller
                 'user_id' => 'required|exists:users,id',
             ]);
 
-
+            $user = User::findOrFail($request->user_id); // Added: Fetch user to log changes
             ResetAccountCredentials::dispatch(User::whereIn('id', [$request->user_id])->get());
-
 
             AdminAction::create([
                 'admin_id' => auth()->id(),

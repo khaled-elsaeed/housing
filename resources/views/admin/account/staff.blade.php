@@ -472,12 +472,19 @@ $('#editRoleModal').on('show.bs.modal', function (event) {
             }
          },
          error: function (xhr) {
-            swal({
-               type: 'error',
-               title: 'Error',
-               text: xhr.responseText,
-            });
-         }
+    let errorMessage = 'An unexpected error occurred.'; // Default message
+
+    if (xhr.responseJSON && xhr.responseJSON.message) {
+        errorMessage = xhr.responseJSON.message; // Get the actual error message
+    }
+
+    swal({
+        type: 'error',
+        title: 'Error',
+        text: errorMessage,
+    });
+}
+
       });
    });
 

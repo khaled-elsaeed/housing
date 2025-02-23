@@ -101,6 +101,7 @@ class ResidentAccountController extends Controller
     public function resetPassword(Request $request)
 {
     try {
+        
         $user = User::findOrFail($request->user_id);
 
         // Use Eloquent query to get an Eloquent Collection

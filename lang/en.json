@@ -694,7 +694,15 @@
     "An error occurred while fetching maintenance requests.": "An error occurred while fetching maintenance requests.",
     "The maintenance request has been completed successfully.": "The maintenance request has been completed successfully.",
     "An error occurred while completing the maintenance request.": "An error occurred while completing the maintenance request.",
-    "No photos": "No photos"
+    "No photos": "No photos",
+    "This email is already in use." : "This email is already in use.",
+    "First Name (English)" : "First Name (English)",
+    "Last Name (English)" : "Last Name (English)",
+    "First Name (Arabic)" : "First Name (Arabic)",
+    "Last Name (Arabic)" : "Last Name (Arabic)",
+    "Profile picture deleted successfully!" : "Profile picture deleted successfully!",
+    "Profile data updated successfully!" :     "Profile data updated successfully!",
+    "male":"Male"
 
   
 }

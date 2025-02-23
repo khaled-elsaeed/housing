@@ -700,7 +700,14 @@
     "An error occurred while fetching maintenance requests.": "حدث خطأ أثناء جلب طلبات الصيانة.",
     "The maintenance request has been completed successfully.": "تم إكمال طلب الصيانة بنجاح.",
     "An error occurred while completing the maintenance request.": "حدث خطأ أثناء إكمال طلب الصيانة.",
-    "No photos": "لا توجد صور"
-
+    "No photos": "لا توجد صور",
+    "This email is already in use." : "هذا البريد الإلكتروني مستخدم بالفعل.",
+    "First Name (English)" : "الاسم الأول (الإنجليزية)",
+    "Last Name (English)" : "الاسم الأخير (الإنجليزية)",
+    "First Name (Arabic)" : "الاسم الأول (العربية)",
+    "Last Name (Arabic)" : "الاسم الأخير (العربية)",
+    "Profile picture deleted successfully!" : "تم تحديث صورة الملف الشخصي بنجاح!",
+    "Profile data updated successfully!" : "تم تحديث بيانات الملف الشخصي بنجاح!",
+    "male":"ذكر"
  
 }

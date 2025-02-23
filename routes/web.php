@@ -16,6 +16,9 @@ use App\Http\Controllers\Admin\{
     AdminSettingsController,
 };
 
+use App\Http\Controllers\App\NotificationController;
+
+
 use App\Http\Controllers\Staff\StaffMaintenanceController;
 
 use App\Http\Controllers\Admin\Maintenance\{
@@ -25,7 +28,6 @@ use App\Http\Controllers\Admin\Maintenance\{
 
 use App\Http\Controllers\Admin\Reservation\{ReservationController,ReservationRequestsController,ReservationSwapController};
 use App\Http\Controllers\App\UploadController;
-use App\Http\Controllers\App\NotificationController;
 
 use App\Http\Controllers\Student\StudentHomeController;
 use App\Http\Controllers\Student\StudentReservationRequestController;
@@ -310,7 +312,11 @@ Route::middleware(Localization::class)
 Route::post('upload', UploadController::class,'')->name('upload');
 
 // Notification Routes
-Route::post('/notifications/{notification}/mark-as-read',[NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
-Route::post('/notifications/mark-all-as-read',[NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
-Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+// Notifications
+Route::prefix('notifications')->group(function () {
+    Route::post('/mark-as-read/{id}', [NotificationController::class, 'markAsRead'])
+        ->name('notifications.markAsRead');
+    Route::post('/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])
+        ->name('notifications.markAllAsRead');
+});
 
