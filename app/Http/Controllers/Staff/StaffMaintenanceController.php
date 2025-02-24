@@ -129,7 +129,8 @@ class StaffMaintenanceController extends Controller
             $staffId = auth()->id();
             
             $query = MaintenanceRequest::with([
-                'room.reservation.user.student',
+                'room.reservation',
+                'user.student',
                 'media',
                 'category',
                 'problems'
@@ -151,11 +152,11 @@ class StaffMaintenanceController extends Controller
 
             return DataTables::of($query)
                 ->addColumn('resident_name', fn ($request) => 
-                    $request->room->reservation->user->name ?? 'N/A')
+                    $request->user->name ?? 'N/A')
                 ->addColumn('resident_location', fn ($request) => 
                     $this->formatResidentLocation($request))
                 ->addColumn('resident_phone', fn ($request) => 
-                    $request->room->reservation->user->student->phone ?? 'N/A')
+                    $request->user->student->mobile ?? 'N/A')
                 ->addColumn('category', fn ($request) => 
                     $request->category->name_en ?? 'N/A')
                 ->addColumn('problems', fn ($request) => 
@@ -210,9 +211,8 @@ class StaffMaintenanceController extends Controller
         if ($request->filled('customSearch')) {
             $searchTerm = $request->get('customSearch');
             $query->where(function ($q) use ($searchTerm) {
-                $q->whereHas('room.reservation.user', function ($userQuery) use ($searchTerm) {
-                    $userQuery->where('name', 'like', "%{$searchTerm}%")
-                        ->orWhere('phone', 'like', "%{$searchTerm}%");
+                $q->whereHas('user', function ($userQuery) use ($searchTerm) {
+                    $userQuery->where('name', 'like', "%{$searchTerm}%");
                 })
                 ->orWhere('title', 'like', "%{$searchTerm}%")
                 ->orWhere('description', 'like', "%{$searchTerm}%");

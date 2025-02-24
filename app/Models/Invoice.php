@@ -68,10 +68,7 @@ class Invoice extends Model
     return $this->reservation->academicTerm;
 }
 
-    // public function media()
-    // {
-    //     return $this->hasOne(Media::class, 'id', 'media_id');  
-    // }
+
 
     public function media(): MorphMany
     {

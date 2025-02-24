@@ -579,13 +579,15 @@
                                         <div class="card-subtitle mb-2 text-muted small">
                                             @if($invoice->reservation->period_type === 'long')
                                             <div class="d-flex align-items-center gap-1">
-                                                <span>{{ __($invoice->reservation->academicTerm->semester) }}</span>
                                                 <span>{{ __('Term') }} {{ $invoice->reservation->academicTerm->term }}</span>
+                                                <span>{{ __($invoice->reservation->academicTerm->semester) }}</span>
+
                                             </div>
                                             <div class="d-flex align-items-center gap-1">
-                                                <span>{{ optional($invoice->reservation->academicTerm)->name }}</span>
-                                                <span>{{ optional($invoice->reservation->academicTerm)->academic_year ?? __('Not specified') }}</span>
+                                                <span>{{ trans(optional($invoice->reservation->academicTerm)->name) }}</span>
+                                                <span>{{ optional($invoice->reservation->academicTerm)->academic_year ? arabicNumbers(optional($invoice->reservation->academicTerm)->academic_year) : __('Not specified') }}</span>
                                             </div>
+
                                             @else
                                             <span class="d-flex align-items-center">
                                                 {{ __('Short Term') }}

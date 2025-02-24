@@ -197,7 +197,7 @@ class MaintenanceController extends Controller
                     ]);
                 })
                 ->addColumn('resident_phone', function ($request) {
-                    return $request->user->student->phone ?? 'N/A';
+                    return $request->user->student->mobile ?? 'N/A';
                 })
                 ->addColumn('category', function ($request) {
                     return $request->category->name_en ?? 'N/A';
