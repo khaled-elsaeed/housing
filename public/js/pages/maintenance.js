@@ -25,9 +25,11 @@ $(document).ready(function () {
             staffAcceptedAt: "Staff accepted at",
             staffCompletedAt: "Staff completed at",
             "Water and Sanitary Issues": "Water and Sanitary Issues",
-                "Electrical Issues": "Electrical Issues",
-                "General Housing Issues": "General Housing Issues"
-            
+            "Electrical Issues": "Electrical Issues",
+            "General Housing Issues": "General Housing Issues",
+            selectCategory: "Select a category",
+            selectStaff: "Select a staff member",
+            noStaffAvailable: "No staff available"
         },
         ar: {
             pending: "معلق",
@@ -45,10 +47,12 @@ $(document).ready(function () {
             assignedAt: "تم التعيين في",
             staffAcceptedAt: "تم قبول الموظف في",
             staffCompletedAt: "تم اكتمال الصيانة من قبل الموظف في",
-                "Water and Sanitary Issues": "مشاكل المياه والصرف الصحي",
-                "Electrical Issues": "مشاكل الكهرباء",
-                "General Housing Issues": "مشاكل السكن العامة"
-            
+            "Water and Sanitary Issues": "مشاكل المياه والصرف الصحي",
+            "Electrical Issues": "مشاكل الكهرباء",
+            "General Housing Issues": "مشاكل السكن العامة",
+            selectCategory: "اختر فئة",
+            selectStaff: "اختر موظفًا",
+            noStaffAvailable: "لا يوجد موظفون متاحون"
         }
     };
     
@@ -278,27 +282,29 @@ function renderCompletedStatus(data) {
     // Fetch staff options on category change
     $('#categorySelect').on('change', function () {
         const selectedCategory = $(this).val();
-        const optionsSelect = $('#optionsSelect');
-        optionsSelect.empty().append('<option>Loading...</option>');
+        const $optionsSelect = $('#optionsSelect');
+        $optionsSelect.empty().append(`<option value="">${gettext('selectStaff')}</option>`);
 
-        $.ajax({
-            url: window.routes.fetchStaff,
-            method: 'GET',
-            data: { category: selectedCategory },
-            success: function (response) {
-                optionsSelect.empty();
-                if (response.staff && response.staff.length > 0) {
-                    response.staff.forEach(staff => {
-                        optionsSelect.append(`<option value="${staff.id}">${staff.name}</option>`);
-                    });
-                } else {
-                    optionsSelect.append('<option value="">No options available</option>');
+        if (selectedCategory) {
+            $.ajax({
+                url: window.routes.fetchStaff,
+                method: 'GET',
+                data: { category: selectedCategory },
+                success: function (response) {
+                    $optionsSelect.empty().append(`<option value="">${gettext('selectStaff')}</option>`);
+                    if (response.staff && response.staff.length > 0) {
+                        response.staff.forEach(staff => {
+                            $optionsSelect.append(`<option value="${staff.id}">${staff.name}</option>`);
+                        });
+                    } else {
+                        $optionsSelect.empty().append(`<option value="">${gettext('noStaffAvailable')}</option>`);
+                    }
+                },
+                error: function () {
+                    $optionsSelect.empty().append(`<option value="">${gettext('errorFetchingIssues')}</option>`);
                 }
-            },
-            error: function () {
-                optionsSelect.empty().append('<option value="">Error loading options</option>');
-            }
-        });
+            });
+        }
     });
 
     // Handle maintenance form submission
@@ -342,4 +348,5 @@ function renderCompletedStatus(data) {
             }
         });
     });
+
 });

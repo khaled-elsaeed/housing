@@ -40,8 +40,8 @@
     </ul>
 </li>
 
-            <li>
-                <a href="{{ route('student.profile') }}" class="{{ request()->routeIs('student.profile*') ? 'active' : '' }}">
+            <li class="{{ request()->routeIs('student.profile*') ? 'active' : '' }}" >
+                <a href="{{ route('student.profile') }}" >
                     <img src="{{ asset('images/svg-icon/user.svg') }}" class="img-fluid" alt="profile">
                     <span>@lang('My Profile')</span>
                 </a>

@@ -36,23 +36,24 @@ return new class extends Migration
             
             // Foreign keys
             $table->foreignId('room_id')->constrained('rooms')->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('category_id')->constrained('maintenance_categories');
             
             // Request details
-            $table->text('description');            
+            $table->text('description');
+            
             // Status tracking
             $table->enum('status', ['pending', 'accepted', 'rejected', 'assigned', 'in_progress', 'completed'])->default('pending');
             
             // Assigned technician
-            $table->foreignId('assigned_to')->nullable()->constrained('users');
+            $table->foreignId('assigned_to')->nullable()->constrained('users')->onDelete('set null');
             
             // Timestamps for tracking
-            $table->timestamp('assigned_at')->nullable(); 
-            $table->timestamp('staff_accepted_at')->nullable(); 
-
-            $table->timestamp('rejected_at')->nullable(); 
-            $table->text('reject_reason')->nullable(); 
-            $table->timestamp('completed_at')->nullable(); 
+            $table->timestamp('assigned_at')->nullable();
+            $table->timestamp('staff_accepted_at')->nullable();
+            $table->timestamp('rejected_at')->nullable();
+            $table->text('reject_reason')->nullable();
+            $table->timestamp('completed_at')->nullable();
             
             // Default timestamps
             $table->timestamps();

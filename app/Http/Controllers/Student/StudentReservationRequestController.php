@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers\Student;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\ReservationRequestService;
-use App\Models\{ReservationRequest, User};
-use Illuminate\Support\Facades\Log;
-use App\Models\UserActivity;
-
+use App\Http\Requests\ReservationRequest as ReservationRequestValidation;
 use App\Events\ReservationRequested;
 use App\Exceptions\BusinessRuleException;
-use App\Http\Requests\ReservationRequest as ReservationRequestValidation; // Import the custom Request
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class StudentReservationRequestController extends Controller
 {
@@ -31,13 +29,10 @@ class StudentReservationRequestController extends Controller
     public function store(ReservationRequestValidation $request)
     {
         try {
-            
             $validatedData = $request->validated();
+            $student = Auth::user();
 
-            // Get authenticated student
-            $student = auth()->user();
-
-            // Convert checkbox values (if necessary)
+            // Normalize checkbox values
             $validatedData['stay_in_last_old_room'] = $request->input('stay_in_last_old_room') !== null
                 ? $this->normalizeCheckboxValue($request->input('stay_in_last_old_room'))
                 : null;
@@ -46,44 +41,16 @@ class StudentReservationRequestController extends Controller
                 ? $this->normalizeCheckboxValue($request->input('share_with_sibling'))
                 : null;
 
-            // Create reservation request
+            // Create reservation request via service
             $reservationRequest = $this->reservationRequestService->createReservationRequest($student, $validatedData);
-            event(new ReservationRequested($reservationRequest));
 
-            UserActivity::create([
-                'user_id' => auth()->id(),
-                'activity_type' => 'reservation_request',
-                'description' => 'Reservation request submitted, awaiting approval',
-            ]);
-            
-            return response()->json([
-                'success' => true,
-                'message' => trans('Reservation request submitted successfully!'),
-            ], 201);
+            return successResponse(trans('Reservation request submitted successfully!'));
         } catch (BusinessRuleException $e) {
-            // Handle business rule violations
-            Log::error('Business rule violation in reservation request', [
-                'error' => $e->getMessage(),
-                'user_id' => auth()->id(),
-                'action' => 'create_reservation_request',
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 422); // 422 Unprocessable Entity for validation failures
-        } catch (\Exception $e) {
-            // Log and handle unexpected system errors
-            Log::error('Unexpected error in reservation request', [
-                'error' => $e->getMessage(),
-                'user_id' => auth()->id(),
-                'action' => 'create_reservation_request',
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'message' => trans('An unexpected error occurred. Please try again later.'),
-            ], 500); // 500 Internal Server Error
+            logError('Business rule violation in reservation request', 'create_reservation_request', $e);
+            return errorResponse($e->getMessage(), 422); 
+        } catch (Exception $e) {
+            logError('Unexpected error in reservation request', 'create_reservation_request', $e);
+            return errorResponse(trans('An unexpected error occurred. Please try again later.'), 500); 
         }
     }
 

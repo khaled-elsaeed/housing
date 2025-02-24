@@ -91,13 +91,10 @@
                         <div class="me-3">
                            @php
                            $iconMapping = [
-                           'update_profile' => '<i class="fa fa-check-circle text-success"></i>',
-                           'update_profile_picture' => '<i class="fa fa-check-circle text-success"></i>',
-                           'delete_profile_picture' => '<i class="fa fa-check-circle text-success"></i>',
-                           'reservation_request' => '<i class="fa fa-check-circle text-success"></i>',
+                           
                            'invoice_upload' => '<i class="fa fa-upload text-primary"></i>',
                            ];
-                           $defaultIcon = '<i class="fa fa-circle text-secondary"></i>';
+                           $defaultIcon = '<i class="fa fa-check-circle text-success"></i>';
                            $icon = $iconMapping[$activity->activity_type] ?? $defaultIcon;
                            @endphp
                            {!! $icon !!}

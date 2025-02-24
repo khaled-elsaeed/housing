@@ -3,15 +3,17 @@
 namespace App\Services;
 
 use App\Models\{User, Room, Reservation, Invoice, InvoiceDetail, ReservationRequest};
-use Illuminate\Support\Facades\{DB, Log, Cache};
-use Illuminate\Support\Carbon;
 use App\Events\{ReservationCreated, ReservationRequested};
-use Exception;
+use Illuminate\Support\Facades\{DB, Cache};
+use App\Exceptions\BusinessRuleException;
+
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+
+use Exception;
 
 class ReservationService
 {
-
     /**
      * Get pending reservation requests filtered by gender and preferences.
      *
@@ -19,11 +21,16 @@ class ReservationService
      */
     public function getReservationRequests(): Collection
     {
-        return ReservationRequest::with(['user.student.faculty:id,name'])
-            ->where('status', 'pending')
-            ->orderBy('created_at', 'desc')
-            ->select(['id', 'user_id', 'stay_in_last_old_room', 'share_with_sibling', 'old_room_id', 'sibling_id', 'created_at'])
-            ->get();
+        try {
+            return ReservationRequest::with(['user.student.faculty:id,name'])
+                ->where('status', 'pending')
+                ->orderBy('created_at', 'desc')
+                ->select(['id', 'user_id', 'stay_in_last_old_room', 'share_with_sibling', 'old_room_id', 'sibling_id', 'created_at'])
+                ->get();
+        } catch (Exception $e) {
+            logError('Failed to get reservation requests', 'get_reservation_requests', $e);
+            return collect();
+        }
     }
 
     /**
@@ -33,38 +40,42 @@ class ReservationService
      */
     private function getAvailableRooms(): array
     {
-        $rooms = Room::select('rooms.*')
-            ->join('apartments', 'rooms.apartment_id', '=', 'apartments.id')
-            ->join('buildings', 'apartments.building_id', '=', 'buildings.id')
-            ->whereNotNull('buildings.gender') // Ensures gender is set
-            ->whereIn('rooms.type', ['single', 'double']) // Ensures valid types
-            ->get()
-            ->groupBy([
-                fn($room) => $room->apartment->building->gender,
-                'type'
-            ]);
-    
-        // Ensure empty structure even if no data is found
-        return [
-            'male' => [
-                'single' => $rooms['male']['single'] ?? [],
-                'double' => $rooms['male']['double'] ?? [],
-            ],
-            'female' => [
-                'single' => $rooms['female']['single'] ?? [],
-                'double' => $rooms['female']['double'] ?? [],
-            ],
-        ];
-    }
-    
-    
+        try {
+            $rooms = Room::select('rooms.*')
+                ->join('apartments', 'rooms.apartment_id', '=', 'apartments.id')
+                ->join('buildings', 'apartments.building_id', '=', 'buildings.id')
+                ->whereNotNull('buildings.gender')
+                ->whereIn('rooms.type', ['single', 'double'])
+                ->get()
+                ->groupBy([
+                    fn($room) => $room->apartment->building->gender,
+                    'type'
+                ]);
 
-    
+            return [
+                'male' => [
+                    'single' => $rooms['male']['single'] ?? collect(),
+                    'double' => $rooms['male']['double'] ?? collect(),
+                ],
+                'female' => [
+                    'single' => $rooms['female']['single'] ?? collect(),
+                    'double' => $rooms['female']['double'] ?? collect(),
+                ],
+            ];
+        } catch (Exception $e) {
+            logError('Failed to get available rooms', 'get_available_rooms', $e);
+            return [
+                'male' => ['single' => collect(), 'double' => collect()],
+                'female' => ['single' => collect(), 'double' => collect()],
+            ];
+        }
+    }
 
     /**
      * Automate the reservation process with background processing support.
      *
      * @return void
+     * @throws Exception
      */
     public function automateReservationProcess(): void
     {
@@ -85,41 +96,27 @@ class ReservationService
                 'Mass Media & Communication' => 13,
             ];
 
-            // Fetch pending requests with relationships loaded, sort by old requested first
             $reservations = ReservationRequest::where('status', 'pending')
                 ->with(['user.student.faculty'])
                 ->orderBy('created_at', 'desc')
                 ->get();
 
-            // Sort faculty priority
             $sortedReservations = $reservations->sortBy(fn($request) =>
-                $facultyRankings[$request->user->student->faculty->name] ?? 99 // Default to 99 if not ranked
+                $facultyRankings[$request->user->student->faculty->name] ?? 99
             );
 
-            // Process in chunks
             $sortedReservations->chunk(500)->each(function ($reservationRequests) {
                 DB::transaction(function () use ($reservationRequests) {
                     $filteredRequests = $this->filterRequests($reservationRequests);
                     $availableRooms = $this->getAvailableRooms();
 
                     foreach (['male', 'female'] as $gender) {
-                        $this->processGenderRequests(
-                            $gender,
-                            $filteredRequests[$gender],
-                            $availableRooms[$gender]
-                        );
+                        $this->processGenderRequests($gender, $filteredRequests[$gender], $availableRooms[$gender]);
                     }
                 });
-
-                Log::info('Processed batch of reservation requests', [
-                    'batch_size' => $reservationRequests->count(),
-                ]);
             });
         } catch (Exception $e) {
-            Log::error('Error processing reservation requests', [
-                'error' => $e->getMessage(),
-                'action' => 'automate-reservation-process',
-            ]);
+            logError('Error processing reservation requests', 'automate_reservation_process', $e);
             throw $e;
         }
     }
@@ -138,7 +135,7 @@ class ReservationService
         ];
 
         foreach ($reservationRequests as $request) {
-            $gender = $request->user?->gender;
+            $gender = $request->user?->student?->gender;
             if (!$gender) {
                 continue;
             }
@@ -156,46 +153,17 @@ class ReservationService
     }
 
     /**
-     * Filter rooms by gender and type.
-     *
-     * @param Collection $rooms
-     * @return array
-     */
-    private function filterRoomsByGender(Collection $rooms): array
-    {
-        $filtered = [
-            'male' => ['single' => [], 'double' => []],
-            'female' => ['single' => [], 'double' => []],
-        ];
-
-        foreach ($rooms as $room) {
-            $gender = $room->apartment?->building?->gender;
-            if (!$gender || !isset($filtered[$gender][$room->type])) {
-                continue;
-            }
-
-            $filtered[$gender][$room->type][] = $room;
-        }
-
-        return $filtered;
-    }
-
-    /**
      * Process requests for a specific gender.
      *
      * @param string $gender
      * @param array $reservationRequests
      * @param array $availableRooms
-     * @return void
      */
     private function processGenderRequests(string $gender, array $reservationRequests, array $availableRooms): void
     {
-        $results = [
-            'old_room' => $this->processOldRoomReservations(collect($reservationRequests['stayInOldLastRoom'])),
-            'sibling' => $this->processSiblingReservations(collect($reservationRequests['stayWithSibling']), collect($availableRooms['double'] ?? [])),
-            'regular' => $this->processRegularReservations(collect($reservationRequests['regular']), $availableRooms),
-        ];
-
+        $this->processOldRoomReservations(collect($reservationRequests['stayInOldLastRoom']));
+        $this->processSiblingReservations(collect($reservationRequests['stayWithSibling']), collect($availableRooms['double'] ?? []));
+        $this->processRegularReservations(collect($reservationRequests['regular']), $availableRooms);
     }
 
     /**
@@ -216,7 +184,6 @@ class ReservationService
 
                 $oldRoom = Room::lockForUpdate()->findOrFail($request->old_room_id);
 
-                // Check if the room was in the last long-term reservation for the user
                 $previousReservation = Reservation::where('user_id', $request->user_id)
                     ->where('period_type', 'long')
                     ->where('status', 'completed')
@@ -224,32 +191,28 @@ class ReservationService
                     ->first();
 
                 if (!$previousReservation || $previousReservation->room_id !== $oldRoom->id) {
-                    throw new Exception('Old room was not part of the last long-term reservation.');
+                    throw new BusinessRuleException('Old room was not part of the last long-term reservation.');
                 }
 
-                // Check if the old room is already reserved in the selected academic term
                 $existingReservation = Reservation::where('room_id', $oldRoom->id)
                     ->where('academic_term_id', $request->academic_term_id)
                     ->whereIn('status', ['pending', 'accepted'])
                     ->exists();
 
                 if ($existingReservation) {
-                    throw new Exception('Old room is already reserved in the selected academic term.');
+                    throw new BusinessRuleException('Old room is already reserved in the selected academic term.');
                 }
 
-                // Create the reservation
                 $reservation = $this->newReservation($request, $oldRoom);
+
+                userActivity($request->user_id, 'old_room_reservation', 'Reserved old room successfully');
 
                 $results['success'][] = [
                     'request_id' => $request->id,
                     'room_id' => $oldRoom->id,
                 ];
             } catch (Exception $e) {
-                Log::error('Error processing old room reservation', [
-                    'reservation_request_id' => $request->id,
-                    'error' => $e->getMessage(),
-                    'action' => 'process-old-room-reservations',
-                ]);
+                logError('Error processing old room reservation', 'process_old_room_reservations', $e);
                 $results['failed'][] = [
                     'request_id' => $request->id,
                     'reason' => $e->getMessage(),
@@ -285,11 +248,11 @@ class ReservationService
                 $siblingRequest = $requests->firstWhere('user_id', $request->sibling_id);
 
                 if (!$siblingRequest) {
-                    throw new Exception('Sibling request not found');
+                    throw new BusinessRuleException('Sibling request not found');
                 }
 
-                if ($request->user?->gender !== $siblingRequest->user?->gender) {
-                    throw new Exception('Siblings must be of the same gender');
+                if ($request->user?->student?->gender !== $siblingRequest->user?->student?->gender) {
+                    throw new BusinessRuleException('Siblings must be of the same gender');
                 }
 
                 $room = $doubleRooms->first(function ($room) {
@@ -297,12 +260,14 @@ class ReservationService
                 });
 
                 if (!$room) {
-                    throw new Exception('No suitable double room available');
+                    throw new BusinessRuleException('No suitable double room available');
                 }
 
                 DB::transaction(function () use ($request, $siblingRequest, $room) {
-                    $this->createReservationAndInvoice($request, $room);
-                    $this->createReservationAndInvoice($siblingRequest, $room);
+                    $this->newReservation($request, $room);
+                    $this->newReservation($siblingRequest, $room);
+                    userActivity($request->user_id, 'sibling_reservation', 'Reserved room with sibling');
+                    userActivity($siblingRequest->user_id, 'sibling_reservation', 'Reserved room with sibling');
                 });
 
                 $processedIds[] = $request->id;
@@ -314,11 +279,7 @@ class ReservationService
                     'room_id' => $room->id,
                 ];
             } catch (Exception $e) {
-                Log::error('Error processing sibling reservation', [
-                    'reservation_request_id' => $request->id,
-                    'error' => $e->getMessage(),
-                    'action' => 'process-sibling-reservations',
-                ]);
+                logError('Error processing sibling reservation', 'process_sibling_reservations', $e);
                 $results['failed'][] = [
                     'request_id' => $request->id,
                     'reason' => $e->getMessage(),
@@ -351,21 +312,19 @@ class ReservationService
                 $room = $this->findAvailableRoom(collect($availableRooms[$roomType]));
 
                 if (!$room) {
-                    throw new Exception('No suitable room available');
+                    throw new BusinessRuleException('No suitable room available');
                 }
 
-                $this->newReservation($request, $room);
+                $reservation = $this->newReservation($request, $room);
+
+                userActivity($request->user_id, 'regular_reservation', 'Reserved regular room successfully');
 
                 $results['success'][] = [
                     'request_id' => $request->id,
                     'room_id' => $room->id,
                 ];
             } catch (Exception $e) {
-                Log::error('Error processing regular reservation', [
-                    'reservation_request_id' => $request->id,
-                    'error' => $e->getMessage(),
-                    'action' => 'process-regular-reservations',
-                ]);
+                logError('Error processing regular reservation', 'process_regular_reservations', $e);
                 $results['failed'][] = [
                     'request_id' => $request->id,
                     'reason' => $e->getMessage(),
@@ -384,27 +343,35 @@ class ReservationService
      */
     private function findAvailableRoom(Collection $rooms): ?Room
     {
-        foreach ($rooms as $room) {
-            $freshRoom = Room::lockForUpdate()->find($room->id);
-
-            if ($freshRoom && $freshRoom->current_occupancy < $freshRoom->max_occupancy) {
-                return $freshRoom;
+        try {
+            foreach ($rooms as $room) {
+                $freshRoom = Room::lockForUpdate()->find($room->id);
+                if ($freshRoom && $freshRoom->current_occupancy < $freshRoom->max_occupancy) {
+                    return $freshRoom;
+                }
             }
+            return null;
+        } catch (Exception $e) {
+            logError('Failed to find available room', 'find_available_room', $e);
+            return null;
         }
-
-        return null;
     }
 
-    /**
-     * Create reservation with atomic operations.
-     *
-     * @param ReservationRequest $request
-     * @param Room $room
-     * @return Reservation
-     * @throws \Exception
-     */
-    public function newReservation(ReservationRequest $request, Room $room): Reservation
-    {
+   /**
+ * Create reservation with atomic operations.
+ *
+ * @param ReservationRequest $request
+ * @param Room $room
+ * @return Reservation
+ * @throws BusinessRuleException|Exception
+ */
+public function newReservation(ReservationRequest $request, Room $room): Reservation
+{
+    try {
+
+        // Check room availability and throw exception if unavailable
+        $this->checkRoomAvailability($room, $request->user);
+
         $reservationData = [
             'user_id' => $request->user_id,
             'room_id' => $room->id,
@@ -420,11 +387,12 @@ class ReservationService
             $reservationData['end_date'] = $request->end_date;
         }
 
-        return DB::transaction(function () use ($room, &$reservationData, $request) {
-            $room = Room::where('id', $room->id)->lockForUpdate()->first();
+        return DB::transaction(function () use ($room, $reservationData, $request) {
+            // Lock the room to prevent simultaneous reservations
+            $room = Room::where('id', $room->id)->lockForUpdate()->firstOrFail();
 
-            if ($room->current_occupancy >= $room->max_occupancy) {
-                throw new Exception('Room is already full');
+            if ($room->full_occupied) {
+                throw new BusinessRuleException(trans('The room became fully occupied while processing your request.'));
             }
 
             $room->increment('current_occupancy');
@@ -435,41 +403,70 @@ class ReservationService
             $reservation = Reservation::create($reservationData);
             $this->createInvoice($reservation);
             $request->update(['status' => 'accepted']);
-
             event(new ReservationCreated($reservation));
+
+            userActivity($request->user_id, 'reservation_created', 'Created new reservation successfully');
 
             return $reservation;
         });
+    } catch (Exception $e) {
+        logError('Failed to create new reservation', 'new_reservation', $e);
+        throw $e; 
     }
+}
+
+/**
+ * Check if a room is available for reservation and throw exceptions if unavailable.
+ *
+ * @param Room $room
+ * @param User $user
+ * @throws BusinessRuleException
+ */
+private function checkRoomAvailability(Room $room, User $user): void
+{
+    if ($room->full_occupied) {
+        throw new BusinessRuleException(trans('The room is fully occupied and cannot accommodate more residents.'));
+    }
+
+    if ($room->status !== 'active') {
+        throw new BusinessRuleException(trans('This room is currently inactive and unavailable for reservation.'));
+    }
+
+    if ($room->purpose !== 'accommodation') {
+        throw new BusinessRuleException(trans('This room is not designated for accommodation purposes.'));
+    }
+
+    if ($room->apartment->building->gender !== $user->gender) {
+        throw new BusinessRuleException(trans('This room does not match resident gender and cannot be reserved.'));
+    }
+}
+
+
+
 
     /**
      * Create an invoice for the reservation.
      *
      * @param Reservation $reservation
-     * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     private function createInvoice(Reservation $reservation): void
     {
         try {
             $invoice = Invoice::create([
-                "reservation_id" => $reservation->id,
-                "status" => "unpaid",
+                'reservation_id' => $reservation->id,
+                'status' => 'unpaid',
             ]);
 
             $roomType = $reservation->room->type;
 
-            if ($reservation->period_type === "long") {
+            if ($reservation->period_type === 'long') {
                 $this->addLongTermInvoiceDetails($invoice, $roomType);
             } else {
                 $this->addShortTermInvoiceDetails($invoice, $reservation);
             }
-        } catch (\Exception $e) {
-            Log::error('Error creating invoice for reservation', [
-                'reservation_id' => $reservation->id,
-                'error' => $e->getMessage(),
-                'action' => 'create-invoice',
-            ]);
+        } catch (Exception $e) {
+            logError('Error creating invoice for reservation', 'create_invoice', $e);
             throw $e;
         }
     }
@@ -479,8 +476,7 @@ class ReservationService
      *
      * @param Invoice $invoice
      * @param string $roomType
-     * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     private function addLongTermInvoiceDetails(Invoice $invoice, string $roomType): void
     {
@@ -488,9 +484,9 @@ class ReservationService
             $feeAmount = $roomType === 'single' ? 10000 : 8000;
 
             InvoiceDetail::create([
-                "invoice_id" => $invoice->id,
-                "category" => "fee",
-                "amount" => $feeAmount,
+                'invoice_id' => $invoice->id,
+                'category' => 'fee',
+                'amount' => $feeAmount,
             ]);
 
             $user = $invoice->reservation->user;
@@ -498,18 +494,13 @@ class ReservationService
 
             if (!$user->lastReservation($academicTerm->id)) {
                 InvoiceDetail::create([
-                    "invoice_id" => $invoice->id,
-                    "category" => "insurance",
-                    "amount" => 5000,
+                    'invoice_id' => $invoice->id,
+                    'category' => 'insurance',
+                    'amount' => 5000,
                 ]);
             }
-        } catch (\Exception $e) {
-
-            Log::error('Error to add long-term invoice details', [
-                'invoice_id' => $invoice->id ?? null,
-                'error' => $e->getMessage(),
-                'action' => 'add-long-invoice-details',
-            ]);
+        } catch (Exception $e) {
+            logError('Failed to add long-term invoice details', 'add_long_term_invoice_details', $e);
             throw $e;
         }
     }
@@ -519,8 +510,7 @@ class ReservationService
      *
      * @param Invoice $invoice
      * @param Reservation $reservation
-     * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     private function addShortTermInvoiceDetails(Invoice $invoice, Reservation $reservation): void
     {
@@ -528,16 +518,12 @@ class ReservationService
             $price = $this->calculateFeePrice($reservation->start_date, $reservation->end_date);
 
             InvoiceDetail::create([
-                "invoice_id" => $invoice->id,
-                "category" => "fee",
-                "amount" => $price,
+                'invoice_id' => $invoice->id,
+                'category' => 'fee',
+                'amount' => $price,
             ]);
-        } catch (\Exception $e) {
-            Log::error('Failed to add short-term invoice details', [
-                'invoice_id' => $invoice->id ?? null,
-                'error' => $e->getMessage(),
-                'action' => 'add-short-invoice-details',
-            ]);
+        } catch (Exception $e) {
+            logError('Failed to add short-term invoice details', 'add_short_term_invoice_details', $e);
             throw $e;
         }
     }
@@ -548,7 +534,7 @@ class ReservationService
      * @param string $startDate
      * @param string $endDate
      * @return int
-     * @throws \Exception
+     * @throws Exception
      */
     private function calculateFeePrice(string $startDate, string $endDate): int
     {
@@ -561,15 +547,10 @@ class ReservationService
                 $days <= 1 => 300, // Daily rate
                 $days <= 7 => 2000, // Weekly rate
                 $days <= 30 => 2500, // Monthly rate
-                default => $days * 300, 
+                default => $days * 300,
             };
-        } catch (\Exception $e) {
-            Log::error('Failed to calculate fee price', [
-                'start_date' => $startDate,
-                'end_date' => $endDate,
-                'error' => $e->getMessage(),
-                'action' => 'calculate-fee-price',
-            ]);
+        } catch (Exception $e) {
+            logError('Failed to calculate fee price', 'calculate_fee_price', $e);
             throw $e;
         }
     }

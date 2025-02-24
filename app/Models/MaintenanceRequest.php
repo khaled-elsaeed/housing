@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 class MaintenanceRequest extends Model
 {
     protected $fillable = [
+        'user_id',
         'room_id',
         'category_id',
         'description',
@@ -30,11 +31,19 @@ class MaintenanceRequest extends Model
     ];
 
     /**
+     * Relationship to the User model.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
      * Relationship to the Room model.
      */
     public function room(): BelongsTo
     {
-        return $this->belongsTo(Room::class, 'room_id');
+        return $this->belongsTo(Room::class);
     }
 
     /**

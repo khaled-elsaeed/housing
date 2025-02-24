@@ -66,7 +66,7 @@
                                                 <i class="feather icon-check-circle"></i>
                                             </span>
                                             <div class="media-body">
-                                                <p>{{ $notification->data['message'] }}</p>
+                                            <p>{{ __($notification->data['message']) }}</p>
                                                 <p><span class="timing">{{ \Carbon\Carbon::parse($notification->created_at)->setTimezone('Africa/Cairo')->diffForHumans() }}</span></p>
                                             </div>
                                         </li>
@@ -79,8 +79,8 @@
                                                 <i class="feather icon-check-circle"></i>
                                             </span>
                                             <div class="media-body">
-                                                <p>{{ $notification->data['message'] }}</p>
-                                                <p><span class="timing">{{ \Carbon\Carbon::parse($notification->created_at)->setTimezone('Africa/Cairo')->diffForHumans() }}</span></p>
+                                            <p>{{ __($notification->data['message']) }}</p>
+                                            <p><span class="timing">{{ \Carbon\Carbon::parse($notification->created_at)->setTimezone('Africa/Cairo')->diffForHumans() }}</span></p>
                                             </div>
                                         </li>
                                         @endforeach @endif
@@ -195,30 +195,31 @@
 
     // Logout function
     function logout() {
-        swal({
-            title: "@lang('Are you sure you want to logout?')",
-            text: "@lang('You will be logged out of your account.')",
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
-        }).then((willLogout) => {
-            if (willLogout) {
-                // Create and submit the logout form
-                var form = document.createElement("form");
-                form.method = "POST";
-                form.action = "{{ route('logout') }}";
+    swal({
+        title: "@lang('Are you sure you want to logout?')",
+        text: "@lang('You will be logged out of your account.')",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: "@lang('Yes, logout')",
+        cancelButtonText: "@lang('Cancel')"
+    }).then((result) => {
+        // Create and submit the logout form
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{{ route('logout') }}";
 
-                var csrfInput = document.createElement("input");
-                csrfInput.type = "hidden";
-                csrfInput.name = "_token";
-                csrfInput.value = "{{ csrf_token() }}";
+        var csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = '{{ csrf_token() }}';
 
-                form.appendChild(csrfInput);
-                document.body.appendChild(form);
-                form.submit();
-            }
-        });
-    }
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);
+        form.submit();
+    });
+}
     // Prevent navigating back after logout
     window.onpopstate = function () {
         window.history.pushState(null, "", window.location.href);

@@ -35,44 +35,44 @@ class MaintenanceController extends Controller
             $rejectedMaintenanceRequestsCount = MaintenanceRequest::where('status', 'rejected')->count();
 
             // Gender Breakdown for Total Requests
-            $maleTotalCount = MaintenanceRequest::whereHas('room.reservation.user', function ($query) {
+            $maleTotalCount = MaintenanceRequest::whereHas('user', function ($query) {
                 $query->where('gender', 'male');
             })->count();
 
-            $femaleTotalCount = MaintenanceRequest::whereHas('room.reservation.user', function ($query) {
+            $femaleTotalCount = MaintenanceRequest::whereHas('user', function ($query) {
                 $query->where('gender', 'female');
             })->count();
 
             // Gender Breakdown for Pending Requests
             $malePendingCount = MaintenanceRequest::where('status', 'pending')
-                ->whereHas('room.reservation.user', function ($query) {
+                ->whereHas('user', function ($query) {
                     $query->where('gender', 'male');
                 })->count();
 
             $femalePendingCount = MaintenanceRequest::where('status', 'pending')
-                ->whereHas('room.reservation.user', function ($query) {
+                ->whereHas('user', function ($query) {
                     $query->where('gender', 'female');
                 })->count();
 
             // Gender Breakdown for Completed Requests
             $maleCompletedCount = MaintenanceRequest::where('status', 'completed')
-                ->whereHas('room.reservation.user', function ($query) {
+                ->whereHas('user', function ($query) {
                     $query->where('gender', 'male');
                 })->count();
 
             $femaleCompletedCount = MaintenanceRequest::where('status', 'completed')
-                ->whereHas('room.reservation.user', function ($query) {
+                ->whereHas('user', function ($query) {
                     $query->where('gender', 'female');
                 })->count();
 
             // Gender Breakdown for Rejected Requests
             $maleRejectedCount = MaintenanceRequest::where('status', 'rejected')
-                ->whereHas('room.reservation.user', function ($query) {
+                ->whereHas('user', function ($query) {
                     $query->where('gender', 'male');
                 })->count();
 
             $femaleRejectedCount = MaintenanceRequest::where('status', 'rejected')
-                ->whereHas('room.reservation.user', function ($query) {
+                ->whereHas('user', function ($query) {
                     $query->where('gender', 'female');
                 })->count();
 
@@ -149,7 +149,7 @@ class MaintenanceController extends Controller
     public function fetchRequests(Request $request)
     {
         try {
-            $query = MaintenanceRequest::with(['room.reservation.user.student', 'media'])
+            $query = MaintenanceRequest::with(['room.reservation', 'media','user.student'])
                 ->select('maintenance_requests.*')
                 ->orderByRaw("
                     CASE 
@@ -171,7 +171,7 @@ class MaintenanceController extends Controller
             if ($request->filled('customSearch')) {
                 $searchTerm = $request->get('customSearch');
                 $query->where(function ($q) use ($searchTerm) {
-                    $q->whereHas('room.reservation.user', function ($userQuery) use ($searchTerm) {
+                    $q->whereHas('user', function ($userQuery) use ($searchTerm) {
                         $userQuery->where('name', 'like', "%{$searchTerm}%")
                             ->orWhere('email', 'like', "%{$searchTerm}%")
                             ->orWhere('phone', 'like', "%{$searchTerm}%");
@@ -183,7 +183,7 @@ class MaintenanceController extends Controller
 
             return DataTables::of($query)
                 ->addColumn('resident_name', function ($request) {
-                    return $request->room->reservation->user->name ?? 'N/A';
+                    return $request->user->name ?? 'N/A';
                 })
                 ->addColumn('resident_location', function ($request) {
                     $roomNumber = $request->room->number ?? 'N/A';
@@ -197,7 +197,7 @@ class MaintenanceController extends Controller
                     ]);
                 })
                 ->addColumn('resident_phone', function ($request) {
-                    return $request->room->reservation->user->student->phone ?? 'N/A';
+                    return $request->user->student->phone ?? 'N/A';
                 })
                 ->addColumn('category', function ($request) {
                     return $request->category->name_en ?? 'N/A';

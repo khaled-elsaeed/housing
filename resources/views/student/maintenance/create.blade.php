@@ -97,166 +97,228 @@
 @section('scripts')
 <!-- SweetAlert2 JS -->
 <script>
-   $(document).ready(function () {
-       // Handle category change
-       $('#category_id').on('change', function () {
-           const categoryId = $(this).val();
-           if (!categoryId) {
-               $('.problems-list').html(`
-                   <div class="col-12 text-center py-3">
-                       <p class="text-muted">{{ __('Please select a category first') }}</p>
-                   </div>
-               `);
-               return;
-           }
-   
-           // Show loading
-           $('.problems-list').html(`
-               <div class="col-12 text-center py-3">
-                   <div class="spinner-border text-primary" role="status">
-                       <span class="sr-only">Loading...</span>
-                   </div>
-                   <p class="mt-2 text-muted">{{ __('Loading issues...') }}</p>
-               </div>
-           `);
-   
-           // Fetch problems for selected category
-           $.ajax({
-               url: "{{ route('student.maintenance.problems.by.category',':id') }}".replace(':id', categoryId),
-               type: "GET",
-               success: function (response) {
-                   let problemsHtml = '';
-   
-                   if (response.data.length === 0) {
-                       problemsHtml = `
-                           <div class="col-12 text-center py-3">
-                               <p class="text-muted">{{ __('No maintenance issues found for this category') }}</p>
-                           </div>
-                       `;
-                   } else {
-                       response.data.forEach(function (problem) {
-                           problemsHtml += `
-                               <div class="col-md-6 mb-3">
-                                   <div class="problem-checkbox">
-                                       <div class="form-check">
-                                           <input type="checkbox" class="form-check-input" 
-                                               id="problem_${problem.id}" 
-                                               name="problems[]" 
-                                               value="${problem.id}">
-                                           <label class="form-check-label fw-bold" for="problem_${problem.id}">
-                                               ${problem.name}
-                                           </label>
-                                       </div>
-                                   </div>
-                               </div>
-                           `;
-                       });
-                   }
-   
-                   $('.problems-list').html(problemsHtml);
-               },
-               error: function () {
-                   $('.problems-list').html(`
-                       <div class="col-12 text-center py-3">
-                           <div class="alert alert-danger">
-                               <i class="fa fa-exclamation-triangle me-2"></i>
-                               {{ __('Failed to load issues. Please try again.') }}
-                           </div>
-                       </div>
-                   `);
-               }
-           });
-       });
-   
-       // Handle file upload preview
-       $('#photos').on('change', function () {
-           const fileInput = this;
-           const photoPreviewContainer = $('#photoPreviewContainer');
-           photoPreviewContainer.empty();
-   
-           if (fileInput.files && fileInput.files.length > 0) {
-               for (let i = 0; i < Math.min(fileInput.files.length, 3); i++) {
-                   const reader = new FileReader();
-                   reader.onload = function (e) {
-                       const preview = `
-                           <div class="photo-preview-item me-2 mb-2 position-relative">
-                               <img src="${e.target.result}" alt="Preview" class="img-thumbnail">
-                               <button type="button" class="btn btn-sm btn-danger position-absolute" onclick="removePreview(this)">
-                                   <i class="fa fa-times"></i>
-                               </button>
-                           </div>
-                       `;
-                       photoPreviewContainer.append(preview);
-                   };
-                   reader.readAsDataURL(fileInput.files[i]);
-               }
-   
-               // Update label with file count
-               const fileCount = fileInput.files.length;
-               $('.custom-file-label').text(fileCount > 1 ? `${fileCount} files selected` : fileInput.files[0].name);
-           } else {
-               $('.custom-file-label').text('{{ __("Choose files") }}');
-           }
-       });
-   
-       // Form submission with SweetAlert
-       $('#maintenanceForm').on('submit', function (e) {
-   e.preventDefault();
-   
-   const formData = new FormData(this);
-   const submitButton = $('#submitBtn');
-   
-   // Disable the button and add a loading spinner
-   submitButton.prop('disabled', true).html(`
-       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-       {{ __("Sending...") }}
-   `);
-   
-   $.ajax({
-       url: $(this).attr('action'),
-       type: $(this).attr('method'),
-       data: formData,
-       processData: false,
-       contentType: false,
-       success: function (response) {
-           swal({
-               type: 'success',
-               title: '{{ __("Success") }}',
-               text: response.message,
-           }).then(() => {
-               window.location.href = "{{ route('student.maintenance.create') }}";
-           });
-       },
-       error: function (xhr) {
-           const errors = xhr.responseJSON.errors;
-           let errorMessage = '';
-   
-           for (const field in errors) {
-               errorMessage += errors[field].join('\n') + '\n';
-           }
-   
-           swal({
-               type: 'error',
-               title: '{{ __("Error") }}',
-               text: errorMessage || '{{ __("An error occurred. Please try again.") }}',
-           });
-   
-           // Re-enable the button and restore original text
-           submitButton.prop('disabled', false).html('{{ __("Submit") }}');
-       }
-   });
-   });
-   
-   });
-   
-   // Function to remove photo preview
-   function removePreview(button) {
-       $(button).parent().remove();
-   
-       if ($('#photoPreviewContainer').children().length === 0) {
-           $('#photos').val('');
-           $('.custom-file-label').text('{{ __("Choose files") }}');
-       }
-   }
+$(document).ready(function () {
+    // === Category Selection ===
+    $('#category_id').on('change', function () {
+        const categoryId = $(this).val();
+        const $problemsList = $('.problems-list');
+
+        if (!categoryId) {
+            $problemsList.html(`
+                <div class="col-12 text-center py-3">
+                    <p class="text-muted">{{ __('Please select a category first') }}</p>
+                </div>
+            `);
+            return;
+        }
+
+        // Show loading spinner
+        $problemsList.html(`
+            <div class="col-12 text-center py-3">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <p class="mt-2 text-muted">{{ __('Loading issues...') }}</p>
+            </div>
+        `);
+
+        // Fetch problems via AJAX
+        $.ajax({
+            url: "{{ route('student.maintenance.problems.by.category', ':id') }}".replace(':id', categoryId),
+            type: "GET",
+            success: function (response) {
+                let problemsHtml = '';
+
+                if (response.data.length === 0) {
+                    problemsHtml = `
+                        <div class="col-12 text-center py-3">
+                            <p class="text-muted">{{ __('No maintenance issues found for this category') }}</p>
+                        </div>
+                    `;
+                } else {
+                    response.data.forEach(problem => {
+                        problemsHtml += `
+                            <div class="col-md-6 mb-3">
+                                <div class="problem-checkbox">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" 
+                                            id="problem_${problem.id}" 
+                                            name="problems[]" 
+                                            value="${problem.id}">
+                                        <label class="form-check-label fw-bold" for="problem_${problem.id}">
+                                            ${problem.name}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                $problemsList.html(problemsHtml);
+            },
+            error: function () {
+                $problemsList.html(`
+                    <div class="col-12 text-center py-3">
+                        <div class="alert alert-danger">
+                            <i class="fa fa-exclamation-triangle me-2"></i>
+                            {{ __('Failed to load issues. Please try again.') }}
+                        </div>
+                    </div>
+                `);
+            }
+        });
+    });
+
+    // === File Configuration ===
+    const fileConfig = {
+        maxSize: 4 * 1024 * 1024, // 4MB
+        allowedTypes: ["image/jpeg", "image/png"]
+    };
+
+    // === File Validation ===
+    function validateImageFile(file) {
+        if (!file) return false;
+
+        if (file.size > fileConfig.maxSize) {
+            swal({
+                type: "error",
+                title: "{{ __('File Too Large') }}",
+                text: "{{ __('Image size must be less than 4MB') }}"
+            });
+            return false;
+        }
+
+        if (!fileConfig.allowedTypes.includes(file.type)) {
+            swal({
+                type: "error",
+                title: "{{ __('Invalid File Type') }}",
+                text: "{{ __('Please upload only JPG or PNG images') }}"
+            });
+            return false;
+        }
+
+        return true;
+    }
+
+    // === Photo Preview ===
+    const $photoPreviewContainer = $('#photoPreviewContainer');
+    const $fileInput = $('#photos');
+    const $fileLabel = $('.custom-file-label');
+
+    $fileInput.on('change', function () {
+        $photoPreviewContainer.empty();
+        const files = Array.from(this.files);
+        const validFiles = files.filter(file => validateImageFile(file)); // Filter out invalid files
+
+        if (validFiles.length > 0) {
+            const dataTransfer = new DataTransfer();
+            validFiles.forEach(file => dataTransfer.items.add(file));
+            this.files = dataTransfer.files;
+
+            validFiles.slice(0, 3).forEach(file => { // Limit to 3 previews
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const $preview = $(`
+                        <div class="photo-preview-item me-2 mb-2 position-relative">
+                            <img src="${e.target.result}" alt="Preview" class="img-thumbnail">
+                            <button type="button" class="btn btn-sm btn-danger position-absolute remove-preview-btn">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </div>
+                    `);
+                    $photoPreviewContainer.append($preview);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            const fileCount = validFiles.length;
+            $fileLabel.text(fileCount > 1 ? `${fileCount} files selected` : validFiles[0].name);
+        } else {
+            this.files = new DataTransfer().files; // Clear files if all are invalid
+            $fileLabel.text('{{ __("Choose files") }}');
+        }
+    });
+
+    $photoPreviewContainer.on('click', '.remove-preview-btn', function () {
+        const $previewItem = $(this).parent();
+        const index = $previewItem.index();
+        $previewItem.remove();
+
+        const currentFiles = Array.from($fileInput[0].files);
+        const dataTransfer = new DataTransfer();
+        currentFiles.forEach((file, i) => {
+            if (i !== index) dataTransfer.items.add(file);
+        });
+        $fileInput[0].files = dataTransfer.files;
+
+        const remainingFiles = $fileInput[0].files.length;
+        $fileLabel.text(remainingFiles > 0 
+            ? (remainingFiles > 1 ? `${remainingFiles} files selected` : currentFiles[0].name) 
+            : '{{ __("Choose files") }}');
+    });
+
+    // === Form Submission ===
+    $('#maintenanceForm').on('submit', function (e) {
+        e.preventDefault();
+        const $form = $(this);
+        const $submitButton = $('#submitBtn');
+        const originalButtonText = $submitButton.html();
+        const formData = new FormData(this);
+
+        $submitButton.prop('disabled', true).html(`
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            {{ __("Sending...") }}
+        `);
+
+        $.ajax({
+            url: $form.attr('action'),
+            type: $form.attr('method'),
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                swal({
+                    type: 'success',
+                    title: '{{ __("Success") }}',
+                    text: response.message
+                }).then(() => {
+                    window.location.href = "{{ route('student.maintenance.create') }}";
+                });
+            },
+            error: function (xhr) {
+                const errors = xhr.responseJSON?.errors || '{{ __("An error occurred. Please try again.") }}';
+                swal({
+                    type: 'error',
+                    title: '{{ __("Error") }}',
+                    text: errors
+                });
+            },
+            complete: function () {
+                $submitButton.prop('disabled', false).html(originalButtonText);
+            }
+        });
+    });
+});
+
+// === Utility Functions ===
+function removePreview(button) {
+    const $previewItem = $(button).parent();
+    const index = $previewItem.index();
+    $previewItem.remove();
+
+    const $fileInput = $('#photos');
+    const currentFiles = Array.from($fileInput[0].files);
+    const dataTransfer = new DataTransfer();
+    currentFiles.forEach((file, i) => {
+        if (i !== index) dataTransfer.items.add(file);
+    });
+    $fileInput[0].files = dataTransfer.files;
+
+    const remainingFiles = $fileInput[0].files.length;
+    $('.custom-file-label').text(remainingFiles > 0 
+        ? (remainingFiles > 1 ? `${remainingFiles} files selected` : currentFiles[0].name) 
+        : '{{ __("Choose files") }}');
+}
 </script>
 @endsection

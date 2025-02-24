@@ -3,19 +3,20 @@
 @section('title', __('Maintenance Requests'))
 
 @section('content')
-<div class="container py-4">
-    <div class="card border-0 shadow-sm rounded-3">
-        <div class="card-header d-flex justify-content-between align-items-center bg-primary py-2">
+<div class="row px-0">
+    <div class="col-12 px-0">
+        <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header d-flex justify-content-between align-items-center bg-primary">
             <h5 class="m-0 text-white"><i class="fa fa-tools me-2"></i>{{ __('Your Maintenance Requests') }}</h5>
             <a href="{{ route('student.maintenance.create') }}" class="btn btn-sm btn-secondary">
                 <i class="fa fa-plus me-1"></i> {{ __('New Request') }}
             </a>
         </div>
         
-        <div class="card-body">
+        <div class="card-body rounded-3 ">
             @if ($requests->isEmpty())
                 <div class="text-center py-4">
-                    <img src="{{ asset('images/empty-state.svg') }}" alt="{{ __('No requests') }}" class="img-fluid mb-3" style="max-height: 120px">
+                    <img src="{{ asset('images/maintenance/empty-state.svg') }}" alt="{{ __('No requests') }}" class="img-fluid mb-3" style="max-height: 120px">
                     <h6 class="text-muted">{{ __('No maintenance requests found') }}</h6>
                     <p class="small text-muted mb-3">{{ __('Need something fixed? Create your first maintenance request.') }}</p>
                     <a href="{{ route('student.maintenance.create') }}" class="btn btn-primary btn-sm">
@@ -159,6 +160,8 @@
             @endif
         </div>
     </div>
+    </div>
+    
 </div>
 @endsection
 
