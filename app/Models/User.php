@@ -91,6 +91,11 @@ class User extends Authenticatable
         return $this->hasOne(Student::class);
     }
 
+    public function insurance()
+    {
+        return $this->hasOne(Insurance::class);
+    }
+
     public function activities()
     {
         return $this->hasMany(UserActivity::class);

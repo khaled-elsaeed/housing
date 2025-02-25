@@ -61,7 +61,7 @@ public function store(Request $request)
             'email'            => 'required|email',
             'password'         => 'required|string|min:8',
             'role'             => 'required|string|exists:roles,name',
-            'technician_role'  => 'sometimes|required_if:role,technician|exists:roles,name',
+            'technician_role'  => 'nullable|required_if:role,technician|exists:roles,name',
         ]);
 
         // Custom email check

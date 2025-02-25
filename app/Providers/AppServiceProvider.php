@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
     {
         
         Gate::define('is-admin', function (User $user) {
-            return $user->hasRole('admin');
+            return $user->hasRole('admin') ||$user->hasRole('housing_manager') ;
                 });
 
                 Paginator::useBootstrapFive();

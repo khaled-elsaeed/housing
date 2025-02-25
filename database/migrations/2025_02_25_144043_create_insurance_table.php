@@ -11,10 +11,9 @@ class CreateInsuranceTable extends Migration
         Schema::create('insurance', function (Blueprint $table) {
             $table->id(); 
             $table->unsignedBigInteger('user_id'); 
+            $table->decimal('amount', 10, 2)->default(0.00);
             $table->enum('status', ['active', 'expired', 'cancelled'])->default('active');
             $table->timestamps();
-
-            // Foreign key constraint
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }

@@ -31,7 +31,7 @@ class LoginService
 
     public function isAdmin(User $user): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasRole('admin') || $user->hasRole('housing_manager');
     }
 
     public function isResident(User $user): bool

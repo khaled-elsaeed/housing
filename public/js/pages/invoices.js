@@ -6,7 +6,7 @@ $(document).ready(function() {
             faculty: "Faculty",
             building: "Building",
             apartment: "Apartment",
-            notes : "Notes",
+            notes: "Notes",
             room: "Room",
             uploadedPictures: "Uploaded Pictures",
             view: "View",
@@ -42,10 +42,8 @@ $(document).ready(function() {
             totalAmount: "Total Amount",
             remainingBalance: "Remaining Balance",
             notes: "Notes",
-            referenceNumber: 'referenceNumber',
-            fee:"Fee",
-            insurance:"Insurance",
-            enterReferenceNumber: 'enterReferenceNumber',
+            fee: "Fee",
+            insurance: "Insurance",
             optional: "Optional",
         },
         ar: {
@@ -53,17 +51,14 @@ $(document).ready(function() {
             name: "الاسم",
             faculty: "الكلية",
             rejected: "مرفوض",
-            fee:"مصاريف",
-            insurance:"تأمين",
+            fee: "مصاريف",
+            insurance: "تأمين",
             building: "المبنى",
             apartment: "الشقة",
-            referenceNumber: 'الرقم المرجعي',
-            enterReferenceNumber: 'أدخل الرقم المرجعي',
             room: "الغرفة",
             uploadedPictures: "الصور المرفوعة",
             view: "عرض",
-            notes : "ملاحظات",
-
+            notes: "ملاحظات",
             download: "تحميل",
             accept: "قبول",
             reject: "رفض",
@@ -103,21 +98,15 @@ $(document).ready(function() {
 
     // Core utility functions
     function getTranslation(key, language = 'en') {
-        // Ensure the translations object and language exist
         if (!translations || !translations[language]) {
             console.error(`Translations not loaded for language: ${language}`);
-            return key; // Return the key itself as a fallback
+            return key;
         }
-
-        // Get the translation for the key
         const translation = translations[language][key];
-
-        // If the translation is not found, log a warning and return the key
         if (!translation) {
             console.warn(`Translation not found for key: ${key}`);
-            return key; // Return the key itself as a fallback
+            return key;
         }
-
         return translation;
     }
 
@@ -142,9 +131,7 @@ $(document).ready(function() {
             category: getTranslation('category', language),
             amount: getTranslation('amount', language),
             paid: getTranslation('paid', language),
-            referenceNumber: getTranslation('referenceNumber', language),
-            enterReferenceNumber: getTranslation('enterReferenceNumber', language),
-            invoiceNotes : getTranslation('notes',language),
+            invoiceNotes: getTranslation('notes', language),
             overpaymentAmount: getTranslation('overpaymentAmount', language),
             enterOverpayment: getTranslation('enterOverpayment', language),
             adminNotes: getTranslation('adminNotes', language),
@@ -176,51 +163,25 @@ $(document).ready(function() {
         responsive: true,
         ordering: false,
         ajax: {
-            url: window.routes.fetchInvoices, // URL to your Laravel route
+            url: window.routes.fetchInvoices,
             data: function(d) {
                 d.customSearch = $("#searchBox").val();
                 d.gender = $("#genderFilter").val();
             },
         },
         columns: [
-
-            // Other columns
+            { data: 'name', name: 'name' },
+            { data: 'national_id', name: 'national_id' },
+            { data: 'faculty', name: 'faculty' },
+            { data: 'phone', name: 'phone' },
+            { data: 'reservation_duration', name: 'reservation_duration' },
+            { data: 'status', name: 'status' },
+            { data: 'admin_approval', name: 'admin_approval' },
             {
-                data: 'name',
-                name: 'name'
-            },
-            {
-                data: 'national_id',
-                name: 'national_id'
-            },
-            {
-                data: 'faculty',
-                name: 'faculty'
-            },
-            {
-                data: 'phone',
-                name: 'phone'
-            }, {
-                data: 'reservation_duration',
-                name: 'reservation_duration'
-            },
-            {
-                data: 'status',
-                name: 'status'
-            },
-            {
-                data: 'admin_approval',
-                name: 'admin_approval'
-            },
-            // Add the action column first
-            // Add the action column first
-            {
-                data: null, // Use null because this column is not tied to any specific data
+                data: null,
                 render: function(data, type, row) {
-                    // Create the button dynamically
                     return '<button type="button" class="btn btn-sm btn-info-rgba" data-invoice-id="' + row.id + '" id="details-btn" title="More Details"><i class="feather icon-info"></i></button>';
                 },
-
             },
         ],
         language: lang === "ar" ? {
@@ -243,22 +204,15 @@ $(document).ready(function() {
             method: "GET",
             dataType: "json",
             success: function(data) {
-                // Total Invoices
                 $("#totalInvoice").text(data.totalInvoice);
                 $("#totalMaleInvoice").text(data.totalMaleInvoice);
                 $("#totalFemaleInvoice").text(data.totalFemaleInvoice);
-
-                // Paid Invoices
                 $("#totalPaidInvoice").text(data.totalPaidInvoice);
                 $("#totalPaidMaleInvoice").text(data.totalPaidMaleInvoice);
                 $("#totalPaidFemaleInvoice").text(data.totalPaidFemaleInvoice);
-
-                // Unpaid Invoices
                 $("#totalUnpaidInvoice").text(data.totalUnpaidInvoice);
                 $("#totalUnpaidMaleInvoice").text(data.totalUnpaidMaleInvoice);
                 $("#totalUnpaidFemaleInvoice").text(data.totalUnpaidFemaleInvoice);
-
-                // Accepted Payments
                 $("#totalAcceptedPayments").text(data.totalAcceptedPayments);
                 $("#totalAcceptedMalePayments").text(data.totalAcceptedMalePayments);
                 $("#totalAcceptedFemalePayments").text(data.totalAcceptedFemalePayments);
@@ -279,7 +233,6 @@ $(document).ready(function() {
         const modalBody = $("#applicantDetailsModal .modal-body");
         const labels = getLabels(lang);
 
-        // Reset current invoice tracking
         currentInvoiceDetails = {
             id: invoiceId,
             paidDetails: []
@@ -304,7 +257,7 @@ $(document).ready(function() {
                     invoice_id,
                     notes
                 } = response;
-                renderInvoiceDetails(modalBody, studentDetails, invoiceDetails, media, status, invoice_id, labels,notes);
+                renderInvoiceDetails(modalBody, studentDetails, invoiceDetails, media, status, invoice_id, labels, notes, response);
                 attachEventListeners(response, labels);
             },
             error: function() {
@@ -336,30 +289,28 @@ $(document).ready(function() {
         modalBody.html(`<p class="text-center text-danger py-5">${message}</p>`);
     }
 
-    function renderInvoiceDetails(modalBody, studentDetails, invoiceDetails, media, status, invoiceId, labels, notes) {
+    function renderInvoiceDetails(modalBody, studentDetails, invoiceDetails, media, status, invoiceId, labels, notes, response) {
         const studentDetailsHtml = generateStudentDetailsHtml(studentDetails, labels);
-        const invoiceDetailsHtml = generateInvoiceDetailsHtml(invoiceDetails, status);
+        const invoiceDetailsHtml = generateInvoiceDetailsHtml(invoiceDetails, status, response);
         const paymentImagesHtml = generatePaymentImagesHtml(media, labels);
-        const invoiceNotesHtml = generateInvoiceNotesHtml(notes, labels); // New notes section
+        const invoiceNotesHtml = generateInvoiceNotesHtml(notes, labels);
         const statusButtonsHtml = status !== 'accepted' ? generateStatusButtonsHtml(invoiceId, labels) : '';
-    
+
         modalBody.html(`
             <div class="container-fluid">
                 ${studentDetailsHtml}
                 ${paymentImagesHtml}
                 ${invoiceDetailsHtml}
-                ${invoiceNotesHtml} <!-- Adding notes section -->
+                ${invoiceNotesHtml}
                 ${statusButtonsHtml}
             </div>
         `);
     }
-    
-    // New function to generate the invoice notes section
+
     function generateInvoiceNotesHtml(notes, labels) {
         if (!notes || notes.trim() === '') {
-            return ''; // If notes are empty, return an empty string
+            return '';
         }
-    
         return `
             <div class="card mb-4 shadow-sm border-info">
                 <div class="card-header bg-info text-white">
@@ -371,13 +322,10 @@ $(document).ready(function() {
             </div>
         `;
     }
-    
 
     // HTML Generation Functions
     function generateStudentDetailsHtml(studentDetails, labels) {
         const details = ["name", "faculty", "building", "apartment", "room", "balance"];
-
-        // Generate the student details cards dynamically
         const studentDetailsCards = details.map((key) => `
             <div class="col-md-4 mb-3">
                 <div class="card h-100 shadow-sm border-0">
@@ -403,60 +351,108 @@ $(document).ready(function() {
         `;
     }
 
-    function generateInvoiceDetailsHtml(invoiceDetails, invoiceStatus) {
+    function generateInvoiceDetailsHtml(invoiceDetails, invoiceStatus, response) {
         const totalAmount = invoiceDetails.reduce((sum, detail) => sum + parseFloat(detail.amount), 0);
         const showOverpayment = invoiceStatus !== 'accepted';
+        const isDisabled = invoiceStatus === 'accepted' ? 'disabled' : '';
+        const pastInsurance = response.pastInsurance ? parseFloat(response.pastInsurance).toLocaleString() : '0';
+
+        let insuranceSection = '';
+        if (invoiceStatus !== 'accepted') {
+            insuranceSection = `
+                <div class="mt-4">
+                    <h6 class="fw-bold">${getTranslation('insurance', lang)}</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">${getTranslation('balance', lang)} (${getTranslation('insurance', lang)}):</label>
+                            <input class="form-control border border-secondary" 
+                                   type="text" 
+                                   value="${pastInsurance}" 
+                                   readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">${getTranslation('amount', lang)} (${getTranslation('insurance', lang)}):</label>
+                            <input class="form-control border border-secondary invoice-detail insurance-amount" 
+                                   id="new-insurance-amount" 
+                                   type="text" 
+                                   value="0" 
+                                   placeholder="${getTranslation('optional', lang)}">
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            insuranceSection = `
+                <div class="mt-4">
+                    <h6 class="fw-bold">${getTranslation('insurance', lang)}</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">${getTranslation('balance', lang)} (${getTranslation('insurance', lang)}):</label>
+                            <input class="form-control border border-secondary" 
+                                   type="text" 
+                                   value="${pastInsurance}" 
+                                   readonly>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
 
         return `
             <div class="card mb-4 shadow-sm border-secondary">
                 <div class="card-header bg-secondary text-white">
-                    <h5 class="card-title mb-0">${getTranslation('invoiceDetails',lang)}</h5>
+                    <h5 class="card-title mb-0">${getTranslation('invoiceDetails', lang)}</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
-                                    <th>${getTranslation('category',lang)}</th>
-                                    <th class="text-end">${getTranslation('amount',lang)}</th>
-                                    <th class="text-end">${getTranslation('paid',lang)}</th>
+                                    <th>${getTranslation('category', lang)}</th>
+                                    <th class="text-end">${getTranslation('amount', lang)}</th>
+                                    <th class="text-end">${getTranslation('paid', lang)}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 ${invoiceDetails.map((detail) => `
                                     <tr>
-                                        <td>${getTranslation(detail.category,lang)}</td>
-                                        <td class="fs-5 text-end">${parseFloat(detail.amount).toLocaleString()}</td>
+                                        <td>${getTranslation(detail.category, lang)}</td>
+                                        <td class="fs-5 text-end">
+                                            <input class="form-input border border-secondary invoice-detail invoice_detail_amount" 
+                                                   name="invoice_detail_amount_${detail.id}" 
+                                                   type="text" 
+                                                   value="${parseFloat(detail.amount).toLocaleString()}" 
+                                                   ${isDisabled}>
+                                        </td>
                                         <td class="fs-5 text-end">
                                             <input class="form-check-input border border-secondary invoice-detail-status" 
                                                    type="checkbox" 
-                                                   value="${detail.id}"
-                                                   ${detail.status == 'paid' ? 'checked disabled' : ''}
+                                                   value="${detail.id}" 
+                                                   ${detail.status == 'paid' ? 'checked' : ''} 
+                                                   ${isDisabled}>
                                         </td>
                                     </tr>
                                 `).join("")}
                             </tbody>
                         </table>
                     </div>
-    
+
+                    <!-- Insurance Section -->
+                    ${insuranceSection}
+
                     ${showOverpayment ? `
-                        <!-- Add Reference Number input first -->
-                        <div class="mt-3">
-                            <label for="reference-number" class="form-label">الرقم المرجعي</label>
-                            <input type="text" id="reference-number" class="form-control border border-secondary" 
-                                   placeholder="أدخل الرقم المرجعي">
-                        </div>
     
                         <div class="mt-3">
                             <label for="overpayment-amount" class="form-label">${getTranslation('overpaymentAmount',lang)}</label>
                             <input type="number" id="overpayment-amount" class="form-control border border-secondary" 
                                    placeholder="${getTranslation('enterOverpayment',lang)}">
                         </div>
-    
+
+
                         <div class="mt-3">
-                            <label for="admin-notes" class="form-label">${getTranslation('adminNotes',lang)}</label>
+                            <label for="admin-notes" class="form-label">${getTranslation('adminNotes', lang)}</label>
                             <textarea id="admin-notes" class="form-control border border-secondary" rows="3" 
-                                placeholder="${getTranslation('addNotes',lang)}"></textarea>
+                                placeholder="${getTranslation('addNotes', lang)}"></textarea>
                         </div>
                     ` : ''}
                 </div>
@@ -466,7 +462,6 @@ $(document).ready(function() {
 
     function generatePaymentImagesHtml(media, labels) {
         if (media.length === 0) return `<p class="text-center text-muted py-3">${labels.noDetails}</p>`;
-
         return `
             <div class="card mb-4 shadow-sm border-primary">
                 <div class="card-header bg-primary text-white">
@@ -510,26 +505,43 @@ $(document).ready(function() {
 
     // Event handlers
     function attachEventListeners(response, labels) {
-        // Update checkbox handling
-        $('.invoice-detail-status').on('change', function() {
-            const detailId = $(this).val();
-            if ($(this).is(':checked')) {
-                if (!currentInvoiceDetails.paidDetails.includes(detailId)) {
-                    currentInvoiceDetails.paidDetails.push(detailId);
+        if (response.status !== 'accepted') {
+            $('.invoice-detail-status').on('change', function() {
+                const detailId = $(this).val();
+                const editAmount = $(this).closest("tr").find(".invoice_detail_amount").val();
+
+                const detailData = {
+                    detailId: detailId,
+                    amount: editAmount.replace(/,/g, '')
+                };
+
+                if ($(this).is(':checked')) {
+                    if (!currentInvoiceDetails.paidDetails.some(detail => detail.detailId === detailId)) {
+                        currentInvoiceDetails.paidDetails.push(detailData);
+                    }
+                } else {
+                    currentInvoiceDetails.paidDetails = currentInvoiceDetails.paidDetails.filter(detail => detail.detailId !== detailId);
                 }
-            } else {
-                currentInvoiceDetails.paidDetails = currentInvoiceDetails.paidDetails.filter(id => id !== detailId);
-            }
-        });
 
-        // Pre-check any existing paid or pending details
+                console.log("Updated paidDetails:", currentInvoiceDetails.paidDetails);
+            });
+
+            // Formatting for insurance amount input
+            $('#new-insurance-amount').on('input', function() {
+                let val = $(this).val().replace(/,/g, '');
+                let amountVal = parseFloat(val);
+                if (!isNaN(amountVal)) {
+                    $(this).val(amountVal.toLocaleString());
+                }
+            });
+        }
+
         response.invoiceDetails.forEach(detail => {
-            if (detail.is_paid || detail.pending) {
-                currentInvoiceDetails.paidDetails.push(detail.id);
+            if (detail.status === 'paid') {
+                currentInvoiceDetails.paidDetails.push({ detailId: detail.id, amount: detail.amount });
             }
         });
 
-        // Add event listeners for accept and reject buttons
         $('#accept-btn').on('click', function() {
             handleAcceptButtonClick(response, labels);
         });
@@ -549,17 +561,16 @@ $(document).ready(function() {
             cancelButtonText: getTranslation('cancel', lang),
         }).then(() => {
             updatePaymentStatus(response.invoice_id, "rejected", null);
-
         });
     }
 
     function handleAcceptButtonClick(response, labels) {
-        const overPaymentAmount = parseFloat($("#overpayment-amount").val()) || 0;
+        if (response.status === 'accepted') return;
 
-        const referenceNumber = $("#reference-number").val();
+        const overPaymentAmount = parseFloat($("#overpayment-amount")?.val()) || 0;
+        const newInsuranceAmount = parseFloat($("#new-insurance-amount")?.val().replace(/,/g, '')) || 0;
 
-        // Validate that all required payments are selected
-        if (currentInvoiceDetails.paidDetails.length === 0 && overPaymentAmount === 0) {
+        if (currentInvoiceDetails.paidDetails.length === 0 && overPaymentAmount === 0 && newInsuranceAmount === 0) {
             swal({
                 type: "warning",
                 title: getTranslation('warning', lang),
@@ -568,19 +579,7 @@ $(document).ready(function() {
             return;
         }
 
-        // Should be:
-        if (!referenceNumber || referenceNumber.trim() === "") {
-            swal({
-                icon: "warning",
-                title: getTranslation('warning', lang),
-                text: getTranslation('enterReferenceNumber', lang),
-            });
-            return;
-        }
-
-
-        // Validate overpayment amount
-        if (overPaymentAmount < 0) {
+        if (overPaymentAmount < 0 || newInsuranceAmount < 0) {
             swal({
                 type: "warning",
                 title: getTranslation('warning', lang),
@@ -602,12 +601,12 @@ $(document).ready(function() {
                 "accepted",
                 currentInvoiceDetails.paidDetails,
                 overPaymentAmount,
-                referenceNumber
+                newInsuranceAmount
             );
         });
     }
 
-    function updatePaymentStatus(invoiceId, status, paidDetails = null, overPaymentAmount = 0, referenceNumber = null) {
+    function updatePaymentStatus(invoiceId, status, paidDetails = null, overPaymentAmount = 0, newInsuranceAmount = 0) {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
         const notes = $("#admin-notes").val();
 
@@ -615,9 +614,8 @@ $(document).ready(function() {
             _token: csrfToken,
             status: status,
             overPaymentAmount: overPaymentAmount,
-            referenceNumber: referenceNumber,
             notes: notes,
-
+            newInsuranceAmount: newInsuranceAmount
         };
 
         if (status === "accepted" && paidDetails) {
@@ -636,7 +634,6 @@ $(document).ready(function() {
                 }).then(() => {
                     showInvoiceDetails(invoiceId);
                     table.ajax.reload();
-
                 });
             },
             error: function(xhr) {
@@ -649,30 +646,33 @@ $(document).ready(function() {
         });
     }
 
-
     // Initialize
     fetchStats();
 
-    // Event bindings
     $(document).on("click", "#details-btn", function() {
         const paymentId = $(this).data("invoice-id");
         showInvoiceDetails(paymentId);
     });
 
-    // Collapse functionality to show and hide search & filters
-    const toggleButton = document.getElementById("toggleButton");
+    $(document).on("input", ".invoice-detail:not(:disabled)", function() {
+        let val = $(this).val().replace(/,/g, '');
+        let amountVal = parseFloat(val);
+        if (!isNaN(amountVal)) {
+            $(this).val(amountVal.toLocaleString());
+        }
+    });
 
+    // Collapse functionality
+    const toggleButton = document.getElementById("toggleButton");
     if (toggleButton) {
         const icon = toggleButton.querySelector("i");
         document.getElementById("collapseExample").addEventListener("shown.bs.collapse", function() {
             icon.classList.remove("fa-search-plus");
             icon.classList.add("fa-search-minus");
         });
-
         document.getElementById("collapseExample").addEventListener("hidden.bs.collapse", function() {
             icon.classList.remove("fa-search-minus");
             icon.classList.add("fa-search-plus");
         });
     }
-
 });
