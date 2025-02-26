@@ -270,8 +270,8 @@ Route::middleware(Localization::class)
 
             Route::post('/reservation',[StudentReservationRequestController::class,'store'])->name('reservation.store');
             
-Route::get('/invoices/{invoiceId}/media', [StudentPaymentController::class, 'getInvoiceMedia'])->name('invoices.media');
-
+            Route::get('/invoices/{invoiceId}/media', [StudentPaymentController::class, 'getInvoiceMedia'])->name('invoices.media');
+            Route::post('/invoice/{invoiceId}/update-media', [StudentPaymentController::class, 'updateMedia'])->name('invoice.update-media');
             Route::get('permission', [StudentPermissionController::class, 'showForm'])->name('permission.form');
             Route::post('permission/store', [StudentPermissionController::class, 'store'])->name('permission.store');
         });

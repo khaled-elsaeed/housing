@@ -12,6 +12,8 @@ use App\Models\AdminAction;
 use Yajra\DataTables\Facades\DataTables;
 use App\Exports\Invoices\InvoicesExport;
 use Illuminate\Http\Request;
+use App\Events\InvoiceReject;
+
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
@@ -80,7 +82,7 @@ class InvoiceController extends Controller
                 ->select('invoices.*')
                 ->orderByRaw("
                     CASE 
-                        WHEN status = 'paid' THEN 1
+                        WHEN status = 'pending' THEN 1
                         WHEN status = 'unpaid' THEN 2
                         ELSE 3
                     END,
@@ -90,7 +92,7 @@ class InvoiceController extends Controller
                         ELSE 3
                     END
                 ")
-                ->orderBy('created_at', 'desc');
+                ->orderBy('created_at', 'asc');
 
             if ($request->filled('gender')) {
                 $query->whereHas('reservation.user.student', fn($q) => $q->where('gender', $request->get('gender')));
@@ -117,12 +119,18 @@ class InvoiceController extends Controller
                 ->addColumn('status', fn($invoice) => trans($invoice->status))
                 ->addColumn('admin_approval', fn($invoice) => trans($invoice->admin_approval))
                 ->editColumn('reservation_duration', function ($invoice) {
-                    if ($invoice->reservation->period_type === "long" && $invoice->reservation->academicTerm) {
-                        return trans($invoice->reservation->academicTerm->semester . " Term ( " . 
-                            $invoice->reservation->academicTerm->name . " " . 
-                            $invoice->reservation->academicTerm->academic_year . " )");
-                    }
-                    return $invoice->reservation->period_duration ?? trans('N/A');
+                    // Check if the reservation period type is "long" and an academic term is associated
+if ($invoice->reservation->period_type === "long" && $invoice->reservation->academicTerm) {
+    // Construct the formatted string using the academic term details
+    return trans('long_period_format', [
+        'semester' => trans($invoice->reservation->academicTerm->semester),
+        'name' => trans($invoice->reservation->academicTerm->name),
+        'year' => app()->getLocale() == 'ar' ? arabicNumbers($invoice->reservation->academicTerm->academic_year) :$invoice->reservation->academicTerm->academic_year ,
+    ]);
+}
+
+// Fallback to the period duration or 'N/A' if not available
+return $invoice->reservation->period_duration ?? trans('N/A');
                 })
                 ->make(true);
         } catch (Throwable $e) {
@@ -216,6 +224,11 @@ class InvoiceController extends Controller
             $status = $validated['status'];
             $invoice->admin_approval = $status;
             $invoice->notes = $validated['notes'] ?? null;
+            if($status == "rejected"){
+                $invoice->status = "pending";
+                event(new InvoiceReject($invoice));
+
+            }
             $invoice->save();
 
             if ($status === 'accepted') {
@@ -303,8 +316,9 @@ class InvoiceController extends Controller
                 'admin_id' => Auth::id(),
                 'invoice_id' => $invoiceId,
                 'action' => 'update_payment_status',
+                'description' => 'update payment status',
                 'status' => $status,
-                'details' => json_encode($validated),
+                'changes' => json_encode($validated),
                 'ip_address' => $request->ip(),
             ]);
         } catch (Throwable $e) {

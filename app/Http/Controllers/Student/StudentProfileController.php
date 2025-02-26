@@ -184,7 +184,7 @@ class StudentProfileController extends Controller
     public function updateProfilePicture(Request $request)
     {
         try {
-            $request->validate(['profile_picture' => 'required|image|max:5120']);
+            $request->validate(['profile_picture' => 'required|image|max:3072']);
             $user = Auth::user();
 
             DB::beginTransaction();

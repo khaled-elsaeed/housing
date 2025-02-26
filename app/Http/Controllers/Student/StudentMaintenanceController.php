@@ -71,7 +71,7 @@ class StudentMaintenanceController extends Controller
                 'problems.*' => 'exists:maintenance_problems,id',
                 'description' => 'required|string|max:1000',
                 'photos' => 'nullable|array',
-                'photos.*' => 'image|mimes:jpeg,png,jpg|max:5120',
+                'photos.*' => 'image|mimes:jpeg,png,jpg|max:3072',
             ]);
     
             $user = Auth::user();
