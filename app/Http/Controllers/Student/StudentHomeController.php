@@ -24,6 +24,14 @@ class StudentHomeController extends Controller
             $availableTerms = AcademicTerm::whereIn('status', ['active', 'planned'])->get();
             $sibling = $user->getEligibleSibling();
 
+            if ($sibling) {
+                \Log::info('Eligible sibling found', [
+                    'class' => get_class($sibling),
+                    'siblingUser' => $sibling->toArray()
+                ]);
+            }
+            
+
             return view('student.home', compact(
                 'user', 'roommates', 'reservation', 'activities', 'availableTerms', 'sibling'
             ));

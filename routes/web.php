@@ -260,8 +260,7 @@ Route::middleware(Localization::class)
             Route::get('/maintenance/create', [StudentMaintenanceController::class, 'create'])->name('maintenance.create');
             Route::post('/maintenance/store', [StudentMaintenanceController::class, 'store'])->name('maintenance.store');
             Route::get('/maintenance/{id}', [StudentMaintenanceController::class, 'show'])->name('maintenance.show');
-            Route::get('/student/maintenance/requests', [StudentMaintenanceController::class, 'fetchUserRequests'])
-    ->name('maintenance.requests');
+            Route::get('/student/maintenance/requests', [StudentMaintenanceController::class, 'fetchUserRequests'])->name('maintenance.requests');
             // Additional maintenance actions
             Route::post('/maintenance/{id}/cancel', [StudentMaintenanceController::class, 'cancel'])->name('maintenance.cancel');
             Route::post('/maintenance/{id}/comment', [StudentMaintenanceController::class, 'addComment'])->name('maintenance.comment');
@@ -270,6 +269,8 @@ Route::middleware(Localization::class)
             Route::get('/maintenance/{id}/problems-by-category', [StudentMaintenanceController::class, 'getProblemsByCategory'])->name('maintenance.problems.by.category');
 
             Route::post('/reservation',[StudentReservationRequestController::class,'store'])->name('reservation.store');
+            
+Route::get('/invoices/{invoiceId}/media', [StudentPaymentController::class, 'getInvoiceMedia'])->name('invoices.media');
 
             Route::get('permission', [StudentPermissionController::class, 'showForm'])->name('permission.form');
             Route::post('permission/store', [StudentPermissionController::class, 'store'])->name('permission.store');

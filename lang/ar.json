@@ -485,6 +485,11 @@
   "Choose files":"اختر الملفات",
   "Up to 3 photos, max 5MB each (JPG, PNG)":"حتى 3 صور، بحد أقصى 5 ميجابايت لكل صورة (JPG, PNG)",
   "Submit Request":"إرسال الطلب",
+  "Upload Payment" : "إضافية فاتورة",
+  "Edit Payment" : "تعديل فاتورة",
+  "Payment files updated successfully!": "تم تحديث ملفات الدفع بنجاح!",
+  
+
   "An error occurred. Please try again.":"حدث خطأ. الرجاء المحاولة مرة أخرى.",
   "Academic Year":"العام الدراسي",
   "Reservation Duration":"مدة الحجز",
@@ -761,8 +766,9 @@
     "User updated successfully": "تم تحديث المستخدم بنجاح",
     "User deleted successfully": "تم حذف المستخدم بنجاح",
     "Email reset successfully": "تم إعادة تعيين البريد الإلكتروني بنجاح",
-    "Password reset successfully": "تم إعادة تعيين كلمة المرور بنجاح"
-
+    "Password reset successfully": "تم إعادة تعيين كلمة المرور بنجاح",
+    "Existing Attachments" : "المرفقات الحالية",
+    "Add New Files":"إضافية ملفات جديدة"
 
     
 
