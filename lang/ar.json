@@ -763,7 +763,7 @@
   "Existing Attachments":"المرفقات الحالية",
   "Add New Files":"إضافية ملفات جديدة",
   "An error occurred during activation" : "حدث خطأ أثناء التفعيل",
-        "not_verified" : "حسابك لم يتم التحقق منه.",
-        "under_maintenance" : "تسجيل الدخول للمقيمين غير متاح حاليًا. سيكون متاحًا لاحقًا."
+  "not_verified" : "حسابك لم يتم التحقق منه.",
+  "under_maintenance" : "تسجيل الدخول للمقيمين غير متاح حاليًا. سيكون متاحًا لاحقًا."
 
 }

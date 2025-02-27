@@ -522,12 +522,12 @@ private function checkRoomAvailability(Room $room, User $user): void
     /**
      * Calculate the fee price based on the reservation duration.
      *
-     * @param string $startDate
-     * @param string $endDate
+     * @param $startDate
+     * @param $endDate
      * @return int
      * @throws Exception
      */
-    private function calculateFeePrice(string $startDate, string $endDate): int
+    private function calculateFeePrice($startDate,$endDate): int
     {
         try {
             $start = Carbon::parse($startDate);
