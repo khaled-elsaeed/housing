@@ -19,6 +19,7 @@ class Invoice extends Model
         'reference_number',
         'due_date', 
         'paid_amount',
+        'reject_reason',
         'status', 
         'category',
         'media_id'

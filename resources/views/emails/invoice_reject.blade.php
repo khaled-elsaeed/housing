@@ -166,7 +166,7 @@
 
             <div class="info-box">
                 <strong>سبب الرفض:</strong>
-                <p style="margin:5px 0 0;">{{ $invoice->notes ?? 'لم يتم تقديم سبب محدد.' }}</p>
+                <p style="margin:5px 0 0;">{{ $invoice->reject_reason ?? 'لم يتم تقديم سبب محدد.' }}</p>
             </div>
 
             <center>
