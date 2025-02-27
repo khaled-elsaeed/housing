@@ -66,8 +66,9 @@ Route::middleware(Localization::class)
     Route::post('/login', [LoginController::class, 'login'])->name('login.post');
     Route::get('/register', [RegisterController::class, 'showRegisterPage'])->name('register');
     Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
-    Route::get('/activate-account/{token}', [AccountActivationController::class, 'activate'])->name('activate-account');
-
+    Route::get('/activate-account/{token}', [AccountActivationController::class, 'activate'])
+    ->middleware('throttle:10,1')
+    ->name('activate-account');
     // Password Reset Routes
     Route::prefix('password')->name('password.')->group(function () {
         Route::get('/reset', [PasswordResetController::class, 'showResetRequestForm'])->name('request');

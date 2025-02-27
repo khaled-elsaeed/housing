@@ -205,8 +205,6 @@ class ReservationService
 
                 $reservation = $this->newReservation($request, $oldRoom);
 
-                userActivity($request->user_id, 'old_room_reservation', 'Reserved old room successfully');
-
                 $results['success'][] = [
                     'request_id' => $request->id,
                     'room_id' => $oldRoom->id,
@@ -266,8 +264,6 @@ class ReservationService
                 DB::transaction(function () use ($request, $siblingRequest, $room) {
                     $this->newReservation($request, $room);
                     $this->newReservation($siblingRequest, $room);
-                    userActivity($request->user_id, 'sibling_reservation', 'Reserved room with sibling');
-                    userActivity($siblingRequest->user_id, 'sibling_reservation', 'Reserved room with sibling');
                 });
 
                 $processedIds[] = $request->id;
@@ -316,9 +312,6 @@ class ReservationService
                 }
 
                 $reservation = $this->newReservation($request, $room);
-
-                userActivity($request->user_id, 'regular_reservation', 'Reserved regular room successfully');
-
                 $results['success'][] = [
                     'request_id' => $request->id,
                     'room_id' => $room->id,
@@ -404,8 +397,6 @@ public function newReservation(ReservationRequest $request, Room $room): Reserva
             $this->createInvoice($reservation);
             $request->update(['status' => 'accepted']);
             event(new ReservationCreated($reservation));
-
-            userActivity($request->user_id, 'reservation_created', 'Created new reservation successfully');
 
             return $reservation;
         });

@@ -258,8 +258,6 @@ class ReservationRequestService
 
             // Trigger event and log activity
             event(new ReservationRequested($reservation));
-            userActivity($userId, 'reservation_request', 'Reservation request submitted, awaiting approval');
-
             return $reservation;
         } catch (Exception $e) {
             logError('Failed to create new reservation request', 'new_reservation_request', $e);

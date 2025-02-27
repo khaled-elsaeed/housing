@@ -90,9 +90,6 @@ class ReservationSwapService
                 $this->createResidentRoomMovement($reservation1, $oldRoom1, $oldRoom2, 'Room swap with another resident');
                 $this->createResidentRoomMovement($reservation2, $oldRoom2, $oldRoom1, 'Room swap with another resident');
 
-                userActivity($reservation1->user_id, 'room_swap', "Swapped room from {$oldRoom1} to {$oldRoom2}");
-                userActivity($reservation2->user_id, 'room_swap', "Swapped room from {$oldRoom2} to {$oldRoom1}");
-
                 event(new ReservationRoomChanged($reservation1->room));
                 event(new ReservationRoomChanged($reservation2->room));
 
@@ -150,7 +147,6 @@ class ReservationSwapService
                 $reservation->save();
 
                 $this->createResidentRoomMovement($reservation, $oldRoomId, $newRoom->id, 'Reallocated to a new room');
-                userActivity($reservation->user_id, 'room_reallocation', "Reallocated from room {$oldRoomId} to {$newRoom->id}");
 
                 event(new ReservationRoomChanged($newRoom));
 

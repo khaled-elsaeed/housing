@@ -146,70 +146,78 @@
                      </ul>
                   </div>
                   <!-- Edit Profile Information Form -->
-                  <form class="row g-3" method="POST" action="{{ route('student.profile.update') }}"
-                     id="updateProfileForm">
-                     @csrf @method('PUT')
-                     <!-- First Name (English) -->
-                     <div class="col-md-6">
-                        <label for="first_name_en"
-                           class="form-label">{{ __('First Name (English)') }}</label>
-                        <input type="text" class="form-control" id="first_name_en" name="first_name_en"
-                           value="{{ old('first_name_en', $user->first_name_en) }}" required />
-                     </div>
-                     <!-- Last Name (English) -->
-                     <div class="col-md-6">
-                        <label for="last_name_en" class="form-label">{{ __('Last Name (English)') }}</label>
-                        <input type="text" class="form-control" id="last_name_en" name="last_name_en"
-                           value="{{ old('last_name_en', $user->last_name_en) }}" required />
-                     </div>
-                     <!-- First Name (Arabic) -->
-                     <div class="col-md-6">
-                        <label for="first_name_ar" class="form-label">{{ __('First Name (Arabic)') }}</label>
-                        <input type="text" class="form-control" id="first_name_ar" name="first_name_ar"
-                           value="{{ old('first_name_ar', $user->first_name_ar) }}" required />
-                     </div>
-                     <!-- Last Name (Arabic) -->
-                     <div class="col-md-6">
-                        <label for="last_name_ar" class="form-label">{{ __('Last Name (Arabic)') }}</label>
-                        <input type="text" class="form-control" id="last_name_ar" name="last_name_ar"
-                           value="{{ old('last_name_ar', $user->last_name_ar) }}" required />
-                     </div>
-                     <!-- Email -->
-                     <div class="col-md-6">
-                        <label for="email" class="form-label">{{ __('Email') }}</label>
-                        <input type="email" class="form-control" id="email" name="email"
-                           value="{{ old('email', $user->email) }}" required />
-                     </div>
-                     <!-- Password Section -->
-                     <div class="col-md-12">
-                        <button type="button" class="btn btn-outline-secondary mb-3"
-                           id="toggle-password-btn"><i class="fa fa-lock me-2"></i>
-                        {{ __('Change Password') }}</button>
-                     </div>
-                     <div id="password-section" class="row g-3" style="display: none;">
-                        <div class="col-md-6">
-                           <label for="password" class="form-label">{{ __('Password') }}</label>
-                           <input type="password" class="form-control" id="password" name="password"
-                              placeholder="{{ __('Enter New Password') }}" />
-                        </div>
-                        <div class="col-md-6">
-                           <label for="password_confirmation"
-                              class="form-label">{{ __('Confirm Password') }}</label>
-                           <input type="password" class="form-control" id="password_confirmation"
-                              name="password_confirmation"
-                              placeholder="{{ __('Confirm New Password') }}" />
-                        </div>
-                     </div>
-                     <!-- Submit Button -->
-                     <div class="col-12">
-                        <button type="submit" class="btn btn-secondary w-50" id="updateProfileBtn">
-                        <span class="button-text"> <i class="fa fa-save me-2"></i>
-                        {{ __('Update Profile') }}</span>
-                        <span class="spinner-border spinner-border-sm d-none" role="status"
-                           aria-hidden="true"></span>
-                        </button>
-                     </div>
-                  </form>
+                  <form class="row g-3" method="POST" action="{{ route('student.profile.update') }}" id="updateProfileForm">
+    @csrf
+    @method('PUT')
+
+    <!-- First Name (English) -->
+    <div class="col-md-6">
+        <label for="first_name_en" class="form-label">{{ __('First Name (English)') }}</label>
+        <input type="text" class="form-control border border-primary" id="first_name_en" name="first_name_en"
+               value="{{ old('first_name_en', $user->first_name_en) }}" required dir="ltr" />
+    </div>
+
+    <!-- Last Name (English) -->
+    <div class="col-md-6">
+        <label for="last_name_en" class="form-label">{{ __('Last Name (English)') }}</label>
+        <input type="text" class="form-control border border-primary" id="last_name_en" name="last_name_en"
+               value="{{ old('last_name_en', $user->last_name_en) }}" required dir="ltr" />
+    </div>
+
+    <!-- First Name (Arabic) -->
+    <div class="col-md-6">
+        <label for="first_name_ar" class="form-label">{{ __('First Name (Arabic)') }}</label>
+        <input type="text" class="form-control border border-primary" id="first_name_ar" name="first_name_ar"
+               value="{{ old('first_name_ar', $user->first_name_ar) }}" required dir="rtl" />
+    </div>
+
+    <!-- Last Name (Arabic) -->
+    <div class="col-md-6">
+        <label for="last_name_ar" class="form-label">{{ __('Last Name (Arabic)') }}</label>
+        <input type="text" class="form-control border border-primary" id="last_name_ar" name="last_name_ar"
+               value="{{ old('last_name_ar', $user->last_name_ar) }}" required dir="rtl" />
+    </div>
+
+    <!-- Email -->
+    <div class="col-md-6">
+        <label for="email" class="form-label">{{ __('Email') }}</label>
+        <input type="email" class="form-control border border-primary" id="email" name="email"
+               value="{{ old('email', $user->email) }}" required dir="ltr" />
+    </div>
+
+    <!-- Password Section Toggle -->
+    <div class="col-md-12">
+        <button type="button" class="btn btn-outline-secondary mb-3" id="toggle-password-btn">
+            <i class="fa fa-lock {{ App::getLocale() === 'ar' ? 'ms-2' : 'me-2' }}"></i>
+            {{ __('Change Password') }}
+        </button>
+    </div>
+
+    <!-- Password Fields (Hidden by Default) -->
+    <div id="password-section" class="row g-3" style="display: none;">
+        <div class="col-md-6">
+            <label for="password" class="form-label">{{ __('Password') }}</label>
+            <input type="password" class="form-control border border-primary" id="password" name="password"
+                   placeholder="{{ __('Enter New Password') }}" dir="ltr" />
+        </div>
+        <div class="col-md-6">
+            <label for="password_confirmation" class="form-label">{{ __('Confirm Password') }}</label>
+            <input type="password" class="form-control border border-primary" id="password_confirmation" name="password_confirmation"
+                   placeholder="{{ __('Confirm New Password') }}" dir="ltr" />
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="col-12 text-center">
+        <button type="submit" class="btn btn-secondary w-50" id="updateProfileBtn">
+            <span class="button-text">
+                <i class="fa fa-save {{ App::getLocale() === 'ar' ? 'ms-2' : 'me-2' }}"></i>
+                {{ __('Update Profile') }}
+            </span>
+            <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+        </button>
+    </div>
+</form>
                </div>
             </div>
             <!-- Profile Picture Modal -->
@@ -228,7 +236,7 @@
                            <div class="mb-3">
                               <label for="profile_picture"
                                  class="form-label">{{ __('Select New Picture') }}</label>
-                              <input type="file" class="form-control" id="profile_picture"
+                              <input type="file" class="form-control border border-primary" id="profile_picture"
                                  name="profile_picture" accept="image/*" required />
                               <div class="mt-2">
                                  <small class="text-muted">
@@ -272,21 +280,21 @@
                      @csrf @method('PUT') @if (!empty($user->student->governorate) && !empty($user->student->governorate->name_en))
                      <div class="mb-3">
                         <label for="governorate">{{ __('Governorate') }}</label>
-                        <input type="text" class="form-control" id="governorate" name="governorate"
+                        <input type="text" class="form-control border border-primary" id="governorate" name="governorate"
                            value="{{ app()->getLocale() == 'en' ? $user->student->governorate->name_en : $user->student->governorate->name_ar }}"
                            disabled />
                      </div>
                      @endif @if (!empty($user->student->city) && !empty($user->student->city->name_en))
                      <div class="mb-3">
                         <label for="city">{{ __('City') }}</label>
-                        <input type="text" class="form-control" id="city" name="city"
+                        <input type="text" class="form-control border border-primary" id="city" name="city"
                            value="{{ app()->getLocale() == 'en' ? $user->student->city->name_en : $user->student->city->name_ar }}"
                            disabled />
                      </div>
                      @endif @if (!empty($user->student->street))
                      <div class="mb-3">
                         <label for="street">{{ __('Street') }}</label>
-                        <input type="text" class="form-control" id="street" name="street"
+                        <input type="text" class="form-control border border-primary" id="street" name="street"
                            value="{{ $user->student->street }}" disabled />
                      </div>
                      @endif
@@ -313,14 +321,14 @@
                      @if (!empty(optional($user->student)->faculty))
                      <div class="col-md-6">
                         <label for="faculty">{{ __('Faculty') }}</label>
-                        <input type="text" class="form-control" id="faculty"
+                        <input type="text" class="form-control border border-primary" id="faculty"
                            value="{{ app()->getLocale() == 'en' ? optional($user->student)->faculty->name_en : optional($user->student)->faculty->name_ar }}"
                            disabled />
                      </div>
                      @endif @if (!empty(optional($user->student)->program))
                      <div class="col-md-6">
                         <label for="program">{{ __('Program') }}</label>
-                        <input type="text" class="form-control" id="program"
+                        <input type="text" class="form-control border border-primary" id="program"
                            value="{{ app()->getLocale() == 'en' ? optional($user->student)->program->name_en : optional($user->student)->program->name_ar }}"
                            disabled />
                      </div>
@@ -347,46 +355,46 @@
                   <div class="row">
                      <div class="col-md-6">
                         <label for="parent_name">{{ __('Parent Name') }}</label>
-                        <input type="text" class="form-control" id="parent_name"
+                        <input type="text" class="form-control border border-primary" id="parent_name"
                            value="{{ $user->parent->name }}" disabled />
                      </div>
                      <div class="col-md-6">
                         <label for="parent_relation">{{ __('Parent Relation') }}</label>
-                        <input type="text" class="form-control" id="parent_relation"
+                        <input type="text" class="form-control border border-primary" id="parent_relation"
                            value="{{ __($user->parent->relation) }}" disabled />
                      </div>
                      <div class="col-md-6">
                         <label for="parent_email">{{ __('Parent Email') }}</label>
-                        <input type="email" class="form-control" id="parent_email"
+                        <input type="email" class="form-control border border-primary" id="parent_email"
                            value="{{ $user->parent->email }}" disabled />
                      </div>
                      <div class="col-md-6">
                         <label for="parent_phone">{{ __('Parent Phone') }}</label>
-                        <input type="text" class="form-control" id="parent_phone"
+                        <input type="text" class="form-control border border-primary" id="parent_phone"
                            value="{{ $user->parent->phone }}" disabled />
                      </div>
                      <div class="col-md-6">
                         <label for="parent_living_abroad">{{ __('Living Abroad') }}</label>
-                        <input type="text" class="form-control" id="parent_living_abroad"
+                        <input type="text" class="form-control border border-primary" id="parent_living_abroad"
                            value="{{ $user->parent->living_abroad == 1 ? __('Yes') : __('No') }}"
                            disabled />
                      </div>
                      @if ($user->parent->living_abroad === 0)
                      <div class="col-md-6">
                         <label for="parent_living_with">{{ __('Living With parents') }}</label>
-                        <input type="text" class="form-control" id="parent_living_with"
+                        <input type="text" class="form-control border border-primary" id="parent_living_with"
                            value="{{ $user->parent->living_with == 1 ? __('Yes') : __('No') }}"
                            disabled />
                      </div>
                      @if ($user->parent->living_with == 0)
                      <div class="col-md-6">
                         <label for="parent_city">{{ __('Parent City') }}</label>
-                        <input type="text" class="form-control" id="parent_city"
+                        <input type="text" class="form-control border border-primary" id="parent_city"
                            value="{{ $user->parent->city->name }}" disabled />
                      </div>
                      <div class="col-md-6">
                         <label for="parent_governorate">{{ __('Parent Governorate') }}</label>
-                        <input type="text" class="form-control" id="parent_governorate"
+                        <input type="text" class="form-control border border-primary" id="parent_governorate"
                            value="{{ $user->parent->governorate->name }}" disabled />
                      </div>
                      @endif
@@ -416,22 +424,22 @@
                   <div class="row">
                      <div class="col-md-6">
                         <label for="sibling_gender">{{ __('Sibling Gender') }}</label>
-                        <input type="text" class="form-control" id="sibling_gender"
-                           value="{{ __($user->sibling->gender) }}" disabled />
+                        <input type="text" class="form-control border border-primary" id="sibling_gender"
+                           value="{{ __('sibling'.$user->sibling->gender) }}" disabled />
                      </div>
                      <div class="col-md-6">
                         <label for="sibling_name">{{ __('Sibling Name') }}</label>
-                        <input type="text" class="form-control" id="sibling_name"
+                        <input type="text" class="form-control border border-primary" id="sibling_name"
                            value="{{ $user->sibling->name }}" disabled />
                      </div>
                      <div class="col-md-6">
                         <label for="sibling_national_id">{{ __('Sibling National ID') }}</label>
-                        <input type="text" class="form-control" id="sibling_national_id"
+                        <input type="text" class="form-control border border-primary" id="sibling_national_id"
                            value="{{ $user->sibling->national_id }}" disabled />
                      </div>
                      <div class="col-md-6">
                         <label for="sibling_faculty">{{ __('Sibling Faculty') }}</label>
-                        <input type="text" class="form-control" id="sibling_faculty"
+                        <input type="text" class="form-control border border-primary" id="sibling_faculty"
                            value="{{ optional($user->sibling->faculty)->name }}" disabled />
                      </div>
                   </div>
@@ -459,17 +467,17 @@
                   <div class="row">
                      <div class="col-md-6">
                         <label for="emergency_contact_name">{{ __('Emergency Contact Name') }}</label>
-                        <input type="text" class="form-control" id="emergency_contact_name"
+                        <input type="text" class="form-control border border-primary" id="emergency_contact_name"
                            value="{{ $user->emergencyContact->name }}" disabled />
                      </div>
                      <div class="col-md-6">
                         <label for="emergency_phone">{{ __('Emergency Phone') }}</label>
-                        <input type="text" class="form-control" id="emergency_phone"
+                        <input type="text" class="form-control border border-primary" id="emergency_phone"
                            value="{{ $user->emergencyContact->phone }}" disabled />
                      </div>
                      <div class="col-md-6">
                         <label for="relationship">{{ __('Relationship') }}</label>
-                        <input type="text" class="form-control" id="relationship"
+                        <input type="text" class="form-control border border-primary" id="relationship"
                            value="{{ __($user->emergencyContact->relation) }}" disabled />
                      </div>
                   </div>

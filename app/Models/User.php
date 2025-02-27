@@ -325,8 +325,7 @@ class User extends Authenticatable
             ]);
     
             // Check eligibility based on gender
-            $isEligible = ($siblingGender === 'brother' && $userGender === 'male') ||
-                          ($siblingGender === 'sister' && $userGender === 'female');
+            $isEligible = ($siblingGender === $userGender); 
     
             if (!$isEligible) {
                 \Log::info('Sibling is not eligible due to gender mismatch', [
