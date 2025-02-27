@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Carbon\Carbon;
 use App\Models\UserActivity;
-use App\Models\AdminActionLog;
+use App\Models\AdminAction;
 
 if (!function_exists('arabicNumbers')) {
     /**
@@ -163,7 +163,7 @@ if (!function_exists('logAdminAction')) {
     function logAdminAction(string $action, string $description, ?array $changes = null): void
     {
         try {
-            AdminActionLog::create([
+            AdminAction::create([
                 'admin_id' => Auth::id() ?? 1, // Default to 1 if no auth user
                 'action' => $action,
                 'description' => $description,
