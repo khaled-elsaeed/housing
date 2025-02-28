@@ -19,15 +19,14 @@ class ReservationRequestService
      *
      * @param User $user The user making the reservation request.
      * @param array $data The data for the reservation request.
-     * @return ReservationRequest The created reservation request.
      * @throws Exception
      */
-    public function createReservationRequest(User $user, array $data): ReservationRequest
+    public function createReservationRequest(User $user, array $data)
     {
         try {
             return DB::transaction(function () use ($user, $data) {
                 $this->validateReservationPeriod($user->id, $data['reservation_period_type'], $data);
-                return $this->newReservationRequest($user->id, $data);
+                $this->newReservationRequest($user->id, $data);
             });
         } catch (Exception $e) {
             logError('Error creating reservation request', 'create_reservation_request', $e);
@@ -242,28 +241,44 @@ class ReservationRequestService
      * @throws Exception
      */
     private function newReservationRequest(int $userId, array $data): ReservationRequest
-    {
-        try {
-            $reservation = ReservationRequest::create([
-                'user_id' => $userId,
-                'period_type' => $data['reservation_period_type'],
-                'stay_in_last_old_room' => $data['stay_in_last_old_room'] ?? null,
-                'old_room_id' => $data['old_room_id'] ?? null,
-                'sibling_id' => $data['sibling_id'] ?? null,
-                'share_with_sibling' => $data['share_with_sibling'] ?? null,
-                'status' => 'pending',
-            ]);
+{
+    try {
 
-            $this->addPeriodSpecificData($reservation, $data);
+        $reservation = ReservationRequest::create([
+            'user_id' => $userId,
+            'period_type' => $data['reservation_period_type'],
+            'stay_in_last_old_room' => $data['stay_in_last_old_room'] ?? null,
+            'old_room_id' => $data['old_room_id'] ?? null,
+            'sibling_id' => $data['sibling_id'] ?? null,
+            'share_with_sibling' => $data['share_with_sibling'] ?? null,
+            'status' => 'pending',
+        ]);
 
-            // Trigger event and log activity
-            event(new ReservationRequested($reservation));
-            return $reservation;
-        } catch (Exception $e) {
-            logError('Failed to create new reservation request', 'new_reservation_request', $e);
-            throw $e;
+
+        // Handle sibling sharing logic
+        if (!empty($data['stay_in_last_old_room']) == 1) {
+            $reservation->old_room_id = $data['old_room_id'] ?? null;
+            $reservation->save();
         }
+
+        if (!empty($data['share_with_sibling']) == 1) {
+            $reservation->sibling_id = $data['sibling_id'] ?? null;
+            $reservation->save();
+        }
+
+        // Add period-specific data
+        $this->addPeriodSpecificData($reservation, $data);
+
+        userActivity($userId, 'reservation_request', 'Reservation request submitted, awaiting approval');
+
+        event(new ReservationRequested($reservation));
+
+        return $reservation;
+    } catch (Exception $e) {
+        logError('Failed to create new reservation request', 'new_reservation_request', $e);
+        throw $e;
     }
+}
 
     /**
      * Add period-specific data to the reservation.

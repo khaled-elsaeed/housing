@@ -24,12 +24,6 @@ class InvoicePaid extends Mailable
      */
     public function __construct(Invoice $invoice)
     {
-        // Log the invoice being passed to the mail class
-        Log::info('InvoicePaid Mail: Invoice object received', [
-            'invoice_id' => $invoice->id,
-            'invoice_type' => get_class($invoice), // Log the class name of the invoice
-        ]);
-
         $this->invoice = $invoice;
 
         // Ensure the reservation and user exist
@@ -49,13 +43,6 @@ class InvoicePaid extends Mailable
         }
 
         $this->user = $invoice->reservation->user;
-
-        // Log the user associated with the invoice
-        Log::info('InvoicePaid Mail: User associated with invoice', [
-            'invoice_id' => $invoice->id,
-            'user_id' => $this->user->id,
-            'user_email' => $this->user->email,
-        ]);
     }
 
     /**

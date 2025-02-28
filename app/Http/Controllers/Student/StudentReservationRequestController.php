@@ -42,7 +42,7 @@ class StudentReservationRequestController extends Controller
                 : null;
 
             // Create reservation request via service
-            $reservationRequest = $this->reservationRequestService->createReservationRequest($student, $validatedData);
+            $this->reservationRequestService->createReservationRequest($student, $validatedData);
 
             return successResponse(trans('Reservation request submitted successfully!'));
         } catch (BusinessRuleException $e) {

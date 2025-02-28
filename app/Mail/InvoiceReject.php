@@ -44,13 +44,6 @@ class InvoiceReject extends Mailable
         }
 
         $this->user = $invoice->reservation->user;
-
-        // Log the user associated with the invoice
-        Log::info('InvoiceReject Mail: User associated with invoice', [
-            'invoice_id' => $invoice->id,
-            'user_id' => $this->user->id,
-            'user_email' => $this->user->email,
-        ]);
     }
 
     /**

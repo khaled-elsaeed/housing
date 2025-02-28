@@ -361,26 +361,10 @@ class ReservationService
 public function newReservation(ReservationRequest $request, Room $room): Reservation
 {
     try {
-
         // Check room availability and throw exception if unavailable
         $this->checkRoomAvailability($room, $request->user);
-
-        $reservationData = [
-            'user_id' => $request->user_id,
-            'room_id' => $room->id,
-            'status' => 'pending',
-            'reservation_request_id' => $request->id,
-            'period_type' => $request->period_type,
-        ];
-
-        if ($request->period_type === 'long') {
-            $reservationData['academic_term_id'] = $request->academic_term_id;
-        } else {
-            $reservationData['start_date'] = $request->start_date;
-            $reservationData['end_date'] = $request->end_date;
-        }
-
-        return DB::transaction(function () use ($room, $reservationData, $request) {
+        
+        return DB::transaction(function () use ($room, $request) {
             // Lock the room to prevent simultaneous reservations
             $room = Room::where('id', $room->id)->lockForUpdate()->firstOrFail();
 
@@ -393,7 +377,24 @@ public function newReservation(ReservationRequest $request, Room $room): Reserva
                 $room->update(['full_occupied' => true]);
             }
 
-            $reservation = Reservation::create($reservationData);
+            // Create reservation manually
+            $reservation = new Reservation();
+            $reservation->user_id = $request->user_id;
+            $reservation->room_id = $room->id;
+            $reservation->status = 'pending';
+            $reservation->period_type = $request->period_type;
+
+            if ($request->period_type === 'long') {
+                $reservation->academic_term_id = $request->academic_term_id;
+            } else if ($request->period_type === 'short') {
+                $reservation->start_date = $request->start_date;
+                $reservation->end_date = $request->end_date;
+            }
+
+            // Save the reservation
+            $reservation->save();
+
+            // Create invoice and update request status
             $this->createInvoice($reservation);
             $request->update(['status' => 'accepted']);
             event(new ReservationCreated($reservation));
@@ -402,9 +403,10 @@ public function newReservation(ReservationRequest $request, Room $room): Reserva
         });
     } catch (Exception $e) {
         logError('Failed to create new reservation', 'new_reservation', $e);
-        throw $e; 
+        throw $e;
     }
 }
+
 
 /**
  * Check if a room is available for reservation and throw exceptions if unavailable.

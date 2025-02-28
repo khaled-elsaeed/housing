@@ -24,11 +24,6 @@ class InvoicePaid extends Notification
     public function __construct(Invoice $invoice)
     {   
         $this->invoice = $invoice;
-        // Log the invoice being passed to the notification
-        Log::info('InvoicePaid Notification: Invoice object received', [
-            'invoice_id' => $this->invoice->id,
-            'invoice_type' => get_class($this->invoice), // Log the class name of the invoice
-        ]);
     }
 
     /**
@@ -46,12 +41,6 @@ class InvoicePaid extends Notification
      */
     public function toMail(object $notifiable): Mailable
     {
-        // Log before creating the InvoicePaidMailable
-        Log::info('InvoicePaid Notification: Preparing to send email', [
-            'invoice_id' => $this->invoice->id,
-            'notifiable_email' => $notifiable->email,
-        ]);
-
         $mailable = new InvoicePaidMailable($this->invoice);
         return $mailable->to($notifiable->email);
     }
