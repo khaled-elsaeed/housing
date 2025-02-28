@@ -100,6 +100,7 @@ Route::middleware(Localization::class)
                 Route::get('/stats', [InvoiceController::class, 'fetchStats'])->name('.stats');  // Fetch statistics for invoices
                 Route::get('/{id}', [InvoiceController::class, 'fetchInvoice'])->name('.show');  // Fetch a specific invoice by ID
                 Route::post('/payment/{paymentId}/status', [InvoiceController::class, 'updatePaymentStatus'])->name('.payment.update'); // Update payment status
+                Route::post('/{invoiceId}/details', [InvoiceController::class, 'updateInvoiceDetails'])->name('.details.update');
                 Route::prefix('export')->name('.export-')->group(function () {
                     Route::get('/excel', [InvoiceController::class, 'downloadInvoicesExcel'])->name('excel');  // Export invoices to Excel
                 });

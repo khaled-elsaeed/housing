@@ -90,20 +90,24 @@ class InvoiceController extends Controller
        try {
            $currentLang = App::getLocale();
            $query = Invoice::with(['reservation.user.student.faculty'])
-               ->select('invoices.*')
-               ->orderByRaw("
-                   CASE 
-                       WHEN status = 'pending' THEN 1
-                       WHEN status = 'unpaid' THEN 2
-                       ELSE 3
-                   END,
-                   CASE 
-                       WHEN admin_approval = 'pending' THEN 1
-                       WHEN admin_approval = 'accepted' THEN 2
-                       ELSE 3
-                   END
-               ")
-               ->orderBy('created_at', 'asc');
+    ->select('invoices.*')
+    ->orderByRaw("
+        CASE 
+            WHEN admin_approval = 'pending' THEN 1
+            WHEN admin_approval = 'accepted' THEN 2
+            ELSE 3
+        END
+    ")
+    ->orderByRaw("
+        CASE 
+            WHEN status = 'pending' THEN 1
+            WHEN status = 'paid' THEN 2
+            WHEN status = 'unpaid' THEN 3
+            ELSE 4
+        END
+    ")
+    
+    ->orderBy('created_at', 'asc');
 
            if ($request->filled('gender')) {
                $query->whereHas('reservation.user.student', fn($q) => $q->where('gender', $request->get('gender')));
@@ -231,16 +235,10 @@ return $invoice->reservation->period_duration ?? trans('N/A');
         try {
             $validated = $request->validate([
                 'status' => 'required|in:accepted,rejected',
-                'paidDetails' => 'required_if:status,accepted|array|min:1',
-                'paidDetails.*.detailId' => 'required_if:status,accepted|exists:invoice_details,id',
-                'paidDetails.*.amount' => 'required_if:status,accepted|numeric',
                 'overPaymentAmount' => 'nullable|numeric|min:0',
                 'newInsuranceAmount' => 'nullable|numeric|min:0',
                 'rejectReason' => 'nullable|string|required_if:status,rejected',
                 'notes' => 'nullable|string',
-                'modifiedDetails' => 'nullable|array',
-                'modifiedDetails.*.detailId' => 'required_with:modifiedDetails|exists:invoice_details,id',
-                'modifiedDetails.*.amount' => 'required_with:modifiedDetails|numeric|min:0',
             ]);
 
             DB::beginTransaction();
@@ -252,19 +250,13 @@ return $invoice->reservation->period_duration ?? trans('N/A');
 
             if ($status === 'rejected') {
                 $invoice->status = 'pending';
-                $invoice->reject_reason = $validated['rejectReason'] ?? null;
-                
-                // Update modified details if provided
-                if (isset($validated['modifiedDetails']) && !empty($validated['modifiedDetails'])) {
-                    $this->updateModifiedDetails($validated['modifiedDetails'], $invoice);
-                }
-                
+                $invoice->reject_reason = $validated['rejectReason'];
                 $invoice->save();
                 event(new InvoiceReject($invoice));
             } elseif ($status === 'accepted') {
                 $invoice->reject_reason = null;
                 $invoice->status = "paid";
-                $this->processAcceptedPayment($invoice, $validated);
+                $this->processAcceptedPayment($invoice,$validated);
             }
 
             $invoice->save();
@@ -277,6 +269,50 @@ return $invoice->reservation->period_duration ?? trans('N/A');
             DB::rollBack();
             logError('Failed to update payment status', 'update_payment_status', $e);
             return errorResponse(trans('Failed to update payment status.'), 500);
+        }
+    }
+
+    /**
+     * Update invoice details amounts
+     *
+     * @param Request $request HTTP request
+     * @param int $invoiceId Invoice ID
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateInvoiceDetails(Request $request, $invoiceId)
+    {
+        try {
+            $validated = $request->validate([
+                'details' => 'required|array|min:1',
+                'details.*.detailId' => 'required|exists:invoice_details,id',
+                'details.*.amount' => 'required|numeric|min:0',
+            ]);
+
+            $invoice = Invoice::findOrFail($invoiceId);
+
+            if ($invoice->status === 'accepted' || $invoice->status === 'paid') {
+                return errorResponse(trans('Cannot modify details of accepted or paid invoice'), 403);
+            }
+
+            DB::beginTransaction();
+
+            foreach ($validated['details'] as $detail) {
+                $invoiceDetail = InvoiceDetail::find($detail['detailId']);
+                if ($invoiceDetail && $invoiceDetail->invoice_id === $invoice->id) {
+                    $invoiceDetail->amount = $detail['amount'];
+                    $invoiceDetail->save();
+                }
+            }
+
+            $this->logAdminAction($request, $invoiceId, 'modified_details', $validated);
+
+            DB::commit();
+
+            return successResponse(trans('Invoice details updated successfully'));
+        } catch (Throwable $e) {
+            DB::rollBack();
+            logError('Failed to update invoice details', 'update_invoice_details', $e);
+            return errorResponse(trans('Failed to update invoice details'), 500);
         }
     }
 
@@ -293,7 +329,6 @@ return $invoice->reservation->period_duration ?? trans('N/A');
      */
     private function processAcceptedPayment(Invoice $invoice, array $validated): void
     {
-        $this->markInvoiceDetailsAsPaid($validated['paidDetails'], $invoice);
         $this->updateReservationStatus($invoice);
 
         if (isset($validated['newInsuranceAmount']) && $validated['newInsuranceAmount'] > 0) {
@@ -306,31 +341,15 @@ return $invoice->reservation->period_duration ?? trans('N/A');
             );
         }
 
-        // Update invoice status to paid if all details are paid
-        $allPaid = $invoice->details->every(fn($detail) => $detail->status === 'paid');
-        if ($allPaid) {
-            $invoice->status = 'paid';
-        }
+        $invoice->details->each(function ($detail) {
+            $detail->status = "paid";
+            $detail->save(); 
+        });
+        
+        
     }
 
-    /**
-     * Mark invoice details as paid.
-     *
-     * @param array $paidDetails Payment details
-     * @param Invoice $invoice Invoice instance
-     * @return void
-     */
-    private function markInvoiceDetailsAsPaid(array $paidDetails, Invoice $invoice): void
-    {
-        foreach ($paidDetails as $detail) {
-            $invoiceDetail = InvoiceDetail::find($detail['detailId']);
-            if ($invoiceDetail && $invoiceDetail->invoice_id === $invoice->id) {
-                $invoiceDetail->status = 'paid';
-                $invoiceDetail->amount = $detail['amount'];
-                $invoiceDetail->save();
-            }
-        }
-    }
+    
 
     /**
      * Update modified invoice details when rejecting.
