@@ -218,7 +218,8 @@ return $invoice->reservation->period_duration ?? trans('N/A');
     // Payment Status Management
     // -----------------------------------
 
-    /**
+ 
+   /**
      * Update payment status for an invoice.
      *
      * @param Request $request HTTP request
@@ -235,8 +236,11 @@ return $invoice->reservation->period_duration ?? trans('N/A');
                 'paidDetails.*.amount' => 'required_if:status,accepted|numeric',
                 'overPaymentAmount' => 'nullable|numeric|min:0',
                 'newInsuranceAmount' => 'nullable|numeric|min:0',
-                'rejectReason' => 'nullable|string',
+                'rejectReason' => 'nullable|string|required_if:status,rejected',
                 'notes' => 'nullable|string',
+                'modifiedDetails' => 'nullable|array',
+                'modifiedDetails.*.detailId' => 'required_with:modifiedDetails|exists:invoice_details,id',
+                'modifiedDetails.*.amount' => 'required_with:modifiedDetails|numeric|min:0',
             ]);
 
             DB::beginTransaction();
@@ -249,10 +253,16 @@ return $invoice->reservation->period_duration ?? trans('N/A');
             if ($status === 'rejected') {
                 $invoice->status = 'pending';
                 $invoice->reject_reason = $validated['rejectReason'] ?? null;
+                
+                // Update modified details if provided
+                if (isset($validated['modifiedDetails']) && !empty($validated['modifiedDetails'])) {
+                    $this->updateModifiedDetails($validated['modifiedDetails'], $invoice);
+                }
+                
                 $invoice->save();
                 event(new InvoiceReject($invoice));
             } elseif ($status === 'accepted') {
-                $invoice->reject_reason = NULL;
+                $invoice->reject_reason = null;
                 $invoice->status = "paid";
                 $this->processAcceptedPayment($invoice, $validated);
             }
@@ -283,7 +293,6 @@ return $invoice->reservation->period_duration ?? trans('N/A');
      */
     private function processAcceptedPayment(Invoice $invoice, array $validated): void
     {
-
         $this->markInvoiceDetailsAsPaid($validated['paidDetails'], $invoice);
         $this->updateReservationStatus($invoice);
 
@@ -315,9 +324,28 @@ return $invoice->reservation->period_duration ?? trans('N/A');
     {
         foreach ($paidDetails as $detail) {
             $invoiceDetail = InvoiceDetail::find($detail['detailId']);
-            if ($invoiceDetail && $invoiceDetail->invoice_id === $invoice->id) { // Ensure detail belongs to this invoice
+            if ($invoiceDetail && $invoiceDetail->invoice_id === $invoice->id) {
                 $invoiceDetail->status = 'paid';
                 $invoiceDetail->amount = $detail['amount'];
+                $invoiceDetail->save();
+            }
+        }
+    }
+
+    /**
+     * Update modified invoice details when rejecting.
+     *
+     * @param array $modifiedDetails Modified details from request
+     * @param Invoice $invoice Invoice instance
+     * @return void
+     */
+    private function updateModifiedDetails(array $modifiedDetails, Invoice $invoice): void
+    {
+        foreach ($modifiedDetails as $detail) {
+            $invoiceDetail = InvoiceDetail::find($detail['detailId']);
+            if ($invoiceDetail && $invoiceDetail->invoice_id === $invoice->id) {
+                $invoiceDetail->amount = $detail['amount'];
+                $invoiceDetail->status = 'unpaid'; 
                 $invoiceDetail->save();
             }
         }
@@ -353,7 +381,8 @@ return $invoice->reservation->period_duration ?? trans('N/A');
                 'admin_id' => Auth::id(),
                 'invoice_id' => $invoiceId,
                 'action' => 'update_payment_status',
-                'description' => "Updated payment status to {$status}",
+                'description' => "Updated payment status to {$status}" . 
+                    (isset($validated['modifiedDetails']) ? " with modified details" : ""),
                 'status' => $status,
                 'changes' => json_encode($validated),
                 'ip_address' => $request->ip(),

@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(document).ready(function() {
     // Translation Data
     const translations = {
         en: {
@@ -35,7 +35,7 @@ $(document).ready(function () {
             selectPayment: "Please select at least one payment detail to accept.",
             negativeAmount: "Overpayment amount cannot be negative.",
             success: "Success",
-            rejectReason:"Reject Reason",
+            rejectReason: "Reject Reason",
             error: "Error",
             errorUpdating: "Error updating payment status: ",
             noDataAvailable: "No data available.",
@@ -59,7 +59,7 @@ $(document).ready(function () {
             fee: "مصاريف",
             insurance: "تأمين",
             building: "المبنى",
-            rejectReason:"سبب الرفض",
+            rejectReason: "سبب الرفض",
             apartment: "الشقة",
             room: "الغرفة",
             uploadedPictures: "الصور المرفوعة",
@@ -125,7 +125,7 @@ $(document).ready(function () {
             view: getTranslation("view", language),
             download: getTranslation("download", language),
             accept: getTranslation("accept", language),
-            rejectReason: getTranslation("rejectReason",language),
+            rejectReason: getTranslation("rejectReason", language),
             reject: getTranslation("reject", language),
             noDetails: getTranslation("noDetails", language),
             loadingFailed: getTranslation("loadingFailed", language),
@@ -171,34 +171,56 @@ $(document).ready(function () {
         ordering: false,
         ajax: {
             url: window.routes.fetchInvoices,
-            data: function (d) {
+            data: function(d) {
                 d.customSearch = $("#searchBox").val();
                 d.gender = $("#genderFilter").val();
             },
         },
-        columns: [
-            { data: "name", name: "name" },
-            { data: "national_id", name: "national_id" },
-            { data: "faculty", name: "faculty" },
-            { data: "phone", name: "phone" },
-            { data: "reservation_duration", name: "reservation_duration" },
-            { data: "status", name: "status" },
-            { data: "admin_approval", name: "admin_approval" },
+        columns: [{
+                data: "name",
+                name: "name"
+            },
+            {
+                data: "national_id",
+                name: "national_id"
+            },
+            {
+                data: "faculty",
+                name: "faculty"
+            },
+            {
+                data: "phone",
+                name: "phone"
+            },
+            {
+                data: "reservation_duration",
+                name: "reservation_duration"
+            },
+            {
+                data: "status",
+                name: "status"
+            },
+            {
+                data: "admin_approval",
+                name: "admin_approval"
+            },
             {
                 data: null,
-                render: function (data, type, row) {
+                render: function(data, type, row) {
                     return `<button type="button" class="btn btn-sm btn-info-rgba" data-invoice-id="${row.id}" id="details-btn" title="More Details"><i class="feather icon-info"></i></button>`;
                 },
             },
         ],
-        language: lang === "ar" ? { url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json" } : {},
+        language: lang === "ar" ? {
+            url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json"
+        } : {},
     });
 
-    $("#searchBox").on("keyup", function () {
+    $("#searchBox").on("keyup", function() {
         table.ajax.reload();
     });
 
-    $("#genderFilter").on("change", function () {
+    $("#genderFilter").on("change", function() {
         table.ajax.reload();
     });
 
@@ -211,7 +233,7 @@ $(document).ready(function () {
             url: window.routes.fetchStats,
             method: "GET",
             dataType: "json",
-            success: function (data) {
+            success: function(data) {
                 $("#totalInvoice").text(data.totalInvoice);
                 $("#totalMaleInvoice").text(data.totalMaleInvoice);
                 $("#totalFemaleInvoice").text(data.totalFemaleInvoice);
@@ -225,7 +247,7 @@ $(document).ready(function () {
                 $("#totalAcceptedMalePayments").text(data.totalAcceptedMalePayments);
                 $("#totalAcceptedFemalePayments").text(data.totalAcceptedFemalePayments);
             },
-            error: function (xhr, status, error) {
+            error: function(xhr, status, error) {
                 console.error("Error fetching summary data:", error);
             },
         });
@@ -235,28 +257,43 @@ $(document).ready(function () {
     // Invoice Details Management
     // -----------------------------------
 
-    let currentInvoiceDetails = { id: null, paidDetails: [] };
+    let currentInvoiceDetails = {
+        paidDetails: [],
+        modifiedDetails: [],
+        id: null
+    };
 
     function showInvoiceDetails(invoiceId) {
         const modalBody = $("#applicantDetailsModal .modal-body");
         const labels = getLabels(lang);
 
-        currentInvoiceDetails = { id: invoiceId, paidDetails: [] };
+        currentInvoiceDetails = {
+            id: invoiceId,
+            paidDetails: []
+        };
         showLoadingSpinner(modalBody);
 
         $.ajax({
             url: window.routes.fetchInvoiceDetails.replace(":id", invoiceId),
             method: "GET",
-            success: function (response) {
+            success: function(response) {
                 if (!response.invoiceDetails || response.invoiceDetails.length === 0) {
                     showNoDataMessage(modalBody, labels.noDetails);
                     return;
                 }
-                const { studentDetails, invoiceDetails, media, status, invoice_id, notes, rejectReason } = response;
+                const {
+                    studentDetails,
+                    invoiceDetails,
+                    media,
+                    status,
+                    invoice_id,
+                    notes,
+                    rejectReason
+                } = response;
                 renderInvoiceDetails(modalBody, studentDetails, invoiceDetails, media, status, invoice_id, labels, notes, rejectReason, response);
                 attachEventListeners(response, labels);
             },
-            error: function () {
+            error: function() {
                 showErrorMessage(modalBody, labels.loadingFailed);
             },
         });
@@ -300,7 +337,7 @@ $(document).ready(function () {
         const invoiceRejectReasonHtml = generateInvoiceRejectReasonHtml(rejectReason, labels);
         // Show status buttons only if status is neither "accepted", "rejected", nor "paid"
         const statusButtonsHtml = (status !== "accepted" && status !== "rejected" && status !== "paid") ? generateStatusButtonsHtml(invoiceId, labels) : "";
-    
+
         modalBody.html(`
             <div class="container-fluid">
                 ${studentDetailsHtml}
@@ -312,7 +349,7 @@ $(document).ready(function () {
             </div>
         `);
     }
-    
+
     function generateStudentDetailsHtml(studentDetails, labels) {
         const details = ["name", "faculty", "building", "apartment", "room", "balance"];
         const studentDetailsCards = details
@@ -329,7 +366,7 @@ $(document).ready(function () {
         `
             )
             .join("");
-    
+
         return `
             <div class="card mb-4 shadow-sm border-0">
                 <div class="card-header bg-primary text-white p-3">
@@ -343,16 +380,16 @@ $(document).ready(function () {
             </div>
         `;
     }
-    
+
     function generateInvoiceDetailsHtml(invoiceDetails, invoiceStatus, response) {
         const totalAmount = invoiceDetails.reduce((sum, detail) => sum + parseFloat(detail.amount), 0);
-        // Disable inputs if status is "accepted", "rejected", or "paid"
-        const isDisabled = (invoiceStatus === "accepted" || invoiceStatus === "rejected" || invoiceStatus === "paid") ? "disabled" : "";
+        // Only disable inputs if status is "accepted" or "paid" (remove "rejected" from this check)
+        const isDisabled = (invoiceStatus === "accepted" || invoiceStatus === "paid") ? "disabled" : "";
         const pastInsurance = response.pastInsurance ? parseFloat(response.pastInsurance).toLocaleString() : "0";
-    
-        // Show editable insurance amount input only if not "accepted", "rejected", or "paid"
-        let insuranceSection = (invoiceStatus !== "accepted" && invoiceStatus !== "rejected" && invoiceStatus !== "paid") 
-            ? `
+
+        // Show editable insurance amount input if not "accepted" or "paid"
+        let insuranceSection = (invoiceStatus !== "accepted" && invoiceStatus !== "paid") ?
+            `
             <div class="mt-4">
                 <h6 class="fw-bold">${getTranslation("insurance", lang)}</h6>
                 <div class="row g-3">
@@ -366,8 +403,8 @@ $(document).ready(function () {
                     </div>
                 </div>
             </div>
-        `
-            : `
+        ` :
+            `
             <div class="mt-4">
                 <h6 class="fw-bold">${getTranslation("insurance", lang)}</h6>
                 <div class="row g-3">
@@ -378,10 +415,10 @@ $(document).ready(function () {
                 </div>
             </div>
         `;
-    
-        // Show additional fields only if status is not "accepted", "rejected", or "paid"
+
+        // Show additional fields if not "accepted" or "paid"
         let additionalFields = "";
-        if (invoiceStatus !== "accepted" && invoiceStatus !== "rejected" && invoiceStatus !== "paid") {
+        if (invoiceStatus !== "accepted" && invoiceStatus !== "paid") {
             additionalFields = `
                 <div class="mt-3">
                     <label for="overpayment-amount" class="form-label">${getTranslation("overpaymentAmount", lang)}</label>
@@ -397,7 +434,7 @@ $(document).ready(function () {
                 </div>
             `;
         }
-    
+
         return `
             <div class="card mb-4 shadow-sm border-secondary">
                 <div class="card-header bg-secondary text-white">
@@ -424,6 +461,7 @@ $(document).ready(function () {
                                                    name="invoice_detail_amount_${detail.id}" 
                                                    type="text" 
                                                    value="${parseFloat(detail.amount).toLocaleString()}" 
+                                                   data-detail-id="${detail.id}"
                                                    ${isDisabled}>
                                         </td>
                                         <td class="fs-5 text-end">
@@ -446,7 +484,7 @@ $(document).ready(function () {
             </div>
         `;
     }
-    
+
     function generatePaymentImagesHtml(media, labels) {
         if (media.length === 0) return `<p class="text-center text-muted py-3">${labels.noDetails}</p>`;
         return `
@@ -480,7 +518,7 @@ $(document).ready(function () {
             </div>
         `;
     }
-    
+
     function generateInvoiceNotesHtml(notes, labels) {
         if (!notes || notes.trim() === "") return "";
         return `
@@ -494,7 +532,7 @@ $(document).ready(function () {
             </div>
         `;
     }
-    
+
     function generateInvoiceRejectReasonHtml(rejectReason, labels) {
         if (!rejectReason || rejectReason.trim() === "") return "";
         return `
@@ -508,7 +546,7 @@ $(document).ready(function () {
             </div>
         `;
     }
-    
+
     function generateStatusButtonsHtml(invoiceId, labels) {
         return `
             <div class="d-flex justify-content-center gap-3 mt-4">
@@ -527,11 +565,14 @@ $(document).ready(function () {
     // -----------------------------------
 
     function attachEventListeners(response, labels) {
-        if (response.status !== "accepted") {
-            $(".invoice-detail-status").on("change", function () {
+        if (response.status !== "accepted" && response.status !== "paid") {
+            $(".invoice-detail-status").on("change", function() {
                 const detailId = $(this).val();
                 const editAmount = $(this).closest("tr").find(".invoice_detail_amount").val();
-                const detailData = { detailId: detailId, amount: editAmount.replace(/,/g, "") };
+                const detailData = {
+                    detailId: detailId,
+                    amount: editAmount.replace(/,/g, "")
+                };
 
                 if ($(this).is(":checked")) {
                     if (!currentInvoiceDetails.paidDetails.some((detail) => detail.detailId === detailId)) {
@@ -542,7 +583,26 @@ $(document).ready(function () {
                 }
             });
 
-            $("#new-insurance-amount").on("input", function () {
+            // Add event listener for amount changes
+            $(".invoice_detail_amount").on("input", function() {
+                const detailId = $(this).data("detail-id");
+                const newAmount = $(this).val().replace(/,/g, "");
+                const detailData = {
+                    detailId: detailId,
+                    amount: newAmount
+                };
+
+                // Update or add to modifiedDetails array
+                const existingIndex = currentInvoiceDetails.modifiedDetails?.findIndex(d => d.detailId === detailId) || -1;
+                if (existingIndex >= 0) {
+                    currentInvoiceDetails.modifiedDetails[existingIndex].amount = newAmount;
+                } else {
+                    currentInvoiceDetails.modifiedDetails = currentInvoiceDetails.modifiedDetails || [];
+                    currentInvoiceDetails.modifiedDetails.push(detailData);
+                }
+            });
+
+            $("#new-insurance-amount").on("input", function() {
                 let val = $(this).val().replace(/,/g, "");
                 let amountVal = parseFloat(val);
                 if (!isNaN(amountVal)) $(this).val(amountVal.toLocaleString());
@@ -551,15 +611,18 @@ $(document).ready(function () {
 
         response.invoiceDetails.forEach((detail) => {
             if (detail.status === "paid") {
-                currentInvoiceDetails.paidDetails.push({ detailId: detail.id, amount: detail.amount });
+                currentInvoiceDetails.paidDetails.push({
+                    detailId: detail.id,
+                    amount: detail.amount
+                });
             }
         });
 
-        $("#accept-btn").on("click", function () {
+        $("#accept-btn").on("click", function() {
             handleAcceptButtonClick(response, labels);
         });
 
-        $("#reject-btn").on("click", function () {
+        $("#reject-btn").on("click", function() {
             handleRejectButtonClick(response, labels);
         });
     }
@@ -571,12 +634,20 @@ $(document).ready(function () {
         const newInsuranceAmount = parseFloat($("#new-insurance-amount")?.val().replace(/,/g, "")) || 0;
 
         if (currentInvoiceDetails.paidDetails.length === 0 && overPaymentAmount === 0 && newInsuranceAmount === 0) {
-            swal({ type: "warning", title: getTranslation("warning", lang), text: getTranslation("selectPayment", lang) });
+            swal({
+                type: "warning",
+                title: getTranslation("warning", lang),
+                text: getTranslation("selectPayment", lang)
+            });
             return;
         }
 
         if (overPaymentAmount < 0 || newInsuranceAmount < 0) {
-            swal({ type: "warning", title: getTranslation("warning", lang), text: getTranslation("negativeAmount", lang) });
+            swal({
+                type: "warning",
+                title: getTranslation("warning", lang),
+                text: getTranslation("negativeAmount", lang)
+            });
             return;
         }
 
@@ -593,6 +664,18 @@ $(document).ready(function () {
     }
 
     function handleRejectButtonClick(response, labels) {
+        const modifiedDetails = currentInvoiceDetails.modifiedDetails || [];
+        const rejectReason = $("#admin-reject-reason").val();
+
+        if (!rejectReason) {
+            swal({
+                type: "warning",
+                title: getTranslation("warning", lang),
+                text: getTranslation("pleaseProvideRejectReason", lang),
+            });
+            return;
+        }
+
         swal({
             title: getTranslation("warning", lang),
             text: getTranslation("areYouSureReject", lang),
@@ -601,7 +684,7 @@ $(document).ready(function () {
             confirmButtonText: labels.reject,
             cancelButtonText: getTranslation("cancel", lang),
         }).then(() => {
-            updatePaymentStatus(response.invoice_id, "rejected", null);
+            updatePaymentStatus(response.invoice_id, "rejected", null, 0, 0, modifiedDetails);
         });
     }
 
@@ -609,7 +692,7 @@ $(document).ready(function () {
     // Payment Status Update
     // -----------------------------------
 
-    function updatePaymentStatus(invoiceId, status, paidDetails = null, overPaymentAmount = 0, newInsuranceAmount = 0) {
+    function updatePaymentStatus(invoiceId, status, paidDetails = null, overPaymentAmount = 0, newInsuranceAmount = 0, modifiedDetails = null) {
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
         const notes = $("#admin-notes").val();
         const rejectReason = $("#admin-reject-reason").val();
@@ -624,12 +707,13 @@ $(document).ready(function () {
         };
 
         if (status === "accepted" && paidDetails) data.paidDetails = paidDetails;
+        if (modifiedDetails) data.modifiedDetails = modifiedDetails;
 
         $.ajax({
             url: window.routes.updateInvoiceStatus.replace(":paymentId", invoiceId),
             method: "POST",
             data: data,
-            success: function (response) {
+            success: function(response) {
                 swal({
                     type: "success",
                     title: getTranslation("success", lang),
@@ -639,7 +723,7 @@ $(document).ready(function () {
                     table.ajax.reload();
                 });
             },
-            error: function (xhr) {
+            error: function(xhr) {
                 swal({
                     type: "error",
                     title: getTranslation("error", lang),
@@ -655,12 +739,12 @@ $(document).ready(function () {
 
     fetchStats();
 
-    $(document).on("click", "#details-btn", function () {
+    $(document).on("click", "#details-btn", function() {
         const paymentId = $(this).data("invoice-id");
         showInvoiceDetails(paymentId);
     });
 
-    $(document).on("input", ".invoice-detail:not(:disabled)", function () {
+    $(document).on("input", ".invoice-detail:not(:disabled)", function() {
         let val = $(this).val().replace(/,/g, "");
         let amountVal = parseFloat(val);
         if (!isNaN(amountVal)) $(this).val(amountVal.toLocaleString());
@@ -669,11 +753,11 @@ $(document).ready(function () {
     const toggleButton = document.getElementById("toggleButton");
     if (toggleButton) {
         const icon = toggleButton.querySelector("i");
-        document.getElementById("collapseExample").addEventListener("shown.bs.collapse", function () {
+        document.getElementById("collapseExample").addEventListener("shown.bs.collapse", function() {
             icon.classList.remove("fa-search-plus");
             icon.classList.add("fa-search-minus");
         });
-        document.getElementById("collapseExample").addEventListener("hidden.bs.collapse", function () {
+        document.getElementById("collapseExample").addEventListener("hidden.bs.collapse", function() {
             icon.classList.remove("fa-search-minus");
             icon.classList.add("fa-search-plus");
         });

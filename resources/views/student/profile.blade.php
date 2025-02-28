@@ -744,10 +744,10 @@
                                         @endif
                                     </div>
                                     <!-- Rejection Notes -->
-                                    @if ($invoice->admin_approval == 'rejected' && $invoice->notes)
+                                    @if ($invoice->admin_approval == 'rejected' && $invoice->reject_reason)
                                         <div class="alert alert-danger border-0 p-2 mb-2" role="alert">
                                             <strong>{{ __('Rejection Reason:') }}</strong>
-                                            <span>{{ $invoice->notes }}</span>
+                                            <span>{{ $invoice->reject_reason }}</span>
                                         </div>
                                     @endif
                                     <!-- Attachments Section -->

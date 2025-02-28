@@ -644,7 +644,6 @@ function handleSubmitSuccess(response) {
         allowOutsideClick: false,     
         allowEscapeKey: false,   
     }).then(() => {
-        console.log(response);
         if (response.success && response.redirect) {
             window.location.href = response.redirect;
         }

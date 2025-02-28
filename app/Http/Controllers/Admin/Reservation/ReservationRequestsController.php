@@ -156,7 +156,7 @@ class ReservationRequestsController extends Controller
                     ]
                 );
 
-                return successResponse('Reservation request accepted successfully!', null, ['data' => $reservationRequest]);
+                return successResponse(trans('Reservation request accepted successfully!'), null, ['data' => $reservationRequest]);
             });
         } catch (BusinessRuleException $e) {
             return errorResponse(trans($e->getMessage()), 400);

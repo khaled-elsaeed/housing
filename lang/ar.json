@@ -717,6 +717,7 @@
   "This room is not designated for accommodation purposes.":"هذه الغرفة ليست مخصصة للإقامة.",
   "This room does not match resident gender and cannot be reserved.":"هذه الغرفة لا تتناسب مع جنس المقيم ولا يمكن حجزها.",
   "Reservation request accepted successfully!":"تم قبول طلب التسكين بنجاح!",
+  "Upload Payment Files" : "تحميل ملفات الدفع",
   "Reservation request rejected successfully!":"تم رفض طلب التسكين بنجاح!",
   "Created new reservation successfully":"تم إنشاء الحجز الجديد بنجاح",
   "Reservation request accepted by administration":"تم قبول طلب الحجز من قبل الإدارة",
