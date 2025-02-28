@@ -722,6 +722,7 @@
   "Created new reservation successfully":"تم إنشاء الحجز الجديد بنجاح",
   "Reservation request accepted by administration":"تم قبول طلب الحجز من قبل الإدارة",
   "Bank Transfer":"تحويل بكي",
+  "Payment images updated successfully!" : "تم تحديث صور الدفع بنجاح!",
   "reservation_created":"تم إنشاء الحجز",
   "reservation_accepted":"تم قبول الحجز",
   "Choose Files":"أختر الملفات",

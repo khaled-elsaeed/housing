@@ -124,8 +124,8 @@ class StudentPaymentController extends Controller
                 $invoice->admin_approval = 'pending';
                 $invoice->save();
             }
+            return successResponse(trans('Payment images updated successfully'), null, ['media' => $media]);
 
-            return response()->json(['message' => 'Payment images updated successfully']);
         } catch (Exception $e) {
             logError('Failed to update invoice media', 'update_media', $e);
             return errorResponse('Failed to update invoice media', 500);
@@ -159,7 +159,7 @@ class StudentPaymentController extends Controller
                 ];
             });
 
-            return successResponse('Invoice media retrieved successfully', null, ['media' => $media]);
+            return successResponse(trans('Invoice media retrieved successfully'), null, ['media' => $media]);
         } catch (Exception $e) {
             logError('Failed to retrieve invoice media', 'get_invoice_media', $e);
             return errorResponse('Failed to retrieve invoice media', 500);
