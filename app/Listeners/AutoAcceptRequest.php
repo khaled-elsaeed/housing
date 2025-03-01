@@ -51,11 +51,7 @@ class AutoAcceptRequest implements ShouldQueue
 
         // Check if the request has the flag `stay_in_last_old_room` set to 1 and `old_room_id` is valid
         if ($reservationRequest->stay_in_last_old_room != 1 || !$reservationRequest->old_room_id) {
-            Log::info('Reservation request does not meet auto-accept conditions.', [
-                'reservation_request_id' => $reservationRequest->id,
-                'stay_in_last_old_room' => $reservationRequest->stay_in_last_old_room,
-                'old_room_id' => $reservationRequest->old_room_id,
-            ]);
+           
             return;
         }
 
@@ -92,10 +88,6 @@ class AutoAcceptRequest implements ShouldQueue
                 // Create a new reservation using the reservation service
                 $this->reservationService->newReservation($reservationRequest, $oldRoom);
 
-                Log::info('Reservation request auto-accepted for user: ' . $user->id, [
-                    'reservation_request_id' => $reservationRequest->id,
-                    'old_room_id' => $oldRoom->id,
-                ]);
             } catch (\Exception $e) {
                 Log::error('Error auto-accepting reservation request: ' . $e->getMessage(), [
                     'user_id' => $user->id,
@@ -103,12 +95,6 @@ class AutoAcceptRequest implements ShouldQueue
                     'old_room_id' => $oldRoom->id,
                 ]);
             }
-        } else {
-            Log::info('No completed reservation found for user in the same academic year and old room.', [
-                'user_id' => $user->id,
-                'academic_year' => $academicYear,
-                'old_room_id' => $oldRoom->id,
-            ]);
-        }
+        } 
     }
 }

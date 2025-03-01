@@ -19,26 +19,29 @@
                     <span>@lang('Home')</span>
                 </a>
             </li>
-
-            <li class="{{ request()->is('student/maintenance*') ? 'active' : '' }}">
-    <a href="javascript:void(0)" class="{{ request()->is('student/maintenance*') ? 'active' : '' }}">
-        <img src="{{ asset('images/svg-icon/error.svg') }}" class="img-fluid" alt="maintenance">
-        <span>@lang('Maintenance')</span>
-        <i class="feather icon-chevron-right"></i>
-    </a>
-    <ul class="vertical-submenu">
-        <li class="{{ request()->routeIs('student.maintenance.index') ? 'active' : '' }}">
-            <a href="{{ route('student.maintenance.index') }}" class="{{ request()->routeIs('student.maintenance.index') ? 'active' : '' }}">
-                @lang('All Requests')
-            </a>
-        </li>
-        <li class="{{ request()->routeIs('student.maintenance.create') ? 'active' : '' }}">
-            <a href="{{ route('student.maintenance.create') }}" class="{{ request()->routeIs('student.maintenance.create') ? 'active' : '' }}">
-                @lang('Submit New Request')
-            </a>
-        </li>
-    </ul>
-</li>
+    <li class="{{ request()->is('student/maintenance*') ? 'active' : '' }}">
+        <a href="javascript:void(0)" class="{{ request()->is('student/maintenance*') ? 'active' : '' }}">
+            <img src="{{ asset('images/svg-icon/error.svg') }}" class="img-fluid" alt="maintenance">
+            <span>@lang('Maintenance')</span>
+            <i class="feather icon-chevron-right"></i>
+        </a>
+        <ul class="vertical-submenu">
+            <li class="{{ request()->routeIs('student.maintenance.index') ? 'active' : '' }}">
+                <a href="{{ route('student.maintenance.index') }}"
+                   class="{{ request()->routeIs('student.maintenance.index') ? 'active' : '' }}">
+                    @lang('All Requests')
+                </a>
+            </li>
+            @if (Auth()->user()->activeReservation())
+            <li class="{{ request()->routeIs('student.maintenance.create') ? 'active' : '' }}">
+                <a href="{{ route('student.maintenance.create') }}"
+                   class="{{ request()->routeIs('student.maintenance.create') ? 'active' : '' }}">
+                    @lang('Submit New Request')
+                </a>
+            </li>
+            @endif
+        </ul>
+    </li>
 
             <li class="{{ request()->routeIs('student.profile*') ? 'active' : '' }}" >
                 <a href="{{ route('student.profile') }}" >

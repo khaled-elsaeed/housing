@@ -374,14 +374,15 @@
                            <div class="row">
                               <div class="col-md-4 mb-2">
                                  <label for="emergencyContactRelationship" class="form-label">{{ __('Relationship') }}</label>
-                                 <select name="emergencyContactRelationship" id="emergencyContactRelationship" class="form-control" >
-                                    <option value="">{{ __('Select Relationship') }}</option>
-                                    <option value="father" {{ old('emergencyContactRelationship', $profileData['emergencyContact']['emergencyContactRelationship'] ?? '') == 'father' ? 'selected' : '' }}>{{ __('Father') }}</option>
-                                    <option value="mother" {{ old('emergencyContactRelationship', $profileData['emergencyContact']['emergencyContactRelationship'] ?? '') == 'mother' ? 'selected' : '' }}>{{ __('Mother') }}</option>
-                                    <option value="brother" {{ old('emergencyContactRelationship', $profileData['emergencyContact']['emergencyContactRelationship'] ?? '') == 'brother' ? 'selected' : '' }}>{{ __('Brother') }}</option>
-                                    <option value="sister" {{ old('emergencyContactRelationship', $profileData['emergencyContact']['emergencyContactRelationship'] ?? '') == 'sister' ? 'selected' : '' }}>{{ __('Sister') }}</option>
-                                    <option value="other" {{ old('emergencyContactRelationship', $profileData['emergencyContact']['emergencyContactRelationship'] ?? '') == 'other' ? 'selected' : '' }}>{{ __('Other') }}</option>
-                                 </select>
+                                 <select name="emergencyContactRelationship" id="emergencyContactRelationship" class="form-control">
+    <option value="">{{ __('Select Relationship') }}</option>
+    <option value="uncle" {{ old('emergencyContactRelationship', $profileData['emergencyContact']['emergencyContactRelationship'] ?? '') == 'uncle' ? 'selected' : '' }}>{{ __('Uncle') }}</option>
+    <option value="aunt" {{ old('emergencyContactRelationship', $profileData['emergencyContact']['emergencyContactRelationship'] ?? '') == 'aunt' ? 'selected' : '' }}>{{ __('Aunt') }}</option>
+    <option value="grandfather" {{ old('emergencyContactRelationship', $profileData['emergencyContact']['emergencyContactRelationship'] ?? '') == 'grandfather' ? 'selected' : '' }}>{{ __('Grandfather') }}</option>
+    <option value="grandmother" {{ old('emergencyContactRelationship', $profileData['emergencyContact']['emergencyContactRelationship'] ?? '') == 'grandmother' ? 'selected' : '' }}>{{ __('Grandmother') }}</option>
+    <option value="other" {{ old('emergencyContactRelationship', $profileData['emergencyContact']['emergencyContactRelationship'] ?? '') == 'other' ? 'selected' : '' }}>{{ __('Other') }}</option>
+</select>
+
                                  <div class="error-message"></div>
                               </div>
                               <!-- Name -->

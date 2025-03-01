@@ -7,10 +7,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Notifications\Notification;
 use App\Models\Invoice; // Ensure this is the correct namespace
-use App\Mail\InvoicePaid as InvoicePaidMailable;
+use App\Mail\InvoiceReject as InvoiceRejectMailable;
 use Illuminate\Support\Facades\Log;
 
-class InvoicePaid extends Notification
+class InvoiceReject extends Notification
 {
     use Queueable;
 
@@ -41,7 +41,7 @@ class InvoicePaid extends Notification
      */
     public function toMail(object $notifiable): Mailable
     {
-        $mailable = new InvoicePaidMailable($this->invoice);
+        $mailable = new InvoiceRejectMailable($this->invoice);
         return $mailable->to($notifiable->email);
     }
 
@@ -53,9 +53,9 @@ class InvoicePaid extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'title' => 'تم رفع الفاتورة',
+            'title' => 'تم رفض الفاتورة',
             'invoice_id' => $this->invoice->id,
-            'message' => 'تم رفع الفاتورة بنجاح وهي قيد المراجعة من قبل إدارة السكن.',
+            'message' => 'تم رفض الفاتورة من قبل إدارة السكن، يرجى مراجعة التفاصيل وإعادة التقديم.',
             'status' => $this->invoice->status,
             'created_at' => now(),
         ];

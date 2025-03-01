@@ -3,8 +3,10 @@
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 use Carbon\Carbon;
 use App\Models\UserActivity;
+use App\Models\AdminAction;
 
 if (!function_exists('arabicNumbers')) {
     /**
@@ -39,7 +41,7 @@ if (!function_exists('formatLastUpdated')) {
         $diffInMinutes = $lastUpdated->diffInMinutes(now());
 
         if ($diffInMinutes < 60) {
-            return trans_choice(__('minute_ago'), $diffInMinutes, ['value' => $diffInMinutes]);
+            return trans_choice('minute_ago', $diffInMinutes, ['value' => $diffInMinutes]);
         }
 
         $diffInHours = (int) $lastUpdated->diffInHours(now());
@@ -49,11 +51,11 @@ if (!function_exists('formatLastUpdated')) {
             if ($minutes > 0) {
                 return __('hour_minute_ago', ['hours' => $diffInHours, 'minutes' => $minutes]);
             }
-            return trans_choice(__('hour_ago'), $diffInHours, ['value' => $diffInHours]);
+            return trans_choice('hour_ago', $diffInHours, ['value' => $diffInHours]);
         }
 
         $diffInDays = (int) $lastUpdated->diffInDays(now());
-        return trans_choice(__('day_ago'), $diffInDays, ['value' => $diffInDays]);
+        return trans_choice('day_ago', $diffInDays, ['value' => $diffInDays]);
     }
 }
 
@@ -112,12 +114,12 @@ if (!function_exists('errorResponse')) {
      * @param int $statusCode
      * @return JsonResponse
      */
-    function errorResponse(string $error, int $statusCode): JsonResponse
+    function errorResponse(string $message, int $statusCode): JsonResponse
     {
         return response()->json([
             'success' => false,
-            'errors' => $error,
-            'message' => $error,
+            'errors' => $message,
+            'message' => $message,
         ], $statusCode);
     }
 }
@@ -133,38 +135,50 @@ if (!function_exists('userActivity')) {
      */
     function userActivity(int $userId, string $activityType, string $description): void
     {
-        UserActivity::create([
-            'user_id' => $userId,
-            'activity_type' => $activityType,
-            'description' => $description,
-        ]);
+        try {
+            UserActivity::create([
+                'user_id' => $userId,
+                'activity_type' => $activityType,
+                'description' => $description,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to log user activity', [
+                'user_id' => $userId,
+                'activity_type' => $activityType,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }
 
-if (!function_exists('successResponse')) {
+if (!function_exists('logAdminAction')) {
     /**
-     * Return a standardized JSON success response, optionally with a redirect and extra data.
+     * Log an admin action to the audit log table.
      *
-     * @param string $message
-     * @param string|null $redirect
-     * @param array $data
-     * @return JsonResponse
+     * @param string $action The type of action (e.g., 'create', 'update', 'delete')
+     * @param string $description Description of the action
+     * @param array|null $changes Array of changes (e.g., ['old' => ..., 'new' => ...])
+     * @return void
      */
-    function successResponse(string $message, ?string $redirect = null, array $data = []): JsonResponse
+    function logAdminAction(string $action, string $description, ?array $changes = null): void
     {
-        $responseData = [
-            'success' => true,
-            'message' => $message,
-        ];
-
-        if ($redirect !== null) {
-            $responseData['redirect'] = $redirect;
+        try {
+            AdminAction::create([
+                'admin_id' => Auth::id() ?? 1, // Default to 1 if no auth user
+                'action' => $action,
+                'description' => $description,
+                'changes' => $changes ? json_encode($changes) : null,
+                'ip_address' => Request::ip(),
+                'user_agent' => Request::userAgent(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to log admin action', [
+                'action' => $action,
+                'description' => $description,
+                'error' => $e->getMessage(),
+            ]);
         }
-
-        if (!empty($data)) {
-            $responseData = array_merge($responseData, $data);
-        }
-
-        return response()->json($responseData, 200);
     }
 }

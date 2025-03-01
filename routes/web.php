@@ -66,8 +66,9 @@ Route::middleware(Localization::class)
     Route::post('/login', [LoginController::class, 'login'])->name('login.post');
     Route::get('/register', [RegisterController::class, 'showRegisterPage'])->name('register');
     Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
-    Route::get('/activate-account/{token}', [AccountActivationController::class, 'activate'])->name('activate-account');
-
+    Route::get('/activate-account/{token}', [AccountActivationController::class, 'activate'])
+    ->middleware('throttle:10,1')
+    ->name('activate-account');
     // Password Reset Routes
     Route::prefix('password')->name('password.')->group(function () {
         Route::get('/reset', [PasswordResetController::class, 'showResetRequestForm'])->name('request');
@@ -99,6 +100,7 @@ Route::middleware(Localization::class)
                 Route::get('/stats', [InvoiceController::class, 'fetchStats'])->name('.stats');  // Fetch statistics for invoices
                 Route::get('/{id}', [InvoiceController::class, 'fetchInvoice'])->name('.show');  // Fetch a specific invoice by ID
                 Route::post('/payment/{paymentId}/status', [InvoiceController::class, 'updatePaymentStatus'])->name('.payment.update'); // Update payment status
+                Route::post('/{invoiceId}/details', [InvoiceController::class, 'updateInvoiceDetails'])->name('.details.update');
                 Route::prefix('export')->name('.export-')->group(function () {
                     Route::get('/excel', [InvoiceController::class, 'downloadInvoicesExcel'])->name('excel');  // Export invoices to Excel
                 });
@@ -260,8 +262,7 @@ Route::middleware(Localization::class)
             Route::get('/maintenance/create', [StudentMaintenanceController::class, 'create'])->name('maintenance.create');
             Route::post('/maintenance/store', [StudentMaintenanceController::class, 'store'])->name('maintenance.store');
             Route::get('/maintenance/{id}', [StudentMaintenanceController::class, 'show'])->name('maintenance.show');
-            Route::get('/student/maintenance/requests', [StudentMaintenanceController::class, 'fetchUserRequests'])
-    ->name('maintenance.requests');
+            Route::get('/student/maintenance/requests', [StudentMaintenanceController::class, 'fetchUserRequests'])->name('maintenance.requests');
             // Additional maintenance actions
             Route::post('/maintenance/{id}/cancel', [StudentMaintenanceController::class, 'cancel'])->name('maintenance.cancel');
             Route::post('/maintenance/{id}/comment', [StudentMaintenanceController::class, 'addComment'])->name('maintenance.comment');
@@ -270,7 +271,9 @@ Route::middleware(Localization::class)
             Route::get('/maintenance/{id}/problems-by-category', [StudentMaintenanceController::class, 'getProblemsByCategory'])->name('maintenance.problems.by.category');
 
             Route::post('/reservation',[StudentReservationRequestController::class,'store'])->name('reservation.store');
-
+            
+            Route::get('/invoices/{invoiceId}/media', [StudentPaymentController::class, 'getInvoiceMedia'])->name('invoices.media');
+            Route::post('/invoice/{invoiceId}/update-media', [StudentPaymentController::class, 'updateMedia'])->name('invoice.update-media');
             Route::get('permission', [StudentPermissionController::class, 'showForm'])->name('permission.form');
             Route::post('permission/store', [StudentPermissionController::class, 'store'])->name('permission.store');
         });

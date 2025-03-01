@@ -337,7 +337,8 @@ window.routes = {
     fetchInvoiceDetails: "{{ route('admin.invoices.show', ':id') }}",  
     fetchInvoices: "{{ route('admin.invoices.fetch') }}",  
     fetchStats: "{{ route('admin.invoices.stats') }}",  
-    updateInvoiceStatus : "{{ route('admin.invoices.payment.update', ':paymentId')}}"
+    updateInvoiceStatus : "{{ route('admin.invoices.payment.update', ':paymentId')}}",
+    updateInvoiceDetails :"{{ route('admin.invoices.details.update', ':invoiceId')}}"
 };
 
 
