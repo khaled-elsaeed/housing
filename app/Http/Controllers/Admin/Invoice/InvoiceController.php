@@ -135,16 +135,16 @@ class InvoiceController extends Controller
                ->addColumn('admin_approval', fn($invoice) => trans($invoice->admin_approval))
                ->editColumn('reservation_duration', function ($invoice) {
                    // Check if the reservation period type is "long" and an academic term is associated
-if ($invoice->reservation->period_type === "long" && $invoice->reservation->academicTerm) {
-   return trans('long_period_format', [
-       'semester' => trans($invoice->reservation->academicTerm->semester),
-       'name' => trans($invoice->reservation->academicTerm->name),
-       'year' => app()->getLocale() == 'ar' ? arabicNumbers($invoice->reservation->academicTerm->academic_year) :$invoice->reservation->academicTerm->academic_year ,
-   ]);
-}
+                if ($invoice->reservation->period_type === "long" && $invoice->reservation->academicTerm) {
+                return trans('long_period_format', [
+                    'semester' => trans($invoice->reservation->academicTerm->semester),
+                    'name' => trans($invoice->reservation->academicTerm->name),
+                    'year' => app()->getLocale() == 'ar' ? arabicNumbers($invoice->reservation->academicTerm->academic_year) :$invoice->reservation->academicTerm->academic_year ,
+                ]);
+                }
 
-// Fallback to the period duration or 'N/A' if not available
-return $invoice->reservation->period_duration ?? trans('N/A');
+                // Fallback to the period duration or 'N/A' if not available
+                return $invoice->reservation->period_duration ?? trans('N/A');
                })
                ->make(true);
        } catch (Throwable $e) {
