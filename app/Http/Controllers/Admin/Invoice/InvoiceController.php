@@ -136,7 +136,6 @@ class InvoiceController extends Controller
                ->editColumn('reservation_duration', function ($invoice) {
                    // Check if the reservation period type is "long" and an academic term is associated
 if ($invoice->reservation->period_type === "long" && $invoice->reservation->academicTerm) {
-   // Construct the formatted string using the academic term details
    return trans('long_period_format', [
        'semester' => trans($invoice->reservation->academicTerm->semester),
        'name' => trans($invoice->reservation->academicTerm->name),

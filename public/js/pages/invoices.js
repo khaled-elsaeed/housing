@@ -725,7 +725,6 @@ function handleAcceptButtonClick(response, labels) {
         confirmButtonText: labels.accept,
         cancelButtonText: getTranslation("cancel", lang),
     }).then((result) => {
-        if (result.isConfirmed) {
             const acceptBtn = $("#accept-btn");
 
             // Disable button and show spinner
@@ -754,7 +753,7 @@ function handleAcceptButtonClick(response, labels) {
                         <i class="fa fa-check-circle me-2"></i> ${labels.accept}
                     `);
                 });
-        }
+        
     });
 }
 
@@ -778,7 +777,6 @@ function handleRejectButtonClick(response, labels) {
         confirmButtonText: labels.reject,
         cancelButtonText: getTranslation("cancel", lang),
     }).then((result) => {
-        if (result.isConfirmed) {
             const rejectBtn = $("#reject-btn");
 
             // Disable button and show spinner
@@ -807,7 +805,7 @@ function handleRejectButtonClick(response, labels) {
                         <i class="fa fa-times-circle me-2"></i> ${labels.reject}
                     `);
                 });
-        }
+        
     });
 }
 
