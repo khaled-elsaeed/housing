@@ -259,8 +259,7 @@ class InvoiceController extends Controller
             }
 
             $invoice->save();
-            $this->logAdminAction($request, $invoiceId, $status, $validated);
-
+            logAdminAction('update_payment_status', "Updated invoice #{$invoiceId} status to {$status}", $validated);
             DB::commit();
 
             return successResponse(trans('Invoice status updated successfully'), null, ['status' => $status]);
@@ -303,8 +302,7 @@ class InvoiceController extends Controller
                 }
             }
 
-            $this->logAdminAction($request, $invoiceId, 'modified_details', $validated);
-
+            logAdminAction('update_invoice_details', "Modified details for invoice #{$invoiceId}", $validated);
             DB::commit();
 
             return successResponse(trans('Invoice details updated successfully'));
@@ -383,30 +381,5 @@ class InvoiceController extends Controller
         }
     }
 
-    /**
-     * Log admin action for auditing.
-     *
-     * @param Request $request HTTP request
-     * @param int $invoiceId Invoice ID
-     * @param string $status New status
-     * @param array $validated Validated request data
-     * @return void
-     */
-    private function logAdminAction(Request $request, $invoiceId, string $status, array $validated): void
-    {
-        try {
-            AdminAction::create([
-                'admin_id' => Auth::id(),
-                'invoice_id' => $invoiceId,
-                'action' => 'update_payment_status',
-                'description' => "Updated payment status to {$status}" . 
-                    (isset($validated['modifiedDetails']) ? " with modified details" : ""),
-                'status' => $status,
-                'changes' => json_encode($validated),
-                'ip_address' => $request->ip(),
-            ]);
-        } catch (Throwable $e) {
-            logError('Failed to log admin action', 'log_admin_action', $e);
-        }
-    }
+   
 }
