@@ -184,7 +184,7 @@
   "Hend Sabry:":"هند صبري:",
   "Nagwa Ebrahim:":"نجوى ابراهيم:",
   "Invoice already paid":"الفاتورة مدفوعة بالفعل",
-  "Invoice paid successfully":"تم رفع الفاتورة بنجاح !",
+  "Invoice paid successfully!":"تم رفع الفاتورة بنجاح!",
   "Failed to pay invoice":"فشل رفع الفاتورة",
   "Payment receipt file is required.":"صورة الايصال مطلوبة",
   "completed":"مكتمل",
@@ -210,10 +210,15 @@
   "If you have a same-gender sibling, you can share a double room":"إذا كان لديك شقيق من نفس الجنس، يمكنك مشاركة غرفة مزدوجة",
   "If you stayed with us last term, you’ll keep your old room":"إذا كنت قد أقمت معنا في الفصل الدراسي الماضي، ستحتفظ بغرفتك القديمة",
   "If your reservation is accepted, the payment option will appear":"إذا تم قبول حجزك، ستظهر خيار الدفع",
-  "Image size must be less than 4MB":"يجب أن يكون حجم الصورة أقل من 4 ميجابايت",
+  "Image size must be less than 3MB":"يجب أن يكون حجم الصورة أقل من 3 ميجابايت",
   "Inactive":"غير نشط",
   "Instapay":"إنستا باي",
+  "siblingfemale":"أخت",
+  "siblingmale":"أخ",
+  "long_period_format":"الفصل الدراسي :semester ( :name :year )",
+  "The invoice has been rejected by the housing administration, please review the details and resubmit.":"تم رفض الفاتورة من قبل إدارة السكن، يرجى مراجعة التفاصيل وإعادة التقديم.",
   "Invalid Date":"تاريخ غير صالح",
+  "Invoice Rejected":"تم رفض الفاتورة",
   "Invalid File Type":"نوع ملف غير صالح",
   "Invoice Details":"تفاصيل الفاتورة",
   "Invoice Status":"حالة الفاتورة",
@@ -483,8 +488,12 @@
   "Failed to submit the maintenance request. Please try again.":"فشل في إرسال طلب الصيانة. يرجى المحاولة مرة أخرى.",
   "Failed to fetch problems. Please try again.":"فشل في جلب المشاكل. يرجى المحاولة مرة أخرى.",
   "Choose files":"اختر الملفات",
-  "Up to 3 photos, max 5MB each (JPG, PNG)":"حتى 3 صور، بحد أقصى 5 ميجابايت لكل صورة (JPG, PNG)",
+  "Up to 3 photos, max 3MB each (JPG, PNG)":"حتى 3 صور، بحد أقصى 3 ميجابايت لكل صورة (JPG, PNG)",
   "Submit Request":"إرسال الطلب",
+  "Upload Payment":"إضافة فاتورة",
+  "Edit Payment":"تعديل فاتورة",
+  "Payment files updated successfully!":"تم تحديث ملفات الدفع بنجاح!",
+  "Rejection Reason:":"سبب الرفض:",
   "An error occurred. Please try again.":"حدث خطأ. الرجاء المحاولة مرة أخرى.",
   "Academic Year":"العام الدراسي",
   "Reservation Duration":"مدة الحجز",
@@ -703,89 +712,66 @@
   "complete_profile":"اكتمال الملف الشخصي",
   "Completed profile information":"تم تحديث معلومات الملف الشخصي بنجاح.",
   "Your reservation has been created successfully.":"تم إنشاء حجزك بنجاح.",
-  "The room is fully occupied and cannot accommodate more residents." : "هذه الغرفة ممتلئة بالكامل ولا يمكنها استيعاب المزيد من السكان.",
-  "This room is currently inactive and unavailable for reservation." : "هذه الغرفة غير نشطة حاليًا وغير متاحة للحجز.",
-  "This room is not designated for accommodation purposes." : "هذه الغرفة ليست مخصصة للإقامة.",
-  "This room does not match resident gender and cannot be reserved." : "هذه الغرفة لا تتناسب مع جنس المقيم ولا يمكن حجزها.",
-  "Reservation request accepted successfully!" : "تم قبول طلب التسكين بنجاح!",
+  "The room is fully occupied and cannot accommodate more residents.":"هذه الغرفة ممتلئة بالكامل ولا يمكنها استيعاب المزيد من السكان.",
+  "This room is currently inactive and unavailable for reservation.":"هذه الغرفة غير نشطة حاليًا وغير متاحة للحجز.",
+  "This room is not designated for accommodation purposes.":"هذه الغرفة ليست مخصصة للإقامة.",
+  "This room does not match resident gender and cannot be reserved.":"هذه الغرفة لا تتناسب مع جنس المقيم ولا يمكن حجزها.",
+  "Reservation request accepted successfully!":"تم قبول طلب التسكين بنجاح!",
+  "Upload Payment Files" : "تحميل ملفات الدفع",
   "Reservation request rejected successfully!":"تم رفض طلب التسكين بنجاح!",
-  "Created new reservation successfully" : "تم إنشاء الحجز الجديد بنجاح",
-  "Reservation request accepted by administration" : "تم قبول طلب الحجز من قبل الإدارة",
-  "Bank Transfer": "تحويل بكي",
-    "reservation_created": "تم إنشاء الحجز",
-    "reservation_accepted": "تم قبول الحجز",
-    "Choose Files" : "أختر الملفات",
-    "Upload Invoice" : "رفع الفواتير",
-    "create_maintenance_request": "إنشاء طلب صيانة",
-    "Submitted a new maintenance request successfully." : "تم تقديم طلب صيانة جديد بنجاح.",
-    "Staff" : "المشرفين",
-    "Role": "الدور",
-
-    "admin" : "مشرف",
-    "housing_manager": "مشرف/مشرفة السكن",
-    "Add User" : "إضافة مستخدم",
-    
-
-      "First Name (EN)": "الاسم الأول (بالإنجليزية)",
-      "Last Name (EN)": "اسم العائلة (بالإنجليزية)",
-      "First Name (AR)": "الاسم الأول (بالعربية)",
-      "Last Name (AR)": "اسم العائلة (بالعربية)",
-
-      "Select Role": "اختر الدور",
-      "Admin": "مشرف",
-      "Housing Manager": "مشرف السكن",
-      "Technician": "فني",
-      "Technician Role": "دور الفني",
-      "Select Technician Role": "اختر دور الفني",
-      "Plumber": "سباك",
-      "Electrician": "كهربائي",
-      "Carpenter": "نجار",
-      "technician - plumber": "فني - سباك",
-  "technician - electrician": "فني - كهربائي",
-  "technician - carpenter": "فني - نجار",
-
-    "Active": "نشط",
-
-    "Edit User": "تعديل المستخدم",
-
-    "Delete User": "حذف المستخدم",
-    
-    
-    "Update User": "تحديث المستخدم",
-    "Are you sure you want to delete this user?": "هل أنت متأكد أنك تريد حذف هذا المستخدم؟",
- 
-    "User added successfully": "تم إضافة المستخدم بنجاح",
-
-    "An error occurred.": "حدث خطأ.",
-    "An unexpected error occurred.": "حدث خطأ غير متوقع.",
-    "User updated successfully": "تم تحديث المستخدم بنجاح",
-    "User deleted successfully": "تم حذف المستخدم بنجاح",
-    "Email reset successfully": "تم إعادة تعيين البريد الإلكتروني بنجاح",
-    "Password reset successfully": "تم إعادة تعيين كلمة المرور بنجاح"
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-
-
-
+  "Created new reservation successfully":"تم إنشاء الحجز الجديد بنجاح",
+  "Reservation request accepted by administration":"تم قبول طلب الحجز من قبل الإدارة",
+  "Bank Transfer":"تحويل بكي",
+  "Too Many Files": "عدد الملفات كبير جدًا"
+,
+  "Payment images updated successfully!" : "تم تحديث صور الدفع بنجاح!",
+  "reservation_created":"تم إنشاء الحجز",
+  "reservation_accepted":"تم قبول الحجز",
+  "Choose Files":"أختر الملفات",
+  "Upload Invoice":"رفع الفواتير",
+  "Update Payment Images": "تحديث صور الدفع",
+  "Add New Images": "إضافة صور جديدة",
+  "You can only upload up to 3 images per invoice.": "يمكنك تحميل ما يصل إلى 3 صور فقط لكل فاتورة."
+,
+  "create_maintenance_request":"إنشاء طلب صيانة",
+  "Submitted a new maintenance request successfully.":"تم تقديم طلب صيانة جديد بنجاح.",
+  "Staff":"المشرفين",
+  "Role":"الدور",
+  "admin":"مشرف",
+  "housing_manager":"مشرف/مشرفة السكن",
+  "Add User":"إضافة مستخدم",
+  "First Name (EN)":"الاسم الأول (بالإنجليزية)",
+  "Last Name (EN)":"اسم العائلة (بالإنجليزية)",
+  "First Name (AR)":"الاسم الأول (بالعربية)",
+  "Last Name (AR)":"اسم العائلة (بالعربية)",
+  "Select Role":"اختر الدور",
+  "Admin":"مشرف",
+  "Housing Manager":"مشرف السكن",
+  "Technician":"فني",
+  "Technician Role":"دور الفني",
+  "Select Technician Role":"اختر دور الفني",
+  "Plumber":"سباك",
+  "Electrician":"كهربائي",
+  "Carpenter":"نجار",
+  "technician - plumber":"فني - سباك",
+  "technician - electrician":"فني - كهربائي",
+  "technician - carpenter":"فني - نجار",
+  "Active":"نشط",
+  "Edit User":"تعديل المستخدم",
+  "Delete User":"حذف المستخدم",
+  "Update User":"تحديث المستخدم",
+  "Are you sure you want to delete this user?":"هل أنت متأكد أنك تريد حذف هذا المستخدم؟",
+  "User added successfully":"تم إضافة المستخدم بنجاح",
+  "An error occurred.":"حدث خطأ.",
+  "An unexpected error occurred.":"حدث خطأ غير متوقع.",
+  "User updated successfully":"تم تحديث المستخدم بنجاح",
+  "User deleted successfully":"تم حذف المستخدم بنجاح",
+  "Email reset successfully":"تم إعادة تعيين البريد الإلكتروني بنجاح",
+  "Password reset successfully":"تم إعادة تعيين كلمة المرور بنجاح",
+  "Existing Attachments":"المرفقات الحالية",
+  "Add New Files":"إضافية ملفات جديدة",
+  "An error occurred during activation" : "حدث خطأ أثناء التفعيل",
+  "not_verified" : "حسابك لم يتم التحقق منه.",
+  "under_maintenance" : "تسجيل الدخول للمقيمين غير متاح حاليًا. سيكون متاحًا لاحقًا."
 
 }

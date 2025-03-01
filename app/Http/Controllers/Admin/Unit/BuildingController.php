@@ -31,9 +31,6 @@ class BuildingController extends Controller
     public function fetchBuildings(Request $request)
     {
         try {
-            // Log incoming request to debug
-            Log::info('Request Parameters:', $request->all());
-
             // Initialize the query for buildings
             $query = Building::query()->orderBy('number', 'asc');
 

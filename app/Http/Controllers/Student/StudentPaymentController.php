@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\Invoice;
-use App\Models\UserActivity;
 use App\Contracts\UploadServiceContract;
 use App\Events\InvoicePaid;
 use Illuminate\Http\Request;
@@ -13,8 +12,16 @@ use Exception;
 
 class StudentPaymentController extends Controller
 {
+    /**
+     * @var UploadServiceContract
+     */
     private $uploadService;
 
+    /**
+     * StudentPaymentController constructor.
+     *
+     * @param UploadServiceContract $uploadService
+     */
     public function __construct(UploadServiceContract $uploadService)
     {
         $this->uploadService = $uploadService;
@@ -29,12 +36,11 @@ class StudentPaymentController extends Controller
     public function payInvoice(Request $request)
     {
         try {
-            
             $validated = $request->validate([
                 'invoice_id' => 'required|exists:invoices,id',
                 'payment_method' => 'required|string|in:bank_transfer,instapay',
                 'photos' => 'nullable|array',
-                'photos.*' => 'image|mimes:jpeg,png,jpg|max:5120', 
+                'photos.*' => 'image|mimes:jpeg,png,jpg|max:3072', // Max 5MB
             ]);
 
             $invoice = Invoice::findOrFail($validated['invoice_id']);
@@ -45,20 +51,14 @@ class StudentPaymentController extends Controller
                 return errorResponse('Unauthorized', 403);
             }
 
-            // Check if invoice is already paid
-            if ($invoice->status === 'paid') {
-                logError('Attempt to pay an already paid invoice', 'pay_invoice', new Exception('Invoice already paid'));
-                return errorResponse('Invoice already paid', 400);
-            }
-
             DB::beginTransaction();
 
-            // Update invoice details
-            $invoice->update([
-                'status' => 'paid',
-                'payment_method' => $validated['payment_method'],
-                'paid_at' => now(),
-            ]);
+            if ($invoice->status !== 'paid') {
+                $invoice->update([
+                    'status' => 'pending',
+                    'payment_method' => $validated['payment_method'],
+                ]);
+            }
 
             // Handle photo uploads
             if ($request->hasFile('photos')) {
@@ -84,57 +84,102 @@ class StudentPaymentController extends Controller
     }
 
     /**
-     * Retrieve details of a specific invoice.
+     * Update media associated with an invoice.
      *
      * @param Request $request
+     * @param int $invoiceId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getInvoiceDetails(Request $request)
-    {
-        try {
-            $validated = $request->validate([
-                'invoice_id' => 'required|exists:invoices,id',
+    public function updateMedia(Request $request, $invoiceId)
+{
+    try {
+        $invoice = Invoice::findOrFail($invoiceId);
+
+        // Authorization check
+        if (!$invoice->reservation || $invoice->reservation->user_id !== Auth::id()) {
+            logError('Unauthorized attempt to update media', 'update_media', new Exception('User not authorized'));
+            return errorResponse(trans('Unauthorized'), 403);
+        }
+
+        // Get current media count
+        $currentMediaCount = $invoice->media()->count();
+
+        // Handle new photo uploads
+        if ($request->hasFile('photos')) {
+            $request->validate([
+                'photos' => 'array',
+                'photos.*' => 'image|mimes:jpeg,png,jpg|max:5120',
             ]);
 
-            $invoice = Invoice::with(['details', 'reservation.user', 'reservation.room'])
-                ->findOrFail($validated['invoice_id']);
+            $newPhotos = $request->file('photos');
+            $totalMediaAfterUpload = $currentMediaCount + count($newPhotos);
+
+            // Check if adding new photos exceeds the limit
+            if ($totalMediaAfterUpload > 3) {
+                return errorResponse(trans('You can only upload up to 3 images per invoice.'), 400);
+            }
+
+            foreach ($newPhotos as $photo) {
+                $this->uploadService->upload($photo, 'payments', $invoice);
+            }
+
+            $invoice->admin_approval = 'pending';
+            $invoice->save();
+        }
+
+        // Handle deleted media
+        if ($request->filled('deleted_media')) {
+            $deletedMediaIds = array_filter(explode(',', $request->input('deleted_media')));
+            $mediaItems = $invoice->media()->whereIn('id', $deletedMediaIds)->get();
+
+            foreach ($mediaItems as $mediaItem) {
+                $this->uploadService->delete($mediaItem);
+            }
+
+            $invoice->admin_approval = 'pending';
+            $invoice->save();
+        }
+
+        return successResponse(trans('Payment images updated successfully'), null);
+
+    } catch (Exception $e) {
+        logError('Failed to update invoice media', 'update_media', $e);
+        return errorResponse(trans('Failed to update invoice media'), 500);
+    }
+}
+
+
+    /**
+     * Retrieve media associated with a specific invoice.
+     *
+     * @param int $invoiceId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getInvoiceMedia($invoiceId)
+    {
+        try {
+            $invoice = Invoice::findOrFail($invoiceId);
 
             // Authorization check
             if ($invoice->reservation->user_id !== Auth::id()) {
-                logError('Unauthorized attempt to access invoice details', 'get_invoice_details', new Exception('User not authorized'));
+                logError('Unauthorized attempt to retrieve media', 'get_invoice_media', new Exception('User not authorized'));
                 return errorResponse('Unauthorized', 403);
             }
 
-            $user = $invoice->reservation->user;
-            $paymentDetails = $invoice->details->map(fn($detail) => [
-                'category' => $detail->category,
-                'amount' => $detail->amount,
-                'description' => $detail->description,
-            ]);
+            // Fetch media associated with the invoice
+            $media = $invoice->media()->get()->map(function ($media) {
+                return [
+                    'id' => $media->id,
+                    'path' => asset($media->path),
+                    'size' => $media->size, 
+                    'created_at' => $media->created_at,
+                ];
+            });
 
-            $totalAmount = $paymentDetails->sum('amount');
-
-            return successResponse('Invoice details retrieved successfully', null, [
-                'invoice_id' => $invoice->id,
-                'reservation' => [
-                    'id' => $invoice->reservation->id,
-                    'customer_name' => $user->name,
-                    'room_number' => $invoice->reservation->room->number,
-                    'building' => $invoice->reservation->room->building->name,
-                    'term' => $invoice->reservation->term,
-                    'year' => $invoice->reservation->year,
-                ],
-                'payment_details' => $paymentDetails,
-                'total_amount' => $totalAmount,
-                'status' => $invoice->status,
-                'payment_method' => $invoice->payment_method,
-                'due_date' => $invoice->due_date,
-                'paid_at' => $invoice->paid_at,
-                'created_at' => $invoice->created_at,
-            ]);
+            return successResponse(trans('Invoice media retrieved successfully'), null, ['media' => $media]);
         } catch (Exception $e) {
-            logError('Failed to retrieve invoice details', 'get_invoice_details', $e);
-            return errorResponse('Failed to retrieve invoice details', 500);
+            logError('Failed to retrieve invoice media', 'get_invoice_media', $e);
+            return errorResponse('Failed to retrieve invoice media', 500);
         }
     }
 }

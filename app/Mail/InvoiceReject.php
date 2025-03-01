@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class InvoicePaid extends Mailable
+class InvoiceReject extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -24,18 +24,19 @@ class InvoicePaid extends Mailable
      */
     public function __construct(Invoice $invoice)
     {
+        
         $this->invoice = $invoice;
 
         // Ensure the reservation and user exist
         if (!$invoice->reservation) {
-            Log::error('InvoicePaid Mail: Reservation not found for invoice', [
+            Log::error('InvoiceReject Mail: Reservation not found for invoice', [
                 'invoice_id' => $invoice->id,
             ]);
             throw new \Exception('Reservation not found for the invoice.');
         }
 
         if (!$invoice->reservation->user) {
-            Log::error('InvoicePaid Mail: User not found for reservation', [
+            Log::error('InvoiceReject Mail: User not found for reservation', [
                 'invoice_id' => $invoice->id,
                 'reservation_id' => $invoice->reservation->id,
             ]);
@@ -51,7 +52,7 @@ class InvoicePaid extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'تم استلام الدفع بنجاح',
+            subject: 'تم رفض الدفع', 
         );
     }
 
@@ -61,7 +62,7 @@ class InvoicePaid extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.invoice_paid',
+            view: 'emails.invoice_reject',
         );
     }
 

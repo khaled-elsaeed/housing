@@ -259,7 +259,7 @@
                   @endif
                   <!-- Sibling Option (Only shows if user has eligible siblings) -->
                   @if($sibling)
-                  <div id="siblingOption" class="mb-3 d-none">
+                     <div id="siblingOption" class="mb-3">
                      <div class="alert alert-info">
                         <i class="fa fa-info-circle me-2"></i>
                         {{ __('We detected that you have a sibling of the same gender in the system. Would you like to share a double room?') }}

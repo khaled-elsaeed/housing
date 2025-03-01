@@ -52,7 +52,7 @@ class StudentProfileCompleteController extends Controller
         try {
             $user = auth()->user();
             $this->completeProfileService->storeProfileData($user, $request->validated());
-            return successResponse('Your registration has been completed successfully.',route('student.home'));
+            return successResponse(trans('Your registration has been completed successfully.'),route('student.home'));
         } catch (Throwable $e) {
             logError('Error completing profile data', 'complete_user_profile', $e);
             return errorResponse(__('An error occurred while completing your profile.'), 500);

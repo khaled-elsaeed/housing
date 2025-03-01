@@ -8,9 +8,11 @@
         <div class="card border-0 shadow-sm rounded-3">
         <div class="card-header d-flex justify-content-between align-items-center bg-primary">
             <h5 class="m-0 text-white"><i class="fa fa-tools me-2"></i>{{ __('Your Maintenance Requests') }}</h5>
+            @if (Auth()->user()->activeReservation())
             <a href="{{ route('student.maintenance.create') }}" class="btn btn-sm btn-secondary">
                 <i class="fa fa-plus me-1"></i> {{ __('New Request') }}
             </a>
+            @endIf
         </div>
         
         <div class="card-body rounded-3 ">
@@ -18,10 +20,12 @@
                 <div class="text-center py-4">
                     <img src="{{ asset('images/maintenance/empty-state.svg') }}" alt="{{ __('No requests') }}" class="img-fluid mb-3" style="max-height: 120px">
                     <h6 class="text-muted">{{ __('No maintenance requests found') }}</h6>
+                    @if (Auth()->user()->activeReservation())
                     <p class="small text-muted mb-3">{{ __('Need something fixed? Create your first maintenance request.') }}</p>
                     <a href="{{ route('student.maintenance.create') }}" class="btn btn-primary btn-sm">
                         <i class="fa fa-plus-circle me-1"></i> {{ __('Create Request') }}
                     </a>
+                    @endIf
                 </div>
             @else
                 <div class="row g-3">

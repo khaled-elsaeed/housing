@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{DB, Auth};
 use Yajra\DataTables\Facades\DataTables;
 use App\Exceptions\BusinessRuleException;
-use Carbon\carbon;
+use Carbon\Carbon;
 use Exception;
 
 class ReservationRequestsController extends Controller
@@ -82,12 +82,12 @@ class ReservationRequestsController extends Controller
                         : ($request->start_date . trans(' To ') . $request->end_date)
                 )
                 ->editColumn('requested_at', fn($request) => 
-                    carbon::parse($request->created_at)->format('F j, Y g:i A')
+                    Carbon::parse($request->created_at)->format('F j, Y g:i A')
                 )
                 ->editColumn('status', fn($request) => $request->status ?? 'pending')
                 ->editColumn('actions', fn($request) => 
                     $request->status !== 'pending'
-                        ? carbon::parse($request->updated_at)->format('d M Y, h:i A')
+                        ? Carbon::parse($request->updated_at)->format('d M Y, h:i A')
                         : 'pending'
                 )
                 ->make(true);
@@ -129,7 +129,6 @@ class ReservationRequestsController extends Controller
     public function accept(Request $request, int $id)
     {
         try {
-
             $validated = $request->validate([
                 'room_id' => 'required|exists:rooms,id',
             ]);
@@ -144,26 +143,20 @@ class ReservationRequestsController extends Controller
 
                 $this->reservationService->newReservation($reservationRequest, $room);
 
-
                 $reservationRequest->status = 'accepted';
                 $reservationRequest->save();
 
-                AdminAction::create([
-                    'admin_id' => Auth::id(),
-                    'action' => 'accept_reservation_request',
-                    'description' => 'Accepted a reservation request',
-                    'changes' => json_encode([
+                logAdminAction(
+                    'accept_reservation_request',
+                    'Accepted a reservation request',
+                    [
                         'reservation_request_id' => $reservationRequest->id,
                         'room_id' => $room->id,
                         'status' => 'accepted',
-                    ]),
-                    'ip_address' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                ]);
+                    ]
+                );
 
-                userActivity($reservationRequest->user_id, 'reservation_accepted', 'Reservation request accepted by administration');
-
-                return successResponse('Reservation request accepted successfully!', null, ['data' => $reservationRequest]);
+                return successResponse(trans('Reservation request accepted successfully!'), null, ['data' => $reservationRequest]);
             });
         } catch (BusinessRuleException $e) {
             return errorResponse(trans($e->getMessage()), 400);
@@ -194,20 +187,15 @@ class ReservationRequestsController extends Controller
                 $reservationRequest->rejection_reason = $request->input('reason');
                 $reservationRequest->save();
 
-                AdminAction::create([
-                    'admin_id' => Auth::id(),
-                    'action' => 'reject_reservation_request',
-                    'description' => 'Rejected a reservation request',
-                    'changes' => json_encode([
+                logAdminAction(
+                    'reject_reservation_request',
+                    'Rejected a reservation request',
+                    [
                         'reservation_request_id' => $reservationRequest->id,
                         'status' => 'rejected',
                         'rejection_reason' => $request->input('reason'),
-                    ]),
-                    'ip_address' => $request->ip(),
-                    'user_agent' => $request->userAgent(),
-                ]);
-
-                userActivity($reservationRequest->user_id, 'reservation_rejected', 'Reservation request rejected by admin');
+                    ]
+                );
 
                 return successResponse('Reservation request rejected successfully!', null, ['data' => $reservationRequest]);
             });
@@ -229,16 +217,11 @@ class ReservationRequestsController extends Controller
         try {
             $this->reservationService->automateReservationProcess();
 
-            AdminAction::create([
-                'admin_id' => Auth::id(),
-                'action' => 'auto_reserve',
-                'description' => 'Auto reserved all pending reservation requests',
-                'changes' => json_encode([]),
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-            ]);
-
-            userActivity(Auth::id(), 'auto_reserve', 'Initiated auto reservation process');
+            logAdminAction(
+                'auto_reserve',
+                'Auto reserved all pending reservation requests',
+                []
+            );
 
             return successResponse('Auto reservation completed');
         } catch (Exception $e) {

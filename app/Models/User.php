@@ -308,22 +308,59 @@ class User extends Authenticatable
     public function getEligibleSibling()
     {
         try {
-            if (!$this->sibling || !$this->sibling->gender) {
+            // Check if sibling details are present
+            if (!$this->sibling || !$this->sibling->gender || !$this->sibling->national_id) {
+                \Log::warning('Sibling data is missing or incomplete', [
+                    'sibling' => $this->sibling
+                ]);
                 return null;
             }
-
+    
             $siblingGender = $this->sibling->gender;
             $userGender = $this->student->gender ?? null;
-
-            return ($siblingGender === 'brother' && $userGender === 'male') ||
-                   ($siblingGender === 'sister' && $userGender === 'female')
-                ? $this->sibling
-                : null;
+    
+            \Log::info('Sibling and student gender check', [
+                'siblingGender' => $siblingGender,
+                'userGender' => $userGender
+            ]);
+    
+            // Check eligibility based on gender
+            $isEligible = ($siblingGender === $userGender); 
+    
+            if (!$isEligible) {
+                \Log::info('Sibling is not eligible due to gender mismatch', [
+                    'siblingGender' => $siblingGender,
+                    'userGender' => $userGender
+                ]);
+                return null;
+            }
+    
+            // Query for sibling user
+            $siblingUser = User::whereHas('student', function ($query) {
+                $query->where('national_id', $this->sibling->national_id);
+            })->first();
+    
+            if (!$siblingUser) {
+                \Log::info('No user found with given national_id', [
+                    'national_id' => $this->sibling->national_id
+                ]);
+            } else {
+                \Log::info('Eligible sibling found', [
+                    'siblingUser' => $siblingUser->toArray()
+                ]);
+            }
+    
+            return $siblingUser ?: null;
+    
         } catch (\Exception $e) {
-            logError('Failed to get eligible sibling', 'get_eligible_sibling', $e);
+            \Log::error('Failed to get eligible sibling', [
+                'method' => 'getEligibleSibling',
+                'exception' => $e->getMessage()
+            ]);
             return null;
         }
     }
+    
 
     // ==================== Media Methods ====================
 
