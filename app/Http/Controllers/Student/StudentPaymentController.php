@@ -91,46 +91,63 @@ class StudentPaymentController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function updateMedia(Request $request, $invoiceId)
-    {
-        try {
-            $invoice = Invoice::findOrFail($invoiceId);
+{
+    try {
+        $invoice = Invoice::findOrFail($invoiceId);
 
-            // Authorization check
-            if ($invoice->reservation->user_id !== Auth::id()) {
-                logError('Unauthorized attempt to update media', 'update_media', new Exception('User not authorized'));
-                return errorResponse('Unauthorized', 403);
-            }
-
-            // Handle new photo uploads
-            if ($request->hasFile('photos')) {
-                $request->validate([
-                    'photos' => 'array',
-                    'photos.*' => 'image|mimes:jpeg,png,jpg|max:5120',
-                ]);
-                foreach ($request->file('photos') as $photo) {
-                    $this->uploadService->upload($photo, 'payments', $invoice);
-                }
-                $invoice->admin_approval = 'pending';
-                $invoice->save();
-            }
-
-            // Handle deleted media
-            if ($request->filled('deleted_media')) {
-                $deletedMediaIds = explode(',', $request->input('deleted_media'));
-                $mediaItems = $invoice->media()->whereIn('id', $deletedMediaIds)->get();
-                foreach ($mediaItems as $media) {
-                    $this->uploadService->delete($media);
-                }
-                $invoice->admin_approval = 'pending';
-                $invoice->save();
-            }
-            return successResponse(trans('Payment images updated successfully'), null, ['media' => $media]);
-
-        } catch (Exception $e) {
-            logError('Failed to update invoice media', 'update_media', $e);
-            return errorResponse('Failed to update invoice media', 500);
+        // Authorization check
+        if (!$invoice->reservation || $invoice->reservation->user_id !== Auth::id()) {
+            logError('Unauthorized attempt to update media', 'update_media', new Exception('User not authorized'));
+            return errorResponse(trans('Unauthorized'), 403);
         }
+
+        // Get current media count
+        $currentMediaCount = $invoice->media()->count();
+
+        // Handle new photo uploads
+        if ($request->hasFile('photos')) {
+            $request->validate([
+                'photos' => 'array',
+                'photos.*' => 'image|mimes:jpeg,png,jpg|max:5120',
+            ]);
+
+            $newPhotos = $request->file('photos');
+            $totalMediaAfterUpload = $currentMediaCount + count($newPhotos);
+
+            // Check if adding new photos exceeds the limit
+            if ($totalMediaAfterUpload > 3) {
+                return errorResponse(trans('You can only upload up to 3 images per invoice.'), 400);
+            }
+
+            foreach ($newPhotos as $photo) {
+                $this->uploadService->upload($photo, 'payments', $invoice);
+            }
+
+            $invoice->admin_approval = 'pending';
+            $invoice->save();
+        }
+
+        // Handle deleted media
+        if ($request->filled('deleted_media')) {
+            $deletedMediaIds = array_filter(explode(',', $request->input('deleted_media')));
+            $mediaItems = $invoice->media()->whereIn('id', $deletedMediaIds)->get();
+
+            foreach ($mediaItems as $mediaItem) {
+                $this->uploadService->delete($mediaItem);
+            }
+
+            $invoice->admin_approval = 'pending';
+            $invoice->save();
+        }
+
+        return successResponse(trans('Payment images updated successfully'), null);
+
+    } catch (Exception $e) {
+        logError('Failed to update invoice media', 'update_media', $e);
+        return errorResponse(trans('Failed to update invoice media'), 500);
     }
+}
+
 
     /**
      * Retrieve media associated with a specific invoice.

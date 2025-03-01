@@ -727,6 +727,10 @@
   "reservation_accepted":"تم قبول الحجز",
   "Choose Files":"أختر الملفات",
   "Upload Invoice":"رفع الفواتير",
+  "Update Payment Images": "تحديث صور الدفع",
+  "Add New Images": "إضافة صور جديدة",
+  "You can only upload up to 3 images per invoice.": "يمكنك تحميل ما يصل إلى 3 صور فقط لكل فاتورة."
+,
   "create_maintenance_request":"إنشاء طلب صيانة",
   "Submitted a new maintenance request successfully.":"تم تقديم طلب صيانة جديد بنجاح.",
   "Staff":"المشرفين",

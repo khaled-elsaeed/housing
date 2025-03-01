@@ -7,6 +7,8 @@ $(document).ready(function() {
             faculty: getTranslation("faculty", language),
             building: getTranslation("building", language),
             apartment: getTranslation("apartment", language),
+            rejecting : getTranslation("rejecting",language),
+            accepting : getTranslation("accpeting",language),
             room: getTranslation("room", language),
             uploadedPictures: getTranslation("uploadedPictures", language),
             view: getTranslation("view", language),
@@ -111,6 +113,8 @@ $(document).ready(function() {
             noChangesDetected: "No changes were detected.",
             detailsUpdated: "Invoice details updated successfully.",
             errorUpdatingDetails: "Failed to update invoice details: ",
+            accepting: "Accepting...",
+  rejecting: "Rejecting...",
             save: "Save"
         },
         ar: {
@@ -151,6 +155,8 @@ $(document).ready(function() {
             warning: "تحذير",
             selectPayment: "يرجى تحديد تفاصيل دفع واحد على الأقل للقبول.",
             negativeAmount: "لا يمكن أن يكون مبلغ الدفع الزائد سالباً.",
+            accepting: "جارٍ القبول...",
+  rejecting: "جارٍ الرفض...",
             success: "نجاح",
             error: "خطأ",
             errorUpdating: "خطأ في تحديث حالة الدفع: ",
@@ -718,8 +724,37 @@ function handleAcceptButtonClick(response, labels) {
         showCancelButton: true,
         confirmButtonText: labels.accept,
         cancelButtonText: getTranslation("cancel", lang),
-    }).then(() => {
-        updatePaymentStatus(currentInvoiceDetails.id, "accepted", overPaymentAmount, newInsuranceAmount);
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const acceptBtn = $("#accept-btn");
+
+            // Disable button and show spinner
+            acceptBtn.prop("disabled", true).html(`
+                <span class="spinner-border spinner-border-sm"></span> ${labels.accepting || 'Accepting...'}
+            `);
+
+            updatePaymentStatus(currentInvoiceDetails.id, "accepted", overPaymentAmount, newInsuranceAmount)
+                .then(() => {
+                    swal({
+                        type: "success",
+                        title: getTranslation("success", lang),
+                        text: getTranslation("paymentAccepted", lang),
+                    });
+                })
+                .catch(() => {
+                    swal({
+                        type: "error",
+                        title: getTranslation("error", lang),
+                        text: getTranslation("actionFailed", lang),
+                    });
+                })
+                .finally(() => {
+                    // Re-enable button and restore text/icon
+                    acceptBtn.prop("disabled", false).html(`
+                        <i class="fa fa-check-circle me-2"></i> ${labels.accept}
+                    `);
+                });
+        }
     });
 }
 
@@ -742,10 +777,40 @@ function handleRejectButtonClick(response, labels) {
         showCancelButton: true,
         confirmButtonText: labels.reject,
         cancelButtonText: getTranslation("cancel", lang),
-    }).then(() => {
-        updatePaymentStatus(response.invoice_id, "rejected", null, 0, 0);
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const rejectBtn = $("#reject-btn");
+
+            // Disable button and show spinner
+            rejectBtn.prop("disabled", true).html(`
+                <span class="spinner-border spinner-border-sm"></span> ${labels.rejecting || 'Rejecting...'}
+            `);
+
+            updatePaymentStatus(response.invoice_id, "rejected", null, 0, 0)
+                .then(() => {
+                    swal({
+                        type: "success",
+                        title: getTranslation("success", lang),
+                        text: getTranslation("paymentRejected", lang),
+                    });
+                })
+                .catch(() => {
+                    swal({
+                        type: "error",
+                        title: getTranslation("error", lang),
+                        text: getTranslation("actionFailed", lang),
+                    });
+                })
+                .finally(() => {
+                    // Re-enable button and restore text/icon
+                    rejectBtn.prop("disabled", false).html(`
+                        <i class="fa fa-times-circle me-2"></i> ${labels.reject}
+                    `);
+                });
+        }
     });
 }
+
 
 // -----------------------------------
 // Payment Status and Details Update

@@ -22,6 +22,9 @@
   "Additional Information":"Additional Information",
   "Address":"Address",
   "Admin Approval":"Admin Approval",
+  "You can only upload up to 3 images per invoice.": "You can only upload up to 3 images per invoice."
+,
+  "Add New Images": "Add New Images",
   "Ahmed Elemam":"Ahmed Elemam",
   "All residents must follow these rules to maintain their housing eligibility.":"All residents must follow these rules to maintain their housing eligibility.",
   "All Rights Reserved":"All Rights Reserved",
@@ -560,6 +563,7 @@
   "Payment images updated successfully!" : "Payment images updated successfully!",
   "Your registration has been completed successfully.":"Your registration has been completed successfully.",
   "No payments found.":"No payments found.",
+  "Update Payment Images": "Update Payment Images",
   "The password must be at least 8 characters long.":"The password must be at least 8 characters long.",
   "The password must contain at least one uppercase letter.":"The password must contain at least one uppercase letter.",
   "The password must contain at least one lowercase letter.":"The password must contain at least one lowercase letter.",
