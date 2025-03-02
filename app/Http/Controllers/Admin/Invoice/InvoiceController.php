@@ -255,6 +255,11 @@ class InvoiceController extends Controller
             } elseif ($status === 'accepted') {
                 $invoice->reject_reason = null;
                 $invoice->status = "paid";
+                if($validated['overPaymentAmount'] > 0 && isset($invoice->reservation->user)) {
+                    $invoice->reservation->user->balance += $validated['overPaymentAmount'];
+                    $invoice->reservation->user->save();
+                }
+                
                 $this->processAcceptedPayment($invoice,$validated);
             }
 
