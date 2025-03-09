@@ -283,40 +283,58 @@ class InvoiceController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function updateInvoiceDetails(Request $request, $invoiceId)
-    {
-        try {
-            $validated = $request->validate([
-                'details' => 'required|array|min:1',
-                'details.*.detailId' => 'required|exists:invoice_details,id',
-                'details.*.amount' => 'required|numeric|min:0',
-            ]);
+{
+    try {
+        $validated = $request->validate([
+            'modifiedDetails' => 'nullable|array', 
+            'modifiedDetails.*.detailId' => 'required_with:modifiedDetails|exists:invoice_details,id',
+            'modifiedDetails.*.amount' => 'required_with:modifiedDetails|numeric|min:0',
+            'newDetails' => 'nullable|array', 
+            'newDetails.*.category' => 'required_with:newDetails|in:damages,maintenance', 
+            'newDetails.*.amount' => 'required_with:newDetails|numeric|min:0',
+        ]);
 
-            $invoice = Invoice::findOrFail($invoiceId);
+        $invoice = Invoice::findOrFail($invoiceId);
 
-            if ($invoice->status === 'accepted' || $invoice->status === 'paid') {
-                return errorResponse(trans('Cannot modify details of accepted or paid invoice'), 403);
-            }
+        if ($invoice->status === 'accepted' || $invoice->status === 'paid') {
+            return errorResponse(trans('Cannot modify details of accepted or paid invoice'), 403);
+        }
 
-            DB::beginTransaction();
+        DB::beginTransaction();
 
-            foreach ($validated['details'] as $detail) {
+        // Update existing invoice details
+        if (!empty($validated['modifiedDetails'])) {
+            foreach ($validated['modifiedDetails'] as $detail) {
                 $invoiceDetail = InvoiceDetail::find($detail['detailId']);
                 if ($invoiceDetail && $invoiceDetail->invoice_id === $invoice->id) {
                     $invoiceDetail->amount = $detail['amount'];
                     $invoiceDetail->save();
                 }
             }
-
-            logAdminAction('update_invoice_details', "Modified details for invoice #{$invoiceId}", $validated);
-            DB::commit();
-
-            return successResponse(trans('Invoice details updated successfully'));
-        } catch (Throwable $e) {
-            DB::rollBack();
-            logError('Failed to update invoice details', 'update_invoice_details', $e);
-            return errorResponse(trans('Failed to update invoice details'), 500);
         }
+
+        // Add new invoice details
+        if (!empty($validated['newDetails'])) {
+            foreach ($validated['newDetails'] as $newDetail) {
+                InvoiceDetail::create([
+                    'invoice_id' => $invoice->id,
+                    'category' => $newDetail['category'],
+                    'amount' => $newDetail['amount'],
+                    'status' => 'pending', // Default status for new details
+                ]);
+            }
+        }
+
+        logAdminAction('update_invoice_details', "Modified and/or added details for invoice #{$invoiceId}", $validated);
+        DB::commit();
+
+        return successResponse(trans('Invoice details updated successfully'));
+    } catch (Throwable $e) {
+        DB::rollBack();
+        logError('Failed to update invoice details', 'update_invoice_details', $e);
+        return errorResponse(trans('Failed to update invoice details'), 500);
     }
+}
 
     // -----------------------------------
     // Helper Methods
