@@ -275,6 +275,8 @@
                      <tr>
                         <th>@lang('Name')</th>
                         <th>@lang('National ID')</th>
+                        <th>@lang('Academic ID')</th>
+
                         <th>@lang('Faculty')</th>
                         <th>@lang('Mobile')</th>
                         <th>@lang('Reservation Duration')</th>

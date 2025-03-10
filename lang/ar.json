@@ -723,7 +723,10 @@
   "Reservation request accepted by administration":"تم قبول طلب الحجز من قبل الإدارة",
   "Bank Transfer":"تحويل بكي",
   "Too Many Files": "عدد الملفات كبير جدًا"
-,
+,"Academic ID":"الرقم الأكاديمي",
+  "Academic ID is required":"الرقم الأكاديمي مطلوب",
+  "Academic ID must be a number":"الرقم الأكاديمي يجب أن يكون رقمًا",
+  
   "Payment images updated successfully!" : "تم تحديث صور الدفع بنجاح!",
   "reservation_created":"تم إنشاء الحجز",
   "reservation_accepted":"تم قبول الحجز",

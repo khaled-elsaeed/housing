@@ -129,6 +129,7 @@ class InvoiceController extends Controller
            return DataTables::of($query)
                ->addColumn('name', fn($invoice) => $invoice->reservation->user->student?->name ?? trans('N/A'))
                ->addColumn('national_id', fn($invoice) => $invoice->reservation->user->student?->national_id ?? trans('N/A'))
+               ->addColumn('academic_id', fn($invoice) => $invoice->reservation->user->student?->academic_id ?? trans('N/A'))
                ->addColumn('faculty', fn($invoice) => $invoice->reservation->user->student?->faculty?->name ?? trans('N/A'))
                ->addColumn('phone', fn($invoice) => $invoice->reservation->user->student?->phone ?? trans('N/A'))
                ->addColumn('status', fn($invoice) => trans($invoice->status))

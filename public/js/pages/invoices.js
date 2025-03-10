@@ -235,6 +235,10 @@ $(document).ready(function() {
                 name: "national_id"
             },
             {
+                data: "academic_id",
+                name: "academic_id"
+            },
+            {
                 data: "faculty",
                 name: "faculty"
             },
