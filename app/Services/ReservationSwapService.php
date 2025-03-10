@@ -120,9 +120,12 @@ class ReservationSwapService
                     ->findOrFail($reservationId);
                 $newRoom = Room::with('apartment.building')->findOrFail($roomId);
 
-                if (Reservation::where('room_id', $newRoom->id)->exists()) {
-                    throw new BusinessRuleException('Room is already assigned to another reservation');
+                if (Reservation::where('room_id', $newRoom->id)
+                    ->whereIn('status', ['active', 'pending','planned'])
+                    ->exists()) {
+                    throw new BusinessRuleException('Room is already assigned to another active or pending reservation');
                 }
+
 
                 if ($reservation->user->student->gender !== $newRoom->apartment->building->gender) {
                     throw new BusinessRuleException('Room gender does not match resident gender');

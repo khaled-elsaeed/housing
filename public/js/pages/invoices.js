@@ -490,50 +490,47 @@ $(document).ready(function() {
                     <h5 class="card-title mb-0">${getTranslation("invoiceDetails", lang)}</h5>
                 </div>
                 <div class="card-body p-3">
+                    <div class="d-flex justify-content-end gap-2 flex-wrap mb-3">
+                        <button id="edit-amounts-btn" class="btn btn-outline-secondary btn-sm text-nowrap" data-invoice-id="${invoiceId}" ${isDisabled}>
+                            ${getTranslation("editAmounts", lang)}
+                        </button>
+                        <button id="save-changes-btn" class="btn btn-outline-primary btn-sm d-none text-nowrap" data-invoice-id="${invoiceId}" ${isDisabled}>
+                            ${getTranslation("saveChanges", lang)}
+                        </button>
+                        <button id="cancel-edit-btn" class="btn btn-outline-danger btn-sm d-none text-nowrap" data-invoice-id="${invoiceId}" ${isDisabled}>
+                            ${getTranslation("cancel", lang)}
+                        </button>
+                        <button id="add-amount-btn" class="btn btn-outline-info btn-sm text-nowrap" data-invoice-id="${invoiceId}" ${isDisabled}>
+                            ${getTranslation("addAmount", lang)}
+                        </button>
+                    </div>
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0" id="invoice-details-table">
+                        <table class="table table-hover mb-0 w-100 dt-responsive nowrap" id="invoice-details-table">
                             <thead>
                                 <tr>
-                                    <th scope="col" class="col-4 col-md-3">${getTranslation("category", lang)}</th>
-                                    <th scope="col" class="col-4 col-md-4 text-end">${getTranslation("amount", lang)}</th>
-                                    <th scope="col" class="col-4 col-md-5 text-end">
-                                        <div class="d-flex justify-content-end gap-2 flex-wrap">
-                                            <button id="edit-amounts-btn" class="btn btn-outline-secondary btn-sm" data-invoice-id="${invoiceId}" ${isDisabled}>
-                                                ${getTranslation("editAmounts", lang)}
-                                            </button>
-                                            <button id="save-changes-btn" class="btn btn-outline-primary btn-sm d-none" data-invoice-id="${invoiceId}" ${isDisabled}>
-                                                ${getTranslation("saveChanges", lang)}
-                                            </button>
-                                            <button id="cancel-edit-btn" class="btn btn-outline-danger btn-sm d-none" data-invoice-id="${invoiceId}" ${isDisabled}>
-                                                ${getTranslation("cancel", lang)}
-                                            </button>
-                                            <button id="add-amount-btn" class="btn btn-outline-info btn-sm" data-invoice-id="${invoiceId}" ${isDisabled}>
-                                                ${getTranslation("addAmount", lang)}
-                                            </button>
-                                        </div>
-                                    </th>
+                                    <th class="text-nowrap" width="30%">${getTranslation("category", lang)}</th>
+                                    <th class="text-end text-nowrap" width="40%">${getTranslation("amount", lang)}</th>
+                                    <th class="text-end" width="30%"></th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                ${invoiceDetails
-                                    .map(
-                                        (detail) => `
-                                    <tr>
-                                        <td class="align-middle">${getTranslation(detail.category, lang)}</td>
-                                        <td class="align-middle text-end">
-                                            <input class="form-control border border-secondary invoice-detail invoice_detail_amount w-100" 
-                                                   name="invoice_detail_amount_${detail.id}" 
-                                                   type="text" 
-                                                   value="${parseFloat(detail.amount).toLocaleString()}" 
-                                                   data-detail-id="${detail.id}"
-                                                   ${isDisabled} ${isReadOnly}>
-                                        </td>
-                                        <td></td>
-                                    </tr>
-                                `
-                                    )
-                                    .join("")}
-                            </tbody>
+                            ${invoiceDetails
+                                .map(
+                                    (detail) => `
+                                <tr>
+                                    <td class="text-nowrap">${getTranslation(detail.category, lang)}</td>
+                                    <td>
+                                        <input class="form-control form-control-sm border border-secondary invoice-detail invoice_detail_amount" 
+                                               name="invoice_detail_amount_${detail.id}" 
+                                               type="text" 
+                                               value="${parseFloat(detail.amount).toLocaleString()}" 
+                                               data-detail-id="${detail.id}"
+                                               ${isDisabled} ${isReadOnly}>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                            `
+                                )
+                                .join("")}
                         </table>
                     </div>
                     ${insuranceSection}
@@ -623,6 +620,22 @@ $(document).ready(function() {
     // -----------------------------------
 
     function attachEventListeners(response, labels) {
+        // Initialize DataTable for invoice details
+        if ($.fn.DataTable.isDataTable('#invoice-details-table')) {
+            $('#invoice-details-table').DataTable().destroy();
+        }
+        
+        $('#invoice-details-table').DataTable({
+            responsive: true,
+            paging: false,
+            searching: false,
+            info: false,
+            ordering: false,
+            language: lang === "ar" ? {
+                url: "https://cdn.datatables.net/plug-ins/1.10.20/i18n/Arabic.json"
+            } : {},
+        });
+
         if (response.status !== "accepted" && response.status !== "paid") {
             $("#new-insurance-amount").on("input", function() {
                 let val = $(this).val().replace(/,/g, "");
