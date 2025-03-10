@@ -90,6 +90,23 @@ class ReservationSwapService
                 $this->createResidentRoomMovement($reservation1, $oldRoom1, $oldRoom2, 'Room swap with another resident');
                 $this->createResidentRoomMovement($reservation2, $oldRoom2, $oldRoom1, 'Room swap with another resident');
 
+                logAdminAction(
+                    'swap_rooms',
+                    "Swapped rooms between residents: {$reservation1->user->name} and {$reservation2->user->name}",
+                    [
+                        'reservation1' => [
+                            'id' => $reservation1->id,
+                            'old_room' => $oldRoom1,
+                            'new_room' => $oldRoom2
+                        ],
+                        'reservation2' => [
+                            'id' => $reservation2->id,
+                            'old_room' => $oldRoom2,
+                            'new_room' => $oldRoom1
+                        ]
+                    ]
+                );
+
                 event(new ReservationRoomChanged($reservation1->room));
                 event(new ReservationRoomChanged($reservation2->room));
 
@@ -150,6 +167,18 @@ class ReservationSwapService
                 $reservation->save();
 
                 $this->createResidentRoomMovement($reservation, $oldRoomId, $newRoom->id, 'Reallocated to a new room');
+
+                logAdminAction(
+                    'reallocate_room',
+                    "Reallocated resident {$reservation->user->name} to new room",
+                    [
+                        'reservation_id' => $reservation->id,
+                        'old_room_id' => $oldRoomId,
+                        'new_room_id' => $newRoom->id,
+                        'building' => $newRoom->apartment->building->number,
+                        'apartment' => $newRoom->apartment->number
+                    ]
+                );
 
                 event(new ReservationRoomChanged($newRoom));
 
